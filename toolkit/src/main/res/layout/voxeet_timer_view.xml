@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_gravity="center"
+        android:id="@+id/color_layout"
+        android:layout_marginRight="10dp">
+
+        <sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView
+            android:id="@+id/recording_status_image_alpha"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:clickable="true"
+            android:alpha="0.5"
+            android:layout_gravity="center"
+            android:src="@color/orange"
+            app:mutate_background="true"
+            app:oval="true" />
+
+        <sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView
+            android:id="@+id/recording_status_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.8"
+            android:clickable="true"
+            android:padding="2.5dp"
+            android:layout_gravity="center"
+            android:src="@color/orange"
+            app:mutate_background="true"
+            app:oval="true" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/timer_conference"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="0:00"
+        android:textColor="@color/lightestGrey"
+        android:textSize="16sp" />
+
+</LinearLayout>

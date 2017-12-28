@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_preview_width">130dp</dimen>
+    <dimen name="screen_preview_height">100dp</dimen>
+    <dimen name="screen_preview_width_padding">129dp</dimen>
+    <dimen name="screen_preview_height_padding">99dp</dimen>
+
+    <dimen name="conference_view_width">100dp</dimen>
+    <dimen name="conference_view_height">140dp</dimen>
+</resources>

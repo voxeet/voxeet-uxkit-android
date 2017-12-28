@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Dev Voxeet Sdk</string>
+    <string name="action_settings">Settings</string>
+    <string name="demo">Conference demo</string>
+    <string name="create_conf">Create Conference</string>
+    <string name="participant_number">#%1$d</string>
+    <string name="ok">Okey</string>
+    <string name="cancel">Cancel</string>
+    <string name="leave_conference_title">Leave conference</string>
+    <string name="leave_conference_message">A conference is live. Would you like to leave it ?</string>
+    <string name="loading">Loading, please wait…</string>
+    <string name="connection_service">Voxeet connection test</string>
+    <string name="conference_name">Conference name</string>
+    <string name="select_user">Select your user</string>
+    <string name="join">Start</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="invalid_activity_start_intent">Invalid accessor to this activity. Please set proper values in intent</string>
+</resources>
+
