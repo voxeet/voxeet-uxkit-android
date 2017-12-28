@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/grey_rounded_button_shape_pressed" android:state_enabled="true" android:state_pressed="true"/>
+    <item android:drawable="@drawable/grey_rounded_button_shape_enabled" android:state_enabled="true"/>
+    <item android:drawable="@drawable/grey_rounded_button_shape_disabled" android:state_enabled="false"/>
+
+</selector>

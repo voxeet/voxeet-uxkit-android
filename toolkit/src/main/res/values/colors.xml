@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="white">#FFFFFF</color>
+    <color name="header_color">#fbfbfb</color>
+
+    <color name="border_color">#e4e4e4</color>
+    <color name="divider_color">@color/grey_light</color>
+
+    <color name="grey_light">#e9e9e9</color>
+    <color name="white_alpha">#a4ffffff</color>
+    <color name="blue">#4280c5</color>
+    <color name="blue_alpha_clearer">#dd4280c5</color>
+    <color name="blue_alpha_transparent">#554280c5</color>
+    <color name="blue_alpha">#eb4280c5</color>
+    <color name="blue_dark">#2a527e</color>
+    <color name="red">#e65c5c</color>
+    <color name="red_hover">#BF0000</color>
+    <color name="yellow">#f3ff74</color>
+    <color name="orange">#ff8500</color>
+    <color name="green">#7ac24b</color>
+
+    <color name="separator_chat_view_grey">#EBEBEB</color>
+    <color name="chat_send_grey">#A3A3A3</color>
+    <color name="background_chat_listview">#FBFBFB</color>
+    <color name="background_dialog">#FBFBFB</color>
+
+    <color name="hint_text_color">#b2b2b2</color>
+    <color name="default_font_color">#3b3b3b</color>
+    <color name="default_title_color">#a0a0a0</color>
+
+    <color name="fab_dim_color">#77000000</color>
+    <color name="overlay_dim_color">#77000000</color>
+    <color name="profile_black">#2F2F2F</color>
+    <color name="VoxeetBlueBackground">#4281C6</color>
+    <color name="VoxeetBlueDark">#4281F6</color>
+    <color name="VoxeetBlueBackgroundEditext">#558ECB</color>
+    <color name="VoxeetBlueStatusMenu">#7EA7D6</color>
+    <color name="VoxeetYellow">@color/lightYellow</color>
+    <color name="VoxeetGreen">#6BBD44</color>
+    <color name="VoxeetBlueTextEditext">#5D7FAC</color>
+    <color name="voxeetred">#BF0000</color>
+    <color name="voxeetredDark">#4F0000</color>
+
+    <color name="lightRed">#9A3334</color>
+
+    <color name="lightFawn">#E6E8DD</color>
+    <color name="lightGreen">#8aa44d</color>
+    <color name="whiteOp">#AAFFFFFF</color>
+    <color name="lesswhite">#fefdfa</color>
+    <color name="black">#121210</color>
+    <color name="darkBrown">#6c5837</color>
+    <color name="lightYellow">#eed787</color>
+    <color name="yellowOrange">#fabe04</color>
+    <color name="purewhite">#ffffff</color>
+    <color name="lighterGreen">#cbd268</color>
+    <color name="grey999">#999999</color>
+    <color name="greyccc">#cccccc</color>
+    <color name="greyf1">#f1f1f1</color>
+    <color name="greyd1">#d1d1d1</color>
+    <color name="light_brown">#eae6dd</color>
+
+    <color name="edit_box_bg">#f8f8f8</color>
+
+    <color name="referralButtonGreen">#88a04a</color> <!-- nearly lightGreen -->
+
+    <color name="darkGrey">#666666</color>
+    <color name="lighterGrey">#999999</color>
+    <color name="lightestGrey">#e1e1e1</color>
+    <color name="transparent">#00000000</color>
+
+
+    <color name="tab_bar_bg">#e5e5e5</color>
+
+    <color name="actionBarBackground">#EEE</color>
+
+    <color name="avatar_bg">#cccccc</color>
+
+    <color name="drawer_bg">#363636</color>
+    <color name="drawer_share_bg">#80FFFFFF</color>
+    <color name="drawer_divider_bg">#313131</color>
+    <color name="drawer_secondary">#aeaeae</color>
+
+    <color name="selected_color">@color/light_brown</color>
+
+    <color name="contact_name_bg">#EBEBEB</color>
+    <color name="contact_name_selected_bg">#dfdfdf</color>
+    <color name="contact_name">@color/grey999</color>
+
+    <color name="presence_online">#8ba34c</color>
+    <color name="presence_busy">#ba2527</color>
+    <color name="presence_away">#fabe04</color>
+    <color name="presence_offline">#AEAEAE</color>
+
+    <color name="action_bar_title_color">@color/darkGrey</color>
+
+    <color name="gplus_color_1">#3e802f</color>
+    <color name="gplus_color_2">#f4b400</color>
+    <color name="gplus_color_3">#427fed</color>
+    <color name="gplus_color_4">#b23424</color>
+    <color name="VoxeetGreenLight">#8ECB67</color>
+    <color name="VoxeetGreenDark">#6B9D44</color>
+    <color name="recent_search_bar_grey">#FBFBFB</color>
+</resources>

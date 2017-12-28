@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/conference_view_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="right|top"
+    android:background="@drawable/background_conference_view">
+
+    <sdk.voxeet.com.toolkit.views.uitookit.VideoView
+        android:id="@+id/selected_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/layout_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp">
+
+            <sdk.voxeet.com.toolkit.views.uitookit.VoxeetTimer
+                android:id="@+id/voxeet_timer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/layout_participant"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:minHeight="@dimen/conference_view_avatar_size"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/toggle_size"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/selector_minimize"
+                    android:src="@drawable/minimize" />
+
+                <sdk.voxeet.com.toolkit.views.uitookit.VoxeetParticipantView
+                    android:id="@+id/participant_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+
+            <sdk.voxeet.com.toolkit.views.uitookit.VoxeetCurrentSpeakerView
+                android:id="@+id/current_speaker_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="10dp" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <!--record button set to false cause png not ready-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <sdk.voxeet.com.toolkit.views.uitookit.VideoView
+            android:id="@+id/self_video_view"
+            android:layout_width="100dp"
+            android:layout_height="80dp"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"/>
+
+        <sdk.voxeet.com.toolkit.views.uitookit.VoxeetConferenceBarView
+            android:id="@+id/conference_bar_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="36dp"
+            android:visibility="gone"
+            app:record_button="false" />
+    </LinearLayout>
+
+
+</FrameLayout>

@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SDK</string>
+    <string name="action_settings">Settings</string>
+    <string name="demo">Conference demo</string>
+    <string name="create_conf">Create Conference</string>
+    <string name="participant_number">#%1$d</string>
+    <string name="websocket_opening_error">Login failed, please try again</string>
+    <string name="mute_error">Something went wrong. Please try again muting that person</string>
+    <string name="recall_failed">Recalling failed</string>
+    <string name="reminder_fail">Sending a reminder failed</string>
+    <string name="invalid_thread">Media operations have to be done on the main thread</string>
+    <string name="leave_error">Error while leaving the conference</string>
+    <string name="guest_access_error">Guest access denied</string>
+</resources>

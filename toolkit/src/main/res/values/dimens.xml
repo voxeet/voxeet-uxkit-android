@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dimen_140">140dp</dimen>
+    <dimen name="dimen_100">100dp</dimen>
+    <dimen name="border_size">1dp</dimen>
+    <dimen name="cornerRadius">30dp</dimen>
+    <dimen name="dimen_512">384dp</dimen>
+    <dimen name="contact_profile_avatar_size_max">256dp</dimen>
+    <dimen name="contact_profile_avatar_size">128dp</dimen>
+    <dimen name="conference_view_avatar_size">64dp</dimen>
+    <dimen name="meeting_list_avatar_double">48dp</dimen>
+    <dimen name="meeting_list_avatar_third">16dp</dimen>
+    <dimen name="dimen_3">3dp</dimen>
+    <dimen name="dimen_5">5dp</dimen>
+    <dimen name="dimen_0">0dp</dimen>
+    <dimen name="dimen_1">1dp</dimen>
+</resources>

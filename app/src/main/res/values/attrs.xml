@@ -1,0 +1,60 @@
+<!--
+  Copyright 2011 The Android Open Source Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
+<resources>
+    <declare-styleable name="VoxeetCurrentSpeakerView">
+        <attr name="vu_meter_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="VoxeetIncomingCallButton">
+        <attr name="view_src" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="VoxeetParticipantView">
+        <attr name="overlay_color" format="color" />
+        <attr name="name_enabled" format="boolean" />
+        <attr name="display_self" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="VoxeetTimer">
+        <attr name="recording_color" format="color" />
+        <attr name="default_color" format="color" />
+        <attr name="not_in_conference_color" format="color" />
+        <attr name="text_color" format="color" />
+        <attr name="timer_mode" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="VoxeetConferenceBarView">
+        <attr name="record_button" format="boolean" />
+        <attr name="audio_button" format="boolean" />
+        <attr name="mute_button" format="boolean" />
+        <attr name="video_button" format="boolean" />
+        <attr name="leave_button" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="VoxeetVuMeter">
+        <attr name="background_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundedImageView">
+        <attr name="corner_radius" format="dimension" />
+        <attr name="border_width" format="dimension" />
+        <attr name="border_color" format="color" />
+        <attr name="mutate_background" format="boolean" />
+        <attr name="oval" format="boolean" />
+        <attr name="android:scaleType" />
+    </declare-styleable>
+</resources>
