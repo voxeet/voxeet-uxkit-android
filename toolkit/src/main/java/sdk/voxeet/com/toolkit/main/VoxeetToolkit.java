@@ -2,24 +2,43 @@ package sdk.voxeet.com.toolkit.main;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.annotation.NonNull;
 
 /**
  * Created by romainbenmansour on 24/03/2017.
  */
 public class VoxeetToolkit {
 
-    private static VoxeetLifeCycleListener lifeCycleListener;
+    private static VoxeetToolkit sInstance;
 
-    private static Application app;
-
-    private static boolean isInit = false;
 
     /**
      * This function initializes the UI Toolkit SDK. It should be called as early as possible.
      *
      * @param application The voxeet sdk instance
      */
-    public static synchronized void initialize(Application application) {
+    public static synchronized VoxeetToolkit initialize(Application application) {
+        sInstance = new VoxeetToolkit(application);
+
+        return sInstance;
+    }
+
+    public static VoxeetToolkit getInstance() {
+        return sInstance;
+    }
+
+    private VoxeetLifeCycleListener lifeCycleListener;
+
+    private Application app;
+
+    private boolean isInit = false;
+
+    /**
+     * Constructor of the VoxeetToolkit
+     * @param application
+     */
+
+    private VoxeetToolkit(@NonNull Application application) {
         app = application;
 
         app.registerActivityLifecycleCallbacks(lifeCycleListener = new VoxeetLifeCycleListener(app.getApplicationContext()));
@@ -33,7 +52,7 @@ public class VoxeetToolkit {
      *
      * @param enabled
      */
-    public static void enableOverlay(boolean enabled) {
+    public void enableOverlay(boolean enabled) {
         isInitialized();
 
         lifeCycleListener.onOverlayEnabled(enabled);
@@ -45,14 +64,14 @@ public class VoxeetToolkit {
      *
      * @return the current activity
      */
-    public static Activity getCurrentActivity() {
+    public Activity getCurrentActivity() {
         return lifeCycleListener.getCurrentActivity();
     }
 
     /**
      * @throws IllegalStateException if SDK is not initialized.
      */
-    static void isInitialized() {
+    private void isInitialized() {
         if (!isInit) {
             throw new IllegalStateException(
                     "The UI Toolkit has not been initialized, make sure to call " +
@@ -63,7 +82,7 @@ public class VoxeetToolkit {
     /**
      * @return wether overlay is enabled or not
      */
-    public static boolean isEnabled() {
+    public boolean isEnabled() {
         return lifeCycleListener.isOverlayEnabled();
     }
 }
