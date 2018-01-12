@@ -20,6 +20,8 @@ import fr.voxeet.sdk.sample.activities.CreateConfActivity;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.events.error.SdkLogoutErrorEvent;
+import voxeet.com.sdk.events.success.SdkLogoutSuccessEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
 import voxeet.com.sdk.json.UserInfo;
 
@@ -70,13 +72,14 @@ public class SampleApplication extends Application {
     /**
      * Select an user, tells the sdk to wether validate or
      * log the selected user
+     *
      * @param user_info The user info selected in our UI
      * @return true if it was the first log
      */
     public boolean selectUser(UserInfo user_info) {
-        if(_current_user == null) {
+        if (_current_user == null) {
             _current_user = user_info;
-            if(VoxeetSdk.getInstance() == null) {
+            if (VoxeetSdk.getInstance() == null) {
                 VoxeetSdk.initialize(this,
                         BuildConfig.CONSUMER_KEY,
                         BuildConfig.CONSUMER_SECRET,
@@ -93,7 +96,7 @@ public class SampleApplication extends Application {
             _log_after_closing_event = false;
         } else {
             _current_user = user_info;
-            if(VoxeetSdk.getInstance().isSocketOpen()) {
+            if (VoxeetSdk.getInstance().isSocketOpen()) {
                 //logout is called because in our example
                 //the main activity will login when triggered
                 //TODO a possible improvement is to migrate the logic into a specific layer
@@ -112,22 +115,25 @@ public class SampleApplication extends Application {
      * Call this method to log the current selected user
      */
     public void logSelectedUser() {
-        Log.d("MainActivity","logSelectedUser " + _current_user.toString());
+        Log.d("MainActivity", "logSelectedUser " + _current_user.toString());
         VoxeetSdk.getInstance().logUser(_current_user);
     }
 
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(SdkLogoutSuccessEvent event) {
+        afterLogoutEvent();
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(SocketStateChangeEvent event) {
-        Log.d("SampleApplication", "SocketStateChangeEvent -"+event.message()+"-"+_log_after_closing_event);
+    public void onEvent(SdkLogoutErrorEvent event) {
+        afterLogoutEvent();
+    }
 
-        switch(event.message()) {
-            case "CLOSING":
-                if(_log_after_closing_event) {
-                    _log_after_closing_event = false;
-                    logSelectedUser();
-                }
+    private void afterLogoutEvent() {
+        if (_log_after_closing_event) {
+            _log_after_closing_event = false;
+            logSelectedUser();
         }
     }
 
