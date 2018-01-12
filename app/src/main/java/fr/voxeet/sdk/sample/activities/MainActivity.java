@@ -179,9 +179,6 @@ public class MainActivity extends AppCompatActivity implements UserAdapter.UserC
                     intent.putExtra("join", true);
                     break;
             }
-
-            //_after_relogged_intent = intent;
-            //VoxeetSdk.getInstance().logout();
             startActivity(intent);
         }
     }
