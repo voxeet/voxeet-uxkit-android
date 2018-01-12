@@ -45,7 +45,11 @@ public class SampleApplication extends Application {
         FirebaseApp.initializeApp(this);
 
         VoxeetToolkit.initialize(this);
-        VoxeetToolkit.enableOverlay(true);
+        VoxeetToolkit.getInstance().enableOverlay(true);
+        //note that in this example, we do not call VoxeetSdk.initialize(...)
+        //please head to the selectUser where we actually initialize the sdk
+        //in fact, the workflow implemented in this example show you you can easily switch from
+        //one user to an other
     }
 
     @Override
