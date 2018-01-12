@@ -16,8 +16,10 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url "https://dl.bintray.com/voxeet/maven"
+        }
         jcenter()
-        mavenLocal()
     }
 }
 
@@ -25,4 +27,6 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-
+subprojects {
+    task allDeps(type: DependencyReportTask) {}
+}

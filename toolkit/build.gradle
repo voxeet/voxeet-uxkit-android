@@ -1,21 +1,25 @@
-apply plugin: 'com.android.library'
-apply plugin: 'android-apt'
-
 buildscript {
     repositories {
         maven {
-            url "${System.getenv('HOME')}/.m2/repository/"
+            url "https://dl.bintray.com/voxeet/maven"
         }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
     }
 }
 
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
 repositories {
-    jcenter();
-    maven { url 'https://maven.fabric.io/public' }
-    mavenCentral()
     maven {
-        url "${System.getenv('HOME')}/.m2/repository/"
+        url "https://dl.bintray.com/voxeet/maven"
     }
+    jcenter();
 }
 
 android {
@@ -26,7 +30,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName project.properties["VOXEET_SDK_TOOLKIT_VERSION"]
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -58,26 +62,20 @@ android {
     }
 }
 
-ext {
-    // Where you will see your artifact in Bintray's web interface 
-    // The "bintrayName" should match the name of the Bintray repro. 
-    bintrayRepo = 'maven'
-    bintrayName = 'voxeet-sdk'
-//    bintrayName = 'toolkit'
+group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
+version = project.properties["VOXEET_SDK_TOOLKIT_VERSION"]
 
-    // Maven metadata 
-    publishedGroupId = project.properties["VOXEET_GROUP_ID"]
-    libraryName = 'Voxeet UI Toolkit'
-
-    // Save yourself a head ache, and set this equal to the name of the Android Studio library 
-    // module. The artifact name needs to match the name of the library. 
-    artifact = 'toolkit'
-
-    libraryDescription = 'Voxeet UI Toolkit'
-    libraryVersion = '1.0.026'
-    developerId = 'romainbenmansour'
-    developerName = 'Romain Bemansour'
-    developerEmail = 'rbenmansour@voxeet.com'
+bintray {
+    user = project.properties["VOXEET_DEVELOPER_ID"]
+    key = project.properties["BINTRAY_API_KEY"]
+    configurations = ['archives'] //When uploading configuration files
+    pkg {
+        userOrg = project.properties["VOXEET_MAIN_DEVELOPER_ID"]
+        repo = "maven" // project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
+        name = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
+        publicDownloadNumbers = true
+        publish = true
+    }
 }
 
 dependencies {
@@ -95,13 +93,9 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 
-    compile ('com.voxeet.sdk.android:public-sdk:0.8.025@aar') {
-        transitive = true
-    }
+    compile 'com.voxeet.sdk:media:0.3.58'
+    compile 'com.voxeet.sdk:kernel:0.9.1'
+    compile 'com.voxeet.sdk:public-sdk:0.9.1'
 }
 
-apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/bintrayv1.gradle'
-
-//apply from: 'https://raw.githubusercontent.com/romainbenmansour/JCenter/master/install.gradle'
-//apply from: 'https://raw.githubusercontent.com/romainbenmansour/JCenter/master/bintray.gradle'
+apply from: "../tasks.gradle"
