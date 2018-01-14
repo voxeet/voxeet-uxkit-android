@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -23,6 +23,7 @@ import com.voxeet.toolkit.R;
 import java.util.List;
 
 import sdk.voxeet.com.toolkit.utils.Corner;
+import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 import voxeet.com.sdk.utils.ScreenHelper;

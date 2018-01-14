@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.nologic;
 
 import android.content.Context;
 import android.content.res.TypedArray;

@@ -10,7 +10,7 @@
         android:layout_width="@dimen/meeting_list_avatar_double"
         android:layout_height="@dimen/meeting_list_avatar_double">
 
-        <sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView
+        <sdk.voxeet.com.toolkit.views.android.RoundedImageView
             android:id="@+id/overlay_avatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -18,7 +18,7 @@
             app:mutate_background="true"
             app:oval="true" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView
+        <sdk.voxeet.com.toolkit.views.android.RoundedImageView
             android:id="@+id/avatar"
             android:layout_width="match_parent"
             android:padding="2dp"
@@ -27,7 +27,7 @@
             app:mutate_background="true"
             app:oval="true" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.VideoView
+        <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
             android:id="@+id/participant_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

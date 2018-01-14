@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -20,6 +20,8 @@ import com.voxeet.toolkit.R;
 
 import java.util.List;
 
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
+import sdk.voxeet.com.toolkit.views.uitookit.nologic.VoxeetVuMeter;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 

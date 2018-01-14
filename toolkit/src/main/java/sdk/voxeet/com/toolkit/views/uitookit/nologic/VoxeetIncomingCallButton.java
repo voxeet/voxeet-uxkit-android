@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.nologic;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.voxeet.toolkit.R;
+
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
 
 /**
  * Created by romainbenmansour on 20/02/2017.
