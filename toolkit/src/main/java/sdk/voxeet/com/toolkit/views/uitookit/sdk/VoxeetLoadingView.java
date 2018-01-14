@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -14,6 +14,7 @@ import com.voxeet.toolkit.R;
 
 import java.util.List;
 
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**

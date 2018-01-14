@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.android;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -15,6 +15,8 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.voxeet.toolkit.R;
+
+import sdk.voxeet.com.toolkit.views.android.RoundedDrawable;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RoundedImageView extends ImageView {

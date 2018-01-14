@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.android;
 
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;

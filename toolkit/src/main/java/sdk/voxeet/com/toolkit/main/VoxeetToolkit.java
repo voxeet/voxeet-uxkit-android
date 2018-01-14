@@ -41,7 +41,8 @@ public class VoxeetToolkit {
     private VoxeetToolkit(@NonNull Application application) {
         app = application;
 
-        app.registerActivityLifecycleCallbacks(lifeCycleListener = new VoxeetLifeCycleListener(app.getApplicationContext()));
+        lifeCycleListener = new VoxeetLifeCycleListener(app.getApplicationContext());
+        app.registerActivityLifecycleCallbacks(lifeCycleListener);
 
         isInit = true;
     }

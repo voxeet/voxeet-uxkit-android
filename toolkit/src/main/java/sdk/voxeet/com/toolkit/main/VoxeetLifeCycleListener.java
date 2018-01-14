@@ -17,8 +17,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import sdk.voxeet.com.toolkit.views.uitookit.VoxeetConferenceView;
-import sdk.voxeet.com.toolkit.views.uitookit.VoxeetView;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceView;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetView;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;

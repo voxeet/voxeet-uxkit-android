@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -13,6 +13,7 @@ import com.voxeet.toolkit.R;
 
 import java.util.List;
 
+import sdk.voxeet.com.toolkit.utils.ParticipantViewAdapter;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
@@ -132,6 +133,7 @@ public class VoxeetParticipantView extends VoxeetView {
 
         if (adapter.getItemCount() > USER_THRESHOLD)
             recyclerView.setLayoutManager(gridLayout);
+        else recyclerView.setLayoutManager(horizontalLayout);
 
         adapter.notifyDataSetChanged();
     }

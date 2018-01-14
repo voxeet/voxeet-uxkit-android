@@ -6,14 +6,14 @@
     android:layout_gravity="center"
     android:orientation="vertical">
 
-    <sdk.voxeet.com.toolkit.views.uitookit.VoxeetVuMeter
+    <sdk.voxeet.com.toolkit.views.uitookit.nologic.VoxeetVuMeter
         android:id="@+id/vu_meter"
         android:layout_width="@dimen/meeting_list_avatar_double"
         android:layout_height="@dimen/meeting_list_avatar_double"
         android:layout_gravity="center"
         android:padding="10dp" />
 
-    <sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView
+    <sdk.voxeet.com.toolkit.views.android.RoundedImageView
         android:id="@+id/speaker_image"
         android:layout_width="@dimen/meeting_list_avatar_double"
         android:layout_height="@dimen/meeting_list_avatar_double"
