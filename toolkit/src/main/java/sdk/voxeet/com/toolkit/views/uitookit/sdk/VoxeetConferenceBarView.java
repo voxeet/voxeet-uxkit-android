@@ -363,7 +363,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
                 public void onClick(View v) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                             && getContext().checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED)
-                        VoxeetToolkit.getCurrentActivity().requestPermissions(new String[]{Manifest.permission.CAMERA}, RESULT_CAMERA);
+                        VoxeetToolkit.getInstance().getCurrentActivity().requestPermissions(new String[]{Manifest.permission.CAMERA}, RESULT_CAMERA);
                     else
                         VoxeetSdk.getInstance().getConferenceService().toggleVideo();
                 }
