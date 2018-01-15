@@ -103,7 +103,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.participant_view_cell, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_participant_view_cell, parent, false);
 
         parentWidth = parent.getWidth();
 
