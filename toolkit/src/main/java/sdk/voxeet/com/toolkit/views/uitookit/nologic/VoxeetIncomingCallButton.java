@@ -86,7 +86,7 @@ public class VoxeetIncomingCallButton extends FrameLayout {
 
         setClipChildren(false);
 
-        View v = inflate(getContext(), R.layout.incoming_call_button, this);
+        View v = inflate(getContext(), R.layout.view_incoming_call_button, this);
 
         image = (RoundedImageView) v.findViewById(R.id.image);
         if (drawable != null)
