@@ -16,6 +16,7 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         maven {
             url "https://dl.bintray.com/voxeet/maven"
         }
