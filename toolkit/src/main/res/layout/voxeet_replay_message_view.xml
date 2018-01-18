@@ -4,48 +4,13 @@
     android:id="@+id/conference_view_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="right|top"
-    android:background="@drawable/background_conference_view">
+    android:layout_gravity="right|top">
+
+    <!-- TODO remove this parent need tests -->
 
     <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
         android:id="@+id/selected_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:id="@+id/layout_participant"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:minHeight="@dimen/conference_view_avatar_size"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/toggle_size"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/selector_minimize"
-                    android:src="@drawable/minimize" />
-
-            </LinearLayout>
-
-        </FrameLayout>
-
-    </LinearLayout>
-
-
 </FrameLayout>

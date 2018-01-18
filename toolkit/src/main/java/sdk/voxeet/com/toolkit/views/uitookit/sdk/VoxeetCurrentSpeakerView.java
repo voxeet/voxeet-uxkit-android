@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -18,6 +20,7 @@ import com.google.common.collect.Iterables;
 import com.squareup.picasso.Picasso;
 import com.voxeet.toolkit.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
@@ -34,6 +37,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     private final int REFRESH_SPEAKER = 250;
 
     private final int REFRESH_METER = 100;
+
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     private int currentWidth;
 
@@ -70,6 +75,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
             handler.postDelayed(this, REFRESH_METER);
         }
     };
+    private List<DefaultConferenceUser> mConferenceUsers;
 
     /**
      * Instantiates a new Voxeet current speaker view.
@@ -115,51 +121,16 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     }
 
     @Override
-    protected void onConferenceJoined(String conferenceId) {
-    }
+    public void onConferenceDestroyed() {
+        super.onConferenceDestroyed();
 
-    @Override
-    protected void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceCreation(String conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
-        start();
-    }
-
-    @Override
-    protected void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onRecordingStatusUpdated(boolean recording) {
-
-    }
-
-    @Override
-    protected void onMediaStreamUpdated(String userId) {
-
-    }
-
-    @Override
-    protected void onConferenceDestroyed() {
         afterLeaving();
     }
 
     @Override
-    protected void onConferenceLeft() {
+    public void onConferenceLeft() {
+        super.onConferenceLeft();
+
         afterLeaving();
     }
 
@@ -173,7 +144,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     }
 
     @Override
-    protected void init() {
+    public void init() {
+        mConferenceUsers = new ArrayList<>();
     }
 
     @Override
@@ -181,6 +153,14 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         super.onConfigurationChanged(newConfig);
 
         orientation = newConfig.orientation;
+    }
+
+    @Override
+    public void onConferenceUsersListUpdate(List<DefaultConferenceUser> conferenceUsers) {
+        Log.d(TAG, "onConferenceUsersListUpdate: " + conferenceUsers.toArray());
+        super.onConferenceUsersListUpdate(conferenceUsers);
+
+        mConferenceUsers = conferenceUsers;
     }
 
     @Override
@@ -203,8 +183,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     }
 
     @Override
-    protected void inflateLayout() {
-        inflate(getContext(), R.layout.voxeet_current_speaker_view, this);
+    protected int layout() {
+        return R.layout.voxeet_current_speaker_view;
     }
 
     @Override
@@ -214,11 +194,6 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         vuMeter = (VoxeetVuMeter) v.findViewById(R.id.vu_meter);
     }
 
-    @Override
-    public void release() {
-        super.release();
-    }
-
     /**
      * Find user by id conference user.
      *
@@ -226,7 +201,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
      * @return the conference user
      */
     public DefaultConferenceUser findUserById(@Nullable final String userId) {
-            return Iterables.find(conferenceUsers, new Predicate<DefaultConferenceUser>() {
+            return Iterables.find(mConferenceUsers, new Predicate<DefaultConferenceUser>() {
                 @Override
                 public boolean apply(DefaultConferenceUser input) {
                     return input.getUserId().equalsIgnoreCase(userId);
@@ -254,6 +229,14 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         handler.removeCallbacks(null);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        handler.removeCallbacks(null);
+        handler.removeCallbacksAndMessages(null);
+    }
+
     /**
      * Starts the handler responsible of updating the vu meter and the speaker photo.
      */
@@ -265,7 +248,10 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     /**
      * Resumes the handler responsible of updating the vu meter and the speaker photo.
      */
+    @Override
     public void onResume() {
+        super.onResume();
+
         start();
     }
 

@@ -16,8 +16,6 @@ import android.widget.ImageView;
 
 import com.voxeet.toolkit.R;
 
-import sdk.voxeet.com.toolkit.views.android.RoundedDrawable;
-
 @SuppressWarnings("UnusedDeclaration")
 public class RoundedImageView extends ImageView {
 

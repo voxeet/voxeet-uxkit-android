@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abstracts;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -31,6 +31,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     private final int defaultWidth = getResources().getDimensionPixelSize(R.dimen.conference_view_width);
 
     private final int defaultHeight = getResources().getDimensionPixelSize(R.dimen.conference_view_height);
+    private IExpandableViewProviderListener mListener;
 
     private boolean isMaxedOut;
 
@@ -51,20 +52,14 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     /**
      * Instantiates a new Voxeet conference view.
      *
+     * @param listener the listener used to create the sub view
      * @param context the context
      */
-    public AbstractVoxeetOverlayView(Context context) {
+    public AbstractVoxeetOverlayView(@NonNull IExpandableViewProviderListener listener, Context context) {
         super(context);
-    }
 
-    /**
-     * Instantiates a new Voxeet conference view.
-     *
-     * @param context the context
-     * @param attrs   the attrs
-     */
-    public AbstractVoxeetOverlayView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        mListener = listener;
+        afterConstructorInit();
     }
 
     @Override
@@ -205,11 +200,6 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         sub_container = view.findViewById(R.id.container);
         action_button = view.findViewById(R.id.action_button);
 
-
-        mSubView = createSubVoxeetView();
-
-        sub_container.addView(mSubView);
-
         action_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -217,6 +207,13 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
             }
         });
 
+    }
+
+
+    private void afterConstructorInit() {
+        mSubView = createSubVoxeetView();
+
+        sub_container.addView(mSubView);
         //now add the subview as a listener of the current view
         addListener(mSubView);
     }
@@ -224,7 +221,9 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     protected abstract void onActionButtonClicked();
 
     @NonNull
-    protected abstract AbstractVoxeetExpandableView createSubVoxeetView();
+    private final AbstractVoxeetExpandableView createSubVoxeetView() {
+        return mListener.createSubVoxeetView();
+    }
 
     private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
 
@@ -447,6 +446,10 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
             animatorSet.start();
         }
 
+    }
+
+    protected IExpandableViewProviderListener getExpandableViewProviderListener() {
+        return mListener;
     }
 
     protected boolean isOverlay() {

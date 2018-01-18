@@ -2,33 +2,21 @@ package sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.AttributeSet;
 
 import com.voxeet.toolkit.R;
 
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetReplayMessageView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetExpandableView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewProviderListener;
 
-public class VoxeetOverlayToggleView extends AbstractVoxeetOverlayView {
+public class VoxeetOverlayBackView extends AbstractVoxeetOverlayView {
 
-    public VoxeetOverlayToggleView(Context context) {
-        super(context);
-    }
-
-    public VoxeetOverlayToggleView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public VoxeetOverlayBackView(@NonNull IExpandableViewProviderListener listener, @NonNull Context context) {
+        super(listener, context);
     }
 
     @Override
     final protected void onActionButtonClicked() {
-        toggleSize();
-    }
-
-    @NonNull
-    @Override
-    protected AbstractVoxeetExpandableView createSubVoxeetView() {
-        return new VoxeetReplayMessageView(getContext());
+        getExpandableViewProviderListener().onActionButtonClicked();
     }
 
 

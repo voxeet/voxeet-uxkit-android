@@ -16,15 +16,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.voxeet.android.media.Media;
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
  * Created by ROMMM on 9/29/15.
@@ -261,58 +262,26 @@ public class VoxeetConferenceBarView extends VoxeetView {
         setUserPreferences();
     }
 
-    @Override
-    protected void onConferenceJoined(String conferenceId) {
-    }
-
-    @Override
-    protected void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceCreation(String conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
-    }
-
     /**
      * Sets the recording button color if the conference is being recorded or not.
      *
      * @param isRecording
      */
     @Override
-    protected void onRecordingStatusUpdated(boolean isRecording) {
+    public void onRecordingStatusUpdated(boolean isRecording) {
+        super.onRecordingStatusUpdated(isRecording);
+
         if (recording != null)
             recording.setSelected(isRecording);
     }
 
     @Override
-    protected void onMediaStreamUpdated(String userId) {
+    public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
+        super.onMediaStreamUpdated(userId, mediaStreams);
+
         if (camera != null && userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStreams.get(userId) != null) {
             camera.setSelected(mediaStreams.get(userId).hasVideo());
         }
-    }
-
-    @Override
-    protected void onConferenceDestroyed() {
-    }
-
-    @Override
-    protected void onConferenceLeft() {
     }
 
     @Override
@@ -455,16 +424,11 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     @Override
-    public void release() {
-        super.release();
-    }
-
-    @Override
-    protected void inflateLayout() {
+    protected int layout() {
         if (builderMode)
-            inflate(getContext(), R.layout.voxeet_conference_bar_view_2, this);
+            return R.layout.voxeet_conference_bar_view_2;
         else
-            inflate(getContext(), R.layout.voxeet_conference_bar_view, this);
+            return R.layout.voxeet_conference_bar_view;
     }
 
     /**

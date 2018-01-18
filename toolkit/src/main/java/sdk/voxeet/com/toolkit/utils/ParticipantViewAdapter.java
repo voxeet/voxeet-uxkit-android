@@ -22,7 +22,6 @@ import java.util.Map;
 
 import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
 import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetParticipantView;
 import voxeet.com.sdk.models.ConferenceUserStatus;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
@@ -45,7 +44,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private int selectedPosition = -1;
 
-    private VoxeetParticipantView.ParticipantViewListener listener;
+    private IParticipantViewListener listener;
 
     private Map<String, MediaStream> mediaStreamMap;
 
@@ -229,7 +228,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param listener the listener
      */
-    public void setParticipantListener(VoxeetParticipantView.ParticipantViewListener listener) {
+    public void setParticipantListener(IParticipantViewListener listener) {
         this.listener = listener;
     }
 
