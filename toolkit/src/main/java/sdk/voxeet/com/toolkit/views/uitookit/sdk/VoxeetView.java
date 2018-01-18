@@ -1,66 +1,32 @@
 package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.voxeet.android.media.MediaStream;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import voxeet.com.sdk.events.success.ConferenceCreationSuccess;
-import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
-import voxeet.com.sdk.events.success.ConferenceEndedEvent;
-import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
-import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
-import voxeet.com.sdk.events.success.ConferenceUpdatedEvent;
-import voxeet.com.sdk.events.success.ConferenceUserJoinedEvent;
-import voxeet.com.sdk.events.success.ConferenceUserLeftEvent;
-import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
-import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
-import voxeet.com.sdk.models.RecordingStatus;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
  * Created by romainbenmansour on 20/02/2017.
  */
-public abstract class VoxeetView extends FrameLayout {
+public abstract class VoxeetView extends FrameLayout
+implements IVoxeetView {
+
+    private List<VoxeetView> mListeners;
 
     private final String TAG = VoxeetView.class.getSimpleName();
 
     protected boolean builderMode = false;
-
-    @NonNull
-    private EventBus eventBus = EventBus.getDefault();
-
-    /**
-     * The IConference users.
-     */
-    @NonNull
-    protected List<DefaultConferenceUser> conferenceUsers = new ArrayList<>();
-
-    /**
-     * The Media streams.
-     */
-    @NonNull
-    protected Map<String, MediaStream> mediaStreams = new HashMap<>();
-
-    /**
-     * The Handler.
-     */
-    @NonNull
-    protected Handler handler = new Handler(Looper.getMainLooper());
 
     /**
      * Instantiates a new Voxeet view.
@@ -117,89 +83,155 @@ public abstract class VoxeetView extends FrameLayout {
      *
      * @param conferenceId the conference id
      */
-    protected abstract void onConferenceJoined(String conferenceId);
+    public void onConferenceJoined(String conferenceId) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceJoined(conferenceId);
+        }
+    }
 
     /**
      * On conference updated.
      *
      * @param conferenceId the conference id
      */
-    protected abstract void onConferenceUpdated(List<DefaultConferenceUser> conferenceId);
+    public void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceUpdated(conferenceId);
+        }
+    }
 
     /**
      * On conference creation.
      *
      * @param conferenceId the conference id
      */
-    protected abstract void onConferenceCreation(String conferenceId);
+    public void onConferenceCreation(String conferenceId) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceCreation(conferenceId);
+        }
+    }
 
     /**
      * On conference user joined.
      *
      * @param conferenceUser the conference user
      */
-    protected abstract void onConferenceUserJoined(DefaultConferenceUser conferenceUser);
+    public void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceUserJoined(conferenceUser);
+        }
+    }
 
     /**
      * On conference user updated.
      *
      * @param conferenceUser the conference user
      */
-    protected abstract void onConferenceUserUpdated(DefaultConferenceUser conferenceUser);
+    public void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceUserUpdated(conferenceUser);
+        }
+    }
 
     /**
      * On conference user left.
      *
      * @param conferenceUser the conference user
      */
-    protected abstract void onConferenceUserLeft(DefaultConferenceUser conferenceUser);
+    public void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceUserLeft(conferenceUser);
+        }
+    }
 
     /**
      * On recording status updated.
      *
      * @param recording the recording
      */
-    protected abstract void onRecordingStatusUpdated(boolean recording);
+    public void onRecordingStatusUpdated(boolean recording) {
+        for (VoxeetView child : mListeners) {
+            child.onRecordingStatusUpdated(recording);
+        }
+    }
 
     /**
      * On media stream updated.
      *
      * @param userId the user id
+     * @param mediaStreams
      */
-    protected abstract void onMediaStreamUpdated(String userId);
+    public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
+        for (VoxeetView child : mListeners) {
+            child.onMediaStreamUpdated(userId, mediaStreams);
+        }
+    }
+
+    /**
+     *
+     * @param conferenceUsers the new list of users
+     */
+    public void onConferenceUsersListUpdate(List<DefaultConferenceUser> conferenceUsers) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceUsersListUpdate(conferenceUsers);
+        }
+    }
+
+    @Override
+    public void onMediaStreamsListUpdated(Map<String, MediaStream> mediaStreams) {
+        for(VoxeetView child: mListeners) {
+            child.onMediaStreamsListUpdated(mediaStreams);
+        }
+    }
+
+    /**
+     *
+     * @param mediaStreams the new list of mediaStreams
+     */
+    public void onMediaStreamsUpdated(Map<String, MediaStream> mediaStreams) {
+        for (VoxeetView child : mListeners) {
+            child.onMediaStreamsUpdated(mediaStreams);
+        }
+    }
 
     /**
      * On conference destroyed.
      */
-    protected abstract void onConferenceDestroyed();
+    public void onConferenceDestroyed() {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceDestroyed();
+        }
+    }
 
     /**
      * On conference left.
      */
-    protected abstract void onConferenceLeft();
+    public void onConferenceLeft() {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceLeft();
+        }
+    }
 
-    /**
-     * Init.
-     */
-    protected abstract void init();
+    @Override
+    public void onResume() {
+        for (VoxeetView child : mListeners) {
+            child.onResume();
+        }
+    }
 
-    /**
-     * Inflate layout.
-     */
-    protected abstract void inflateLayout();
-
-    /**
-     * Bind view.
-     *
-     * @param view the view
-     */
-    protected abstract void bindView(View view);
+    @Override
+    public void onDestroy() {
+        for (VoxeetView child : mListeners) {
+            child.onDestroy();
+        }
+    }
 
     /**
      * On init.
      */
-    protected void onInit() {
-        eventBus.register(this);
+    @Override
+    public void onInit() {
+        mListeners = new ArrayList<>();
 
         inflateLayout();
 
@@ -208,139 +240,32 @@ public abstract class VoxeetView extends FrameLayout {
         init();
     }
 
-    /**
-     * Release.
-     */
-    protected void release() {
-        onDestroy();
-    }
-
-    /**
-     * On destroy.
-     */
-    public void onDestroy() {
-        eventBus.unregister(this);
-
-        handler.removeCallbacks(null);
-        handler.removeCallbacksAndMessages(null);
-    }
-
-    /**
-     * On ConferenceJoinedSuccessEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceJoinedSuccessEvent event) {
-        onConferenceJoined(event.getConferenceId());
-    }
-
-    /**
-     * On ConferenceCreationSuccess event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceCreationSuccess event) {
-        onConferenceCreation(event.getConfId());
-    }
-
-    /**
-     * On ConferenceUserUpdatedEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceUserUpdatedEvent event) {
-        DefaultConferenceUser user = event.getUser();
-
-        mediaStreams.put(user.getUserId(), event.getMediaStream());
-
-        onMediaStreamUpdated(user.getUserId());
-
-        onConferenceUserUpdated(user);
-    }
-
-    /**
-     * On ConferenceUserJoinedEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceUserJoinedEvent event) {
-        DefaultConferenceUser user = event.getUser();
-        if (!conferenceUsers.contains(user)) {
-            conferenceUsers.add(user);
-
-            mediaStreams.put(user.getUserId(), event.getMediaStream());
-
-            onMediaStreamUpdated(user.getUserId());
-
-            onConferenceUserJoined(user);
+    protected void addListener(@NonNull VoxeetView voxeetView) {
+        if(mListeners.indexOf(voxeetView) < 0) {
+            Log.d(TAG, "addListener: " + voxeetView.getClass().getSimpleName());
+            mListeners.add(voxeetView);
         }
     }
 
-    /**
-     * On ConferenceUserLeftEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceUserLeftEvent event) {
-        DefaultConferenceUser user = event.getUser();
-        if (conferenceUsers.contains(user))
-            conferenceUsers.remove(user);
-
-        onConferenceUserLeft(user);
+    private void inflateLayout() {
+        inflate(getContext(), layout(), this);
     }
 
     /**
-     * On ConferenceLeftSuccessEvent event.
-     *
-     * @param event the event
+     * Inflate layout.
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceLeftSuccessEvent event) {
-        onConferenceLeft();
-    }
+    @LayoutRes
+    protected abstract int layout();
 
     /**
-     * On event.
-     *
-     * @param event the event
+     * Init.
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceDestroyedPushEvent event) {
-        onConferenceDestroyed();
-    }
+    public abstract void init();
 
     /**
-     * On ConferenceEndedEvent event.
+     * Bind view.
      *
-     * @param event the event
+     * @param view the view
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceEndedEvent event) {
-        onConferenceDestroyed();
-    }
-
-    /**
-     * On RecordingStatusUpdateEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(RecordingStatusUpdateEvent event) {
-        onRecordingStatusUpdated(event.getRecordingStatus().equalsIgnoreCase(RecordingStatus.RECORDING.name()));
-    }
-
-    /**
-     * On ConferenceUpdatedEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceUpdatedEvent event) {
-        onConferenceUpdated(event.getEvent().getParticipants());
-    }
+    protected abstract void bindView(View view);
 }

@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit.sdk.listeners;
+package sdk.voxeet.com.toolkit.utils;
 
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 

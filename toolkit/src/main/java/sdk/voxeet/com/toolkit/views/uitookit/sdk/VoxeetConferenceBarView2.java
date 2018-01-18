@@ -10,10 +10,6 @@ import android.widget.LinearLayout;
 
 import com.voxeet.toolkit.R;
 
-import java.util.List;
-
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
-
 /**
  * Created by romainbenmansour on 10/05/2017.
  */
@@ -35,16 +31,6 @@ public class VoxeetConferenceBarView2 extends VoxeetView {
     public VoxeetConferenceBarView2(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
-//    public VoxeetConferenceBarView2(Context context, Builder builder) {
-//        super(context);
-//
-//        if (builder.params != null)
-//            this.setLayoutParams(builder.params);
-//
-//        for (Builder.ConferenceBarComponent component : builder.components)
-//            addButton(component.drawable, component.listener);
-//    }
 
     private VoxeetConferenceBarView2 addButton(int drawable, OnClickListener listener) {
         ImageView imageView = new ImageView(getContext());
@@ -68,68 +54,18 @@ public class VoxeetConferenceBarView2 extends VoxeetView {
     }
 
     @Override
-    protected void onConferenceJoined(String conferenceId) {
+    public void init() {
 
     }
 
     @Override
-    protected void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceCreation(String conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onRecordingStatusUpdated(boolean recording) {
-
-    }
-
-    @Override
-    protected void onMediaStreamUpdated(String userId) {
-
-    }
-
-    @Override
-    protected void onConferenceDestroyed() {
-
-    }
-
-    @Override
-    protected void onConferenceLeft() {
-
-    }
-
-    @Override
-    protected void init() {
-
-    }
-
-    @Override
-    protected void inflateLayout() {
-        inflate(getContext(), R.layout.voxeet_conference_bar_view_2, this);
+    protected int layout() {
+        return R.layout.voxeet_conference_bar_view_2;
     }
 
     @Override
     protected void bindView(View view) {
-        container = (LinearLayout) view.findViewById(R.id.container);
+        container = view.findViewById(R.id.container);
     }
 
 //    public static class Builder {

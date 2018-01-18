@@ -16,6 +16,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 repositories {
+    mavenLocal()
     maven {
         url "https://dl.bintray.com/voxeet/maven"
     }

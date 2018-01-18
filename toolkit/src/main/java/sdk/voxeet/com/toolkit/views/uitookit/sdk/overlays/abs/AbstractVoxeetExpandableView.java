@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,7 +9,7 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetView;
  * Created by kevinleperf on 18/01/2018.
  */
 
-public abstract class AbstractVoxeetExpandableView extends VoxeetView implements IExpandableViewListener{
+public abstract class AbstractVoxeetExpandableView extends VoxeetView implements IExpandableViewListener {
 
 
     public AbstractVoxeetExpandableView(Context context) {
