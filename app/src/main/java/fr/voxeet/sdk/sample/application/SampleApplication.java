@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -17,7 +18,11 @@ import java.util.List;
 import fr.voxeet.sdk.sample.BuildConfig;
 import fr.voxeet.sdk.sample.Recording;
 import fr.voxeet.sdk.sample.activities.CreateConfActivity;
+import sdk.voxeet.com.toolkit.controllers.AbstractConferenceToolkitController;
+import sdk.voxeet.com.toolkit.controllers.ConferenceToolkitController;
+import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.error.SdkLogoutErrorEvent;
@@ -36,6 +41,7 @@ public class SampleApplication extends Application {
     private List<Recording> recordedConference = new ArrayList<>();
     private UserInfo _current_user;
     private boolean _log_after_closing_event;
+    private AbstractConferenceToolkitController mVoxeetToolkitConferenceController;
 
     @Override
     public void onCreate() {
@@ -44,8 +50,9 @@ public class SampleApplication extends Application {
         Log.d(TAG, "firebase...");
         FirebaseApp.initializeApp(this);
 
-        VoxeetToolkit.initialize(this);
+        VoxeetToolkit.initialize(this, EventBus.getDefault());
         VoxeetToolkit.getInstance().enableOverlay(true);
+
         //note that in this example, we do not call VoxeetSdk.initialize(...)
         //please head to the selectUser where we actually initialize the sdk
         //in fact, the workflow implemented in this example show you you can easily switch from

@@ -10,8 +10,8 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewPro
 
 public class VoxeetOverlayBackView extends AbstractVoxeetOverlayView {
 
-    public VoxeetOverlayBackView(@NonNull IExpandableViewProviderListener listener, @NonNull Context context) {
-        super(listener, context);
+    public VoxeetOverlayBackView(@NonNull IExpandableViewProviderListener listener, @NonNull Context context, OverlayState overlay) {
+        super(listener, context, overlay);
     }
 
     @Override

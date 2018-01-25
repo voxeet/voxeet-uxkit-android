@@ -8,9 +8,9 @@
     android:background="@drawable/background_conference_view">
 
     <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/container">
+        android:layout_height="match_parent">
         <!-- subview will be put here -->
     </FrameLayout>
 
@@ -24,21 +24,21 @@
             android:layout_height="match_parent">
 
             <LinearLayout
+                android:id="@+id/action_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:minHeight="@dimen/conference_view_avatar_size">
+                android:minHeight="@dimen/conference_view_avatar_size"
+                android:background="@drawable/selector_minimize"
+                android:visibility="gone"
+                android:padding="16dp">
 
                 <ImageView
-                    android:id="@+id/action_button"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="20dp"
-                    android:visibility="gone"
                     android:layout_marginTop="6dp"
-                    android:background="@drawable/selector_minimize"
                     android:src="@drawable/ic_close" />
 
             </LinearLayout>

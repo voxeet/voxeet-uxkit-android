@@ -7,10 +7,15 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import sdk.voxeet.com.toolkit.controllers.AbstractConferenceToolkitController;
+import sdk.voxeet.com.toolkit.controllers.ConferenceToolkitController;
+import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 
 /**
  * Created by romainbenmansour on 24/03/2017.
@@ -18,7 +23,9 @@ import sdk.voxeet.com.toolkit.controllers.AbstractConferenceToolkitController;
 public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
 
     private final static String TAG = VoxeetToolkit.class.getSimpleName();
+
     private static VoxeetToolkit sInstance;
+    private EventBus mEventBus;
 
     private boolean mIsOverEnabled;
     private Activity mCurrentActivity;
@@ -31,8 +38,8 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
      *
      * @param application The voxeet sdk instance
      */
-    public static synchronized VoxeetToolkit initialize(Application application) {
-        sInstance = new VoxeetToolkit(application);
+    public static synchronized VoxeetToolkit initialize(Application application, EventBus eventBus) {
+        sInstance = new VoxeetToolkit(application, eventBus);
 
         return sInstance;
     }
@@ -50,7 +57,8 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
      * @param application
      */
 
-    private VoxeetToolkit(@NonNull Application application) {
+    private VoxeetToolkit(@NonNull Application application, EventBus eventBus) {
+        mEventBus = eventBus;
         mIsActivityResumed = false;
         mConferenceToolkitControllers = new ArrayList<>();
 
@@ -64,9 +72,29 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
         mApp.registerActivityLifecycleCallbacks(this);
 
         mIsInit = true;
+
+        registerConferenceToolkitController(new ConferenceToolkitController(application, eventBus, OverlayState.MINIMIZED));
+        registerConferenceToolkitController(new ReplayMessageToolkitController(application, eventBus, OverlayState.MINIMIZED));
     }
 
-    public void registerConferenceToolkitController(AbstractConferenceToolkitController controller) {
+    public ReplayMessageToolkitController getReplayMessageToolkit() {
+        return getAbstractToolkit(ReplayMessageToolkitController.class);
+    }
+
+    public ConferenceToolkitController getConferenceToolkit() {
+        return getAbstractToolkit(ConferenceToolkitController.class);
+    }
+
+    private <CF extends AbstractConferenceToolkitController> CF getAbstractToolkit(Class<CF> klass) {
+        for (AbstractConferenceToolkitController controller: mConferenceToolkitControllers) {
+            if(controller.getClass().isAssignableFrom(klass)) {
+                return (CF) controller;
+            }
+        }
+        return null;
+    }
+
+    private void registerConferenceToolkitController(AbstractConferenceToolkitController controller) {
         if(mConferenceToolkitControllers.indexOf(controller) < 0) {
             mConferenceToolkitControllers.add(controller);
 
@@ -80,7 +108,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
         }
     }
 
-    public void unregisterConferenceToolkitController(AbstractConferenceToolkitController controller) {
+    private void unregisterConferenceToolkitController(AbstractConferenceToolkitController controller) {
         if(mConferenceToolkitControllers.indexOf(controller) >= 0) {
             mConferenceToolkitControllers.remove(controller);
 

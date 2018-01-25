@@ -20,13 +20,13 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
-        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:visibility="visible">
 
         <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetLoadingView
             android:id="@+id/loading_view"
