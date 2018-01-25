@@ -8,10 +8,12 @@ import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 import com.voxeet.toolkit.R;
 
 import sdk.voxeet.com.toolkit.utils.CornerHelper;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import voxeet.com.sdk.utils.ScreenHelper;
 
 /**
@@ -33,9 +36,10 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     private final int defaultHeight = getResources().getDimensionPixelSize(R.dimen.conference_view_height);
     private IExpandableViewProviderListener mListener;
 
-    private boolean isMaxedOut;
+    //private boolean isMaxedOut = false;
+    private OverlayState overlayState;
 
-    private ImageView action_button;
+    private View action_button;
 
     private AnimationHandler animationHandler;
 
@@ -53,13 +57,63 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
      * Instantiates a new Voxeet conference view.
      *
      * @param listener the listener used to create the sub view
-     * @param context the context
+     * @param context  the context
      */
-    public AbstractVoxeetOverlayView(@NonNull IExpandableViewProviderListener listener, Context context) {
+    public AbstractVoxeetOverlayView(@NonNull IExpandableViewProviderListener listener, Context context, final OverlayState overlay) {
         super(context);
+
+        //isMaxedOut = OverlayState.EXPANDED.equals(overlay);
+        overlayState = overlay;
 
         mListener = listener;
         afterConstructorInit();
+
+        final boolean[] done = {false};
+
+        mSubView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (!done[0]) {
+                    done[0] = true;
+                    if (OverlayState.EXPANDED.equals(overlay)) {
+                        expand();
+                    } else {
+                        minimize();
+                    }
+                }
+            }
+        });
+
+        sub_container.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View view) {
+                Log.d(TAG, "onViewAttachedToWindow: " + view.getClass().getSimpleName());
+                if (OverlayState.EXPANDED.equals(overlay)) {
+                    expand();
+                } else {
+                    minimize();
+                }
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View view) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onViewAdded(View child) {
+        super.onViewAdded(child);
+
+        Log.d(TAG, "onViewAdded: " + child.getClass().getSimpleName());
+        if (child == mSubView) {
+            if (OverlayState.EXPANDED.equals(overlayState)) {
+                expand();
+            } else {
+                minimize();
+            }
+        }
     }
 
     @Override
@@ -72,10 +126,11 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(dm);
 
-        if (isMaxedOut)
+        if (isExpanded())
             animationHandler.toLandScape(250, previousWidth, dm.widthPixels, previousHeight, dm.heightPixels);
         else
             CornerHelper.sendToCorner(this, windowManager, getContext());
+
     }
 
     @Override
@@ -98,7 +153,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
             public boolean onTouch(View v, MotionEvent event) {
                 if (gestureDetector.onTouchEvent(event)) {
                     toggleSize();
-                } else if (!isMaxedOut) { // drag n drop only when minimized
+                } else if (!isExpanded()) { // drag n drop only when minimized
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
                             dX = getX() - event.getRawX();
@@ -130,23 +185,52 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
      * Toggles view's size to full screen or default size.
      */
     protected void toggleSize() {
-        isMaxedOut = getWidth() > defaultWidth && getHeight() > defaultHeight;
+        //isMaxedOut = getWidth() > defaultWidth && getHeight() > defaultHeight;
+        if (getWidth() > defaultWidth && getHeight() > defaultHeight) {
+            overlayState = OverlayState.EXPANDED;
+        } else {
+            overlayState = OverlayState.MINIMIZED;
+        }
 
-        if (!isMaxedOut) { // maximize
-            onPreExpandedView();
-            expandView();
+        if (!isExpanded()) { // maximize
+            expand();
         } else { // minimize
-            onPreMinizedView();
-            minizeView();
+            minimize();
         }
     }
 
-    private void onViewToggled() {
-        isMaxedOut = !isMaxedOut;
+    protected void refreshOverlayState() {
 
+    }
+
+    public void expand() {
+        //isMaxedOut = true;
+        overlayState = OverlayState.EXPANDED;
+
+        onPreExpandedView();
+        expandView();
+    }
+
+    public void minimize() {
+        //isMaxedOut = false;
+        overlayState = OverlayState.MINIMIZED;
+
+        onPreMinizedView();
+        minizeView();
+    }
+
+    private void onViewToggled() {
+        //isMaxedOut = !isMaxedOut;
+        /*if (OverlayState.EXPANDED.equals(overlayState)) {
+            overlayState = OverlayState.MINIMIZED;
+        } else {
+            overlayState = OverlayState.EXPANDED;
+        }*/
+
+        Log.d(TAG, "onViewToggled: " + overlayState);
         toggleBackground();
 
-        if(isMaxedOut) {
+        if (isExpanded()) {
             onExpandedView();
         } else {
             onMinizedView();
@@ -166,7 +250,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     }
 
     protected void toggleBackground() {
-        if (isMaxedOut)
+        if (isExpanded())
             container.setBackgroundResource(R.drawable.background_conference_view_maxed_out);
         else
             container.setBackgroundResource(R.drawable.background_conference_view);
@@ -288,7 +372,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
-
+                    refreshOverlayState();
                 }
 
                 @Override
@@ -356,6 +440,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
+                    refreshOverlayState();
                 }
 
                 @Override
@@ -428,6 +513,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
                 @Override
                 public void onAnimationEnd(Animator animator) {
                     onViewToggled();
+                    refreshOverlayState();
                 }
 
                 @Override
@@ -454,5 +540,20 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
     protected boolean isOverlay() {
         return getParent() != null && getParent() == getRootView();
+    }
+
+    protected boolean isExpanded() {
+        /*DisplayMetrics metrics = new DisplayMetrics();
+
+        windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+
+
+        boolean expanded = getWidth() > metrics.widthPixels * 0.8 || getHeight() > metrics.heightPixels * 0.8;
+
+        Log.d(TAG, "isExpanded: " + expanded + " " + getWidth() + " " + metrics.widthPixels + " " + getHeight() + " " + metrics.heightPixels);
+        return expanded;*/
+
+        return OverlayState.EXPANDED.equals(overlayState);
     }
 }

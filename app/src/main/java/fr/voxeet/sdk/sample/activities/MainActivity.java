@@ -30,6 +30,7 @@ import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.main_screen.UserAdapter;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
 import fr.voxeet.sdk.sample.users.UsersHelper;
+import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.SocketConnectEvent;
@@ -164,11 +165,6 @@ public class MainActivity extends AppCompatActivity implements UserAdapter.UserC
                     break;
                 case CREATE:
                     intent.putExtra("create", true);
-                    List<String> externalIds = UsersHelper.getExternalIds(VoxeetPreferences.id());
-                    intent.putExtra(CreateConfActivity.INVIT_EXTERNAL_IDS, externalIds.toArray());
-
-                    Log.d("CreateConfActivity", "externalIds := " + Arrays.toString(externalIds.toArray()));
-
                     break;
                 case REPLAY:
                     intent.putExtra("replay", true);

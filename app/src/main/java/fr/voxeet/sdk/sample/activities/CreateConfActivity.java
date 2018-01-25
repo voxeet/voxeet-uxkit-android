@@ -43,9 +43,13 @@ import fr.voxeet.sdk.sample.adapters.ParticipantAdapter;
 import fr.voxeet.sdk.sample.adapters.RecordedConferencesAdapter;
 import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.dialogs.ConferenceOutput;
+import fr.voxeet.sdk.sample.users.UsersHelper;
+import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
+import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceBarView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetLoadingView;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetReplayMessageView;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
@@ -56,6 +60,7 @@ import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
 import voxeet.com.sdk.events.success.MessageReceived;
 import voxeet.com.sdk.events.success.ScreenStreamAddedEvent;
 import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
+import voxeet.com.sdk.events.success.StopRecordingResultEvent;
 import voxeet.com.sdk.json.ConferenceEnded;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
 import voxeet.com.sdk.models.RecordingStatus;
@@ -235,10 +240,12 @@ public class CreateConfActivity extends AppCompatActivity {
 
         switch (action) {
             case MainActivity.JOIN:
-                VoxeetSdk.getInstance().getConferenceService().join(confAlias);
+
+                VoxeetToolkit.getInstance().getConferenceToolkit().join(confAlias);
+                //ReplayMessageToolkitController.replay("591e1dd6-1200-4e49-9542-40f639180922", 0);
                 break;
             case MainActivity.REPLAY:
-                VoxeetSdk.getInstance().getConferenceService().replay(confAlias, 0);
+                VoxeetToolkit.getInstance().getReplayMessageToolkit().replay(confAlias, 0);
                 break;
             default:
         }
@@ -294,7 +301,7 @@ public class CreateConfActivity extends AppCompatActivity {
                 recordedConferences.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        VoxeetSdk.getInstance().getConferenceService().replay(((Recording) recordedConferences.getItemAtPosition(i)).conferenceId, 0);
+                        VoxeetToolkit.getInstance().getReplayMessageToolkit().replay(((Recording) recordedConferences.getItemAtPosition(i)).conferenceId, 0);
 
                         showProgress();
 
@@ -311,7 +318,7 @@ public class CreateConfActivity extends AppCompatActivity {
 
             setTitle("Demo IConference");
 
-            VoxeetSdk.getInstance().getConferenceService().demo();
+            VoxeetToolkit.getInstance().getConferenceToolkit().demo();
         } else if(getIntent().hasExtra("create")){
             action = MainActivity.CREATE;
 
@@ -319,7 +326,7 @@ public class CreateConfActivity extends AppCompatActivity {
 
             setTitle("Create IConference");
 
-            VoxeetSdk.getInstance().getConferenceService().create();
+            VoxeetToolkit.getInstance().getConferenceToolkit().create();
         } else {
             Toast.makeText(this, getString(R.string.invalid_activity_start_intent), Toast.LENGTH_SHORT).show();
             finish();
@@ -409,23 +416,20 @@ public class CreateConfActivity extends AppCompatActivity {
             sendText.setVisibility(VISIBLE);
         }
 
-        //TODO exfilter this call into the intent
-        //append the list directly as key/value
+        List<String> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
 
-        if(getIntent().hasExtra(INVIT_EXTERNAL_IDS)) {
-            String[] external_ids = getIntent().getStringArrayExtra(INVIT_EXTERNAL_IDS);
-
-            VoxeetSdk.getInstance().getConferenceService().invite(null, Arrays.asList(external_ids));
-        }
+        VoxeetSdk.getInstance().getConferenceService().invite(null, external_ids);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceLeftSuccessEvent event) {
+        Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         onConferenceEnding();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceEnded event) {
+        Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         onConferenceEnding();
     }
 
@@ -441,6 +445,7 @@ public class CreateConfActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(final ConferenceUserLeftEvent event) {
+        Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         adapter.removeParticipant(event.getUser());
         adapter.notifyDataSetChanged();
     }
@@ -453,11 +458,13 @@ public class CreateConfActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(final ConferenceUserUpdatedEvent event) {
+        Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         updateStreams(event.getUser(), event.getMediaStream());
     }
 
     @Subscribe
     public void onEvent(ScreenStreamAddedEvent event) {
+        Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         MediaStream mediaStream = event.getMediaStream();
         if (mediaStream != null && mediaStream.hasVideo()) { // attaching stream
             screenShare.setVisibility(VISIBLE);
@@ -467,6 +474,7 @@ public class CreateConfActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(RecordingStatusUpdateEvent event) {
+        Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         if (event.getRecordingStatus().equalsIgnoreCase(RecordingStatus.RECORDING.name())) {
             ((SampleApplication) getApplication()).saveRecordingConference(new Recording(event.getConferenceId(), event.getTimeStamp()));
 
@@ -478,6 +486,7 @@ public class CreateConfActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(ScreenStreamRemovedEvent event) { // unattaching stream
+        Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         screenShare.setVisibility(View.GONE);
         screenShare.unAttach();
     }
