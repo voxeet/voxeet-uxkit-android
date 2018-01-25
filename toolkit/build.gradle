@@ -95,8 +95,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'com.voxeet.sdk:media:0.3.58'
-    compile 'com.voxeet.sdk:kernel:0.9.1.4'
-    compile 'com.voxeet.sdk:public-sdk:0.9.1.4'
+    compile 'com.voxeet.sdk:kernel:0.9.1.5'
+    compile 'com.voxeet.sdk:public-sdk:0.9.1.5'
 }
 
 apply from: "../tasks.gradle"
