@@ -8,9 +8,6 @@ import android.support.annotation.NonNull;
 
 public interface IExpandableViewProviderListener {
 
-    @NonNull
-    AbstractVoxeetExpandableView createSubVoxeetView();
-
     void onActionButtonClicked();
 
 }

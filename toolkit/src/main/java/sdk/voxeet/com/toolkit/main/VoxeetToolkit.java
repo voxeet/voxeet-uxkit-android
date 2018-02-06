@@ -147,7 +147,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
      */
     public void setCurrentActivity(Activity activity) {
         mCurrentActivity = activity;
-        Log.d(TAG, "setCurrentActivity: " + activity);
     }
 
     /**
@@ -227,6 +226,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        setCurrentActivity(activity);
+
     }
 }

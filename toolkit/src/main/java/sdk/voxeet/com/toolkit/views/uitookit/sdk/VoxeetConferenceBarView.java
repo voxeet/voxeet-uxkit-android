@@ -330,11 +330,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
             camera.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                            && getContext().checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED)
-                        VoxeetToolkit.getInstance().getCurrentActivity().requestPermissions(new String[]{Manifest.permission.CAMERA}, RESULT_CAMERA);
-                    else
-                        VoxeetSdk.getInstance().getConferenceService().toggleVideo();
+                    toggleCamera();
                 }
             });
 
@@ -345,6 +341,30 @@ public class VoxeetConferenceBarView extends VoxeetView {
                     VoxeetSdk.getInstance().getConferenceService().toggleRecording();
                 }
             });
+        }
+    }
+
+    private boolean checkCameraPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && getContext().checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+            VoxeetToolkit.getInstance().getCurrentActivity().requestPermissions(new String[]{Manifest.permission.CAMERA}, RESULT_CAMERA);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    protected void toggleCamera() {
+        if(checkCameraPermission()) {
+            VoxeetSdk.getInstance().getConferenceService().toggleVideo();
+        }
+    }
+
+    protected void turnCamera(boolean on) {
+        if(checkCameraPermission()) {
+
+            VoxeetSdk.getInstance().getConferenceService()
+                    .startRecording();
         }
     }
 

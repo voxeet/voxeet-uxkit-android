@@ -1,20 +1,15 @@
 package sdk.voxeet.com.toolkit.controllers;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.voxeet.android.media.Media;
 
 import org.greenrobot.eventbus.EventBus;
 
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetReplayMessageView;
+import sdk.voxeet.com.toolkit.providers.containers.DefaultReplayMessageProvider;
+import sdk.voxeet.com.toolkit.providers.logics.DefaultReplayMessageSubViewProvider;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.VoxeetOverlayBackView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetExpandableView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewProviderListener;
 import voxeet.com.sdk.core.VoxeetSdk;
 
@@ -23,16 +18,13 @@ import voxeet.com.sdk.core.VoxeetSdk;
  */
 
 public class ReplayMessageToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
-    private String mSelectedConferenceToReplay;
-    private String TAG = ReplayMessageToolkitController.class.getSimpleName();
 
     public ReplayMessageToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
-        super(context, eventbus, overlay);
-    }
+        super(context, eventbus);
 
-    @Override
-    protected AbstractVoxeetOverlayView createMainView(final Activity activity) {
-        return new VoxeetOverlayBackView(this, activity, getDefaultOverlayState());
+        setDefaultOverlayState(overlay);
+        setVoxeetOverlayViewProvider(new DefaultReplayMessageProvider(this));
+        setVoxeetSubViewProvider(new DefaultReplayMessageSubViewProvider());
     }
 
     @Override
@@ -53,19 +45,12 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      * @param offset       the offset in seconds from the start
      */
     public final void replay(String conferenceId, long offset) {
-        mSelectedConferenceToReplay = conferenceId;
         VoxeetToolkit.getInstance().getConferenceToolkit().enable(false);
         enable(true);
 
         VoxeetSdk.getInstance().getConferenceService().setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
-        VoxeetSdk.getInstance().getConferenceService().replay(conferenceId, 0);
+        VoxeetSdk.getInstance().getConferenceService().replay(conferenceId, offset);
 
-    }
-
-    @NonNull
-    @Override
-    public AbstractVoxeetExpandableView createSubVoxeetView() {
-        return new VoxeetReplayMessageView(getContext());
     }
 
     @Override
