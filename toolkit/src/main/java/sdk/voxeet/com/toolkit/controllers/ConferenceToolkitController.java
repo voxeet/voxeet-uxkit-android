@@ -1,18 +1,13 @@
 package sdk.voxeet.com.toolkit.controllers;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import org.greenrobot.eventbus.EventBus;
 
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetView;
+import sdk.voxeet.com.toolkit.providers.containers.DefaultConferenceProvider;
+import sdk.voxeet.com.toolkit.providers.logics.DefaultConferenceSubViewProvider;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.VoxeetOverlayToggleView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetExpandableView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewProviderListener;
 import voxeet.com.sdk.core.VoxeetSdk;
 
@@ -23,23 +18,16 @@ import voxeet.com.sdk.core.VoxeetSdk;
 public class ConferenceToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
     public ConferenceToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
-        super(context, eventbus, overlay);
-    }
+        super(context, eventbus);
 
-    @Override
-    protected AbstractVoxeetOverlayView createMainView(final Activity activity) {
-        return new VoxeetOverlayToggleView(this, activity, getDefaultOverlayState());
+        setDefaultOverlayState(overlay);
+        setVoxeetOverlayViewProvider(new DefaultConferenceProvider(this));
+        setVoxeetSubViewProvider(new DefaultConferenceSubViewProvider());
     }
 
     @Override
     protected boolean validFilter(String conference) {
         return isEnabled();
-    }
-
-    @NonNull
-    @Override
-    public AbstractVoxeetExpandableView createSubVoxeetView() {
-        return new VoxeetConferenceView(getContext());
     }
 
     @Override

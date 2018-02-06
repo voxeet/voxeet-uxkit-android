@@ -149,13 +149,14 @@ public class VideoView extends FrameLayout {
             unAttach();
 
         if (!isAttached() && peerId != null && mediaStream != null && mediaStream.hasVideo()) {
-            VoxeetSdk.getInstance().getConferenceService().attachMediaStream(mediaStream, mRenderer);
-
             setAttached(true);
 
             mPeerId = peerId;
 
             mMediaStream = mediaStream;
+
+            boolean result = VoxeetSdk.getInstance().getConferenceService().attachMediaStream(mediaStream, mRenderer);
+
         }
     }
 

@@ -6,7 +6,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -16,10 +15,10 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.ImageView;
 
 import com.voxeet.toolkit.R;
 
+import sdk.voxeet.com.toolkit.providers.logics.IVoxeetSubViewProvider;
 import sdk.voxeet.com.toolkit.utils.CornerHelper;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import voxeet.com.sdk.utils.ScreenHelper;
@@ -34,6 +33,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     private final int defaultWidth = getResources().getDimensionPixelSize(R.dimen.conference_view_width);
 
     private final int defaultHeight = getResources().getDimensionPixelSize(R.dimen.conference_view_height);
+    private final IVoxeetSubViewProvider mSubViewProvider;
     private IExpandableViewProviderListener mListener;
 
     //private boolean isMaxedOut = false;
@@ -52,6 +52,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     private WindowManager windowManager;
     private AbstractVoxeetExpandableView mSubView;
     private ViewGroup sub_container;
+    private boolean mRemainExpanded;
 
     /**
      * Instantiates a new Voxeet conference view.
@@ -59,13 +60,18 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
      * @param listener the listener used to create the sub view
      * @param context  the context
      */
-    public AbstractVoxeetOverlayView(@NonNull IExpandableViewProviderListener listener, Context context, final OverlayState overlay) {
+    public AbstractVoxeetOverlayView(@NonNull IExpandableViewProviderListener listener,
+                                     @NonNull IVoxeetSubViewProvider provider,
+                                     @NonNull Context context,
+                                     @NonNull final OverlayState overlay) {
         super(context);
 
+        mRemainExpanded = false;
         //isMaxedOut = OverlayState.EXPANDED.equals(overlay);
         overlayState = overlay;
 
         mListener = listener;
+        mSubViewProvider = provider;
         afterConstructorInit();
 
         final boolean[] done = {false};
@@ -212,11 +218,13 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     }
 
     public void minimize() {
-        //isMaxedOut = false;
-        overlayState = OverlayState.MINIMIZED;
+        if(!mRemainExpanded) {
+            //isMaxedOut = false;
+            overlayState = OverlayState.MINIMIZED;
 
-        onPreMinizedView();
-        minizeView();
+            onPreMinizedView();
+            minizeView();
+        }
     }
 
     private void onViewToggled() {
@@ -245,8 +253,10 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     }
 
     protected void minizeView() {
-        action_button.setVisibility(View.GONE);
-        animationHandler.collapse(1000, defaultWidth, defaultHeight);
+        if(!mRemainExpanded) {
+            action_button.setVisibility(View.GONE);
+            animationHandler.collapse(1000, defaultWidth, defaultHeight);
+        }
     }
 
     protected void toggleBackground() {
@@ -295,7 +305,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
 
     private void afterConstructorInit() {
-        mSubView = createSubVoxeetView();
+        mSubView = mSubViewProvider.createView(getContext(), overlayState);
 
         sub_container.addView(mSubView);
         //now add the subview as a listener of the current view
@@ -303,11 +313,6 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     }
 
     protected abstract void onActionButtonClicked();
-
-    @NonNull
-    private final AbstractVoxeetExpandableView createSubVoxeetView() {
-        return mListener.createSubVoxeetView();
-    }
 
     private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
 
@@ -536,6 +541,10 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
     protected IExpandableViewProviderListener getExpandableViewProviderListener() {
         return mListener;
+    }
+
+    public void lockExpanded(boolean remain_expanded) {
+        mRemainExpanded = remain_expanded;
     }
 
     protected boolean isOverlay() {

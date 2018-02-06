@@ -5,13 +5,25 @@ import android.support.annotation.NonNull;
 
 import com.voxeet.toolkit.R;
 
+import sdk.voxeet.com.toolkit.providers.logics.IVoxeetSubViewProvider;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewProviderListener;
 
 public class VoxeetOverlayBackView extends AbstractVoxeetOverlayView {
 
-    public VoxeetOverlayBackView(@NonNull IExpandableViewProviderListener listener, @NonNull Context context, OverlayState overlay) {
-        super(listener, context, overlay);
+    /**
+     * Instantiates a new Voxeet conference view.
+     *
+     * @param listener the listener used to create the sub view
+     * @param provider
+     * @param context  the context
+     * @param overlay
+     */
+    public VoxeetOverlayBackView(@NonNull IExpandableViewProviderListener listener,
+                                 @NonNull IVoxeetSubViewProvider provider,
+                                 @NonNull Context context,
+                                 @NonNull OverlayState overlay) {
+        super(listener, provider, context, overlay);
     }
 
     @Override

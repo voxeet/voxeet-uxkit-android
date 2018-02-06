@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        mavenLocal()
         maven {
             url "https://dl.bintray.com/voxeet/maven"
         }
@@ -64,7 +65,7 @@ android {
 }
 
 group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-version = project.properties["VOXEET_SDK_TOOLKIT_VERSION"]
+version = project.properties["VOXEET_SDK_VERSION"]
 
 bintray {
     user = project.properties["VOXEET_DEVELOPER_ID"]
@@ -94,9 +95,9 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 
-    compile 'com.voxeet.sdk:media:0.3.58'
-    compile 'com.voxeet.sdk:kernel:0.9.1.5'
-    compile 'com.voxeet.sdk:public-sdk:0.9.1.5'
+    compile 'com.voxeet.sdk:media:0.3.59'
+    compile 'com.voxeet.sdk:kernel:0.9.1.5.5'
+    compile 'com.voxeet.sdk:public-sdk:0.9.1.5.5'
 }
 
 apply from: "../tasks.gradle"

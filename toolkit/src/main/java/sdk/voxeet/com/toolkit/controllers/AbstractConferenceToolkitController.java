@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetView;
+import sdk.voxeet.com.toolkit.providers.containers.IVoxeetOverlayViewProvider;
+import sdk.voxeet.com.toolkit.providers.logics.IVoxeetSubViewProvider;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.VoxeetOverlayToggleView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.error.ConferenceLeftError;
@@ -86,12 +86,13 @@ public abstract class AbstractConferenceToolkitController {
     private AbstractVoxeetOverlayView mMainView;
 
     private FrameLayout.LayoutParams params;
-    private OverlayState mOverlayState;
     private final static String TAG = AbstractConferenceToolkitController.class.getSimpleName();
     private boolean mEnabled;
+    private IVoxeetOverlayViewProvider mVoxeetOverlayViewProvider;
+    private IVoxeetSubViewProvider mVoxeetSubViewProvider;
+    private OverlayState mDefaultOverlayState;
 
-    public AbstractConferenceToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
-        setDefaultOverlayState(overlay);
+    public AbstractConferenceToolkitController(Context context, EventBus eventbus) {
         mContext = context;
         this.eventBus = eventbus;
 
@@ -111,7 +112,9 @@ public abstract class AbstractConferenceToolkitController {
      */
     protected void init() {
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
-        mMainView = createMainView(activity);
+        mMainView = mVoxeetOverlayViewProvider.createView(activity,
+                mVoxeetSubViewProvider,
+                getDefaultOverlayState());
 
         mMainView.onMediaStreamsListUpdated(mediaStreams);
         mMainView.onConferenceUsersListUpdate(conferenceUsers);
@@ -134,7 +137,13 @@ public abstract class AbstractConferenceToolkitController {
             eventBus.unregister(this);
     }
 
-    protected abstract AbstractVoxeetOverlayView createMainView(Activity activity);
+    public void setVoxeetOverlayViewProvider(@NonNull IVoxeetOverlayViewProvider provider) {
+        mVoxeetOverlayViewProvider = provider;
+    }
+
+    public void setVoxeetSubViewProvider(@NonNull IVoxeetSubViewProvider provider) {
+        mVoxeetSubViewProvider = provider;
+    }
 
     /**
      * Method set to filter specific conference from the given id
@@ -441,7 +450,8 @@ public abstract class AbstractConferenceToolkitController {
 
     public void setDefaultOverlayState(OverlayState overlay) {
         Log.d(TAG, "setDefaultOverlayState: ");
-        mOverlayState = overlay;
+
+        mDefaultOverlayState = overlay;
 
         if(mMainView != null) {
             if(OverlayState.EXPANDED.equals(overlay)) {
@@ -453,8 +463,7 @@ public abstract class AbstractConferenceToolkitController {
     }
 
     public OverlayState getDefaultOverlayState() {
-        Log.d(TAG, "getDefaultOverlayState: " + mOverlayState);
-        return mOverlayState;
+        return mDefaultOverlayState;
     }
 
     public void enable(boolean state) {
