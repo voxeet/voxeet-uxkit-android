@@ -223,7 +223,6 @@ public abstract class AbstractConferenceToolkitController {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserUpdatedEvent event) {
         if (conferenceUsers != null && mMainView != null && mediaStreams != null) {
-            Log.d("VoxeetSDK", "onEvent: ConferenceUserUpdatedEvent " + event.getMediaStream().hasVideo());
             DefaultConferenceUser user = event.getUser();
             if (!conferenceUsers.contains(user)) {
                 conferenceUsers.add(user);
@@ -246,7 +245,6 @@ public abstract class AbstractConferenceToolkitController {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserJoinedEvent event) {
         if (conferenceUsers != null && mMainView != null) {
-            Log.d("VoxeetSDK", "onEvent: ConferenceUserJoinedEvent " + event.getUser().getUserId() + " " + event.getMediaStream().hasVideo() + " " + mMainView);
             DefaultConferenceUser user = event.getUser();
             if (!conferenceUsers.contains(user)) {
                 conferenceUsers.add(user);
@@ -292,7 +290,6 @@ public abstract class AbstractConferenceToolkitController {
             reset();
             mMainView.onConferenceLeft();
 
-
             removeView(true);
         }
     }
@@ -307,7 +304,6 @@ public abstract class AbstractConferenceToolkitController {
         if (mMainView != null) {
             reset();
             mMainView.onConferenceLeft();
-
 
             removeView(true);
         }
@@ -347,7 +343,6 @@ public abstract class AbstractConferenceToolkitController {
     public void onEvent(ReplayConferenceErrorEvent event) {
         reset();
         //TODO error message
-        Log.d("VoxeetSDK", "onEvent: " + event.toString());
         if (mMainView != null) mMainView.onConferenceDestroyed();
 
         removeView(true);
@@ -413,7 +408,6 @@ public abstract class AbstractConferenceToolkitController {
     }
 
     public synchronized void removeView(final boolean shouldRelease) {
-        Log.d("VoxeetSDK", "removeView: " + shouldRelease);
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -449,8 +443,6 @@ public abstract class AbstractConferenceToolkitController {
     }
 
     public void setDefaultOverlayState(OverlayState overlay) {
-        Log.d(TAG, "setDefaultOverlayState: ");
-
         mDefaultOverlayState = overlay;
 
         if(mMainView != null) {
