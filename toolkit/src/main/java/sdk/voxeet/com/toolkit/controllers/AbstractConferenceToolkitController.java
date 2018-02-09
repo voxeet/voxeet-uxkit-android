@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -445,8 +445,8 @@ public abstract class AbstractConferenceToolkitController {
     public void setDefaultOverlayState(OverlayState overlay) {
         mDefaultOverlayState = overlay;
 
-        if(mMainView != null) {
-            if(OverlayState.EXPANDED.equals(overlay)) {
+        if (mMainView != null) {
+            if (OverlayState.EXPANDED.equals(overlay)) {
                 mMainView.expand();
             } else {
                 mMainView.minimize();
@@ -464,5 +464,10 @@ public abstract class AbstractConferenceToolkitController {
 
     public boolean isEnabled() {
         return mEnabled;
+    }
+
+    @Nullable
+    protected AbstractVoxeetOverlayView getMainView() {
+        return mMainView;
     }
 }

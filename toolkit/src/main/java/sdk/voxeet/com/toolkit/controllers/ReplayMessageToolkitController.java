@@ -10,16 +10,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.providers.containers.DefaultReplayMessageProvider;
 import sdk.voxeet.com.toolkit.providers.logics.DefaultReplayMessageSubViewProvider;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewProviderListener;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.services.SdkConferenceService;
 import voxeet.com.sdk.events.error.GetConferenceHistoryErrorEvent;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
@@ -77,7 +74,10 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         _last_conference_duration = 0;
         _wait_for_history_offset = offset;
 
-        VoxeetSdk.getInstance().getConferenceService().conferenceHistory(conferenceId);
+        SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
+        service.setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
+        service.conferenceHistory(conferenceId);
+        service.replay(_last_conference, _wait_for_history_offset);
     }
 
     @Override
@@ -92,15 +92,10 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(GetConferenceHistoryEvent event) {
-
-
         HistoryConference history_conference = findFirstMatch(event);
 
         if (history_conference != null) {
             _last_conference_duration = history_conference.getConferenceDuration();
-            Log.d(TAG, "onEvent: " + Arrays.toString(conferenceHistoryToString(event).toArray()));
-            VoxeetSdk.getInstance().getConferenceService().setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
-            VoxeetSdk.getInstance().getConferenceService().replay(_last_conference, _wait_for_history_offset);
         } else {
             //must be because it is not the current conference which returned something !
         }
@@ -109,13 +104,15 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
     @Override
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceEndedEvent event) {
-        //to allow replay
+        //to allow replay - prevent super call()
+        if (getMainView() != null) getMainView().onConferenceDestroyed();
     }
 
     @Override
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPushEvent event) {
-        //to allow replay
+        //to allow replay - prevent super call()
+        if (getMainView() != null) getMainView().onConferenceDestroyed();
     }
 
     public String getLastConferenceCalled() {
@@ -134,17 +131,5 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         }
 
         return null;
-    }
-
-    private List<String> conferenceHistoryToString(GetConferenceHistoryEvent event) {
-        List<String> result = new ArrayList<>();
-
-        for (HistoryConference item : event.getItems()) {
-            result.add(item.getConferenceId() + " " + item.getConferenceType() + " " + item.getOwnerId()
-                    + " " + item.getUserId() + " " + item.getConferenceDuration() + " " + item.getConferenceTimestamp()
-                    + " " + item.getMetadata().getExternalId());
-        }
-
-        return result;
     }
 }
