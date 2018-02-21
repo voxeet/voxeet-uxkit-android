@@ -20,6 +20,7 @@ import voxeet.com.sdk.core.services.SdkConferenceService;
 import voxeet.com.sdk.events.error.GetConferenceHistoryErrorEvent;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
+import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
 import voxeet.com.sdk.events.success.GetConferenceHistoryEvent;
 import voxeet.com.sdk.models.HistoryConference;
 
@@ -95,7 +96,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         HistoryConference history_conference = findFirstMatch(event);
 
         if (history_conference != null) {
-            _last_conference_duration = history_conference.getConferenceDuration();
+            _last_conference_duration = history_conference.getConferenceRecordingDuration();
         } else {
             //must be because it is not the current conference which returned something !
         }
@@ -115,6 +116,11 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         if (getMainView() != null) getMainView().onConferenceDestroyed();
     }
 
+    public boolean isShowing() {
+        return null != getMainView();
+    }
+
+
     public String getLastConferenceCalled() {
         return _last_conference;
     }
@@ -125,7 +131,8 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
     private HistoryConference findFirstMatch(GetConferenceHistoryEvent event) {
         for (HistoryConference item : event.getItems()) {
-            if (_last_conference.equalsIgnoreCase(item.getConferenceId())) {
+            if (_last_conference.equalsIgnoreCase(item.getConferenceId())
+                    && item.getConferenceRecordingDuration() > 0) {
                 return item;
             }
         }

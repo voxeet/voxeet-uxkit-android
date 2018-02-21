@@ -169,7 +169,6 @@ public class VoxeetTimer extends VoxeetView {
         TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetTimer);
 
         action = attributes.getInt(R.styleable.VoxeetTimer_timer_mode, CONFERENCE_MODE);
-        Log.d(TAG, "updateAttrs: " + action);
         updateAction();
 
         ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetTimer_not_in_conference_color);
@@ -215,9 +214,8 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     @Override
-    public void onConferenceJoined(String conferenceId) {
-        Log.d(TAG, "onConferenceJoined: " + conferenceId+" "+action);
-        super.onConferenceJoined(conferenceId);
+    public void onConferenceJoined(String conference_id) {
+        super.onConferenceJoined(conference_id);
         if (action == CONFERENCE_MODE) {
             startTime = SystemClock.uptimeMillis();
 

@@ -157,7 +157,6 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
 
     @Override
     public void onConferenceUsersListUpdate(List<DefaultConferenceUser> conferenceUsers) {
-        Log.d(TAG, "onConferenceUsersListUpdate: " + conferenceUsers.toArray());
         super.onConferenceUsersListUpdate(conferenceUsers);
 
         mConferenceUsers = conferenceUsers;
