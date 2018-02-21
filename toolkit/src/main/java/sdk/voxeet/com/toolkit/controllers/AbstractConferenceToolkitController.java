@@ -47,8 +47,6 @@ import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 import voxeet.com.sdk.utils.ScreenHelper;
 
 /**
- * Created by kevinleperf on 15/01/2018.
- * <p>
  * Implements the common logic to any controller this SDK provides
  * <p>
  * The general idea is that it will receive relevants events and dispatch
@@ -63,52 +61,60 @@ public abstract class AbstractConferenceToolkitController {
 
     private Context mContext;
     @NonNull
-    private EventBus eventBus = EventBus.getDefault();
+    private EventBus mEventBus = EventBus.getDefault();
 
     /**
      * The IConference users.
      */
     @NonNull
-    protected List<DefaultConferenceUser> conferenceUsers = new ArrayList<>();
+    protected List<DefaultConferenceUser> mConferenceUsers = new ArrayList<>();
 
     /**
      * The Media streams.
+     * <p>
+     * Empty by default
      */
     @NonNull
-    protected Map<String, MediaStream> mediaStreams = new HashMap<>();
+    protected Map<String, MediaStream> mMediaStreams = new HashMap<>();
 
     /**
      * The Handler.
      */
     @NonNull
-    protected Handler handler = new Handler(Looper.getMainLooper());
+    protected Handler mHandler = new Handler(Looper.getMainLooper());
 
+    /**
+     * MainView represent the view showed to the user
+     */
+    @Nullable
     private AbstractVoxeetOverlayView mMainView;
 
-    private FrameLayout.LayoutParams params;
-    private final static String TAG = AbstractConferenceToolkitController.class.getSimpleName();
-    private boolean mEnabled;
+    /**
+     * Information about the mParams of the
+     */
+    @NonNull
+    private FrameLayout.LayoutParams mParams;
+
     private IVoxeetOverlayViewProvider mVoxeetOverlayViewProvider;
     private IVoxeetSubViewProvider mVoxeetSubViewProvider;
     private OverlayState mDefaultOverlayState;
+    private boolean mEnabled;
 
-    public AbstractConferenceToolkitController(Context context, EventBus eventbus) {
-        mContext = context;
-        this.eventBus = eventbus;
+    AbstractConferenceToolkitController(Context context, EventBus eventbus) {
+        this.mContext = context;
+        this.mEventBus = eventbus;
 
-        handler = new Handler(Looper.getMainLooper());
+        mHandler = new Handler(Looper.getMainLooper());
 
-        params = new FrameLayout.LayoutParams(
-                context.getResources().getDimensionPixelSize(R.dimen.dimen_100),
-                context.getResources().getDimensionPixelSize(R.dimen.dimen_140));
-        params.gravity = Gravity.END | Gravity.TOP;
-        params.topMargin = ScreenHelper.actionBar(context) + ScreenHelper.getStatusBarHeight(context);
+        setParams();
 
         register();
     }
 
     /**
-     * Init.
+     * Init the controller
+     *
+     * ensures the main view is valid
      */
     protected void init() {
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
@@ -116,33 +122,205 @@ public abstract class AbstractConferenceToolkitController {
                 mVoxeetSubViewProvider,
                 getDefaultOverlayState());
 
-        mMainView.onMediaStreamsListUpdated(mediaStreams);
-        mMainView.onConferenceUsersListUpdate(conferenceUsers);
+        mMainView.onMediaStreamsListUpdated(mMediaStreams);
+        mMainView.onConferenceUsersListUpdate(mConferenceUsers);
     }
 
+    /**
+     * Register the controller to the instance of eventbus given in constructor
+     *
+     * If the mainview is valid, we also call the interface's method to give possible new
+     */
     public void register() {
-        if (!eventBus.isRegistered(this))
-            eventBus.register(this);
+        if (!mEventBus.isRegistered(this))
+            mEventBus.register(this);
 
         //set the relevant streams info
-        //TODO transform those setters to listeners onto this element ?
         if (mMainView != null) {
-            mMainView.onMediaStreamsListUpdated(mediaStreams);
-            mMainView.onConferenceUsersListUpdate(conferenceUsers);
+            mMainView.onMediaStreamsListUpdated(mMediaStreams);
+            mMainView.onConferenceUsersListUpdate(mConferenceUsers);
         }
     }
 
+    /**
+     * Unregister the controller from the EvenBus
+     *
+     * In a typical workflow, this method is never called
+     */
     public void unregister() {
-        if (eventBus.isRegistered(this))
-            eventBus.unregister(this);
+        if (mEventBus.isRegistered(this)) {
+            mEventBus.unregister(this);
+        }
     }
 
-    public void setVoxeetOverlayViewProvider(@NonNull IVoxeetOverlayViewProvider provider) {
+    /**
+     * Inject an overlay view provider
+     * @param provider a non-null provider
+     */
+    public AbstractConferenceToolkitController setVoxeetOverlayViewProvider(@NonNull IVoxeetOverlayViewProvider provider) {
         mVoxeetOverlayViewProvider = provider;
+
+        return this;
     }
 
-    public void setVoxeetSubViewProvider(@NonNull IVoxeetSubViewProvider provider) {
+    /**
+     *
+     * @param provider
+     */
+    public AbstractConferenceToolkitController setVoxeetSubViewProvider(@NonNull IVoxeetSubViewProvider provider) {
         mVoxeetSubViewProvider = provider;
+
+        return this;
+    }
+
+    /**
+     * Release.
+     */
+    public void onDestroy() {
+        mMainView.onDestroy();
+    }
+
+    public boolean isOverlayEnabled() {
+        return VoxeetToolkit.getInstance().isEnabled();
+    }
+
+
+    /**
+     * Toggles overlay visibility.
+     */
+    public void onOverlayEnabled(boolean enabled) {
+        if (enabled)
+            displayView();
+        else
+            removeView(false);
+    }
+
+    private void displayView() {
+        if (isOverlayEnabled()) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (mMainView != null) {
+                        ViewGroup viewHolder = (ViewGroup) mMainView.getParent();
+                        if (viewHolder != null)
+                            viewHolder.removeView(mMainView);
+
+                        Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
+                        ViewGroup root = VoxeetToolkit.getInstance().getRootView();
+
+                        if (root != null && activity != null && !activity.isFinishing()) {
+                            root.addView(mMainView, mParams);
+                            mMainView.onResume();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    public void removeView(final boolean should_release) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mMainView != null) {
+                    ViewGroup viewHolder = (ViewGroup) mMainView.getParent();
+                    if (viewHolder != null)
+                        viewHolder.removeView(mMainView);
+
+                    if (should_release) {
+                        mMainView.onDestroy();
+                        mMainView = null;
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     *
+     *
+     * @param activity
+     */
+    public void onActivityResumed(Activity activity) {
+        if (mMainView != null) {
+            displayView();
+        }
+    }
+
+    /**
+     * When activity pause, remove the main view
+     *
+     * @param activity paused to
+     */
+    public void onActivityPaused(@NonNull Activity activity) {
+        if (mMainView != null) {
+            removeView(false);
+        }
+    }
+
+    /**
+     * Reset the state of the streams and conference users of this controller
+     */
+    private void reset() {
+        mMediaStreams = new HashMap<>();
+        mConferenceUsers = new ArrayList<>();
+    }
+
+    /**
+     *
+     * @param overlay as the new default
+     */
+    public void setDefaultOverlayState(@NonNull OverlayState overlay) {
+        mDefaultOverlayState = overlay;
+
+        //set the new state to the view
+        if (mMainView != null) {
+            if (OverlayState.EXPANDED.equals(overlay)) {
+                mMainView.expand();
+            } else {
+                mMainView.minimize();
+            }
+        }
+    }
+
+    /**
+     * Access the overlay state showed by this controller
+     *
+     * @return the default state, expanded or minimized
+     */
+    public OverlayState getDefaultOverlayState() {
+        return mDefaultOverlayState;
+    }
+
+    /**
+     * Change the state of this controller
+     * @param state the new state of the controller
+     */
+    public void enable(boolean state) {
+        mEnabled = state;
+    }
+
+    /**
+     * Check wether this controller can be called
+     *
+     * @return the activation state of this controller
+     */
+    public boolean isEnabled() {
+        return mEnabled;
+    }
+
+    /**
+     * Getter of the main view
+     * @return the instance of the main view
+     */
+    @Nullable
+    protected AbstractVoxeetOverlayView getMainView() {
+        return mMainView;
+    }
+
+
+    protected Context getContext() {
+        return mContext;
     }
 
     /**
@@ -153,35 +331,31 @@ public abstract class AbstractConferenceToolkitController {
      */
     protected abstract boolean validFilter(String conference);
 
-    protected Context getContext() {
-        return mContext;
-    }
 
-    /**
-     * Release.
-     */
-    public void onDestroy() {
-        mMainView.onDestroy();
+    private void setParams() {
+        mParams = new FrameLayout.LayoutParams(
+                getContext().getResources().getDimensionPixelSize(R.dimen.dimen_100),
+                getContext().getResources().getDimensionPixelSize(R.dimen.dimen_140));
+        mParams.gravity = Gravity.END | Gravity.TOP;
+        mParams.topMargin = ScreenHelper.actionBar(getContext()) + ScreenHelper.getStatusBarHeight(getContext());
     }
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * Event Management - see EventBus field
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     /**
      * Display the conference view when the user is creating/joining a conference.
      *
      * @param event the event
-     * @exclude
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferencePreJoinedEvent event) {
+    public void onEvent(@NonNull ConferencePreJoinedEvent event) {
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
         if (activity != null && validFilter(event.getConferenceId())) {
             if (mMainView == null)
                 init();
 
-            params = new FrameLayout.LayoutParams(
-                    activity.getResources().getDimensionPixelSize(R.dimen.dimen_100),
-                    activity.getResources().getDimensionPixelSize(R.dimen.dimen_140));
-            params.gravity = Gravity.END | Gravity.TOP;
-            params.topMargin = ScreenHelper.actionBar(activity) + ScreenHelper.getStatusBarHeight(activity);
+            setParams();
 
             displayView();
         }
@@ -193,9 +367,10 @@ public abstract class AbstractConferenceToolkitController {
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceJoinedSuccessEvent event) {
+    public void onEvent(@NonNull ConferenceJoinedSuccessEvent event) {
         if (validFilter(event.getConferenceId()) || validFilter(event.getAliasId())) {
-            VoxeetSdk.getInstance().getConferenceService().setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
+            VoxeetSdk.getInstance().getConferenceService()
+                    .setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
 
             if (mMainView != null) {
                 mMainView.onConferenceJoined(event.getConferenceId());
@@ -209,7 +384,7 @@ public abstract class AbstractConferenceToolkitController {
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceCreationSuccess event) {
+    public void onEvent(@NonNull ConferenceCreationSuccess event) {
         if (validFilter(event.getConfId()) || validFilter(event.getConfAlias())) {
             mMainView.onConferenceCreation(event.getConfId());
         }
@@ -221,17 +396,17 @@ public abstract class AbstractConferenceToolkitController {
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceUserUpdatedEvent event) {
-        if (conferenceUsers != null && mMainView != null && mediaStreams != null) {
+    public void onEvent(@NonNull ConferenceUserUpdatedEvent event) {
+        if (mMainView != null) {
             DefaultConferenceUser user = event.getUser();
-            if (!conferenceUsers.contains(user)) {
-                conferenceUsers.add(user);
-                mMainView.onConferenceUsersListUpdate(conferenceUsers);
+            if (!mConferenceUsers.contains(user)) {
+                mConferenceUsers.add(user);
+                mMainView.onConferenceUsersListUpdate(mConferenceUsers);
             }
 
-            mediaStreams.put(user.getUserId(), event.getMediaStream());
+            mMediaStreams.put(user.getUserId(), event.getMediaStream());
 
-            mMainView.onMediaStreamUpdated(user.getUserId(), mediaStreams);
+            mMainView.onMediaStreamUpdated(user.getUserId(), mMediaStreams);
 
             mMainView.onConferenceUserUpdated(user);
         }
@@ -244,19 +419,19 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserJoinedEvent event) {
-        if (conferenceUsers != null && mMainView != null) {
+        if (mMainView != null) {
             DefaultConferenceUser user = event.getUser();
-            if (!conferenceUsers.contains(user)) {
-                conferenceUsers.add(user);
+            if (!mConferenceUsers.contains(user)) {
+                mConferenceUsers.add(user);
                 if (mMainView != null) {
-                    mMainView.onConferenceUsersListUpdate(conferenceUsers);
+                    mMainView.onConferenceUsersListUpdate(mConferenceUsers);
                 }
             }
 
-            mediaStreams.put(user.getUserId(), event.getMediaStream());
+            mMediaStreams.put(user.getUserId(), event.getMediaStream());
 
             if (mMainView != null) {
-                mMainView.onMediaStreamUpdated(user.getUserId(), mediaStreams);
+                mMainView.onMediaStreamUpdated(user.getUserId(), mMediaStreams);
 
                 mMainView.onConferenceUserJoined(user);
             }
@@ -270,10 +445,10 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserLeftEvent event) {
-        if (conferenceUsers != null && mMainView != null) {
+        if (mMainView != null) {
             DefaultConferenceUser user = event.getUser();
-            if (conferenceUsers.contains(user))
-                conferenceUsers.remove(user);
+            if (mConferenceUsers.contains(user))
+                mConferenceUsers.remove(user);
 
             mMainView.onConferenceUserLeft(user);
         }
@@ -337,8 +512,6 @@ public abstract class AbstractConferenceToolkitController {
         removeView(true);
     }
 
-    //TODO event replay ok
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ReplayConferenceErrorEvent event) {
         reset();
@@ -354,8 +527,8 @@ public abstract class AbstractConferenceToolkitController {
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(RecordingStatusUpdateEvent event) {
-        mMainView.onRecordingStatusUpdated(event.getRecordingStatus().equalsIgnoreCase(RecordingStatus.RECORDING.name()));
+    public void onEvent(@NonNull RecordingStatusUpdateEvent event) {
+        mMainView.onRecordingStatusUpdated(RecordingStatus.RECORDING.name().equalsIgnoreCase(event.getRecordingStatus()));
     }
 
     /**
@@ -364,110 +537,7 @@ public abstract class AbstractConferenceToolkitController {
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceUpdatedEvent event) {
+    public void onEvent(@NonNull ConferenceUpdatedEvent event) {
         mMainView.onConferenceUpdated(event.getEvent().getParticipants());
-    }
-
-
-    public boolean isOverlayEnabled() {
-        return VoxeetToolkit.getInstance().isEnabled();
-    }
-
-
-    /**
-     * Toggles overlay visibility.
-     */
-    public void onOverlayEnabled(boolean enabled) {
-        if (enabled)
-            displayView();
-        else
-            removeView(false);
-    }
-
-    private synchronized void displayView() {
-        if (isOverlayEnabled()) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (mMainView != null) {
-                        ViewGroup viewHolder = (ViewGroup) mMainView.getParent();
-                        if (viewHolder != null)
-                            viewHolder.removeView(mMainView);
-
-                        Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
-                        ViewGroup root = VoxeetToolkit.getInstance().getRootView();
-
-                        if (root != null && activity != null && !activity.isFinishing()) {
-                            root.addView(mMainView, params);
-                            mMainView.onResume();
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    public synchronized void removeView(final boolean shouldRelease) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mMainView != null) {
-                    ViewGroup viewHolder = (ViewGroup) mMainView.getParent();
-                    if (viewHolder != null)
-                        viewHolder.removeView(mMainView);
-
-                    if (shouldRelease) {
-                        mMainView.onDestroy();
-                        mMainView = null;
-                    }
-                }
-            }
-        });
-    }
-
-
-    public void onActivityResumed(Activity activity) {
-        if (mMainView != null) { // conf is live
-            displayView();
-        }
-    }
-
-    public void onActivityPaused(Activity activity) {
-        if (mMainView != null)
-            removeView(false);
-    }
-
-    private void reset() {
-        mediaStreams = new HashMap<>();
-        conferenceUsers = new ArrayList<>();
-    }
-
-    public void setDefaultOverlayState(OverlayState overlay) {
-        mDefaultOverlayState = overlay;
-
-        if (mMainView != null) {
-            if (OverlayState.EXPANDED.equals(overlay)) {
-                mMainView.expand();
-            } else {
-                mMainView.minimize();
-            }
-        }
-    }
-
-    public OverlayState getDefaultOverlayState() {
-        return mDefaultOverlayState;
-    }
-
-    public void enable(boolean state) {
-        mEnabled = state;
-    }
-
-    public boolean isEnabled() {
-        return mEnabled;
-    }
-
-    @Nullable
-    protected AbstractVoxeetOverlayView getMainView() {
-        return mMainView;
     }
 }

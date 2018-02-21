@@ -22,6 +22,7 @@ import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 public abstract class VoxeetView extends FrameLayout
 implements IVoxeetView {
 
+    @NonNull
     private List<VoxeetView> mListeners;
 
     private final String TAG = VoxeetView.class.getSimpleName();
@@ -81,66 +82,66 @@ implements IVoxeetView {
     /**
      * On conference joined.
      *
-     * @param conferenceId the conference id
+     * @param conference_id the conference id
      */
-    public void onConferenceJoined(String conferenceId) {
+    public void onConferenceJoined(@NonNull String conference_id) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceJoined(conferenceId);
+            child.onConferenceJoined(conference_id);
         }
     }
 
     /**
      * On conference updated.
      *
-     * @param conferenceId the conference id
+     * @param conference_users the conference id
      */
-    public void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
+    public void onConferenceUpdated(@NonNull List<DefaultConferenceUser> conference_users) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceUpdated(conferenceId);
+            child.onConferenceUpdated(conference_users);
         }
     }
 
     /**
      * On conference creation.
      *
-     * @param conferenceId the conference id
+     * @param conference_id the conference id
      */
-    public void onConferenceCreation(String conferenceId) {
+    public void onConferenceCreation(@NonNull String conference_id) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceCreation(conferenceId);
+            child.onConferenceCreation(conference_id);
         }
     }
 
     /**
      * On conference user joined.
      *
-     * @param conferenceUser the conference user
+     * @param conference_user the conference user
      */
-    public void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
+    public void onConferenceUserJoined(@NonNull DefaultConferenceUser conference_user) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceUserJoined(conferenceUser);
+            child.onConferenceUserJoined(conference_user);
         }
     }
 
     /**
      * On conference user updated.
      *
-     * @param conferenceUser the conference user
+     * @param conference_user the conference user
      */
-    public void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
+    public void onConferenceUserUpdated(@NonNull DefaultConferenceUser conference_user) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceUserUpdated(conferenceUser);
+            child.onConferenceUserUpdated(conference_user);
         }
     }
 
     /**
      * On conference user left.
      *
-     * @param conferenceUser the conference user
+     * @param conference_user the conference user
      */
-    public void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
+    public void onConferenceUserLeft(@NonNull DefaultConferenceUser conference_user) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceUserLeft(conferenceUser);
+            child.onConferenceUserLeft(conference_user);
         }
     }
 
@@ -159,21 +160,23 @@ implements IVoxeetView {
      * On media stream updated.
      *
      * @param userId the user id
-     * @param mediaStreams
+     * @param media_streams
      */
-    public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
+    public void onMediaStreamUpdated(@NonNull String userId,
+                                     @NonNull Map<String, MediaStream> media_streams) {
         for (VoxeetView child : mListeners) {
-            child.onMediaStreamUpdated(userId, mediaStreams);
+            child.onMediaStreamUpdated(userId, media_streams);
         }
     }
 
     /**
      *
-     * @param conferenceUsers the new list of users
+     * @param conference_users the new list of users
      */
-    public void onConferenceUsersListUpdate(List<DefaultConferenceUser> conferenceUsers) {
+    @Override
+    public void onConferenceUsersListUpdate(List<DefaultConferenceUser> conference_users) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceUsersListUpdate(conferenceUsers);
+            child.onConferenceUsersListUpdate(conference_users);
         }
     }
 
@@ -186,8 +189,9 @@ implements IVoxeetView {
 
     /**
      *
-     * @param mediaStreams the new list of mediaStreams
+     * @param mediaStreams the new list of mMediaStreams
      */
+    @Override
     public void onMediaStreamsUpdated(Map<String, MediaStream> mediaStreams) {
         for (VoxeetView child : mListeners) {
             child.onMediaStreamsUpdated(mediaStreams);
@@ -197,6 +201,7 @@ implements IVoxeetView {
     /**
      * On conference destroyed.
      */
+    @Override
     public void onConferenceDestroyed() {
         for (VoxeetView child : mListeners) {
             child.onConferenceDestroyed();
@@ -206,6 +211,7 @@ implements IVoxeetView {
     /**
      * On conference left.
      */
+    @Override
     public void onConferenceLeft() {
         for (VoxeetView child : mListeners) {
             child.onConferenceLeft();
