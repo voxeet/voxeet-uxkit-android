@@ -240,9 +240,7 @@ public class CreateConfActivity extends AppCompatActivity {
 
         switch (action) {
             case MainActivity.JOIN:
-
                 VoxeetToolkit.getInstance().getConferenceToolkit().join(confAlias);
-                //ReplayMessageToolkitController.replay("591e1dd6-1200-4e49-9542-40f639180922", 0);
                 break;
             case MainActivity.REPLAY:
                 VoxeetToolkit.getInstance().getReplayMessageToolkit().replay(confAlias, 0);
@@ -433,7 +431,7 @@ public class CreateConfActivity extends AppCompatActivity {
         onConferenceEnding();
     }
 
-    private void onConferenceEnding() {
+    private void    onConferenceEnding() {
         VoxeetSdk.getInstance().unregister(CreateConfActivity.this);
 
         screenShare.unAttach(); // unattaching just in case
