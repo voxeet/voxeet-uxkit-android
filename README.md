@@ -47,9 +47,6 @@ Add your keys into your ~/.gradle/gradle.properties file
 ```gradle
 PROD_CONSUMER_KEY=your_key_prod
 PROD_CONSUMER_SECRET=your_key_prod_staging
-
-STAGING_CONSUMER_KEY=your_key_staging
-STAGING_CONSUMER_SECRET=your_key_secret_staging
 ```
 
 And use them in the app using BuildConfig.CONSUMER_KEY and BuildConfig.CONSUMER_SECRET (as shown in the app/build.gradle file)
