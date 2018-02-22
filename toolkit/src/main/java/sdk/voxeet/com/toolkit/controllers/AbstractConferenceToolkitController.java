@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -38,6 +39,7 @@ import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
 import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
 import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
 import voxeet.com.sdk.events.success.ConferenceUpdatedEvent;
+import voxeet.com.sdk.events.success.ConferenceUserCallDeclinedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserJoinedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserLeftEvent;
 import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
@@ -113,7 +115,7 @@ public abstract class AbstractConferenceToolkitController {
 
     /**
      * Init the controller
-     *
+     * <p>
      * ensures the main view is valid
      */
     protected void init() {
@@ -128,7 +130,7 @@ public abstract class AbstractConferenceToolkitController {
 
     /**
      * Register the controller to the instance of eventbus given in constructor
-     *
+     * <p>
      * If the mainview is valid, we also call the interface's method to give possible new
      */
     public void register() {
@@ -144,7 +146,7 @@ public abstract class AbstractConferenceToolkitController {
 
     /**
      * Unregister the controller from the EvenBus
-     *
+     * <p>
      * In a typical workflow, this method is never called
      */
     public void unregister() {
@@ -155,6 +157,7 @@ public abstract class AbstractConferenceToolkitController {
 
     /**
      * Inject an overlay view provider
+     *
      * @param provider a non-null provider
      */
     public AbstractConferenceToolkitController setVoxeetOverlayViewProvider(@NonNull IVoxeetOverlayViewProvider provider) {
@@ -164,7 +167,6 @@ public abstract class AbstractConferenceToolkitController {
     }
 
     /**
-     *
      * @param provider
      */
     public AbstractConferenceToolkitController setVoxeetSubViewProvider(@NonNull IVoxeetSubViewProvider provider) {
@@ -219,26 +221,33 @@ public abstract class AbstractConferenceToolkitController {
     }
 
     public void removeView(final boolean should_release) {
-        mHandler.post(new Runnable() {
+        final AbstractVoxeetOverlayView view = mMainView;
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if (mMainView != null) {
-                    ViewGroup viewHolder = (ViewGroup) mMainView.getParent();
+                if (view != null) {
+                    ViewGroup viewHolder = (ViewGroup) view.getParent();
                     if (viewHolder != null)
-                        viewHolder.removeView(mMainView);
+                        viewHolder.removeView(view);
 
                     if (should_release) {
-                        mMainView.onDestroy();
-                        mMainView = null;
+                        view.onDestroy();
+                        //if we still have the main view displayed
+                        //but wanted to clear it
+                        if (view == mMainView) {
+                            mMainView = null;
+                        }
                     }
                 }
             }
-        });
+        };
+
+        long after = should_release ? mMainView.getCloseTimeoutInMilliseconds() : 0;
+
+        mHandler.postDelayed(runnable, after);
     }
 
     /**
-     *
-     *
      * @param activity
      */
     public void onActivityResumed(Activity activity) {
@@ -267,7 +276,6 @@ public abstract class AbstractConferenceToolkitController {
     }
 
     /**
-     *
      * @param overlay as the new default
      */
     public void setDefaultOverlayState(@NonNull OverlayState overlay) {
@@ -294,6 +302,7 @@ public abstract class AbstractConferenceToolkitController {
 
     /**
      * Change the state of this controller
+     *
      * @param state the new state of the controller
      */
     public void enable(boolean state) {
@@ -311,6 +320,7 @@ public abstract class AbstractConferenceToolkitController {
 
     /**
      * Getter of the main view
+     *
      * @return the instance of the main view
      */
     @Nullable
@@ -447,10 +457,36 @@ public abstract class AbstractConferenceToolkitController {
     public void onEvent(final ConferenceUserLeftEvent event) {
         if (mMainView != null) {
             DefaultConferenceUser user = event.getUser();
-            if (mConferenceUsers.contains(user))
+            if (mConferenceUsers.contains(user)) {
                 mConferenceUsers.remove(user);
+                mMainView.onConferenceUsersListUpdate(mConferenceUsers);
+            }
 
             mMainView.onConferenceUserLeft(user);
+        }
+    }
+
+    /**
+     * On User Declined call event
+     * <p>
+     * Logic is quite different from the onEvent(ConferenceUserLeftEvent)
+     * since we do not have a direct object but the user's
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(final ConferenceUserCallDeclinedEvent event) {
+        if (mMainView != null) {
+            int i = 0;
+            DefaultConferenceUser user = null;
+            while (i < mConferenceUsers.size()) {
+                user = mConferenceUsers.get(i);
+                if (user.getUserId() != null && user.getUserId().equals(event.getUserId())) {
+                    mConferenceUsers.remove(i);
+                    mMainView.onConferenceUsersListUpdate(mConferenceUsers);
+                } else {
+                    i++;
+                }
+            }
+            mMainView.onConferenceUserDeclined(event.getUserId());
         }
     }
 
@@ -495,6 +531,7 @@ public abstract class AbstractConferenceToolkitController {
         if (mMainView != null) {
             mMainView.onConferenceDestroyed();
         }
+
 
         removeView(true);
     }
