@@ -16,11 +16,21 @@ The SDK is a Java library allowing users to:
 
 ### Installing the Android SDK using Gradle
 
-To install the SDK directly into your Android project using the Grade build system and an IDE like Android Studio, add the following entry: "compile 'com.voxeet.sdk:core:0.8.021'" to your build.gradle file as shown below:
+To install the SDK directly into your Android project using the Grade build system and an IDE like Android Studio, add the following entry to your build.gradle file as shown below:
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:0.9.1.5.8.2') {
+  compile ('com.voxeet.sdk:toolkit:0.9.1.5.8.2.1') {
+    transitive = true
+  }
+}
+```
+
+The current sdk is available using the following version (used by the current toolkit version) :
+
+```gradle
+dependencies {
+  compile ('com.voxeet.sdk:toolkit:0.9.1.5.8.2.1') {
     transitive = true
   }
 }
@@ -764,8 +774,8 @@ Only one instance of a conference is allowed to be live. Leaving the current con
 ## Version
 
 
-public-sdk: 0.9.1.5.7
-toolkit: 0.9.1.5.8.2
+public-sdk: 0.9.1.5.8.3
+toolkit: 0.9.1.5.8.2.1
 
 ## Tech
 
