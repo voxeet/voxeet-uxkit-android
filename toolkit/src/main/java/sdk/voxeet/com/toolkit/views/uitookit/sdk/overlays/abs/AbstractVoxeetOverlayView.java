@@ -5,6 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -313,6 +314,16 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     }
 
     protected abstract void onActionButtonClicked();
+
+    /**
+     * Set how long will it should take to close the current view
+     *
+     * Every values <= 0 will be considered as being equals to "now"
+     * @return timeoutin milliseconds
+     */
+    public long getCloseTimeoutInMilliseconds() {
+        return 0;
+    }
 
     private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
 
