@@ -20,7 +20,7 @@ import voxeet.com.sdk.models.impl.DefaultConferenceUser;
  * Created by romainbenmansour on 20/02/2017.
  */
 public abstract class VoxeetView extends FrameLayout
-implements IVoxeetView {
+        implements IVoxeetView {
 
     @NonNull
     private List<VoxeetView> mListeners;
@@ -146,6 +146,18 @@ implements IVoxeetView {
     }
 
     /**
+     * An user declined the call
+     *
+     * @param userId the declined-user id
+     */
+    @Override
+    public void onConferenceUserDeclined(String userId) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceUserDeclined(userId);
+        }
+    }
+
+    /**
      * On recording status updated.
      *
      * @param recording the recording
@@ -170,7 +182,6 @@ implements IVoxeetView {
     }
 
     /**
-     *
      * @param conference_users the new list of users
      */
     @Override
@@ -182,13 +193,12 @@ implements IVoxeetView {
 
     @Override
     public void onMediaStreamsListUpdated(Map<String, MediaStream> mediaStreams) {
-        for(VoxeetView child: mListeners) {
+        for (VoxeetView child : mListeners) {
             child.onMediaStreamsListUpdated(mediaStreams);
         }
     }
 
     /**
-     *
      * @param mediaStreams the new list of mMediaStreams
      */
     @Override
@@ -247,7 +257,7 @@ implements IVoxeetView {
     }
 
     protected void addListener(@NonNull VoxeetView voxeetView) {
-        if(mListeners.indexOf(voxeetView) < 0) {
+        if (mListeners.indexOf(voxeetView) < 0) {
             Log.d(TAG, "addListener: " + voxeetView.getClass().getSimpleName());
             mListeners.add(voxeetView);
         }
