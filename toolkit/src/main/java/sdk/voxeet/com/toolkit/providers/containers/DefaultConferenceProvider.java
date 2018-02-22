@@ -25,7 +25,7 @@ public class DefaultConferenceProvider implements IVoxeetOverlayViewProvider {
 
     }
 
-    protected DefaultConferenceProvider(IExpandableViewProviderListener listener) {
+    public DefaultConferenceProvider(IExpandableViewProviderListener listener) {
         this();
 
         mListener = listener;
