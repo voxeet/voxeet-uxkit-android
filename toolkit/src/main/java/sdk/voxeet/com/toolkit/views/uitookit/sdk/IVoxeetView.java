@@ -55,6 +55,13 @@ public interface IVoxeetView {
     void onConferenceUserLeft(DefaultConferenceUser conferenceUser);
 
     /**
+     * An user declined the call
+     *
+     * @param userId the declined-user id
+     */
+    void onConferenceUserDeclined(String userId);
+
+    /**
      * On recording status updated.
      *
      * @param recording the recording
