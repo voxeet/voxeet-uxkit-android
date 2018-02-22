@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:orientation="vertical">
 
-    <sdk.voxeet.com.toolkit.views.uitookit.nologic.VoxeetVuMeter
-        android:id="@+id/vu_meter"
-        android:layout_width="@dimen/meeting_list_avatar_double"
-        android:layout_height="@dimen/meeting_list_avatar_double"
-        android:layout_gravity="center"
-        android:padding="10dp" />
 
-    <sdk.voxeet.com.toolkit.views.android.RoundedImageView
-        android:id="@+id/speaker_image"
-        android:layout_width="@dimen/meeting_list_avatar_double"
-        android:layout_height="@dimen/meeting_list_avatar_double"
-        android:layout_gravity="center"
-        app:border_color="#FFFFFF"
-        app:border_width="0dp"
-        app:corner_radius="30dip"
-        app:mutate_background="true"
-        app:oval="true" />
+    <TextView
+        android:id="@+id/speaker_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"
+        android:text="zer" />
 
-</FrameLayout>
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <sdk.voxeet.com.toolkit.views.uitookit.nologic.VoxeetVuMeter
+            android:id="@+id/vu_meter"
+            android:layout_width="@dimen/meeting_list_avatar_double"
+            android:layout_height="@dimen/meeting_list_avatar_double"
+            android:layout_gravity="center"
+            android:padding="10dp" />
+
+        <sdk.voxeet.com.toolkit.views.android.RoundedImageView
+            android:id="@+id/speaker_image"
+            android:layout_width="@dimen/meeting_list_avatar_double"
+            android:layout_height="@dimen/meeting_list_avatar_double"
+            android:layout_gravity="center"
+            app:border_color="#FFFFFF"
+            app:border_width="0dp"
+            app:corner_radius="30dip"
+            app:mutate_background="true"
+            app:oval="true" />
+    </FrameLayout>
+</LinearLayout>

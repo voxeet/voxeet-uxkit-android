@@ -14,6 +14,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -56,8 +58,13 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     private Runnable updateSpeakerRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!selected)
+            if (!selected) {
                 currentSpeaker = findUserById(VoxeetSdk.getInstance().getConferenceService().currentSpeaker());
+                if (currentSpeaker != null && currentSpeaker.getUserInfo() != null) {
+                    speakerName.setText(currentSpeaker.getUserInfo().getName());
+                    invalidateSpeakerName();
+                }
+            }
 
             if (currentSpeaker != null && currentWidth > 0)
                 loadViaPicasso(currentSpeaker, currentWidth / 2, currentSpeakerView);
@@ -76,6 +83,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         }
     };
     private List<DefaultConferenceUser> mConferenceUsers;
+    private boolean mDisplaySpeakerName = false;
+    private TextView speakerName;
 
     /**
      * Instantiates a new Voxeet current speaker view.
@@ -145,6 +154,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
 
     @Override
     public void init() {
+
+        setShowSpeakerName(false);
         mConferenceUsers = new ArrayList<>();
     }
 
@@ -191,6 +202,31 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         currentSpeakerView = (RoundedImageView) v.findViewById(R.id.speaker_image);
 
         vuMeter = (VoxeetVuMeter) v.findViewById(R.id.vu_meter);
+
+        speakerName = (TextView) v.findViewById(R.id.speaker_name);
+    }
+
+    /**
+     * When showing speaker name, it will disable the VuMeter
+     * @param display
+     */
+    protected void setShowSpeakerName(boolean display) {
+        mDisplaySpeakerName = display;
+
+        invalidateSpeakerName();
+    }
+
+    /**
+     * Return wether the user name will be visible instead of the vu meter
+     * @return true or false
+     */
+    protected boolean isShowSpeakerName() {
+        return mDisplaySpeakerName;
+    }
+
+    private void invalidateSpeakerName() {
+        vuMeter.setVisibility(mDisplaySpeakerName ? View.GONE : View.VISIBLE);
+        speakerName.setVisibility(mDisplaySpeakerName ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -200,12 +236,12 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
      * @return the conference user
      */
     public DefaultConferenceUser findUserById(@Nullable final String userId) {
-            return Iterables.find(mConferenceUsers, new Predicate<DefaultConferenceUser>() {
-                @Override
-                public boolean apply(DefaultConferenceUser input) {
-                    return input.getUserId().equalsIgnoreCase(userId);
-                }
-            }, null);
+        return Iterables.find(mConferenceUsers, new Predicate<DefaultConferenceUser>() {
+            @Override
+            public boolean apply(DefaultConferenceUser input) {
+                return input.getUserId().equalsIgnoreCase(userId);
+            }
+        }, null);
     }
 
     private void loadViaPicasso(DefaultConferenceUser conferenceUser, int avatarSize, ImageView imageView) {
@@ -266,6 +302,10 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         currentSpeaker = findUserById(userId);
 
         selected = true;
+
+        if (currentSpeaker != null) {
+            speakerName.setText(currentSpeaker.getUserInfo().getName());
+        }
     }
 
     /**
