@@ -20,7 +20,6 @@ import voxeet.com.sdk.core.services.SdkConferenceService;
 import voxeet.com.sdk.events.error.GetConferenceHistoryErrorEvent;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
-import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
 import voxeet.com.sdk.events.success.GetConferenceHistoryEvent;
 import voxeet.com.sdk.models.HistoryConference;
 
