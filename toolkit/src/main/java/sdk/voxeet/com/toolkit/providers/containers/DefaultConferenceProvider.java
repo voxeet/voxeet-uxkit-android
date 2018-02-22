@@ -17,11 +17,15 @@ public class DefaultConferenceProvider implements IVoxeetOverlayViewProvider {
 
     private IExpandableViewProviderListener mListener;
 
+    protected IExpandableViewProviderListener getListener() {
+        return mListener;
+    }
+
     private DefaultConferenceProvider() {
 
     }
 
-    public DefaultConferenceProvider(IExpandableViewProviderListener listener) {
+    protected DefaultConferenceProvider(IExpandableViewProviderListener listener) {
         this();
 
         mListener = listener;
