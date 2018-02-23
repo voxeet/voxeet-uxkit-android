@@ -24,7 +24,8 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import voxeet.com.sdk.utils.ScreenHelper;
 
 /**
- * Created by romainbenmansour on 11/08/16.
+ * Abbstract view used to managed the overlay state of its content. It does not manage the calls, leaving users etc...
+ * It is only here to help and ensure the current overlay behaviour
  */
 public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandableView {
 
@@ -53,6 +54,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     private AbstractVoxeetExpandableView mSubView;
     private ViewGroup sub_container;
     private boolean mRemainExpanded;
+    private boolean mCanBeMinizedByTouch;
 
     /**
      * Instantiates a new Voxeet conference view.
@@ -66,6 +68,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
                                      @NonNull final OverlayState overlay) {
         super(context);
 
+        mCanBeMinizedByTouch = true;
         mRemainExpanded = false;
         //isMaxedOut = OverlayState.EXPANDED.equals(overlay);
         overlayState = overlay;
@@ -139,6 +142,17 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
     }
 
+    /**
+     * Inform the current view wether it can be minized when the user touches it
+     * Useful in custom environment
+     * Note that the current default behaviour of the view is to be minizable
+     *
+     * @param can_be_minized_by_touch wether the can be minized when it is expanded
+     */
+    public void setCanBeMinizedByTouch(boolean can_be_minized_by_touch) {
+        mCanBeMinizedByTouch = can_be_minized_by_touch;
+    }
+
     @Override
     public void init() {
         animationHandler = new AnimationHandler();
@@ -157,7 +171,8 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (gestureDetector.onTouchEvent(event)) {
+                //if the view can be minized by touch or it is not expanded
+                if ((mCanBeMinizedByTouch || !isExpanded()) && gestureDetector.onTouchEvent(event)) {
                     toggleSize();
                 } else if (!isExpanded()) { // drag n drop only when minimized
                     switch (event.getAction()) {
