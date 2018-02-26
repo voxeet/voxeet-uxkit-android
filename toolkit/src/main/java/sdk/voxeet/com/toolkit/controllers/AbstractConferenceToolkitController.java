@@ -241,7 +241,7 @@ public abstract class AbstractConferenceToolkitController {
             }
         };
 
-        long after = should_release ? mMainView.getCloseTimeoutInMilliseconds() : 0;
+        long after = should_release && mMainView != null ? mMainView.getCloseTimeoutInMilliseconds() : 0;
 
         mHandler.postDelayed(runnable, after);
     }
