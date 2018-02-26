@@ -2,7 +2,10 @@ package sdk.voxeet.com.toolkit.views.uitookit.nologic;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.widget.FrameLayout;
 
 import com.voxeet.android.media.MediaStream;
@@ -10,16 +13,28 @@ import com.voxeet.android.media.video.EglBase;
 import com.voxeet.android.media.video.RendererCommon;
 import com.voxeet.toolkit.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import voxeet.com.sdk.core.VoxeetSdk;
 
 /**
  * Created by romainbenmansour on 11/08/16.
+ *
+ * Update @kleperf : add possibilité to register for renderer events
+ * those events are sent on the main thread
+ * and add accessor to reinit() the view after a release()
  */
-public class VideoView extends FrameLayout {
+public class VideoView extends FrameLayout implements RendererCommon.RendererEvents {
+    private static final String SCALE_FIT = "scale_fit";
+    private static final String SCALE_FILL = "scale_fill";
+    private static final String SCALE_BALANCED = "scale_balanced";
+
     private final String TAG = VideoView.class.getSimpleName();
 
     private boolean mIsAttached = false;
 
+    private List<RendererCommon.RendererEvents> mEventsListeners;
     /**
      * The Voxeet renderer.
      */
@@ -34,6 +49,8 @@ public class VideoView extends FrameLayout {
     private EglBase eglBase;
 
     private boolean shouldMirror = false;
+    private String mScaleType;
+    private Handler mHandler;
 
     /**
      * Instantiates a new Video view.
@@ -63,13 +80,25 @@ public class VideoView extends FrameLayout {
     private void updateAttrs(AttributeSet attrs) {
         TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VideoView);
         shouldMirror = attributes.getBoolean(R.styleable.VideoView_mirrored, false);
+
+        mScaleType = attributes.getString(R.styleable.VideoView_scaleType);
+
         attributes.recycle();
     }
 
     private void init() {
+        mHandler = new Handler();
+        mEventsListeners = new ArrayList<>();
         eglBase = EglBase.create();
 
+        FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.MATCH_PARENT,
+                Gravity.CENTER);
         mRenderer = new VoxeetRenderer(getContext());
+        mRenderer.setLayoutParams(param);
+
+        mRenderer.init(eglBase.getEglBaseContext(), this);
 
         addView(mRenderer);
 
@@ -77,12 +106,79 @@ public class VideoView extends FrameLayout {
     }
 
     /**
+     * Add a new RendererEvents listener to the current VideoView
+     * <p>
+     * Caution : no catch are made when listeners are called !
+     *
+     * @param listener a non null listener
+     */
+    public void addListener(@NonNull RendererCommon.RendererEvents listener) {
+        synchronized (listener) {
+            if (!mEventsListeners.contains(listener)) {
+                mEventsListeners.add(listener);
+            }
+        }
+    }
+
+    /**
+     * Remove a specified listener from the list of internal RendererEvents listener
+     *
+     * @param listener a non null listener to remove
+     */
+    public void removeListener(@NonNull RendererCommon.RendererEvents listener) {
+        synchronized (listener) {
+            if (mEventsListeners.contains(listener)) {
+                mEventsListeners.remove(listener);
+            }
+        }
+    }
+
+    /**
+     * Clear the list of listener from this view
+     * <p>
+     * to be called when cleaning it
+     */
+    public void clearListeners() {
+        synchronized (mEventsListeners) {
+            mEventsListeners.clear();
+        }
+    }
+
+    public void setVideoFit() {
+        mScaleType = SCALE_FIT;
+        setSurfaceViewRenderer();
+        requestLayout();
+    }
+
+    public void setVideoFill() {
+        mScaleType = SCALE_FILL;
+        setSurfaceViewRenderer();
+        requestLayout();
+    }
+
+    public void setVideoBalanced() {
+        mScaleType = SCALE_BALANCED;
+        setSurfaceViewRenderer();
+        requestLayout();
+    }
+
+    /**
      * Sets surface view renderer.
      */
     public void setSurfaceViewRenderer() {
-        this.mRenderer.init(eglBase.getEglBaseContext(), null);
-
-        this.mRenderer.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
+        RendererCommon.ScalingType type;
+        if (mScaleType == null) mScaleType = SCALE_FIT;
+        switch (mScaleType) {
+            case SCALE_BALANCED:
+                type = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
+                break;
+            case SCALE_FILL:
+                type = RendererCommon.ScalingType.SCALE_ASPECT_FILL;
+                break;
+            default:
+                type = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
+        }
+        this.mRenderer.setScalingType(type);
 
         this.mRenderer.setMirror(shouldMirror);
     }
@@ -111,6 +207,23 @@ public class VideoView extends FrameLayout {
      */
     public void release() {
         this.mRenderer.release();
+    }
+
+    /**
+     * Try to reinit the view
+     *
+     * When returning false, warns that something wrong happened. Common case is the fast the
+     * renderer's init was already called without a proper release call
+     *
+     * @return if the view was reinit
+     */
+    public boolean reinit() {
+        try {
+            this.mRenderer.init(eglBase.getEglBaseContext(), this);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -182,5 +295,31 @@ public class VideoView extends FrameLayout {
      */
     public String getPeerId() {
         return mPeerId;
+    }
+
+    @Override
+    public void onFirstFrameRendered() {
+        //make sure we are sending event on the main looper
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                setSurfaceViewRenderer();
+
+                synchronized (mEventsListeners) {
+                    for (RendererCommon.RendererEvents events_listener : mEventsListeners) {
+                        events_listener.onFirstFrameRendered();
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation) {
+        synchronized (mEventsListeners) {
+            for (RendererCommon.RendererEvents events_listener : mEventsListeners) {
+                events_listener.onFrameResolutionChanged(videoWidth, videoHeight, rotation);
+            }
+        }
     }
 }
