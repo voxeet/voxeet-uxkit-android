@@ -17,6 +17,7 @@ import sdk.voxeet.com.toolkit.utils.IParticipantViewListener;
 import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetExpandableView;
 import voxeet.com.sdk.core.VoxeetPreferences;
+import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
@@ -141,6 +142,18 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         selectedView.setAutoUnAttach(true);
 
         selfView = (VideoView) view.findViewById(R.id.self_video_view);
+
+        selfView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(VoxeetSdk.getInstance() != null) {
+                    //switchCamera should not trigger crash since it is only possible
+                    //to click when already capturing and ... rendering the camera
+                    VoxeetSdk.getInstance()
+                            .getConferenceService().switchCamera();
+                }
+            }
+        });
 
         layoutTimer = (ViewGroup) view.findViewById(R.id.layout_timer);
 
