@@ -28,7 +28,7 @@ repositories {
 System.out.println("creating for ${project.properties["VOXEET_SDK_TOOLKIT_VERSION"]}")
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.3"
 
     defaultConfig {
         minSdkVersion 14
@@ -41,7 +41,7 @@ android {
 
     buildTypes {
         release {
-            shrinkResources true
+            shrinkResources false
             minifyEnabled false
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
