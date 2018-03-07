@@ -21,7 +21,8 @@ repositories {
     maven {
         url "https://dl.bintray.com/voxeet/maven"
     }
-    jcenter();
+    jcenter()
+    google()
 }
 
 System.out.println("creating for ${project.properties["VOXEET_SDK_TOOLKIT_VERSION"]}")
