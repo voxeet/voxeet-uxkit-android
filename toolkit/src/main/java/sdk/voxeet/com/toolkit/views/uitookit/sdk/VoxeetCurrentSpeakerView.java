@@ -1,9 +1,11 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -12,14 +14,18 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.squareup.picasso.Picasso;
 import com.voxeet.toolkit.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
+import sdk.voxeet.com.toolkit.views.uitookit.nologic.VoxeetVuMeter;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
@@ -32,6 +38,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     private final int REFRESH_SPEAKER = 250;
 
     private final int REFRESH_METER = 100;
+
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     private int currentWidth;
 
@@ -49,8 +57,13 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     private Runnable updateSpeakerRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!selected)
+            if (!selected) {
                 currentSpeaker = findUserById(VoxeetSdk.getInstance().getConferenceService().currentSpeaker());
+                if (currentSpeaker != null && currentSpeaker.getUserInfo() != null) {
+                    speakerName.setText(currentSpeaker.getUserInfo().getName());
+                    invalidateSpeakerName();
+                }
+            }
 
             if (currentSpeaker != null && currentWidth > 0)
                 loadViaPicasso(currentSpeaker, currentWidth / 2, currentSpeakerView);
@@ -68,6 +81,9 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
             handler.postDelayed(this, REFRESH_METER);
         }
     };
+    private List<DefaultConferenceUser> mConferenceUsers;
+    private boolean mDisplaySpeakerName = false;
+    private TextView speakerName;
 
     /**
      * Instantiates a new Voxeet current speaker view.
@@ -113,51 +129,16 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     }
 
     @Override
-    protected void onConferenceJoined(String conferenceId) {
-    }
+    public void onConferenceDestroyed() {
+        super.onConferenceDestroyed();
 
-    @Override
-    protected void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceCreation(String conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
-        start();
-    }
-
-    @Override
-    protected void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onRecordingStatusUpdated(boolean recording) {
-
-    }
-
-    @Override
-    protected void onMediaStreamUpdated(String userId) {
-
-    }
-
-    @Override
-    protected void onConferenceDestroyed() {
         afterLeaving();
     }
 
     @Override
-    protected void onConferenceLeft() {
+    public void onConferenceLeft() {
+        super.onConferenceLeft();
+
         afterLeaving();
     }
 
@@ -171,7 +152,10 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     }
 
     @Override
-    protected void init() {
+    public void init() {
+
+        setShowSpeakerName(false);
+        mConferenceUsers = new ArrayList<>();
     }
 
     @Override
@@ -179,6 +163,13 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         super.onConfigurationChanged(newConfig);
 
         orientation = newConfig.orientation;
+    }
+
+    @Override
+    public void onConferenceUsersListUpdate(List<DefaultConferenceUser> conferenceUsers) {
+        super.onConferenceUsersListUpdate(conferenceUsers);
+
+        mConferenceUsers = conferenceUsers;
     }
 
     @Override
@@ -201,8 +192,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     }
 
     @Override
-    protected void inflateLayout() {
-        inflate(getContext(), R.layout.voxeet_current_speaker_view, this);
+    protected int layout() {
+        return R.layout.voxeet_current_speaker_view;
     }
 
     @Override
@@ -210,11 +201,31 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         currentSpeakerView = (RoundedImageView) v.findViewById(R.id.speaker_image);
 
         vuMeter = (VoxeetVuMeter) v.findViewById(R.id.vu_meter);
+
+        speakerName = (TextView) v.findViewById(R.id.speaker_name);
     }
 
-    @Override
-    public void release() {
-        super.release();
+    /**
+     * When showing speaker name, it will disable the VuMeter
+     * @param display
+     */
+    protected void setShowSpeakerName(boolean display) {
+        mDisplaySpeakerName = display;
+
+        invalidateSpeakerName();
+    }
+
+    /**
+     * Return wether the user name will be visible instead of the vu meter
+     * @return true or false
+     */
+    protected boolean isShowSpeakerName() {
+        return mDisplaySpeakerName;
+    }
+
+    private void invalidateSpeakerName() {
+        vuMeter.setVisibility(mDisplaySpeakerName ? View.GONE : View.VISIBLE);
+        speakerName.setVisibility(mDisplaySpeakerName ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -224,12 +235,12 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
      * @return the conference user
      */
     public DefaultConferenceUser findUserById(@Nullable final String userId) {
-            return Iterables.find(conferenceUsers, new Predicate<DefaultConferenceUser>() {
-                @Override
-                public boolean apply(DefaultConferenceUser input) {
-                    return input.getUserId().equalsIgnoreCase(userId);
-                }
-            }, null);
+        return Iterables.find(mConferenceUsers, new Predicate<DefaultConferenceUser>() {
+            @Override
+            public boolean apply(DefaultConferenceUser input) {
+                return input.getUserId().equalsIgnoreCase(userId);
+            }
+        }, null);
     }
 
     private void loadViaPicasso(DefaultConferenceUser conferenceUser, int avatarSize, ImageView imageView) {
@@ -252,6 +263,14 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         handler.removeCallbacks(null);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        handler.removeCallbacks(null);
+        handler.removeCallbacksAndMessages(null);
+    }
+
     /**
      * Starts the handler responsible of updating the vu meter and the speaker photo.
      */
@@ -263,7 +282,10 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     /**
      * Resumes the handler responsible of updating the vu meter and the speaker photo.
      */
+    @Override
     public void onResume() {
+        super.onResume();
+
         start();
     }
 
@@ -279,6 +301,10 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         currentSpeaker = findUserById(userId);
 
         selected = true;
+
+        if (currentSpeaker != null) {
+            speakerName.setText(currentSpeaker.getUserInfo().getName());
+        }
     }
 
     /**

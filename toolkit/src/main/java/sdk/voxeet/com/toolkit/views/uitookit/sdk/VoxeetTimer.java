@@ -1,11 +1,13 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.ColorRes;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +15,15 @@ import android.widget.TextView;
 
 import com.voxeet.toolkit.R;
 
-import java.util.List;
-
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
 import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
  * Created by ROMMM on 9/29/15.
  */
 public class VoxeetTimer extends VoxeetView {
+
+    private Handler handler = new Handler();
     private final String TAG = VoxeetTimer.class.getSimpleName();
 
     private final int DEFAULT_MODE = 0;
@@ -39,8 +41,6 @@ public class VoxeetTimer extends VoxeetView {
 
     private long startTime = -1;
 
-    private long timeInMilliseconds;
-
     private int notInConferenceColor = getResources().getColor(R.color.blue);
 
     private int inConferenceColor = getResources().getColor(R.color.green);
@@ -49,16 +49,13 @@ public class VoxeetTimer extends VoxeetView {
 
     private int textColor = getResources().getColor(R.color.lightestGrey);
 
-    private ValueAnimator colorAnimation;
-
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
-            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+            long timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
             int secs = (int) (timeInMilliseconds / 1000);
             int mins = secs / 60;
             secs = secs % 60;
-            timer.setText("" + mins + ":"
-                    + String.format("%02d", secs));
+            timer.setText(getResources().getString(R.string.format_timer, mins, secs));
             handler.postDelayed(this, 1000);
         }
     };
@@ -174,26 +171,26 @@ public class VoxeetTimer extends VoxeetView {
         updateAction();
 
         ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetTimer_not_in_conference_color);
-        if (color != null)
-            notInConferenceColor = color.getColorForState(getDrawableState(), 0);
+        if (color != null) notInConferenceColor = getColorForState(color, 0);
 
         color = attributes.getColorStateList(R.styleable.VoxeetTimer_default_color);
-        if (color != null)
-            inConferenceColor = color.getColorForState(getDrawableState(), 0);
+        if (color != null) inConferenceColor = getColorForState(color, 0);
 
         color = attributes.getColorStateList(R.styleable.VoxeetTimer_recording_color);
-        if (color != null)
-            recordingColor = color.getColorForState(getDrawableState(), 0);
+        if (color != null) recordingColor = getColorForState(color, 0);
 
         color = attributes.getColorStateList(R.styleable.VoxeetTimer_text_color);
-        if (color != null)
-            textColor = color.getColorForState(getDrawableState(), R.color.lightestGrey);
+        if (color != null) textColor = getColorForState(color, R.color.lightestGrey);
 
         enableColor(attributes.getBoolean(R.styleable.VoxeetTimer_color_enabled, true));
 
         attributes.recycle();
 
         updateColors();
+    }
+
+    private int getColorForState(ColorStateList state_list, @ColorRes int color) {
+        return state_list.getColorForState(getDrawableState(), color);
     }
 
     private void updateAction() {
@@ -216,7 +213,8 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     @Override
-    protected void onConferenceJoined(String conferenceId) {
+    public void onConferenceJoined(String conference_id) {
+        super.onConferenceJoined(conference_id);
         if (action == CONFERENCE_MODE) {
             startTime = SystemClock.uptimeMillis();
 
@@ -226,29 +224,8 @@ public class VoxeetTimer extends VoxeetView {
         colorAnimation(notInConferenceColor, inConferenceColor);
     }
 
-    @Override
-    protected void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceCreation(String conferenceId) {
-    }
-
-    @Override
-    protected void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
-    }
-
-    @Override
-    protected void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
-    }
-
-    @Override
-    protected void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
-    }
-
     private void colorAnimation(int oldColor, int newColor) {
-        colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), oldColor, newColor);
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), oldColor, newColor);
         colorAnimation.setDuration(1000);
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -263,7 +240,8 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     @Override
-    protected void onRecordingStatusUpdated(final boolean recording) {
+    public void onRecordingStatusUpdated(final boolean recording) {
+        super.onRecordingStatusUpdated(recording);
         int currentColor = recording ? inConferenceColor : recordingColor;
         int nextColor = recording ? recordingColor : inConferenceColor;
 
@@ -271,12 +249,8 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     @Override
-    protected void onMediaStreamUpdated(String userId) {
-
-    }
-
-    @Override
-    protected void onConferenceDestroyed() {
+    public void onConferenceDestroyed() {
+        super.onConferenceDestroyed();
         if (action == CONFERENCE_MODE) {
             recordingImage.clearAnimation();
 
@@ -285,11 +259,20 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     @Override
-    protected void onConferenceLeft() {
+    public void onConferenceLeft() {
+        super.onConferenceLeft();
         if (action == CONFERENCE_MODE)
             handler.removeCallbacks(updateTimerThread);
 
         colorAnimation(inConferenceColor, notInConferenceColor);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        handler.removeCallbacks(null);
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -300,23 +283,20 @@ public class VoxeetTimer extends VoxeetView {
 
     @Override
     protected void bindView(View v) {
-        timer = (TextView) v.findViewById(R.id.timer_conference);
+        timer = v.findViewById(R.id.timer_conference);
 
-        colorLayout = (ViewGroup) v.findViewById(R.id.color_layout);
+        colorLayout = v.findViewById(R.id.color_layout);
 
-        recordingImage = (RoundedImageView) v.findViewById(R.id.recording_status_image);
+        recordingImage = v.findViewById(R.id.recording_status_image);
 
-        recordingImageAlpha = (RoundedImageView) v.findViewById(R.id.recording_status_image_alpha);
+        recordingImageAlpha = v.findViewById(R.id.recording_status_image_alpha);
+
+        //no listeners for this item
     }
 
     @Override
-    public void release() {
-        super.release();
-    }
-
-    @Override
-    protected void inflateLayout() {
-        inflate(getContext(), R.layout.voxeet_timer_view, this);
+    protected int layout() {
+        return R.layout.voxeet_timer_view;
     }
 
     /**

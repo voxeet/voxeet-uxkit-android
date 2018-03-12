@@ -18,7 +18,7 @@
             android:layout_height="60dp"
             android:layout_marginBottom="5dp">
 
-            <sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView
+            <sdk.voxeet.com.toolkit.views.android.RoundedImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:visibility="visible"
@@ -27,7 +27,7 @@
                 app:mutate_background="true"
                 android:id="@+id/avatar_image"/>
 
-            <sdk.voxeet.com.toolkit.views.uitookit.VideoView
+            <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"

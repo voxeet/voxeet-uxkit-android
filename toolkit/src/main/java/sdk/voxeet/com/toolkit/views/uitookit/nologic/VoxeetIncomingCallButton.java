@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.nologic;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.voxeet.toolkit.R;
+
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
 
 /**
  * Created by romainbenmansour on 20/02/2017.
@@ -84,7 +86,7 @@ public class VoxeetIncomingCallButton extends FrameLayout {
 
         setClipChildren(false);
 
-        View v = inflate(getContext(), R.layout.incoming_call_button, this);
+        View v = inflate(getContext(), R.layout.view_incoming_call_button, this);
 
         image = (RoundedImageView) v.findViewById(R.id.image);
         if (drawable != null)

@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.nologic;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -12,6 +12,8 @@ import com.voxeet.toolkit.R;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import java.util.Queue;
+
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
 
 /**
  * Created by romainbenmansour on 20/02/2017.

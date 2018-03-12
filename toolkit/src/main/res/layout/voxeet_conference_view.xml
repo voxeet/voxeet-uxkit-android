@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/conference_view_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="right|top"
-    android:background="@drawable/background_conference_view">
+    android:layout_gravity="right|top">
 
-    <sdk.voxeet.com.toolkit.views.uitookit.VideoView
+    <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
         android:id="@+id/selected_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -25,7 +23,7 @@
             android:layout_gravity="center"
             android:padding="5dp">
 
-            <sdk.voxeet.com.toolkit.views.uitookit.VoxeetTimer
+            <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetTimer
                 android:id="@+id/voxeet_timer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,18 +43,16 @@
                 android:minHeight="@dimen/conference_view_avatar_size"
                 android:visibility="gone">
 
-                <ImageView
-                    android:id="@+id/toggle_size"
+                <!-- dummy view representing the toggle one -->
+                <View
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="20dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/selector_minimize"
-                    android:src="@drawable/minimize" />
+                    android:layout_marginTop="6dp" />
 
-                <sdk.voxeet.com.toolkit.views.uitookit.VoxeetParticipantView
+                <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetParticipantView
                     android:id="@+id/participant_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,7 +61,7 @@
 
             </LinearLayout>
 
-            <sdk.voxeet.com.toolkit.views.uitookit.VoxeetCurrentSpeakerView
+            <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetCurrentSpeakerView
                 android:id="@+id/current_speaker_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -83,7 +79,7 @@
         android:layout_gravity="bottom"
         android:orientation="vertical">
 
-        <sdk.voxeet.com.toolkit.views.uitookit.VideoView
+        <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
             android:id="@+id/self_video_view"
             android:layout_width="100dp"
             android:layout_height="80dp"
@@ -91,7 +87,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"/>
 
-        <sdk.voxeet.com.toolkit.views.uitookit.VoxeetConferenceBarView
+        <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceBarView
             android:id="@+id/conference_bar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

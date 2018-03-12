@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -9,10 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
-import java.util.List;
+import java.util.Map;
 
+import sdk.voxeet.com.toolkit.utils.IParticipantViewListener;
+import sdk.voxeet.com.toolkit.utils.ParticipantViewAdapter;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
@@ -111,6 +114,8 @@ public class VoxeetParticipantView extends VoxeetView {
 
     @Override
     public void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
+        super.onConferenceUserJoined(conferenceUser);
+
         boolean isMe = conferenceUser.getUserId().equalsIgnoreCase(VoxeetPreferences.id());
         if (!isMe || displaySelf) {
             adapter.addUser(conferenceUser);
@@ -123,58 +128,44 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     @Override
-    protected void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
-    }
-
-    @Override
     public void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
+        super.onConferenceUserLeft(conferenceUser);
+
         adapter.removeUser(conferenceUser);
 
         if (adapter.getItemCount() > USER_THRESHOLD)
             recyclerView.setLayoutManager(gridLayout);
+        else recyclerView.setLayoutManager(horizontalLayout);
 
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    protected void onRecordingStatusUpdated(boolean recording) {
+    public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
+        super.onMediaStreamUpdated(userId, mediaStreams);
 
-    }
-
-    @Override
-    protected void onMediaStreamUpdated(String userId) {
         adapter.onMediaStreamUpdated(mediaStreams);
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    protected void onConferenceJoined(String conferenceId) {
-    }
+    public void onConferenceDestroyed() {
+        super.onConferenceDestroyed();
 
-    @Override
-    protected void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceCreation(String conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceDestroyed() {
         adapter.clearParticipants();
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    protected void onConferenceLeft() {
+    public void onConferenceLeft() {
+        super.onConferenceLeft();
+
         adapter.clearParticipants();
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    protected void init() {
+    public void init() {
         if (adapter == null)
             adapter = new ParticipantViewAdapter(getContext());
 
@@ -189,8 +180,8 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     @Override
-    protected void inflateLayout() {
-        inflate(getContext(), R.layout.voxeet_participant_view, this);
+    protected int layout() {
+        return R.layout.voxeet_participant_view;
     }
 
     @Override
@@ -198,38 +189,13 @@ public class VoxeetParticipantView extends VoxeetView {
         recyclerView = (RecyclerView) view.findViewById(R.id.participant_recycler_view);
     }
 
-    @Override
-    public void release() {
-        super.release();
-    }
-
     /**
      * Sets participant listener.
      *
      * @param listener the listener
      */
-    public void setParticipantListener(ParticipantViewListener listener) {
+    public void setParticipantListener(IParticipantViewListener listener) {
         if (adapter != null)
             adapter.setParticipantListener(listener);
-    }
-
-    /**
-     * Participants selection callbacks
-     */
-    public interface ParticipantViewListener {
-
-        /**
-         * A conference user has been selected.
-         *
-         * @param user the user
-         */
-        void onParticipantSelected(DefaultConferenceUser user);
-
-        /**
-         * A conference user has been unselected.
-         *
-         * @param user the user
-         */
-        void onParticipantUnselected(DefaultConferenceUser user);
     }
 }

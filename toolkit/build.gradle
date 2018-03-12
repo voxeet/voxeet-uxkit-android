@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        mavenLocal()
         maven {
             url "https://dl.bintray.com/voxeet/maven"
         }
@@ -16,15 +17,18 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 repositories {
+    mavenLocal()
     maven {
         url "https://dl.bintray.com/voxeet/maven"
     }
-    jcenter();
+    jcenter()
+    google()
 }
 
+System.out.println("creating for ${project.properties["VOXEET_SDK_TOOLKIT_VERSION"]}")
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.3"
 
     defaultConfig {
         minSdkVersion 14
@@ -37,7 +41,7 @@ android {
 
     buildTypes {
         release {
-            shrinkResources true
+            shrinkResources false
             minifyEnabled false
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -93,9 +97,9 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 
-    compile 'com.voxeet.sdk:media:0.3.58'
-    compile 'com.voxeet.sdk:kernel:0.9.1'
-    compile 'com.voxeet.sdk:public-sdk:0.9.1'
+    compile "com.voxeet.sdk:media:${VOXEET_SDK_MEDIA_VERSION}"
+    compile "com.voxeet.sdk:kernel:${VOXEET_SDK_VERSION}"
+    compile "com.voxeet.sdk:public-sdk:${VOXEET_SDK_VERSION}"
 }
 
 apply from: "../tasks.gradle"

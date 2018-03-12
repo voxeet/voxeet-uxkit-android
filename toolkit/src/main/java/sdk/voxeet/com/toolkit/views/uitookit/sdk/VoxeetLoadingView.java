@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -12,9 +12,7 @@ import android.view.View;
 
 import com.voxeet.toolkit.R;
 
-import java.util.List;
-
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
 
 /**
  * Created by romainbenmansour on 29/03/2017.
@@ -62,56 +60,6 @@ public class VoxeetLoadingView extends VoxeetView {
             setLoadingColor(color.getColorForState(getDrawableState(), 0));
     }
 
-    @Override
-    protected void onConferenceJoined(String conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceCreation(String conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onRecordingStatusUpdated(boolean recording) {
-
-    }
-
-    @Override
-    protected void onMediaStreamUpdated(String userId) {
-
-    }
-
-    @Override
-    protected void onConferenceDestroyed() {
-
-    }
-
-    @Override
-    protected void onConferenceLeft() {
-
-    }
-
     public void onStop() {
         for (RoundedImageView imageView : images)
             if (imageView.getAnimation() != null)
@@ -119,7 +67,7 @@ public class VoxeetLoadingView extends VoxeetView {
     }
 
     @Override
-    protected void init() {
+    public void init() {
         ObjectAnimator first = ObjectAnimator.ofFloat(images[0], View.ALPHA, 1);
         first.setRepeatCount(ValueAnimator.INFINITE);
         first.setRepeatMode(ValueAnimator.REVERSE);
@@ -141,15 +89,15 @@ public class VoxeetLoadingView extends VoxeetView {
     }
 
     @Override
-    protected void inflateLayout() {
-        inflate(getContext(), R.layout.voxeet_loading_view, this);
+    protected int layout() {
+        return R.layout.voxeet_loading_view;
     }
 
     @Override
     protected void bindView(View view) {
         images = new RoundedImageView[3];
-        images[0] = (RoundedImageView) view.findViewById(R.id.first);
-        images[1] = (RoundedImageView) view.findViewById(R.id.second);
-        images[2] = (RoundedImageView) view.findViewById(R.id.third);
+        images[0] = view.findViewById(R.id.first);
+        images[1] = view.findViewById(R.id.second);
+        images[2] = view.findViewById(R.id.third);
     }
 }

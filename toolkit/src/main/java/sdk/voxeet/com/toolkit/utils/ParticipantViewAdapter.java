@@ -1,4 +1,4 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.utils;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
+import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
 import voxeet.com.sdk.models.ConferenceUserStatus;
-import voxeet.com.sdk.models.Status;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
@@ -43,7 +44,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private int selectedPosition = -1;
 
-    private VoxeetParticipantView.ParticipantViewListener listener;
+    private IParticipantViewListener listener;
 
     private Map<String, MediaStream> mediaStreamMap;
 
@@ -75,7 +76,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param conferenceUser the conference user
      */
-    void removeUser(DefaultConferenceUser conferenceUser) {
+    public void removeUser(DefaultConferenceUser conferenceUser) {
         if (users.contains(conferenceUser))
             users.remove(conferenceUser);
     }
@@ -85,7 +86,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param conferenceUser the conference user
      */
-    void addUser(DefaultConferenceUser conferenceUser) {
+    public void addUser(DefaultConferenceUser conferenceUser) {
         if (!users.contains(conferenceUser))
             users.add(conferenceUser);
     }
@@ -101,7 +102,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.participant_view_cell, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_participant_view_cell, parent, false);
 
         parentWidth = parent.getWidth();
 
@@ -227,7 +228,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param listener the listener
      */
-    void setParticipantListener(VoxeetParticipantView.ParticipantViewListener listener) {
+    public void setParticipantListener(IParticipantViewListener listener) {
         this.listener = listener;
     }
 
@@ -236,14 +237,14 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param mediaStreams the media streams
      */
-    void onMediaStreamUpdated(Map<String, MediaStream> mediaStreams) {
+    public void onMediaStreamUpdated(Map<String, MediaStream> mediaStreams) {
         this.mediaStreamMap = mediaStreams;
     }
 
     /**
      * Clear participants.
      */
-    void clearParticipants() {
+    public void clearParticipants() {
         this.users.clear();
     }
 
@@ -252,7 +253,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param enabled the enabled
      */
-    void setNamesEnabled(boolean enabled) {
+    public void setNamesEnabled(boolean enabled) {
         namesEnabled = enabled;
     }
 
