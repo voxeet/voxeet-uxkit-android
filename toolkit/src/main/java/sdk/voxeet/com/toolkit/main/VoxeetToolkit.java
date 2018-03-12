@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.EventBus;
@@ -15,22 +15,24 @@ import java.util.List;
 import sdk.voxeet.com.toolkit.controllers.AbstractConferenceToolkitController;
 import sdk.voxeet.com.toolkit.controllers.ConferenceToolkitController;
 import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
+import sdk.voxeet.com.toolkit.providers.rootview.AbstractRootViewProvider;
+import sdk.voxeet.com.toolkit.providers.rootview.DefaultRootViewProvider;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 
 /**
  * Created by romainbenmansour on 24/03/2017.
  */
-public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
+public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
     private final static String TAG = VoxeetToolkit.class.getSimpleName();
 
     private static VoxeetToolkit sInstance;
-    private EventBus mEventBus;
+
+    @Nullable
+    private AbstractRootViewProvider mProvider;
 
     private boolean mIsOverEnabled;
-    private Activity mCurrentActivity;
     private List<AbstractConferenceToolkitController> mConferenceToolkitControllers;
-    private boolean mIsActivityResumed;
 
 
     /**
@@ -39,7 +41,14 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
      * @param application The voxeet sdk instance
      */
     public static synchronized VoxeetToolkit initialize(Application application, EventBus eventBus) {
-        sInstance = new VoxeetToolkit(application, eventBus);
+        sInstance = new VoxeetToolkit();
+
+        DefaultRootViewProvider provider = new DefaultRootViewProvider(application, sInstance);
+        provider.registerLifecycleListener(sInstance);
+        sInstance.setProvider(provider);
+
+        sInstance.init(application, eventBus);
+
 
         return sInstance;
     }
@@ -48,33 +57,26 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
         return sInstance;
     }
 
-    private Application mApp;
 
     private boolean mIsInit = false;
 
     /**
      * Constructor of the VoxeetToolkit
-     * @param application
      */
 
-    private VoxeetToolkit(@NonNull Application application, EventBus eventBus) {
-        mEventBus = eventBus;
-        mIsActivityResumed = false;
-        mConferenceToolkitControllers = new ArrayList<>();
+    private VoxeetToolkit() {
+    }
 
-        //keeping a reference on the Application should not be an issue
-        //since the Application is the only object available right after the application
-        //spawn at native level, it is also the last object available
-        //right before being killed by the system
-        //hence, no leak here
-        mApp = application;
-
-        mApp.registerActivityLifecycleCallbacks(this);
-
-        mIsInit = true;
-
-        registerConferenceToolkitController(new ConferenceToolkitController(application, eventBus, OverlayState.MINIMIZED));
-        registerConferenceToolkitController(new ReplayMessageToolkitController(application, eventBus, OverlayState.MINIMIZED));
+    /**
+     * Replace the current provider with an other one
+     *
+     * TODO send event to "remove" the previous instances
+     * For now, setProvider() should be called 1 time at most in production
+     *
+     * @param provider
+     */
+    public void setProvider(@NonNull AbstractRootViewProvider provider) {
+        mProvider = provider;
     }
 
     public ReplayMessageToolkitController getReplayMessageToolkit() {
@@ -83,42 +85,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
 
     public ConferenceToolkitController getConferenceToolkit() {
         return getAbstractToolkit(ConferenceToolkitController.class);
-    }
-
-    private <CF extends AbstractConferenceToolkitController> CF getAbstractToolkit(Class<CF> klass) {
-        for (AbstractConferenceToolkitController controller: mConferenceToolkitControllers) {
-            if(controller.getClass().isAssignableFrom(klass)) {
-                return (CF) controller;
-            }
-        }
-        return null;
-    }
-
-    private void registerConferenceToolkitController(AbstractConferenceToolkitController controller) {
-        if(mConferenceToolkitControllers.indexOf(controller) < 0) {
-            mConferenceToolkitControllers.add(controller);
-
-            //then call the current state of the activity for this one
-            if(mCurrentActivity != null) {
-                if(!mIsActivityResumed)
-                    controller.onActivityPaused(mCurrentActivity);
-                else
-                    controller.onActivityResumed(mCurrentActivity);
-            }
-        }
-    }
-
-    private void unregisterConferenceToolkitController(AbstractConferenceToolkitController controller) {
-        if(mConferenceToolkitControllers.indexOf(controller) >= 0) {
-            mConferenceToolkitControllers.remove(controller);
-
-
-            //then call the current state of the activity for this one
-            if(mCurrentActivity != null) {
-                controller.onActivityPaused(mCurrentActivity);
-                controller.removeView(true);
-            }
-        }
     }
 
 
@@ -139,44 +105,9 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
         }
     }
 
-    /**
-     * Gets current activity. Useful when requiring new permissions. Can be null if current activity
-     * is finishing or event the mApp.
-     *
-     * @return the current activity
-     */
-    public void setCurrentActivity(Activity activity) {
-        mCurrentActivity = activity;
-    }
-
-    /**
-     * Gets current activity. Useful when requiring new permissions. Can be null if current activity
-     * is finishing or event the mApp.
-     *
-     * @return the current activity
-     */
-    public Activity getCurrentActivity() {
-        return mCurrentActivity;
-    }
-
+    @NonNull
     public ViewGroup getRootView() {
-        Log.d(TAG, "getRootView: " + mCurrentActivity);
-        if(mCurrentActivity != null) {
-            return (ViewGroup) mCurrentActivity.getWindow().getDecorView().getRootView();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * @throws IllegalStateException if SDK is not initialized.
-     */
-    private void isInitialized() {
-        if (!mIsInit) {
-            throw new IllegalStateException(
-                    "The UI Toolkit has not been initialized, make sure to call " +
-                            "Toolkit.validate() first.");
-        }
+        return mProvider.getRootView();
     }
 
     /**
@@ -197,18 +128,14 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
     }
 
     @Override
-    public void onActivityResumed(Activity activity) {
-        mIsActivityResumed = true;
-        setCurrentActivity(activity);
-
+    public void onActivityResumed(@NonNull Activity activity) {
         for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
             controller.onActivityResumed(activity);
         }
     }
 
     @Override
-    public void onActivityPaused(Activity activity) {
-        mIsActivityResumed = false;
+    public void onActivityPaused(@NonNull Activity activity) {
         for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
             controller.onActivityPaused(activity);
         }
@@ -227,5 +154,70 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks{
     @Override
     public void onActivityDestroyed(Activity activity) {
 
+    }
+
+
+    private void init(@NonNull Application application,
+                      EventBus eventBus) {
+
+        mConferenceToolkitControllers = new ArrayList<>();
+
+        mIsInit = true;
+
+        registerConferenceToolkitController(new ConferenceToolkitController(application, eventBus, OverlayState.MINIMIZED));
+        registerConferenceToolkitController(new ReplayMessageToolkitController(application, eventBus, OverlayState.MINIMIZED));
+    }
+
+    /**
+     * @throws IllegalStateException if SDK is not initialized.
+     */
+    private void isInitialized() {
+        if (!mIsInit) {
+            throw new IllegalStateException(
+                    "The UI Toolkit has not been initialized, make sure to call " +
+                            "Toolkit.validate() first.");
+        }
+    }
+
+    private <CF extends AbstractConferenceToolkitController> CF getAbstractToolkit(Class<CF> klass) {
+        for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
+            if (controller.getClass().isAssignableFrom(klass)) {
+                return (CF) controller;
+            }
+        }
+        return null;
+    }
+
+    private void registerConferenceToolkitController(AbstractConferenceToolkitController controller) {
+        if (mConferenceToolkitControllers.indexOf(controller) < 0) {
+            mConferenceToolkitControllers.add(controller);
+
+            //then call the current state of the activity for this one
+            Activity activity = mProvider.getCurrentActivity();
+            if (null != activity) {
+                if (!mProvider.isCurrentActivityResumed())
+                    controller.onActivityPaused(activity);
+                else
+                    controller.onActivityResumed(activity);
+            }
+        }
+    }
+
+    private void unregisterConferenceToolkitController(AbstractConferenceToolkitController controller) {
+        if (mConferenceToolkitControllers.indexOf(controller) >= 0) {
+            mConferenceToolkitControllers.remove(controller);
+
+
+            //then call the current state of the activity for this one
+            Activity activity = mProvider.getCurrentActivity();
+            if (null != activity) {
+                controller.onActivityPaused(activity);
+                controller.removeView(true);
+            }
+        }
+    }
+
+    public Activity getCurrentActivity() {
+        return mProvider.getCurrentActivity();
     }
 }

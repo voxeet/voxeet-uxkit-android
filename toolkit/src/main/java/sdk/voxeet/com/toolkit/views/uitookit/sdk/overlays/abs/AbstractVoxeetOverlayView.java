@@ -18,6 +18,8 @@ import android.view.animation.AccelerateInterpolator;
 
 import com.voxeet.toolkit.R;
 
+import java.util.ArrayList;
+
 import sdk.voxeet.com.toolkit.providers.logics.IVoxeetSubViewProvider;
 import sdk.voxeet.com.toolkit.utils.CornerHelper;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
@@ -28,6 +30,8 @@ import voxeet.com.sdk.utils.ScreenHelper;
  * It is only here to help and ensure the current overlay behaviour
  */
 public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandableView {
+
+    private ArrayList<AnimatorSet> mCurrentAnimations;
 
     private final String TAG = AbstractVoxeetOverlayView.class.getSimpleName();
 
@@ -67,6 +71,8 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
                                      @NonNull Context context,
                                      @NonNull final OverlayState overlay) {
         super(context);
+
+        mCurrentAnimations = new ArrayList<>();
 
         mCanBeMinizedByTouch = true;
         mRemainExpanded = false;
@@ -220,10 +226,6 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         }
     }
 
-    protected void refreshOverlayState() {
-
-    }
-
     public void expand() {
         //isMaxedOut = true;
         overlayState = OverlayState.EXPANDED;
@@ -362,63 +364,24 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
          * @param targetHeight   the target height
          */
         void toLandScape(int duration, final int previousWidth, final int targetWidth, final int previousHeight, final int targetHeight) {
+            cancelAnimations();
+
             animate().x(0).y(0).setDuration(0).start();
 
             ValueAnimator height = ValueAnimator.ofInt(previousHeight, targetHeight);
             height.setDuration(duration);
-            height.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    int value = (int) animation.getAnimatedValue();
-
-                    getLayoutParams().height = value;
-
-                    container.getLayoutParams().height = value;
-
-                    requestLayout();
-                }
-            });
+            height.addUpdateListener(HEIGHT_LISTENER);
 
             ValueAnimator width = ValueAnimator.ofInt(previousWidth, targetWidth);
             width.setDuration(duration);
-            width.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    int value = (int) animation.getAnimatedValue();
-
-                    getLayoutParams().width = value;
-
-                    container.getLayoutParams().width = value;
-
-                    requestLayout();
-                }
-            });
+            width.addUpdateListener(WIDTH_LISTENER);
 
             AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    refreshOverlayState();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-
-                }
-            });
+            animatorSet.addListener(ANIMATOR_LISTENER);
             animatorSet.setDuration(animatonDuration);
             animatorSet.setInterpolator(new AccelerateInterpolator());
             animatorSet.playTogether(width, height);
-            animatorSet.start();
+            appendAndStart(animatorSet);
         }
 
         /**
@@ -429,64 +392,24 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
          * @param targetHeight the target height
          */
         void expand(int duration, final int targetWidth, final int targetHeight) {
+            cancelAnimations();
+
             animate().x(0).y(0).setDuration(300).start();
 
             ValueAnimator height = ValueAnimator.ofInt(getHeight(), targetHeight);
             height.setDuration(duration);
-            height.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    int value = (int) animation.getAnimatedValue();
-
-                    getLayoutParams().height = value;
-
-                    container.getLayoutParams().height = value;
-
-                    requestLayout();
-                }
-            });
+            height.addUpdateListener(HEIGHT_LISTENER);
 
             ValueAnimator width = ValueAnimator.ofInt(getWidth(), targetWidth);
             width.setDuration(duration);
-            width.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    int value = (int) animation.getAnimatedValue();
-
-                    getLayoutParams().width = value;
-
-                    container.getLayoutParams().width = value;
-
-                    requestLayout();
-                }
-            });
+            width.addUpdateListener(WIDTH_LISTENER);
 
             AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                    onViewToggled();
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    refreshOverlayState();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-
-                }
-            });
+            animatorSet.addListener(ANIMATOR_LISTENER);
             animatorSet.setDuration(animatonDuration);
             animatorSet.setInterpolator(new AccelerateInterpolator());
             animatorSet.playTogether(width, height);
-            animatorSet.start();
+            appendAndStart(animatorSet);
         }
 
         /**
@@ -497,6 +420,8 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
          * @param targetHeight the target height
          */
         void collapse(int duration, final int targetWidth, final int targetHeight) {
+            cancelAnimations();
+
             if (isOverlay()) {
                 animate().x(dm.widthPixels - defaultWidth).y(ScreenHelper.actionBar(getContext()) + ScreenHelper.getStatusBarHeight(getContext())).setDuration(300).start();
             } else if (getParent() != null) {
@@ -506,60 +431,19 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
             ValueAnimator height = ValueAnimator.ofInt(getHeight(), targetHeight);
             height.setDuration(duration);
-            height.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    int value = (int) animation.getAnimatedValue();
-
-                    getLayoutParams().height = value;
-
-                    container.getLayoutParams().height = value;
-
-                    requestLayout();
-                }
-            });
+            height.addUpdateListener(HEIGHT_LISTENER);
 
             ValueAnimator width = ValueAnimator.ofInt(getWidth(), targetWidth);
             width.setDuration(duration);
-            width.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    int value = (int) animation.getAnimatedValue();
-
-                    getLayoutParams().width = value;
-
-                    container.getLayoutParams().width = value;
-
-                    requestLayout();
-                }
-            });
+            width.addUpdateListener(WIDTH_LISTENER);
 
             AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    onViewToggled();
-                    refreshOverlayState();
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-
-                }
-            });
+            animatorSet.addListener(ANIMATOR_LISTENER);
             animatorSet.setDuration(animatonDuration);
             animatorSet.setInterpolator(new AccelerateInterpolator());
             animatorSet.playTogether(width, height);
-            animatorSet.start();
+
+            appendAndStart(animatorSet);
         }
 
     }
@@ -590,4 +474,91 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
         return OverlayState.EXPANDED.equals(overlayState);
     }
+
+    private ValueAnimator.AnimatorUpdateListener HEIGHT_LISTENER = new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            int value = (int) animation.getAnimatedValue();
+
+            getLayoutParams().height = value;
+
+            container.getLayoutParams().height = value;
+
+            requestLayout();
+            Log.d(TAG, "onAnimationUpdate: height");
+        }
+    };
+
+    private ValueAnimator.AnimatorUpdateListener WIDTH_LISTENER = new ValueAnimator.AnimatorUpdateListener() {
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            int value = (int) animation.getAnimatedValue();
+
+            getLayoutParams().width = value;
+
+            container.getLayoutParams().width = value;
+
+            requestLayout();
+            Log.d(TAG, "onAnimationUpdate: width");
+        }
+    };
+
+    private Animator.AnimatorListener ANIMATOR_LISTENER = new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animator) {
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animator) {
+            onViewToggled();
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animator) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animator) {
+
+        }
+    };
+
+    /**
+     * Cancel any animations which could have been put in motion
+     *
+     * It is normally - at most - with 1 animation, but this function is here to deal
+     * with possibly more than 1
+     *
+     * note that it is not done to deal with non-ui thread calls
+     */
+    private void cancelAnimations() {
+        try {
+            for (AnimatorSet animator : mCurrentAnimations) {
+                if(animator.isStarted() && animator.isRunning()) {
+                    animator.cancel();
+                }
+            }
+        } catch (Exception e){
+            //nothing particular to do here, print crash just in case
+            //one could happen
+            e.printStackTrace();
+        }
+
+        mCurrentAnimations.clear();
+    }
+
+    /**
+     * Start a given animator. Append it to the list of animations before actually
+     * starting it
+     *
+     * @param animator a given valid animator, ready
+     */
+    private void appendAndStart(@NonNull AnimatorSet animator) {
+        mCurrentAnimations.add(animator);
+
+        animator.start();
+    }
+
+
 }

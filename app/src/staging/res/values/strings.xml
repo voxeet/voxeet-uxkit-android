@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="api_key">rrd</string>
+    <string name="api_password">voxeet</string>
+
+    <string name="avatar_url">@string/avatar_staging</string>
+    <string name="upload_server_avatar_url">@string/uploadServerAvatarUrl</string>
+    <string name="upload_server_file_url">@string/uploadServerFileUrl</string>
+    <string name="base_url">https://staging-session.voxeet.com</string>
+    <string name="websocket_url">wss://staging-session.voxeet.com/session/</string>
+    <string name="session_manager_url">staging-session.voxeet.com</string>
+</resources>
