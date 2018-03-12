@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -17,7 +18,11 @@ import java.util.List;
 import fr.voxeet.sdk.sample.BuildConfig;
 import fr.voxeet.sdk.sample.Recording;
 import fr.voxeet.sdk.sample.activities.CreateConfActivity;
+import sdk.voxeet.com.toolkit.controllers.AbstractConferenceToolkitController;
+import sdk.voxeet.com.toolkit.controllers.ConferenceToolkitController;
+import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.error.SdkLogoutErrorEvent;
@@ -36,20 +41,30 @@ public class SampleApplication extends Application {
     private List<Recording> recordedConference = new ArrayList<>();
     private UserInfo _current_user;
     private boolean _log_after_closing_event;
+    private AbstractConferenceToolkitController mVoxeetToolkitConferenceController;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Log.d(TAG, "firebase...");
-        FirebaseApp.initializeApp(this);
 
-        VoxeetToolkit.initialize(this);
+        VoxeetToolkit.initialize(this, EventBus.getDefault());
         VoxeetToolkit.getInstance().enableOverlay(true);
-        //note that in this example, we do not call VoxeetSdk.initialize(...)
-        //please head to the selectUser where we actually initialize the sdk
-        //in fact, the workflow implemented in this example show you you can easily switch from
-        //one user to an other
+
+        //change the overlay used by default
+        VoxeetToolkit.getInstance().getConferenceToolkit().setDefaultOverlayState(OverlayState.EXPANDED);
+        VoxeetToolkit.getInstance().getReplayMessageToolkit().setDefaultOverlayState(OverlayState.EXPANDED);
+
+
+        //prevent close from
+        //init the SDK
+        VoxeetSdk.initialize(this,
+                BuildConfig.CONSUMER_KEY,
+                BuildConfig.CONSUMER_SECRET,
+                _current_user); //can be null - will be removed in a later version
+
+        //register the Application and add at least one subscriber
+        VoxeetSdk.getInstance().register(this, this);
     }
 
     @Override
@@ -81,31 +96,15 @@ public class SampleApplication extends Application {
      * @return true if it was the first log
      */
     public boolean selectUser(UserInfo user_info) {
+        //first case, the user was disconnected
         if (_current_user == null) {
             _current_user = user_info;
-            if (VoxeetSdk.getInstance() == null) {
-                VoxeetSdk.initialize(this,
-                        BuildConfig.CONSUMER_KEY,
-                        BuildConfig.CONSUMER_SECRET,
-                        _current_user);
-
-                //when we are sure the preferences are now in stable state
-                VoxeetPreferences.setDefaultActivity(CreateConfActivity.class.getName());
-
-                VoxeetSdk.getInstance().getEventBus().register(this);
-                return true;
-            } else {
-                VoxeetSdk.getInstance().logUser(_current_user);
-            }
+            logSelectedUser();
             _log_after_closing_event = false;
         } else {
+            //we have an user
             _current_user = user_info;
             if (VoxeetSdk.getInstance().isSocketOpen()) {
-                //logout is called because in our example
-                //the main activity will login when triggered
-                //TODO a possible improvement is to migrate the logic into a specific layer
-                //Application+Activity will be able to use this layer through an Application's accessor
-
                 _log_after_closing_event = true;
                 VoxeetSdk.getInstance().logout();
             } else {

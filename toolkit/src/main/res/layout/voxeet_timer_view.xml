@@ -12,7 +12,7 @@
         android:id="@+id/color_layout"
         android:layout_marginRight="10dp">
 
-        <sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView
+        <sdk.voxeet.com.toolkit.views.android.RoundedImageView
             android:id="@+id/recording_status_image_alpha"
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -23,7 +23,7 @@
             app:mutate_background="true"
             app:oval="true" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView
+        <sdk.voxeet.com.toolkit.views.android.RoundedImageView
             android:id="@+id/recording_status_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

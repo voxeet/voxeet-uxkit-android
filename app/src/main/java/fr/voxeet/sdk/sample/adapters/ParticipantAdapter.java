@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import fr.voxeet.sdk.sample.R;
-import sdk.voxeet.com.toolkit.views.uitookit.RoundedImageView;
-import sdk.voxeet.com.toolkit.views.uitookit.VideoView;
+import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
+import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.json.UserInfo;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;

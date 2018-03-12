@@ -1,140 +1,128 @@
-package sdk.voxeet.com.toolkit.views.uitookit;
+package sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Point;
-import android.util.AttributeSet;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
-import android.view.Display;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.ImageView;
 
-import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
-import java.util.List;
-
-import sdk.voxeet.com.toolkit.utils.Corner;
-import voxeet.com.sdk.core.VoxeetPreferences;
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
+import sdk.voxeet.com.toolkit.providers.logics.IVoxeetSubViewProvider;
+import sdk.voxeet.com.toolkit.utils.CornerHelper;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import voxeet.com.sdk.utils.ScreenHelper;
 
 /**
- * Created by romainbenmansour on 11/08/16.
+ * Abbstract view used to managed the overlay state of its content. It does not manage the calls, leaving users etc...
+ * It is only here to help and ensure the current overlay behaviour
  */
-public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipantView.ParticipantViewListener {
-    private final String TAG = VoxeetConferenceView.class.getSimpleName();
+public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandableView {
+
+    private final String TAG = AbstractVoxeetOverlayView.class.getSimpleName();
 
     private final int defaultWidth = getResources().getDimensionPixelSize(R.dimen.conference_view_width);
 
     private final int defaultHeight = getResources().getDimensionPixelSize(R.dimen.conference_view_height);
+    private final IVoxeetSubViewProvider mSubViewProvider;
+    private IExpandableViewProviderListener mListener;
 
-    private boolean isMaxedOut;
+    //private boolean isMaxedOut = false;
+    private OverlayState overlayState;
 
-    private VoxeetParticipantView participantView;
-
-    private VoxeetConferenceBarView conferenceBarView;
-
-    private VoxeetCurrentSpeakerView speakerView;
-
-    private ImageView toggleSize;
+    private View action_button;
 
     private AnimationHandler animationHandler;
 
-    private ViewGroup layoutTimer;
-
-    private VideoView selectedView;
-
-    private VideoView selfView;
-
     private ViewGroup container;
-
-    private ViewGroup layoutParticipant;
 
     private GestureDetector gestureDetector;
 
     private DisplayMetrics dm;
 
     private WindowManager windowManager;
+    private AbstractVoxeetExpandableView mSubView;
+    private ViewGroup sub_container;
+    private boolean mRemainExpanded;
+    private boolean mCanBeMinizedByTouch;
 
     /**
      * Instantiates a new Voxeet conference view.
      *
-     * @param context the context
+     * @param listener the listener used to create the sub view
+     * @param context  the context
      */
-    public VoxeetConferenceView(Context context) {
+    public AbstractVoxeetOverlayView(@NonNull IExpandableViewProviderListener listener,
+                                     @NonNull IVoxeetSubViewProvider provider,
+                                     @NonNull Context context,
+                                     @NonNull final OverlayState overlay) {
         super(context);
-    }
 
-    /**
-     * Instantiates a new Voxeet conference view.
-     *
-     * @param context the context
-     * @param attrs   the attrs
-     */
-    public VoxeetConferenceView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        mCanBeMinizedByTouch = true;
+        mRemainExpanded = false;
+        //isMaxedOut = OverlayState.EXPANDED.equals(overlay);
+        overlayState = overlay;
+
+        mListener = listener;
+        mSubViewProvider = provider;
+        afterConstructorInit();
+
+        final boolean[] done = {false};
+
+        mSubView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (!done[0]) {
+                    done[0] = true;
+                    if (OverlayState.EXPANDED.equals(overlay)) {
+                        expand();
+                    } else {
+                        minimize();
+                    }
+                }
+            }
+        });
+
+        sub_container.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View view) {
+                Log.d(TAG, "onViewAttachedToWindow: " + view.getClass().getSimpleName());
+                if (OverlayState.EXPANDED.equals(overlay)) {
+                    expand();
+                } else {
+                    minimize();
+                }
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View view) {
+
+            }
+        });
     }
 
     @Override
-    protected void onConferenceJoined(String conferenceId) {
-    }
+    public void onViewAdded(View child) {
+        super.onViewAdded(child);
 
-    @Override
-    protected void onConferenceUpdated(List<DefaultConferenceUser> conferenceId) {
-
-    }
-
-    @Override
-    protected void onConferenceCreation(String conferenceId) {
-    }
-
-    @Override
-    protected void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
-    }
-
-    @Override
-    protected void onConferenceUserUpdated(DefaultConferenceUser conferenceUser) {
-
-    }
-
-    @Override
-    protected void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
-    }
-
-    @Override
-    protected void onRecordingStatusUpdated(boolean recording) {
-
-    }
-
-    @Override
-    protected void onMediaStreamUpdated(String userId) {
-        MediaStream mediaStream = mediaStreams.get(userId);
-        if (userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStream != null) {
-            if (mediaStream.hasVideo()) {
-                selfView.setVisibility(VISIBLE);
-                selfView.attach(userId, mediaStream);
+        Log.d(TAG, "onViewAdded: " + child.getClass().getSimpleName());
+        if (child == mSubView) {
+            if (OverlayState.EXPANDED.equals(overlayState)) {
+                expand();
             } else {
-                selfView.setVisibility(GONE);
-                selfView.unAttach();
+                minimize();
             }
         }
-    }
-
-    @Override
-    protected void onConferenceDestroyed() {
-    }
-
-    @Override
-    protected void onConferenceLeft() {
     }
 
     @Override
@@ -147,14 +135,26 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
         windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(dm);
 
-        if (isMaxedOut)
+        if (isExpanded())
             animationHandler.toLandScape(250, previousWidth, dm.widthPixels, previousHeight, dm.heightPixels);
         else
-            sendToCorner();
+            CornerHelper.sendToCorner(this, windowManager, getContext());
+
+    }
+
+    /**
+     * Inform the current view wether it can be minized when the user touches it
+     * Useful in custom environment
+     * Note that the current default behaviour of the view is to be minizable
+     *
+     * @param can_be_minized_by_touch wether the can be minized when it is expanded
+     */
+    public void setCanBeMinizedByTouch(boolean can_be_minized_by_touch) {
+        mCanBeMinizedByTouch = can_be_minized_by_touch;
     }
 
     @Override
-    protected void init() {
+    public void init() {
         animationHandler = new AnimationHandler();
 
         dm = new DisplayMetrics();
@@ -171,9 +171,10 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (gestureDetector.onTouchEvent(event)) {
+                //if the view can be minized by touch or it is not expanded
+                if ((mCanBeMinizedByTouch || !isExpanded()) && gestureDetector.onTouchEvent(event)) {
                     toggleSize();
-                } else if (!isMaxedOut) { // drag n drop only when minimized
+                } else if (!isExpanded()) { // drag n drop only when minimized
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
                             dX = getX() - event.getRawX();
@@ -191,7 +192,7 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
                                     .setDuration(0).start();
                             break;
                         case MotionEvent.ACTION_UP:
-                            sendToCorner();
+                            CornerHelper.sendToCorner(AbstractVoxeetOverlayView.this, windowManager, getContext());
                         default:
                             return false;
                     }
@@ -201,178 +202,141 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
         });
     }
 
-    private void sendToCorner() {
-        Point closest_corner = getFinalPositionForCorner(getClosestCorner());
-        animate().x(closest_corner.x).y(closest_corner.y).setDuration(200).start();
-    }
-
-    private Point getCenterPosition() {
-        Point point = new Point();
-        point.x = (int) (getX() + getWidth() / 2);
-        point.y = (int) (getY() + getHeight() / 2);
-
-        return point;
-    }
-
-    private Corner getClosestCorner() {
-        Point center = getCenterPosition();
-        Display display = windowManager.getDefaultDisplay();
-        int statusHeight = ScreenHelper.getStatusBarHeight(getContext());
-
-        int top = statusHeight;
-        int left = statusHeight;
-        int bottom = display.getHeight();
-        int right = display.getWidth();
-
-        Point topLeft = new Point(left, top);
-        Point topRight = new Point(right, top);
-        Point bottomLeft = new Point(left, bottom);
-        Point bottomRight = new Point(right, bottom);
-
-        Corner doubleTopLeft = new Corner(Corner.Type.TopLeft, topLeft);
-        Corner doubleTopRight = new Corner(Corner.Type.TopRight, topRight);
-        Corner doubleBottomLeft = new Corner(Corner.Type.BottomLeft, bottomLeft);
-        Corner doubleBottomRight = new Corner(Corner.Type.BottomRight, bottomRight);
-
-        Corner max = doubleTopLeft;
-
-        if(doubleTopRight.isCloser(max, center)) max = doubleTopRight;
-        if(doubleBottomLeft.isCloser(max, center)) max = doubleBottomLeft;
-        if(doubleBottomRight.isCloser(max, center)) max = doubleBottomRight;
-
-        return max;
-    }
-
-    private Point getFinalPositionForCorner(Corner corner) {
-        Display display = windowManager.getDefaultDisplay();
-        int statusHeight = ScreenHelper.getStatusBarHeight(getContext());
-
-        switch(corner.getType()) {
-            case TopRight: return new Point(display.getWidth() - getWidth(), statusHeight);
-            case BottomLeft: return new Point(0, display.getHeight() - getHeight());
-            case BottomRight: return new Point(display.getWidth() - getWidth(), display.getHeight() - getHeight());
-            case TopLeft:
-            default:
-                return new Point(0, statusHeight);
-        }
-    }
-
-
     /**
      * Toggles view's size to full screen or default size.
      */
-    private void toggleSize() {
-        isMaxedOut = getWidth() > defaultWidth && getHeight() > defaultHeight;
+    protected void toggleSize() {
+        //isMaxedOut = getWidth() > defaultWidth && getHeight() > defaultHeight;
+        if (getWidth() > defaultWidth && getHeight() > defaultHeight) {
+            overlayState = OverlayState.EXPANDED;
+        } else {
+            overlayState = OverlayState.MINIMIZED;
+        }
 
-        if (!isMaxedOut) { // maximize
-            if(selfView.isAttached()) {
-                selfView.setVisibility(View.VISIBLE);
-            }
-            maxOutView();
+        if (!isExpanded()) { // maximize
+            expand();
         } else { // minimize
-            selfView.setVisibility(View.GONE);
-            minimizeView();
+            minimize();
+        }
+    }
+
+    protected void refreshOverlayState() {
+
+    }
+
+    public void expand() {
+        //isMaxedOut = true;
+        overlayState = OverlayState.EXPANDED;
+
+        onPreExpandedView();
+        expandView();
+    }
+
+    public void minimize() {
+        if(!mRemainExpanded) {
+            //isMaxedOut = false;
+            overlayState = OverlayState.MINIMIZED;
+
+            onPreMinizedView();
+            minizeView();
         }
     }
 
     private void onViewToggled() {
-        isMaxedOut = !isMaxedOut;
+        //isMaxedOut = !isMaxedOut;
+        /*if (OverlayState.EXPANDED.equals(overlayState)) {
+            overlayState = OverlayState.MINIMIZED;
+        } else {
+            overlayState = OverlayState.EXPANDED;
+        }*/
 
+        Log.d(TAG, "onViewToggled: " + overlayState);
         toggleBackground();
 
-        layoutTimer.setVisibility(isMaxedOut ? GONE : VISIBLE);
-
-        layoutParticipant.setVisibility(isMaxedOut ? VISIBLE : GONE);
-
-        conferenceBarView.onToggleSize(isMaxedOut);
+        if (isExpanded()) {
+            onExpandedView();
+        } else {
+            onMinizedView();
+        }
     }
 
-    private void maxOutView() {
+    protected void expandView() {
+        action_button.setVisibility(View.VISIBLE);
         ViewGroup view = (ViewGroup) getParent();
         if (view != null)
             animationHandler.expand(1000, view.getWidth(), view.getHeight());
     }
 
-    private void minimizeView() {
-        animationHandler.collapse(1000, defaultWidth, defaultHeight);
+    protected void minizeView() {
+        if(!mRemainExpanded) {
+            action_button.setVisibility(View.GONE);
+            animationHandler.collapse(1000, defaultWidth, defaultHeight);
+        }
     }
 
-    private void toggleBackground() {
-        if (isMaxedOut)
+    protected void toggleBackground() {
+        if (isExpanded())
             container.setBackgroundResource(R.drawable.background_conference_view_maxed_out);
         else
             container.setBackgroundResource(R.drawable.background_conference_view);
     }
 
+
     @Override
-    protected void inflateLayout() {
-        inflate(getContext(), R.layout.voxeet_conference_view, this);
+    public void onPreExpandedView() {
+        mSubView.onPreExpandedView();
     }
+
+    @Override
+    public void onExpandedView() {
+        mSubView.onExpandedView();
+    }
+
+    @Override
+    public void onPreMinizedView() {
+        mSubView.onPreMinizedView();
+    }
+
+    @Override
+    public void onMinizedView() {
+        mSubView.onMinizedView();
+    }
+
 
     @Override
     protected void bindView(View view) {
-        container = (ViewGroup) view.findViewById(R.id.conference_view_container);
+        container = view.findViewById(R.id.overlay_main_container);
+        sub_container = view.findViewById(R.id.container);
+        action_button = view.findViewById(R.id.action_button);
 
-        layoutParticipant = (ViewGroup) view.findViewById(R.id.layout_participant);
-
-        speakerView = (VoxeetCurrentSpeakerView) view.findViewById(R.id.current_speaker_view);
-
-        selectedView = (VideoView) view.findViewById(R.id.selected_video_view);
-        selectedView.setAutoUnAttach(true);
-
-        selfView = (VideoView) view.findViewById(R.id.self_video_view);
-
-        layoutTimer = (ViewGroup) view.findViewById(R.id.layout_timer);
-
-        toggleSize = (ImageView) view.findViewById(R.id.toggle_size);
-        toggleSize.setOnClickListener(new OnClickListener() {
+        action_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                toggleSize();
+                onActionButtonClicked();
             }
         });
 
-        conferenceBarView = (VoxeetConferenceBarView) view.findViewById(R.id.conference_bar_view);
-
-        participantView = (VoxeetParticipantView) view.findViewById(R.id.participant_view);
-        participantView.setParticipantListener(this);
     }
+
+
+    private void afterConstructorInit() {
+        mSubView = mSubViewProvider.createView(getContext(), overlayState);
+
+        sub_container.addView(mSubView);
+        //now add the subview as a listener of the current view
+        addListener(mSubView);
+    }
+
+    protected abstract void onActionButtonClicked();
 
     /**
-     * To be called when done with it.
+     * Set how long will it should take to close the current view
+     *
+     * Every values <= 0 will be considered as being equals to "now"
+     * @return timeoutin milliseconds
      */
-    @Override
-    public void release() {
-        super.release();
-    }
-
-    @Override
-    public void onParticipantSelected(DefaultConferenceUser user) {
-        speakerView.lockScreen(user.getUserId());
-
-        MediaStream mediaStream = mediaStreams.get(user.getUserId());
-        if (mediaStream != null) {
-            if (mediaStream.hasVideo()) {
-                selectedView.setVisibility(VISIBLE);
-                selectedView.attach(user.getUserId(), mediaStream);
-
-                speakerView.setVisibility(GONE);
-                speakerView.onPause();
-            }
-        }
-    }
-
-    @Override
-    public void onParticipantUnselected(DefaultConferenceUser user) {
-        selectedView.setVisibility(GONE);
-        selectedView.unAttach();
-
-        speakerView.unlockScreen();
-        speakerView.setVisibility(VISIBLE);
-    }
-
-    private boolean isOverlay() {
-        return getParent() != null && getParent() == getRootView();
+    public long getCloseTimeoutInMilliseconds() {
+        return 0;
     }
 
     private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
@@ -383,10 +347,9 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
         }
     }
 
-    /**
-     * Animation class
-     */
-    private class AnimationHandler {
+
+    public class AnimationHandler {
+
         private final long animatonDuration = 200;
 
         /**
@@ -439,7 +402,7 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
-
+                    refreshOverlayState();
                 }
 
                 @Override
@@ -507,6 +470,7 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
+                    refreshOverlayState();
                 }
 
                 @Override
@@ -579,6 +543,7 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
                 @Override
                 public void onAnimationEnd(Animator animator) {
                     onViewToggled();
+                    refreshOverlayState();
                 }
 
                 @Override
@@ -596,5 +561,33 @@ public class VoxeetConferenceView extends VoxeetView implements VoxeetParticipan
             animatorSet.playTogether(width, height);
             animatorSet.start();
         }
+
+    }
+
+    protected IExpandableViewProviderListener getExpandableViewProviderListener() {
+        return mListener;
+    }
+
+    public void lockExpanded(boolean remain_expanded) {
+        mRemainExpanded = remain_expanded;
+    }
+
+    protected boolean isOverlay() {
+        return getParent() != null && getParent() == getRootView();
+    }
+
+    protected boolean isExpanded() {
+        /*DisplayMetrics metrics = new DisplayMetrics();
+
+        windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+
+
+        boolean expanded = getWidth() > metrics.widthPixels * 0.8 || getHeight() > metrics.heightPixels * 0.8;
+
+        Log.d(TAG, "isExpanded: " + expanded + " " + getWidth() + " " + metrics.widthPixels + " " + getHeight() + " " + metrics.heightPixels);
+        return expanded;*/
+
+        return OverlayState.EXPANDED.equals(overlayState);
     }
 }
