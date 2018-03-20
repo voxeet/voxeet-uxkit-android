@@ -238,7 +238,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         return Iterables.find(mConferenceUsers, new Predicate<DefaultConferenceUser>() {
             @Override
             public boolean apply(DefaultConferenceUser input) {
-                return input.getUserId().equalsIgnoreCase(userId);
+                return input.getUserId().equalsIgnoreCase(userId) && input.getUserInfo() != null;
             }
         }, null);
     }
