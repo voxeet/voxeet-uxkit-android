@@ -16,7 +16,7 @@ import java.util.Map;
 
 import sdk.voxeet.com.toolkit.utils.IParticipantViewListener;
 import sdk.voxeet.com.toolkit.utils.ParticipantViewAdapter;
-import voxeet.com.sdk.core.VoxeetPreferences;
+import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**

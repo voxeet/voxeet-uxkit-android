@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
-import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 
 /**
  * Created by ROMMM on 9/29/15.
