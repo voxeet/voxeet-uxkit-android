@@ -102,7 +102,6 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         sub_container.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View view) {
-                Log.d(TAG, "onViewAttachedToWindow: " + view.getClass().getSimpleName());
                 if (OverlayState.EXPANDED.equals(overlay)) {
                     expand();
                 } else {
@@ -121,7 +120,6 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     public void onViewAdded(View child) {
         super.onViewAdded(child);
 
-        Log.d(TAG, "onViewAdded: " + child.getClass().getSimpleName());
         if (child == mSubView) {
             if (OverlayState.EXPANDED.equals(overlayState)) {
                 expand();
@@ -235,7 +233,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     }
 
     public void minimize() {
-        if(!mRemainExpanded) {
+        if (!mRemainExpanded) {
             //isMaxedOut = false;
             overlayState = OverlayState.MINIMIZED;
 
@@ -252,7 +250,6 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
             overlayState = OverlayState.EXPANDED;
         }*/
 
-        Log.d(TAG, "onViewToggled: " + overlayState);
         toggleBackground();
 
         if (isExpanded()) {
@@ -270,7 +267,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     }
 
     protected void minizeView() {
-        if(!mRemainExpanded) {
+        if (!mRemainExpanded) {
             action_button.setVisibility(View.GONE);
             animationHandler.collapse(1000, defaultWidth, defaultHeight);
         }
@@ -333,8 +330,9 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
     /**
      * Set how long will it should take to close the current view
-     *
+     * <p>
      * Every values <= 0 will be considered as being equals to "now"
+     *
      * @return timeoutin milliseconds
      */
     public long getCloseTimeoutInMilliseconds() {
@@ -485,7 +483,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
             container.getLayoutParams().height = value;
 
             requestLayout();
-            Log.d(TAG, "onAnimationUpdate: height");
+            Log.d(TAG, "onAnimationUpdate: height " + value);
         }
     };
 
@@ -499,7 +497,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
             container.getLayoutParams().width = value;
 
             requestLayout();
-            Log.d(TAG, "onAnimationUpdate: width");
+            Log.d(TAG, "onAnimationUpdate: width " + value);
         }
     };
 
@@ -511,6 +509,12 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         @Override
         public void onAnimationEnd(Animator animator) {
             onViewToggled();
+
+            if (!isExpanded()) {
+                CornerHelper.sendToCorner(AbstractVoxeetOverlayView.this, windowManager, getContext());
+            } else {
+                animate().x(0).y(0).setDuration(0).start();
+            }
         }
 
         @Override
@@ -526,20 +530,20 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
     /**
      * Cancel any animations which could have been put in motion
-     *
+     * <p>
      * It is normally - at most - with 1 animation, but this function is here to deal
      * with possibly more than 1
-     *
+     * <p>
      * note that it is not done to deal with non-ui thread calls
      */
     private void cancelAnimations() {
         try {
             for (AnimatorSet animator : mCurrentAnimations) {
-                if(animator.isStarted() && animator.isRunning()) {
+                if (animator.isStarted() && animator.isRunning()) {
                     animator.cancel();
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             //nothing particular to do here, print crash just in case
             //one could happen
             e.printStackTrace();

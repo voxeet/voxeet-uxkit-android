@@ -2,10 +2,12 @@ package sdk.voxeet.com.toolkit.controllers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -99,6 +101,8 @@ public abstract class AbstractConferenceToolkitController {
     @Nullable
     private AbstractVoxeetOverlayView mMainView;
 
+    private FrameLayout mMainViewParent;
+
     /**
      * Information about the mParams of the
      */
@@ -129,6 +133,10 @@ public abstract class AbstractConferenceToolkitController {
      */
     protected void init() {
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
+
+        mMainViewParent = new FrameLayout(activity);
+        mMainViewParent.setLayoutParams(createMatchParams());
+
         mMainView = mVoxeetOverlayViewProvider.createView(activity,
                 mVoxeetSubViewProvider,
                 getDefaultOverlayState());
@@ -219,6 +227,9 @@ public abstract class AbstractConferenceToolkitController {
                     || VoxeetSdk.getInstance().getConferenceService().isLive();
         }
 
+
+        Log.d(TAG, "displayView: " + mMainView+" "+in_conf+" "+isOverlayEnabled());
+
         if (mMainView == null && in_conf) {
             init();
         }
@@ -233,12 +244,21 @@ public abstract class AbstractConferenceToolkitController {
                         if (viewHolder != null)
                             viewHolder.removeView(mMainView);
 
+                        viewHolder = (ViewGroup) mMainViewParent.getParent();
+                        if (viewHolder != null)
+                            viewHolder.removeView(mMainViewParent);
+
                         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
                         ViewGroup root = VoxeetToolkit.getInstance().getRootView();
 
                         log("run: " + root + " " + activity);
                         if (root != null && activity != null && !activity.isFinishing()) {
-                            root.addView(mMainView, mParams);
+                            root.addView(mMainViewParent, createMatchParams());
+                            mMainViewParent.addView(mMainView, mParams);
+
+                            mMainView.requestLayout();
+                            mMainViewParent.requestLayout();
+
                             mMainView.onResume();
                         }
                     }
@@ -256,6 +276,12 @@ public abstract class AbstractConferenceToolkitController {
                     ViewGroup viewHolder = (ViewGroup) view.getParent();
                     if (viewHolder != null)
                         viewHolder.removeView(view);
+
+                    if(view == mMainView) {
+                        viewHolder = (ViewGroup) mMainViewParent.getParent();
+                        if (viewHolder != null)
+                            viewHolder.removeView(mMainViewParent);
+                    }
 
                     if (should_release) {
                         view.onDestroy();
@@ -376,6 +402,15 @@ public abstract class AbstractConferenceToolkitController {
         mParams.gravity = Gravity.END | Gravity.TOP;
         mParams.topMargin = ScreenHelper.actionBar(getContext()) + ScreenHelper.getStatusBarHeight(getContext());
     }
+
+
+    private FrameLayout.LayoutParams createMatchParams() {
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        return params;
+    }
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Event Management - see EventBus field
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
