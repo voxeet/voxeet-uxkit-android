@@ -6,7 +6,10 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.View;
@@ -26,6 +29,7 @@ import java.util.Map;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
+import voxeet.com.sdk.utils.Validate;
 
 /**
  * Created by ROMMM on 9/29/15.
@@ -345,9 +349,15 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     private boolean checkCameraPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && getContext().checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-            VoxeetToolkit.getInstance().getCurrentActivity().requestPermissions(new String[]{Manifest.permission.CAMERA}, RESULT_CAMERA);
+        if (!Validate.hashPermissionInManifest(getContext(), Manifest.permission.CAMERA)) {
+            Log.d(TAG, "checkCameraPermission: CAMERA permission _is not_ set in your manifest. Please update accordingly");
+            return false;
+        } else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                ActivityCompat.requestPermissions(VoxeetToolkit.getInstance().getCurrentActivity(),
+                        new String[]{Manifest.permission.CAMERA},
+                        RESULT_CAMERA);
+            }
             return false;
         } else {
             return true;

@@ -2,6 +2,9 @@ package sdk.voxeet.com.toolkit.utils;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -13,6 +16,8 @@ import voxeet.com.sdk.utils.ScreenHelper;
  */
 
 public class CornerHelper {
+
+    private static final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private CornerHelper() {
 
@@ -72,9 +77,14 @@ public class CornerHelper {
         }
     }
 
-    public static void sendToCorner(VoxeetView view, WindowManager windowManager, Context context) {
-        Corner corner = CornerHelper.getClosestCorner(view, windowManager, context);
-        Point closest_corner = CornerHelper.getFinalPositionForCorner(view, windowManager, context, corner);
-        view.animate().x(closest_corner.x).y(closest_corner.y).setDuration(200).start();
+    public static void sendToCorner(final VoxeetView view, final WindowManager windowManager, final Context context) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Corner corner = CornerHelper.getClosestCorner(view, windowManager, context);
+                Point closest_corner = CornerHelper.getFinalPositionForCorner(view, windowManager, context, corner);
+                view.animate().x(closest_corner.x).y(closest_corner.y).setDuration(200).start();
+            }
+        });
     }
 }
