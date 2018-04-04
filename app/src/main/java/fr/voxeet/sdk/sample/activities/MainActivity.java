@@ -32,7 +32,6 @@ import fr.voxeet.sdk.sample.main_screen.UserItem;
 import fr.voxeet.sdk.sample.users.UsersHelper;
 import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
-import voxeet.com.sdk.core.VoxeetPreferences;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.SocketConnectEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
