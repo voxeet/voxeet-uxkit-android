@@ -240,25 +240,32 @@ public abstract class AbstractConferenceToolkitController {
                 public void run() {
                     log("run: add view" + mMainView);
                     if (mMainView != null) {
-                        ViewGroup viewHolder = (ViewGroup) mMainView.getParent();
-                        if (viewHolder != null)
-                            viewHolder.removeView(mMainView);
-
-                        viewHolder = (ViewGroup) mMainViewParent.getParent();
-                        if (viewHolder != null)
-                            viewHolder.removeView(mMainViewParent);
-
                         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
                         ViewGroup root = VoxeetToolkit.getInstance().getRootView();
 
-                        log("run: " + root + " " + activity);
+
+                        ViewGroup viewHolder = (ViewGroup) mMainViewParent.getParent();
+                        if (null != viewHolder && root != viewHolder) {
+                            viewHolder.removeView(mMainViewParent);
+
+                            viewHolder = (ViewGroup) mMainView.getParent();
+                            if (viewHolder != null)
+                                viewHolder.removeView(mMainView);
+                        }
+
+
+                        log("run: " + root + " " + activity+" "+!activity.isFinishing());
                         if (root != null && activity != null && !activity.isFinishing()) {
-                            root.addView(mMainViewParent, createMatchParams());
-                            mMainViewParent.addView(mMainView, mParams);
+                            if(null == mMainViewParent.getParent()) {
+                                root.addView(mMainViewParent, createMatchParams());
+                            }
+
+                            if(null == mMainView.getParent()) {
+                                mMainViewParent.addView(mMainView, mParams);
+                            }
 
                             mMainView.requestLayout();
                             mMainViewParent.requestLayout();
-
                             mMainView.onResume();
                         }
                     }
