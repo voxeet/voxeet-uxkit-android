@@ -50,6 +50,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.IncomingCallActivity"
+            android:launchMode="singleInstance">
+            <!-- extends AbstractIncomingCallActivity -->
+        </activity>
+
         <activity
             android:name=".activities.CreateConfActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

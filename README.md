@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:0.9.1.5.8.3.15') {
+  compile ('com.voxeet.sdk:toolkit:0.9.1.5.8.3.16') {
     transitive = true
   }
 }
@@ -30,7 +30,7 @@ The current sdk is available using the following version (used by the current to
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:public-sdk:0.9.1.5.8.3.19') {
+  compile ('com.voxeet.sdk:public-sdk:0.9.1.5.8.3.20') {
     transitive = true
   }
 }
@@ -172,6 +172,48 @@ VoxeetSdk.getInstance().getConferenceService().setTimeOut(45000);
 VoxeetToolkit.initialize(this, EventBus.getDefault());
 VoxeetToolkit.getInstance().enableOverlay(true);
 ```
+
+### Incoming Calls
+
+The new workflow to receive incoming calls has been updated.
+
+You can now have the following implementations to do in order to have invitations :
+
+- make every Activity extends `VoxeetAppCompatActivity`
+VoxeetAppCompatActivity will manage and call the proper methods to join a conference if detected
+
+- For push notification or in SDK, register an Activity which extends `AbstractIncomingCallActivity`
+```
+VoxeetPreferences.setDefaultActivity(IncomingCallActivity.class.getCanonicalName());
+```
+
+In this snippet, `IncomingCallActivity` extends `AbstractIncomingCallActivity`. A method must be overriden :
+```
+@NonNull
+@Override
+protected Class<? extends VoxeetAppCompatActivity> getActivityClassToCall() {
+    return MainActivity.class;
+}
+```
+
+Note that in the case of multiple Activities in the app, you can use the VoxeetAppCompatActivity to automatically register the activity to start when "accepting" a call.
+Instead of returning `MainActivity.class` in the sample, use `IncomingCallFactory.getAcceptedIncomingActivityKlass()`:
+
+```
+@NonNull
+@Override
+protected Class<? extends VoxeetAppCompatActivity> getActivityClassToCall() {
+    VoxeetAppCompatActivity temp = IncomingCallFactory.getAcceptedIncomingActivityKlass();
+
+    if(null != temp)
+        return temp;
+    
+    return MainActivity.class;
+}
+
+```
+
+
 
 
 ### Registering the SDK
@@ -774,8 +816,8 @@ Only one instance of a conference is allowed to be live. Leaving the current con
 ## Version
 
 
-public-sdk: 0.9.1.5.8.19
-toolkit: 0.9.1.5.8.3.15
+public-sdk: 0.9.1.5.8.20
+toolkit: 0.9.1.5.8.3.16
 
 ## Tech
 

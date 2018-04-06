@@ -30,13 +30,14 @@ import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.main_screen.UserAdapter;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
 import fr.voxeet.sdk.sample.users.UsersHelper;
+import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.SocketConnectEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
 
-public class MainActivity extends AppCompatActivity implements UserAdapter.UserClickListener {
+public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int RECORD_AUDIO_RESULT = 0x20;
