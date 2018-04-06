@@ -14,4 +14,8 @@
     <dimen name="dimen_5">5dp</dimen>
     <dimen name="dimen_0">0dp</dimen>
     <dimen name="dimen_1">1dp</dimen>
+    <dimen name="voxeet_incoming_call_activity_padding">64dp</dimen>
+    <dimen name="voxeet_default_margin">16dp</dimen>
+    <dimen name="voxeet_incoming_call_username">16dp</dimen>
+    <dimen name="voxeet_conference_state">24dp</dimen>
 </resources>

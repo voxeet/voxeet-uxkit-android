@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="api_key">rrd</string>
-    <string name="api_password">voxeet</string>
-
     <string name="avatar_url">@string/avatar_staging</string>
     <string name="upload_server_avatar_url">@string/uploadServerAvatarUrl</string>
     <string name="upload_server_file_url">@string/uploadServerFileUrl</string>
