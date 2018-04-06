@@ -12,4 +12,8 @@
     <string name="leave_error">Error while leaving the conference</string>
     <string name="guest_access_error">Guest access denied</string>
     <string name="format_timer">%1$d:%2$02d</string>
+    <string name="voxeet_incoming_call_text">Incoming call !</string>
+    <string name="voxeet_incoming_call_decline">Decline</string>
+    <string name="voxeet_incoming_call_accept">Accept</string>
+    <string name="invalid_bundle">Invalid Bundle !</string>
 </resources>
