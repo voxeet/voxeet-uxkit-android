@@ -49,7 +49,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
 
     public void join(@NonNull String conference_id, @Nullable UserInfo from_invitation) {
         mCachedInvited.clear();
-        if(null != from_invitation) {
+        if (null != from_invitation) {
             mCachedInvited.put(from_invitation.getExternalId(), from_invitation);
         }
 
@@ -67,13 +67,13 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         List<String> to_list = new ArrayList<>();
 
         for (UserInfo infos : to_invite) {
-            if(null != infos) {
+            if (null != infos) {
                 to_list.add(infos.getExternalId());
                 mCachedInvited.put(infos.getExternalId(), infos);
             }
         }
 
-        VoxeetSdk.getInstance().getConferenceService().invite(null, to_list);
+        VoxeetSdk.getInstance().getConferenceService().invite(to_list);
     }
 
     @Nullable

@@ -44,6 +44,7 @@ import fr.voxeet.sdk.sample.adapters.RecordedConferencesAdapter;
 import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.dialogs.ConferenceOutput;
 import fr.voxeet.sdk.sample.users.UsersHelper;
+import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
@@ -71,7 +72,7 @@ import static android.view.View.VISIBLE;
 /**
  * Created by RomainBenmansour on 4/21/16.
  */
-public class CreateConfActivity extends AppCompatActivity {
+public class CreateConfActivity extends VoxeetAppCompatActivity {
 
     public static final String INVIT_EXTERNAL_IDS = "INVIT_EXTERNAL_IDS";
     private int action;
@@ -416,7 +417,7 @@ public class CreateConfActivity extends AppCompatActivity {
 
         List<String> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
 
-        VoxeetSdk.getInstance().getConferenceService().invite(null, external_ids);
+        VoxeetSdk.getInstance().getConferenceService().invite(external_ids);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
