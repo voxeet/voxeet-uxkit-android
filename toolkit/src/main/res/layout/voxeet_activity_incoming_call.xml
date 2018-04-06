@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/voxeet_background_incoming_call"
     android:orientation="vertical"
     android:paddingBottom="@dimen/voxeet_incoming_call_activity_padding"
     android:paddingTop="@dimen/voxeet_incoming_call_activity_padding">
