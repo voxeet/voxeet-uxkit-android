@@ -295,6 +295,26 @@ VoxeetSdk.getInstance().getConferenceService().leave();
 VoxeetSdk.getInstance().getConferenceService().toggleVideo();
 ```
 
+### Change the camera
+
+It is possible to set the default camera the app will use :
+
+```java
+VoxeetSdk.getInstance().getConferenceService().setDefaultCamera(String cameraName);
+```
+
+In this sample, the cameraName can be used with the following calls :
+
+```java
+CameraEnumerationAndroid.getNameOfBackFacingDevice();
+CameraEnumerationAndroid.getNameOfFrontFacingDevice();
+```
+
+When using the toolkit, note that a "clic" on the "self" video will trigger a switchCamera() :
+```java
+VoxeetSdk.getInstance().getConferenceService().switchCamera();
+```
+
 ### Retrieving list of invited (not in the conference yet) users to the conference
 
 ```java
@@ -816,7 +836,7 @@ Only one instance of a conference is allowed to be live. Leaving the current con
 ## Version
 
 
-public-sdk: 0.9.1.5.8.20
+public-sdk: 0.9.1.5.8.3.20
 toolkit: 0.9.1.5.8.3.16
 
 ## Tech
