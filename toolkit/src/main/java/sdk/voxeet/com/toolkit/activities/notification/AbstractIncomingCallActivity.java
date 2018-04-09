@@ -24,6 +24,8 @@ import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
 import voxeet.com.sdk.events.success.DeclineConferenceResultEvent;
+import voxeet.com.sdk.promise.ErrorPromise;
+import voxeet.com.sdk.promise.SuccessPromise;
 
 public abstract class AbstractIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
 
@@ -139,7 +141,19 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
 
     protected void onDecline() {
         if (getConferenceId() != null) {
-            VoxeetSdk.getInstance().getConferenceService().decline(getConferenceId());
+            VoxeetSdk.getInstance().getConferenceService().decline(getConferenceId())
+                    .then(new SuccessPromise<Boolean, Object>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+                            //
+                        }
+                    })
+                    .error(new ErrorPromise() {
+                        @Override
+                        public void onError(Throwable error) {
+
+                        }
+                    });
         }
     }
 

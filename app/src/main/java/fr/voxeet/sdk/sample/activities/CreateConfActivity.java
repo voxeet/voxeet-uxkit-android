@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,7 +28,6 @@ import com.voxeet.android.media.MediaStream;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,12 +43,10 @@ import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.dialogs.ConferenceOutput;
 import fr.voxeet.sdk.sample.users.UsersHelper;
 import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
-import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceBarView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetLoadingView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetReplayMessageView;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
@@ -61,11 +57,13 @@ import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
 import voxeet.com.sdk.events.success.MessageReceived;
 import voxeet.com.sdk.events.success.ScreenStreamAddedEvent;
 import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
-import voxeet.com.sdk.events.success.StopRecordingResultEvent;
 import voxeet.com.sdk.json.ConferenceEnded;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
 import voxeet.com.sdk.models.RecordingStatus;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
+import voxeet.com.sdk.promise.ErrorPromise;
+import voxeet.com.sdk.promise.Promise;
+import voxeet.com.sdk.promise.SuccessPromise;
 
 import static android.view.View.VISIBLE;
 
@@ -173,7 +171,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -188,7 +186,19 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
     @OnClick(R.id.leaveConf)
     public void leave() {
-        VoxeetSdk.getInstance().getConferenceService().leave();
+        VoxeetSdk.getInstance().getConferenceService().leave()
+                .then(new SuccessPromise() {
+                    @Override
+                    public void onSuccess(Object result) {
+
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                });
     }
 
     @OnClick(R.id.record)
@@ -237,16 +247,35 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         }
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(joinLayout.getWindowToken(), 0);
+        if (null != imm) {
+            imm.hideSoftInputFromWindow(joinLayout.getWindowToken(), 0);
+        }
 
+        Promise<Boolean> promise = null;
         switch (action) {
             case MainActivity.JOIN:
-                VoxeetToolkit.getInstance().getConferenceToolkit().join(confAlias);
+                promise = VoxeetToolkit.getInstance().getConferenceToolkit().join(confAlias);
                 break;
             case MainActivity.REPLAY:
-                VoxeetToolkit.getInstance().getReplayMessageToolkit().replay(confAlias, 0);
+                promise = VoxeetToolkit.getInstance().getReplayMessageToolkit().replay(confAlias, 0);
                 break;
             default:
+        }
+
+        if (promise != null) {
+            promise
+                    .then(new SuccessPromise<Boolean, Object>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+
+                        }
+                    })
+                    .error(new ErrorPromise() {
+                        @Override
+                        public void onError(Throwable error) {
+                            error.printStackTrace();
+                        }
+                    });
         }
 
         showProgress();
@@ -275,13 +304,13 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
             String confIdOrAlias = null;
 
-            if(getIntent().hasExtra("confAlias")) {
+            if (getIntent().hasExtra("confAlias")) {
                 confIdOrAlias = getIntent().getStringExtra("confAlias");
-            } else if(getIntent().hasExtra("conferenceId")){
+            } else if (getIntent().hasExtra("conferenceId")) {
                 confIdOrAlias = getIntent().getStringExtra("conferenceId");
             }
 
-            if(confIdOrAlias != null) {
+            if (confIdOrAlias != null) {
                 join(confIdOrAlias);
                 //displayJoin();
             } else {
@@ -317,8 +346,20 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
             setTitle("Demo IConference");
 
-            VoxeetToolkit.getInstance().getConferenceToolkit().demo();
-        } else if(getIntent().hasExtra("create")){
+            VoxeetToolkit.getInstance().getConferenceToolkit().demo()
+                    .then(new SuccessPromise<Boolean, Object>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+
+                        }
+                    })
+                    .error(new ErrorPromise() {
+                        @Override
+                        public void onError(Throwable error) {
+
+                        }
+                    });
+        } else if (getIntent().hasExtra("create")) {
             action = MainActivity.CREATE;
 
             showProgress();
@@ -396,7 +437,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceJoinedSuccessEvent event) {
-        Log.d("CreateConfActivity", "ConferencejoinedSuccessEvent "+event.getConferenceId()+" "+event.getAliasId());
+        Log.d("CreateConfActivity", "ConferencejoinedSuccessEvent " + event.getConferenceId() + " " + event.getAliasId());
         hideProgress();
 
         leave.setVisibility(VISIBLE);
@@ -417,7 +458,19 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
         List<String> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
 
-        VoxeetSdk.getInstance().getConferenceService().invite(external_ids);
+        VoxeetSdk.getInstance().getConferenceService().invite(external_ids)
+                .then(new SuccessPromise() {
+                    @Override
+                    public void onSuccess(Object result) {
+
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -432,7 +485,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         onConferenceEnding();
     }
 
-    private void    onConferenceEnding() {
+    private void onConferenceEnding() {
         VoxeetSdk.getInstance().unregister(CreateConfActivity.this);
 
         screenShare.unAttach(); // unattaching just in case
@@ -451,7 +504,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
     @Subscribe
     public void onEvent(final ConferenceUserJoinedEvent event) {
-        Log.d("CreateConfActivity", "ConferenceUserJoinedEvent " + event.message() + " " + event.getUser().getUserInfo().getExternalId()+" "+event.getUser().isOwner());
+        Log.d("CreateConfActivity", "ConferenceUserJoinedEvent " + event.message() + " " + event.getUser().getUserInfo().getExternalId() + " " + event.getUser().isOwner());
         updateStreams(event.getUser(), event.getMediaStream());
     }
 

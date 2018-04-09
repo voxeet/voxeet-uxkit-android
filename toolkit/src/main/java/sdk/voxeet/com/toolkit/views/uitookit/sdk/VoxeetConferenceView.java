@@ -19,6 +19,8 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetExpa
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
+import voxeet.com.sdk.promise.ErrorPromise;
+import voxeet.com.sdk.promise.SuccessPromise;
 
 /**
  * Created by romainbenmansour on 11/08/16.
@@ -99,7 +101,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @Override
     public void onPreExpandedView() {
-        if(selfView.isAttached()) {
+        if (selfView.isAttached()) {
             selfView.setVisibility(View.VISIBLE);
         }
     }
@@ -146,11 +148,23 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         selfView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(VoxeetSdk.getInstance() != null) {
+                if (VoxeetSdk.getInstance() != null) {
                     //switchCamera should not trigger crash since it is only possible
                     //to click when already capturing and ... rendering the camera
                     VoxeetSdk.getInstance()
-                            .getConferenceService().switchCamera();
+                            .getConferenceService().switchCamera()
+                            .then(new SuccessPromise<Boolean, Object>() {
+                                @Override
+                                public void onSuccess(Boolean result) {
+
+                                }
+                            })
+                            .error(new ErrorPromise() {
+                                @Override
+                                public void onError(Throwable error) {
+
+                                }
+                            });
                 }
             }
         });
