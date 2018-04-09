@@ -77,6 +77,9 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         _last_conference_duration = 0;
         _wait_for_history_offset = offset;
 
+        VoxeetToolkit.getInstance().getConferenceToolkit().enable(false);
+        enable(true);
+
         SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
         service.setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId);
