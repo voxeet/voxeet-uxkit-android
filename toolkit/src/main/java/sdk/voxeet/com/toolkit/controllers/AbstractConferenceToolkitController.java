@@ -291,6 +291,7 @@ public abstract class AbstractConferenceToolkitController {
                     }
 
                     if (should_release) {
+                        Log.d(TAG, "run: AbstractConferenceToolkitController should release view " + view.getClass().getSimpleName());
                         view.onDestroy();
                         //if we still have the main view displayed
                         //but wanted to clear it
@@ -367,6 +368,10 @@ public abstract class AbstractConferenceToolkitController {
      */
     public void enable(boolean state) {
         mEnabled = state;
+
+        //enable or disable depending
+        if(mEnabled) register();
+        else unregister();
     }
 
     /**
