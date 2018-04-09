@@ -11,6 +11,8 @@ import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.factories.VoxeetIntentFactory;
 import voxeet.com.sdk.json.UserInfo;
+import voxeet.com.sdk.promise.ErrorPromise;
+import voxeet.com.sdk.promise.SuccessPromise;
 
 public class IncomingBundleChecker {
 
@@ -67,7 +69,19 @@ public class IncomingBundleChecker {
 
             VoxeetToolkit.getInstance()
                     .getConferenceToolkit()
-                    .join(mConferenceId, info);
+                    .join(mConferenceId, info)
+                    .then(new SuccessPromise<Boolean, Object>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+                            //possible callback to set ?
+                        }
+                    })
+                    .error(new ErrorPromise() {
+                        @Override
+                        public void onError(Throwable error) {
+                            error.printStackTrace();
+                        }
+                    });
         }
     }
 

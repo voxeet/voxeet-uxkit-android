@@ -17,7 +17,9 @@ import sdk.voxeet.com.toolkit.providers.logics.DefaultConferenceSubViewProvider;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewProviderListener;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.json.UserInfo;
+import voxeet.com.sdk.promise.Promise;
 
 /**
  * Created by kevinleperf on 15/01/2018.
@@ -47,7 +49,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         //nothing to do
     }
 
-    public void join(@NonNull String conference_id, @Nullable UserInfo from_invitation) {
+    public Promise<Boolean> join(@NonNull String conference_id, @Nullable UserInfo from_invitation) {
         mCachedInvited.clear();
         if (null != from_invitation) {
             mCachedInvited.put(from_invitation.getExternalId(), from_invitation);
@@ -56,14 +58,14 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
         enable(true);
 
-        VoxeetSdk.getInstance().getConferenceService().join(conference_id);
+        return VoxeetSdk.getInstance().getConferenceService().join(conference_id);
     }
 
-    public void join(@NonNull String conference_id) {
-        join(conference_id, null);
+    public Promise<Boolean> join(@NonNull String conference_id) {
+        return join(conference_id, null);
     }
 
-    public void invite(@NonNull List<UserInfo> to_invite) {
+    public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull List<UserInfo> to_invite) {
         List<String> to_list = new ArrayList<>();
 
         for (UserInfo infos : to_invite) {
@@ -73,7 +75,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
             }
         }
 
-        VoxeetSdk.getInstance().getConferenceService().invite(to_list);
+        return VoxeetSdk.getInstance().getConferenceService().invite(to_list);
     }
 
     @Nullable
@@ -81,17 +83,17 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         return (null != mCachedInvited) ? mCachedInvited.get(externalId) : null;
     }
 
-    public void demo() {
+    public Promise<Boolean> demo() {
         VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
         enable(true);
 
-        VoxeetSdk.getInstance().getConferenceService().demo();
+        return VoxeetSdk.getInstance().getConferenceService().demo();
     }
 
-    public void create() {
+    public Promise<Boolean> create() {
         VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
         enable(true);
 
-        VoxeetSdk.getInstance().getConferenceService().create();
+        return VoxeetSdk.getInstance().getConferenceService().create();
     }
 }

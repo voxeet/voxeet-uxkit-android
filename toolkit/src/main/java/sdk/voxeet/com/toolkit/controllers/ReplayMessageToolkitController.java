@@ -22,6 +22,9 @@ import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.GetConferenceHistoryEvent;
 import voxeet.com.sdk.models.HistoryConference;
+import voxeet.com.sdk.promise.ErrorPromise;
+import voxeet.com.sdk.promise.Promise;
+import voxeet.com.sdk.promise.SuccessPromise;
 
 /**
  * Created by kevinleperf on 15/01/2018.
@@ -65,7 +68,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      * @param conferenceId the conference id to replay
      * @param offset       the offset in seconds from the start
      */
-    public final void replay(@NonNull String conferenceId, long offset) {
+    public final Promise<Boolean> replay(@NonNull String conferenceId, long offset) {
         VoxeetToolkit.getInstance().getConferenceToolkit().enable(false);
         enable(true);
 
@@ -77,13 +80,29 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
         service.setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId);
-        service.replay(_last_conference, _wait_for_history_offset);
+
+        //TODO here, do a Promise.all with the two different method !
+        //and resolve a returned promise with the relevant information
+        return service.replay(_last_conference, _wait_for_history_offset);
     }
 
     @Override
     public void onActionButtonClicked() {
         //leave the current conference
-        VoxeetSdk.getInstance().getConferenceService().leave();
+        VoxeetSdk.getInstance().getConferenceService()
+                .leave()
+                .then(new SuccessPromise<Boolean, Object>() {
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        //do something here ?
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
     }
 
     public void onEvent(GetConferenceHistoryErrorEvent event) {

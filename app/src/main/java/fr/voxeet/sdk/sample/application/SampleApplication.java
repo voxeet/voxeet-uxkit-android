@@ -4,46 +4,40 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.voxeet.sdk.sample.BuildConfig;
 import fr.voxeet.sdk.sample.Recording;
-import fr.voxeet.sdk.sample.activities.CreateConfActivity;
 import fr.voxeet.sdk.sample.activities.IncomingCallActivity;
-import fr.voxeet.sdk.sample.activities.MainActivity;
 import sdk.voxeet.com.toolkit.controllers.AbstractConferenceToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.events.error.SdkLogoutErrorEvent;
-import voxeet.com.sdk.events.success.SdkLogoutSuccessEvent;
 import voxeet.com.sdk.json.UserInfo;
+import voxeet.com.sdk.promise.ErrorPromise;
+import voxeet.com.sdk.promise.SuccessPromise;
 
 /**
  * Created by RomainBenmansour on 06,April,2016
  */
-public class SampleApplication extends Application {
+public class SampleApplication extends MultiDexApplication {
 
     private static final String TAG = SampleApplication.class.getSimpleName();
 
     @NonNull
     private List<Recording> recordedConference = new ArrayList<>();
     private UserInfo _current_user;
-    private boolean _log_after_closing_event;
-    private AbstractConferenceToolkitController mVoxeetToolkitConferenceController;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
 
         VoxeetToolkit.initialize(this, EventBus.getDefault());
         VoxeetToolkit.getInstance().enableOverlay(true);
@@ -62,13 +56,6 @@ public class SampleApplication extends Application {
         VoxeetPreferences.setDefaultActivity(IncomingCallActivity.class.getCanonicalName());
         //register the Application and add at least one subscriber
         VoxeetSdk.getInstance().register(this, this);
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-
-        MultiDex.install(this);
     }
 
     public void saveRecordingConference(Recording newRecording) {
@@ -94,19 +81,25 @@ public class SampleApplication extends Application {
      */
     public boolean selectUser(UserInfo user_info) {
         //first case, the user was disconnected
+        _current_user = user_info;
         if (_current_user == null) {
-            _current_user = user_info;
             logSelectedUser();
-            _log_after_closing_event = false;
         } else {
             //we have an user
-            _current_user = user_info;
-            if (VoxeetSdk.getInstance().isSocketOpen()) {
-                _log_after_closing_event = true;
-                VoxeetSdk.getInstance().logout();
-            } else {
-                logSelectedUser();
-            }
+            VoxeetSdk.getInstance()
+                    .logout()
+                    .then(new SuccessPromise<Boolean, Object>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+                            logSelectedUser();
+                        }
+                    })
+                    .error(new ErrorPromise() {
+                        @Override
+                        public void onError(Throwable error) {
+                            logSelectedUser();
+                        }
+                    });
         }
         return false;
     }
@@ -117,24 +110,6 @@ public class SampleApplication extends Application {
     public void logSelectedUser() {
         Log.d("MainActivity", "logSelectedUser " + _current_user.toString());
         VoxeetSdk.getInstance().logUser(_current_user);
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(SdkLogoutSuccessEvent event) {
-        afterLogoutEvent();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(SdkLogoutErrorEvent event) {
-        afterLogoutEvent();
-    }
-
-    private void afterLogoutEvent() {
-        if (_log_after_closing_event) {
-            _log_after_closing_event = false;
-            logSelectedUser();
-        }
     }
 
     public UserInfo getCurrentUser() {

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,9 +18,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Arrays;
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -31,11 +27,12 @@ import fr.voxeet.sdk.sample.main_screen.UserAdapter;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
 import fr.voxeet.sdk.sample.users.UsersHelper;
 import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
-import sdk.voxeet.com.toolkit.controllers.ReplayMessageToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.SocketConnectEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
+import voxeet.com.sdk.promise.ErrorPromise;
+import voxeet.com.sdk.promise.SuccessPromise;
 
 public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -129,7 +126,19 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     @OnClick(R.id.disconnect)
     public void onDisconnectClick() {
 
-        VoxeetSdk.getInstance().logout();
+        VoxeetSdk.getInstance().logout()
+                .then(new SuccessPromise<Boolean, Object>() {
+                    @Override
+                    public void onSuccess(Boolean result) {
+
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(Throwable error) {
+
+                    }
+                });
     }
 
     public void verifyStoragePermissions(Activity context) {
@@ -200,9 +209,10 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
         switch (event.message()) {
             case "CLOSING":
+            case "CLOSED":
                 joinConf.setEnabled(false);
                 disconnect.setVisibility(View.GONE);
-                ((UserAdapter)users.getAdapter()).reset();
+                ((UserAdapter) users.getAdapter()).reset();
         }
     }
 
@@ -227,7 +237,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @Override
     public void onBackPressed() {
-        if(VoxeetToolkit.getInstance().getReplayMessageToolkit().isShowing()) {
+        if (VoxeetToolkit.getInstance().getReplayMessageToolkit().isShowing()) {
             VoxeetSdk.getInstance().getConferenceService().leave();
         } else {
             super.onBackPressed();

@@ -29,6 +29,8 @@ import java.util.Map;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
+import voxeet.com.sdk.promise.ErrorPromise;
+import voxeet.com.sdk.promise.SuccessPromise;
 import voxeet.com.sdk.utils.Validate;
 
 /**
@@ -305,7 +307,8 @@ public class VoxeetConferenceBarView extends VoxeetView {
                     speaker.setSelected(!speaker.isSelected());
 
                     VoxeetSdk.getInstance()
-                            .getConferenceService().setAudioRoute(speaker.isSelected() ? Media.AudioRoute.ROUTE_SPEAKER : Media.AudioRoute.ROUTE_PHONE);
+                            .getConferenceService()
+                            .setAudioRoute(speaker.isSelected() ? Media.AudioRoute.ROUTE_SPEAKER : Media.AudioRoute.ROUTE_PHONE);
                 }
             });
 
@@ -314,7 +317,20 @@ public class VoxeetConferenceBarView extends VoxeetView {
                 @Override
                 public void onClick(View v) {
                     VoxeetSdk.getInstance()
-                    .getConferenceService().leave();
+                            .getConferenceService()
+                            .leave()
+                            .then(new SuccessPromise<Boolean, Object>() {
+                                @Override
+                                public void onSuccess(Boolean result) {
+                                    //manage the result ?
+                                }
+                            })
+                            .error(new ErrorPromise() {
+                                @Override
+                                public void onError(Throwable error) {
+                                    //manage the error ?
+                                }
+                            });
                 }
             });
 
@@ -326,7 +342,8 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
                     microphone.setSelected(new_muted_state);
 
-                    VoxeetSdk.getInstance().getConferenceService().muteConference(new_muted_state);
+                    VoxeetSdk.getInstance().getConferenceService()
+                            .muteConference(new_muted_state);
                 }
             });
 
@@ -365,16 +382,28 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     protected void toggleCamera() {
-        if(checkCameraPermission()) {
+        if (checkCameraPermission()) {
             VoxeetSdk.getInstance().getConferenceService().toggleVideo();
         }
     }
 
     protected void turnCamera(boolean on) {
-        if(checkCameraPermission()) {
+        if (checkCameraPermission()) {
 
             VoxeetSdk.getInstance().getConferenceService()
-                    .startRecording();
+                    .startRecording()
+                    .then(new SuccessPromise<Boolean, Object>() {
+                        @Override
+                        public void onSuccess(Boolean result) {
+
+                        }
+                    })
+                    .error(new ErrorPromise() {
+                        @Override
+                        public void onError(Throwable error) {
+
+                        }
+                    });
         }
     }
 
