@@ -5,7 +5,9 @@ import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.ViewGroup;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -69,7 +71,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
     /**
      * Replace the current provider with an other one
-     *
+     * <p>
      * TODO send event to "remove" the previous instances
      * For now, setProvider() should be called 1 time at most in production
      *
@@ -106,8 +108,8 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
     }
 
     @NonNull
-    public ViewGroup getRootView() {
-        return mProvider.getRootView();
+    public AbstractRootViewProvider getDefaultRootViewProvider() {
+        return mProvider;
     }
 
     /**
@@ -155,7 +157,33 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
     public void onActivityDestroyed(Activity activity) {
 
     }
+    
+    /**
+     * Disable every controllers
+     */
+    public void disableAll() {
+        for (AbstractConferenceToolkitController internal_controller : mConferenceToolkitControllers) {
+            internal_controller.enable(false);
+        }
+    }
 
+    /**
+     * Activate a controller, disable all others
+     *
+     * @param controller a non null controller to try to activate
+     * @return true if the controller was found and activated or already activated
+     */
+    public boolean enable(@NonNull AbstractConferenceToolkitController controller) {
+        if (mConferenceToolkitControllers.contains(controller)) {
+            for (AbstractConferenceToolkitController internal_controller : mConferenceToolkitControllers) {
+                //only check for references
+                if (!internal_controller.isEnabled())
+                    internal_controller.enable(controller == internal_controller);
+            }
+            return true;
+        }
+        return false;
+    }
 
     private void init(@NonNull Application application,
                       EventBus eventBus) {

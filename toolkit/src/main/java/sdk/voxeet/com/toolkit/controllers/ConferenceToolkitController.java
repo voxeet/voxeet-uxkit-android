@@ -53,7 +53,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
             mCachedInvited.put(from_invitation.getExternalId(), from_invitation);
         }
 
-        VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
+        VoxeetToolkit.getInstance().enable(this);
         enable(true);
 
         VoxeetSdk.getInstance().getConferenceService().join(conference_id);
@@ -82,14 +82,14 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
     }
 
     public void demo() {
-        VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
+        VoxeetToolkit.getInstance().enable(this);
         enable(true);
 
         VoxeetSdk.getInstance().getConferenceService().demo();
     }
 
     public void create() {
-        VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
+        VoxeetToolkit.getInstance().enable(this);
         enable(true);
 
         VoxeetSdk.getInstance().getConferenceService().create();
