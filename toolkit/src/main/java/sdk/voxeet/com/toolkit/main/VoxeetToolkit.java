@@ -212,7 +212,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
             Activity activity = mProvider.getCurrentActivity();
             if (null != activity) {
                 controller.onActivityPaused(activity);
-                controller.removeView(true);
+                controller.removeView(true, AbstractConferenceToolkitController.RemoveViewType.FROM_HUD);
             }
         }
     }
