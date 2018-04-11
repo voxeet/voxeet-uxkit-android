@@ -236,6 +236,13 @@ public abstract class VoxeetView extends FrameLayout
     }
 
     @Override
+    public void onStop() {
+        for (VoxeetView child : mListeners) {
+            child.onStop();
+        }
+    }
+
+    @Override
     public void onDestroy() {
         for (VoxeetView child : mListeners) {
             child.onDestroy();

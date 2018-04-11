@@ -109,6 +109,12 @@ public interface IVoxeetView {
     void onResume();
 
     /**
+     * View stopped
+     * typically when conference stopped
+     */
+    void onStop();
+
+    /**
      * View destroyed
      */
     void onDestroy();
