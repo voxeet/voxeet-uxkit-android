@@ -176,11 +176,10 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
                 //only check for references
                 if (controller != internal_controller) { //if different, disable the current
                     internal_controller.enable(false);
-                    internal_controller.enable(controller == internal_controller);
                 }
             }
             //only enable if was disabled
-            if (!controller.isEnabled()) controller.enable(false);
+            if (!controller.isEnabled()) controller.enable(true);
             return true;
         }
         return false;
