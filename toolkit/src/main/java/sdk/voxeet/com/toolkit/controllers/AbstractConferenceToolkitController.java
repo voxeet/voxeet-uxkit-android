@@ -2,7 +2,6 @@ package sdk.voxeet.com.toolkit.controllers;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -114,13 +113,15 @@ public abstract class AbstractConferenceToolkitController {
     private OverlayState mDefaultOverlayState;
     private boolean mEnabled;
     private String TAG = AbstractConferenceSdkService.class.getSimpleName();
+    private boolean mIsViewRetainedOnLeave;
 
     AbstractConferenceToolkitController(Context context, EventBus eventbus) {
-        this.mContext = context;
-        this.mEventBus = eventbus;
+        mContext = context;
+        mEventBus = eventbus;
 
         mHandler = new Handler(Looper.getMainLooper());
 
+        setViewRetainedOnLeave(false);
         setParams();
 
         register();
@@ -216,7 +217,7 @@ public abstract class AbstractConferenceToolkitController {
         if (enabled)
             displayView();
         else
-            removeView(false);
+            removeView(false, RemoveViewType.FROM_EVENT);
     }
 
     private void displayView() {
@@ -228,7 +229,7 @@ public abstract class AbstractConferenceToolkitController {
         }
 
 
-        Log.d(TAG, "displayView: " + mMainView+" "+in_conf+" "+isOverlayEnabled());
+        Log.d(TAG, "displayView: " + mMainView + " " + in_conf + " " + isOverlayEnabled());
 
         if (mMainView == null && in_conf) {
             init();
@@ -254,13 +255,13 @@ public abstract class AbstractConferenceToolkitController {
                         }
 
 
-                        log("run: " + root + " " + activity+" "+!activity.isFinishing());
+                        log("run: " + root + " " + activity + " " + !activity.isFinishing());
                         if (root != null && activity != null && !activity.isFinishing()) {
-                            if(null == mMainViewParent.getParent()) {
+                            if (null == mMainViewParent.getParent()) {
                                 root.addView(mMainViewParent, createMatchParams());
                             }
 
-                            if(null == mMainView.getParent()) {
+                            if (null == mMainView.getParent()) {
                                 mMainViewParent.addView(mMainView, mParams);
                             }
 
@@ -274,7 +275,7 @@ public abstract class AbstractConferenceToolkitController {
         }
     }
 
-    public void removeView(final boolean should_release) {
+    public void removeView(final boolean should_release, final RemoveViewType from_type) {
         final AbstractVoxeetOverlayView view = mMainView;
         Runnable runnable = new Runnable() {
             @Override
@@ -284,13 +285,15 @@ public abstract class AbstractConferenceToolkitController {
                     if (viewHolder != null)
                         viewHolder.removeView(view);
 
-                    if(view == mMainView) {
+                    if (view == mMainView) {
                         viewHolder = (ViewGroup) mMainViewParent.getParent();
                         if (viewHolder != null)
                             viewHolder.removeView(mMainViewParent);
                     }
 
-                    if (should_release) {
+                    view.onStop();
+
+                    if (should_release && (RemoveViewType.FROM_HUD.equals(from_type) || !isEnabled() || !isViewRetainedOnLeave())) {
                         Log.d(TAG, "run: AbstractConferenceToolkitController should release view " + view.getClass().getSimpleName());
                         view.onDestroy();
                         //if we still have the main view displayed
@@ -324,7 +327,7 @@ public abstract class AbstractConferenceToolkitController {
      */
     public void onActivityPaused(@NonNull Activity activity) {
         if (mMainView != null) {
-            removeView(false);
+            removeView(false, RemoveViewType.FROM_HUD);
         }
     }
 
@@ -370,9 +373,25 @@ public abstract class AbstractConferenceToolkitController {
         mEnabled = state;
 
         //enable or disable depending
-        if(mEnabled) register();
+        if (mEnabled) register();
         else unregister();
     }
+
+    /**
+     *
+     * TODO check for retain state switch : quit in correct cases
+     * @param state the new state of the view
+     */
+    public void setViewRetainedOnLeave(boolean state) {
+        mIsViewRetainedOnLeave = state;
+    }
+    /**
+     * Check wether the view should still be up and running on quit conference
+     */
+    public boolean isViewRetainedOnLeave() {
+        return mIsViewRetainedOnLeave;
+    }
+
 
     /**
      * Check wether this controller can be called
@@ -661,7 +680,7 @@ public abstract class AbstractConferenceToolkitController {
             reset();
             mMainView.onConferenceLeft();
 
-            removeView(true);
+            removeView(true, RemoveViewType.FROM_EVENT);
         }
     }
 
@@ -676,7 +695,7 @@ public abstract class AbstractConferenceToolkitController {
             reset();
             mMainView.onConferenceLeft();
 
-            removeView(true);
+            removeView(true, RemoveViewType.FROM_EVENT);
         }
     }
 
@@ -693,7 +712,7 @@ public abstract class AbstractConferenceToolkitController {
         }
 
 
-        removeView(true);
+        removeView(true, RemoveViewType.FROM_EVENT);
     }
 
     /**
@@ -706,7 +725,7 @@ public abstract class AbstractConferenceToolkitController {
         reset();
         if (mMainView != null) mMainView.onConferenceDestroyed();
 
-        removeView(true);
+        removeView(true, RemoveViewType.FROM_EVENT);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -715,7 +734,7 @@ public abstract class AbstractConferenceToolkitController {
         //TODO error message
         if (mMainView != null) mMainView.onConferenceDestroyed();
 
-        removeView(true);
+        removeView(true, RemoveViewType.FROM_EVENT);
     }
 
     /**
@@ -751,5 +770,16 @@ public abstract class AbstractConferenceToolkitController {
                 }
             }
         }
+    }
+
+    /**
+     * Simple enum to manage the different ways to request for view removal, if any
+     *
+     * FROM_HUD = a graphical interaction occured : pause, kill etc...
+     * FROM_EVENT = the conference emitted an/- event-s, management requires a removal from thi.o.se
+     */
+    public enum RemoveViewType {
+        FROM_HUD,
+        FROM_EVENT
     }
 }
