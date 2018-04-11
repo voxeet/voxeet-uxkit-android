@@ -525,7 +525,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (String permission : MANDATORY_STRINGS) {
-                if(ContextCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_DENIED) {
+                if(ContextCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
                     permissions_to_request.add(permission);
                 }
             }
