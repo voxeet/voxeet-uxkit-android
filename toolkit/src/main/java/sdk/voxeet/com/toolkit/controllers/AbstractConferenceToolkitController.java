@@ -27,6 +27,7 @@ import java.util.Map;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.providers.containers.IVoxeetOverlayViewProvider;
 import sdk.voxeet.com.toolkit.providers.logics.IVoxeetSubViewProvider;
+import sdk.voxeet.com.toolkit.providers.rootview.AbstractRootViewProvider;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
 import voxeet.com.sdk.core.VoxeetSdk;
@@ -114,12 +115,19 @@ public abstract class AbstractConferenceToolkitController {
     private boolean mEnabled;
     private String TAG = AbstractConferenceSdkService.class.getSimpleName();
     private boolean mIsViewRetainedOnLeave;
+    private AbstractRootViewProvider mRootViewProvider;
 
-    AbstractConferenceToolkitController(Context context, EventBus eventbus) {
+    private AbstractConferenceToolkitController() {
+
+    }
+
+    protected AbstractConferenceToolkitController(Context context, EventBus eventbus) {
         mContext = context;
         mEventBus = eventbus;
 
         mHandler = new Handler(Looper.getMainLooper());
+
+        mRootViewProvider = VoxeetToolkit.getInstance().getDefaultRootViewProvider();
 
         setViewRetainedOnLeave(false);
         setParams();
@@ -209,6 +217,13 @@ public abstract class AbstractConferenceToolkitController {
         return VoxeetToolkit.getInstance().isEnabled();
     }
 
+    public void setRootViewProvider(@NonNull AbstractRootViewProvider provider) {
+        mRootViewProvider = provider;
+    }
+
+    private AbstractRootViewProvider getRootViewProvider() {
+        return mRootViewProvider;
+    }
 
     /**
      * Toggles overlay visibility.
@@ -241,12 +256,12 @@ public abstract class AbstractConferenceToolkitController {
                 public void run() {
                     log("run: add view" + mMainView);
                     if (mMainView != null) {
-                        Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
-                        ViewGroup root = VoxeetToolkit.getInstance().getRootView();
+                        Activity activity = getRootViewProvider().getCurrentActivity();
+                        ViewGroup root = getRootViewProvider().getRootView();
 
 
                         ViewGroup viewHolder = (ViewGroup) mMainViewParent.getParent();
-                        if (null != viewHolder && root != viewHolder) {
+                        if (null != viewHolder && null != root && root != viewHolder) {
                             viewHolder.removeView(mMainViewParent);
 
                             viewHolder = (ViewGroup) mMainView.getParent();
@@ -254,9 +269,7 @@ public abstract class AbstractConferenceToolkitController {
                                 viewHolder.removeView(mMainView);
                         }
 
-
-                        log("run: " + root + " " + activity + " " + !activity.isFinishing());
-                        if (root != null && activity != null && !activity.isFinishing()) {
+                        if (null != root && null != activity && !activity.isFinishing()) {
                             if (null == mMainViewParent.getParent()) {
                                 root.addView(mMainViewParent, createMatchParams());
                             }
@@ -378,13 +391,14 @@ public abstract class AbstractConferenceToolkitController {
     }
 
     /**
-     *
      * TODO check for retain state switch : quit in correct cases
+     *
      * @param state the new state of the view
      */
     public void setViewRetainedOnLeave(boolean state) {
         mIsViewRetainedOnLeave = state;
     }
+
     /**
      * Check wether the view should still be up and running on quit conference
      */
@@ -774,7 +788,7 @@ public abstract class AbstractConferenceToolkitController {
 
     /**
      * Simple enum to manage the different ways to request for view removal, if any
-     *
+     * <p>
      * FROM_HUD = a graphical interaction occured : pause, kill etc...
      * FROM_EVENT = the conference emitted an/- event-s, management requires a removal from thi.o.se
      */

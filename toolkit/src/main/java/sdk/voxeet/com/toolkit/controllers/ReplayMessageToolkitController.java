@@ -66,16 +66,13 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      * @param offset       the offset in seconds from the start
      */
     public final void replay(@NonNull String conferenceId, long offset) {
-        VoxeetToolkit.getInstance().getConferenceToolkit().enable(false);
-        enable(true);
+        VoxeetToolkit.getInstance().enable(this);
 
         _wait_for_history = true;
         _last_conference = conferenceId;
         _last_conference_duration = 0;
         _wait_for_history_offset = offset;
 
-        VoxeetToolkit.getInstance().getConferenceToolkit().enable(false);
-        enable(true);
 
         SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
         service.setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);

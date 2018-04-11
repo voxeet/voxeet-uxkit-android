@@ -55,7 +55,7 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
         mListener = listener;
     }
 
-    @NonNull
+    @Nullable
     public abstract ViewGroup getRootView();
 
     /**
