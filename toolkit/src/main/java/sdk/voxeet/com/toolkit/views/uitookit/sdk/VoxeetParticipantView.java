@@ -3,6 +3,9 @@ package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +15,7 @@ import android.view.View;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import sdk.voxeet.com.toolkit.utils.IParticipantViewListener;
@@ -41,6 +45,7 @@ public class VoxeetParticipantView extends VoxeetView {
     private boolean nameEnabled = true;
 
     private boolean displaySelf = false;
+    private Handler mHandler;
 
     /**
      * Instantiates a new Voxeet participant view.
@@ -49,6 +54,8 @@ public class VoxeetParticipantView extends VoxeetView {
      */
     public VoxeetParticipantView(Context context) {
         super(context);
+
+        internalInit();
     }
 
     /**
@@ -60,7 +67,12 @@ public class VoxeetParticipantView extends VoxeetView {
     public VoxeetParticipantView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        internalInit();
         updateAttrs(attrs);
+    }
+
+    private void internalInit() {
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -141,11 +153,54 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     @Override
-    public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
+    public void onMediaStreamUpdated(final String userId, final Map<String, MediaStream> mediaStreams) {
         super.onMediaStreamUpdated(userId, mediaStreams);
 
-        adapter.onMediaStreamUpdated(mediaStreams);
-        adapter.notifyDataSetChanged();
+        postOnUi(new Runnable() {
+            @Override
+            public void run() {
+                if (adapter != null) {
+                    adapter.onMediaStreamUpdated(userId, mediaStreams);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onScreenShareMediaStreamUpdated(final String userId, final Map<String, MediaStream> mediaStreams) {
+        super.onScreenShareMediaStreamUpdated(userId, mediaStreams);
+
+        postOnUi(new Runnable() {
+            @Override
+            public void run() {
+                if (adapter != null) {
+                    adapter.onScreenShareMediaStreamUpdated(userId, mediaStreams);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onScreenShareMediaStreamUpdated(final Map<String, MediaStream> screenShareMediaStreams) {
+        super.onScreenShareMediaStreamUpdated(screenShareMediaStreams);
+
+        postOnUi(new Runnable() {
+            @Override
+            public void run() {
+                String userId = null;
+                Iterator<String> keys = screenShareMediaStreams.keySet().iterator();
+                while (null == userId && keys.hasNext()) {
+                    userId = keys.next();
+                    if (null == screenShareMediaStreams.get(userId))
+                        userId = null; //reset if invalid stream
+                }
+
+                adapter.onMediaStreamUpdated(userId, screenShareMediaStreams);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -197,5 +252,9 @@ public class VoxeetParticipantView extends VoxeetView {
     public void setParticipantListener(IParticipantViewListener listener) {
         if (adapter != null)
             adapter.setParticipantListener(listener);
+    }
+
+    private void postOnUi(@NonNull Runnable runnable) {
+        mHandler.post(runnable);
     }
 }

@@ -3,6 +3,7 @@ package sdk.voxeet.com.toolkit.utils;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private Context context;
 
-    private final int avatarSize;
+    private int avatarSize;
 
     private int lastPosition = -1;
 
@@ -46,13 +48,20 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private IParticipantViewListener listener;
 
-    private Map<String, MediaStream> mediaStreamMap;
+    private Map<String, MediaStream> mMediaStreamMap;
+    private Map<String, MediaStream> mScreenShareMediaStreams;
 
     private int overlayColor;
 
     private int parentWidth;
-
     private int parentHeight;
+
+    private String mRequestUserIdChanged;
+
+    private ParticipantViewAdapter() {
+        mScreenShareMediaStreams = new HashMap<>();
+        mMediaStreamMap = new HashMap<>();
+    }
 
     /**
      * Instantiates a new Participant view adapter.
@@ -60,6 +69,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      * @param context the context
      */
     public ParticipantViewAdapter(Context context) {
+        this();
         this.overlayColor = context.getResources().getColor(R.color.blue);
 
         this.context = context;
@@ -113,6 +123,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+        Log.d(TAG, "onBindViewHolder: " + position);
         final DefaultConferenceUser user = getItem(position);
 
 //        if ((parentWidth / getItemCount()) <= parentHeight) {
@@ -143,39 +154,127 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
             holder.overlay.setVisibility(View.GONE);
         }
 
-        if (mediaStreamMap != null) {
-            MediaStream mediaStream = mediaStreamMap.get(user.getUserId());
-            if (mediaStream != null) {
-                if (mediaStream.hasVideo()) {
-                    holder.videoView.setVisibility(View.VISIBLE);
-                    holder.videoView.attach(user.getUserId(), mediaStream);
-                } else {
-                    holder.videoView.setVisibility(View.GONE);
-                    holder.videoView.unAttach();
-                }
-            }
-        }
+        //updateMediaScreenFor(user.getUserId(), holder);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                if (selectedPosition != holder.getAdapterPosition()) {
-                    selectedPosition = holder.getAdapterPosition();
+            public boolean onLongClick(View view) {
 
-                    if (listener != null)
-                        listener.onParticipantSelected(user);
-                } else {
+                if (selectedPosition == holder.getAdapterPosition()) {
                     selectedPosition = -1;
 
                     if (listener != null)
                         listener.onParticipantUnselected(user);
                 }
+                return true;
+            }
+        });
 
-                notifyDataSetChanged();
+        if (null != mRequestUserIdChanged && mRequestUserIdChanged.equals(user.getUserId())) {
+            VideoView.MediaStreamType type = null;
+            MediaStream stream = null;
+            if (hasScreenShareMediaStream(mRequestUserIdChanged)) {
+                stream = getScreenShareMediaStream(mRequestUserIdChanged);
+                type = getPrevious(mRequestUserIdChanged, VideoView.MediaStreamType.SCREEN_SHARE);
+            } else if (hasCameraMediaStream(mRequestUserIdChanged)) {
+                stream = getCameraMediaStream(mRequestUserIdChanged);
+                type = getPrevious(mRequestUserIdChanged, VideoView.MediaStreamType.VIDEO);
+            }
+
+            if (null != type) {
+                loadStreamOnto(mRequestUserIdChanged, type, holder);
+
+                if (listener != null)
+                    listener.onParticipantSelected(user, stream);
+            }
+
+            //prevent any modification until next event
+            mRequestUserIdChanged = null;
+        }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String userId = user.getUserId();
+                //toggle media screen call next stream
+                VideoView.MediaStreamType current_type = holder.videoView.getCurrentMediaStreamType();
+
+                VideoView.MediaStreamType next = getNext(user.getUserId(), current_type);
+
+                loadStreamOnto(userId, next, holder);
+
+                //now get the one for the main view
+                next = getNext(user.getUserId(), next);
+
+                MediaStream stream = null;
+
+                switch (next) {
+                    case SCREEN_SHARE:
+                        stream = getScreenShareMediaStream(userId);
+                        break;
+                    case VIDEO:
+                        stream = getCameraMediaStream(userId);
+                        break;
+                }
+
+                if (listener != null)
+                    listener.onParticipantSelected(user, stream);
             }
         });
 
         setAnimation(holder.itemView, position);
+    }
+
+    private void loadStreamOnto(String userId, VideoView.MediaStreamType type, ViewHolder holder) {
+        holder.videoView.setAutoUnAttach(true);
+        switch (type) {
+            case NONE:
+                holder.videoView.unAttach();
+                holder.videoView.setVisibility(View.GONE);
+                break;
+            case SCREEN_SHARE:
+                holder.videoView.attach(userId, getScreenShareMediaStream(userId), true);
+                holder.videoView.setVisibility(View.VISIBLE);
+                break;
+            case VIDEO:
+                holder.videoView.attach(userId, getCameraMediaStream(userId), true);
+                holder.videoView.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    private VideoView.MediaStreamType getPrevious(String userId, VideoView.MediaStreamType type) {
+        switch (type) {
+            case NONE:
+                if (hasCameraMediaStream(userId))
+                    return VideoView.MediaStreamType.VIDEO;
+                if (hasScreenShareMediaStream(userId))
+                    return VideoView.MediaStreamType.SCREEN_SHARE;
+                break;
+            case SCREEN_SHARE:
+                if (hasCameraMediaStream(userId))
+                    return VideoView.MediaStreamType.VIDEO;
+                break;
+            case VIDEO:
+        }
+        return VideoView.MediaStreamType.NONE;
+    }
+
+    private VideoView.MediaStreamType getNext(String userId, VideoView.MediaStreamType type) {
+        switch (type) {
+            case NONE:
+                if (hasCameraMediaStream(userId))
+                    return VideoView.MediaStreamType.VIDEO;
+                if (hasScreenShareMediaStream(userId))
+                    return VideoView.MediaStreamType.SCREEN_SHARE;
+                break;
+            case VIDEO:
+                if (hasScreenShareMediaStream(userId))
+                    return VideoView.MediaStreamType.SCREEN_SHARE;
+                break;
+            case SCREEN_SHARE:
+        }
+        return VideoView.MediaStreamType.NONE;
     }
 
     /**
@@ -237,8 +336,29 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param mediaStreams the media streams
      */
-    public void onMediaStreamUpdated(Map<String, MediaStream> mediaStreams) {
-        this.mediaStreamMap = mediaStreams;
+    public void onMediaStreamUpdated(@Nullable String userId, @NonNull Map<String, MediaStream> mediaStreams) {
+        mMediaStreamMap = mediaStreams;
+        if (null != userId && mediaStreams.containsKey(userId)) {
+            MediaStream stream = mediaStreams.get(userId);
+            if (null != stream && stream.hasVideo()) {
+                mRequestUserIdChanged = userId;
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void onScreenShareMediaStreamUpdated(String userId, Map<String, MediaStream> screenSharemediaStreams) {
+        mScreenShareMediaStreams = screenSharemediaStreams;
+
+        if (screenSharemediaStreams.containsKey(userId)) {
+            MediaStream stream = screenSharemediaStreams.get(userId);
+            if (null != stream && stream.isScreenShare()) {
+                mRequestUserIdChanged = userId;
+            }
+        }
+
+        notifyDataSetChanged();
     }
 
     /**
@@ -285,5 +405,33 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
             avatar = (RoundedImageView) view.findViewById(R.id.avatar);
         }
+    }
+
+    @Nullable
+    private MediaStream getScreenShareMediaStream(@NonNull String userId) {
+        if (hasScreenShareMediaStream(userId)) {
+            return mScreenShareMediaStreams.get(userId);
+        }
+        return null;
+    }
+
+    @Nullable
+    private MediaStream getCameraMediaStream(@NonNull String userId) {
+        if (hasCameraMediaStream(userId)) {
+            return mMediaStreamMap.get(userId);
+        }
+        return null;
+    }
+
+    private boolean hasScreenShareMediaStream(@NonNull String userId) {
+        if (null != mScreenShareMediaStreams && mScreenShareMediaStreams.containsKey(userId))
+            return mScreenShareMediaStreams.get(userId).isScreenShare();
+        return false;
+    }
+
+    private boolean hasCameraMediaStream(@NonNull String userId) {
+        if (null != mMediaStreamMap && mMediaStreamMap.containsKey(userId))
+            return mMediaStreamMap.get(userId).hasVideo();
+        return false;
     }
 }

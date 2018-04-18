@@ -71,13 +71,12 @@ public interface IVoxeetView {
     /**
      * On media stream updated.
      *
-     * @param userId the user id
+     * @param userId       the user id
      * @param mediaStreams
      */
     void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams);
 
     /**
-     *
      * @param conferenceUsers the new list of users
      */
     void onConferenceUsersListUpdate(List<DefaultConferenceUser> conferenceUsers);
@@ -88,10 +87,14 @@ public interface IVoxeetView {
     void onMediaStreamsListUpdated(Map<String, MediaStream> mediaStreams);
 
     /**
-     *
      * @param mediaStreams the new list of mediaStreams
      */
     void onMediaStreamsUpdated(Map<String, MediaStream> mediaStreams);
+
+    /**
+     * @param screenShareMediaStreams the new list of screen share media streams
+     */
+    void onScreenShareMediaStreamUpdated(Map<String, MediaStream> screenShareMediaStreams);
 
     /**
      * On conference destroyed.
@@ -101,6 +104,7 @@ public interface IVoxeetView {
     /**
      * On conference left.
      */
+
     void onConferenceLeft();
 
     /**

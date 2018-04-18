@@ -1,6 +1,8 @@
 package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -50,6 +52,12 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
      */
     public VoxeetConferenceView(Context context) {
         super(context);
+
+        internalInit();
+    }
+
+    private void internalInit() {
+        mMediaStreams = new HashMap<>();
     }
 
     /**
@@ -60,20 +68,15 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
      */
     public VoxeetConferenceView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
 
-    @Override
-    public void onMediaStreamsUpdated(Map<String, MediaStream> mediaStreams) {
-        super.onMediaStreamsUpdated(mediaStreams);
-
-        mMediaStreams = mediaStreams;
+        internalInit();
     }
 
     @Override
     public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
         super.onMediaStreamUpdated(userId, mediaStreams);
 
-        MediaStream mediaStream = mediaStreams.get(userId);
+        MediaStream mediaStream = null != mediaStreams ? mediaStreams.get(userId) : null;
         if (userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStream != null) {
             if (mediaStream.hasVideo()) {
                 selfView.setVisibility(VISIBLE);
@@ -86,6 +89,13 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     @Override
+    public void onScreenShareMediaStreamUpdated(@NonNull String userId, @NonNull Map<String, MediaStream> screen_share_media_streams) {
+        super.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
+
+
+    }
+
+    @Override
     public void onMediaStreamsListUpdated(Map<String, MediaStream> mediaStreams) {
         super.onMediaStreamsListUpdated(mediaStreams);
 
@@ -94,7 +104,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @Override
     public void init() {
-        mMediaStreams = new HashMap<>();
+
     }
 
     @Override
@@ -172,18 +182,22 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     @Override
-    public void onParticipantSelected(DefaultConferenceUser user) {
+    public void onParticipantSelected(DefaultConferenceUser user, MediaStream mediaStream) {
         speakerView.lockScreen(user.getUserId());
 
-        MediaStream mediaStream = mMediaStreams.get(user.getUserId());
-        if (mediaStream != null) {
-            if (mediaStream.hasVideo()) {
-                selectedView.setVisibility(VISIBLE);
-                selectedView.attach(user.getUserId(), mediaStream);
+        if (mediaStream != null && (mediaStream.hasVideo() || mediaStream.isScreenShare())) {
+            selectedView.setVisibility(VISIBLE);
+            selectedView.setAutoUnAttach(true);
+            selectedView.attach(user.getUserId(), mediaStream, true);
 
-                speakerView.setVisibility(GONE);
-                speakerView.onPause();
-            }
+            speakerView.setVisibility(GONE);
+            speakerView.onPause();
+        } else{
+            selectedView.setVisibility(View.GONE);
+            selectedView.unAttach();
+
+            speakerView.setVisibility(View.VISIBLE);
+            speakerView.onResume();
         }
     }
 

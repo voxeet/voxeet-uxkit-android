@@ -1,4 +1,4 @@
-package com.voxeet.ext;
+package sdk.voxeet.com.toolkit.utils;
 
 import android.util.Log;
 
