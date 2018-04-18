@@ -17,9 +17,8 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
-        maven {
-            url "https://dl.bintray.com/voxeet/maven"
-        }
+        maven { url "https://dl.bintray.com/voxeet/maven" }
+        maven { url "https://dl.bintray.com/codlab/oss" }
         jcenter()
         google()
     }

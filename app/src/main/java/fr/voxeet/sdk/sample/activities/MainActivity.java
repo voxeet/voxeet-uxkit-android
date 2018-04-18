@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +23,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import eu.codlab.simplepromise.solve.ErrorPromise;
+import eu.codlab.simplepromise.solve.PromiseExec;
+import eu.codlab.simplepromise.solve.Solver;
 import fr.voxeet.sdk.sample.R;
 import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.main_screen.UserAdapter;
@@ -31,8 +36,6 @@ import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.SocketConnectEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
-import voxeet.com.sdk.promise.ErrorPromise;
-import voxeet.com.sdk.promise.SuccessPromise;
 
 public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -127,9 +130,9 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     public void onDisconnectClick() {
 
         VoxeetSdk.getInstance().logout()
-                .then(new SuccessPromise<Boolean, Object>() {
+                .then(new PromiseExec<Boolean, Object>() {
                     @Override
-                    public void onSuccess(Boolean result) {
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
 
                     }
                 })

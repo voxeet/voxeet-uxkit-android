@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -26,11 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import eu.codlab.simplepromise.solve.ErrorPromise;
+import eu.codlab.simplepromise.solve.PromiseExec;
+import eu.codlab.simplepromise.solve.Solver;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.promise.ErrorPromise;
-import voxeet.com.sdk.promise.SuccessPromise;
 import voxeet.com.sdk.utils.Validate;
 
 /**
@@ -44,12 +47,19 @@ public class VoxeetConferenceBarView extends VoxeetView {
      * The constant RESULT_CAMERA.
      */
     public static final int RESULT_CAMERA = 0x0012;
+    public static final int RESULT_MICROPHONE = 0x000c;
+    public static final int RESULT_MANDATORY = RESULT_CAMERA | RESULT_MICROPHONE;
 
     public static final int RECORD = 0x0200;
     public static final int MUTE = 0x201;
     public static final int HANG_UP = 0x202;
     public static final int SPEAKER = 0x203;
     public static final int VIDEO = 0x204;
+
+    private static final String[] MANDATORY_STRINGS = new String[]{
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CAMERA
+    };
 
     /**
      * handling buttons visibility
@@ -319,9 +329,9 @@ public class VoxeetConferenceBarView extends VoxeetView {
                     VoxeetSdk.getInstance()
                             .getConferenceService()
                             .leave()
-                            .then(new SuccessPromise<Boolean, Object>() {
+                            .then(new PromiseExec<Boolean, Object>() {
                                 @Override
-                                public void onSuccess(Boolean result) {
+                                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                                     //manage the result ?
                                 }
                             })
@@ -338,12 +348,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
             microphone.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    boolean new_muted_state = !VoxeetSdk.getInstance().getConferenceService().isMuted();
-
-                    microphone.setSelected(new_muted_state);
-
-                    VoxeetSdk.getInstance().getConferenceService()
-                            .muteConference(new_muted_state);
+                    toggleMute();
                 }
             });
 
@@ -362,22 +367,22 @@ public class VoxeetConferenceBarView extends VoxeetView {
                     VoxeetSdk.getInstance().getConferenceService().toggleRecording();
                 }
             });
+
+            if(!checkMicrophonePermission()) {
+                microphone.setSelected(true);
+                VoxeetSdk.getInstance().getConferenceService().muteConference(true);
+            }
         }
     }
 
-    private boolean checkCameraPermission() {
-        if (!Validate.hashPermissionInManifest(getContext(), Manifest.permission.CAMERA)) {
-            Log.d(TAG, "checkCameraPermission: CAMERA permission _is not_ set in your manifest. Please update accordingly");
-            return false;
-        } else if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                ActivityCompat.requestPermissions(VoxeetToolkit.getInstance().getCurrentActivity(),
-                        new String[]{Manifest.permission.CAMERA},
-                        RESULT_CAMERA);
-            }
-            return false;
-        } else {
-            return true;
+    protected void toggleMute() {
+        boolean new_muted_state = !VoxeetSdk.getInstance().getConferenceService().isMuted();
+
+        if (new_muted_state || checkMicrophonePermission()) {
+            //if we unmute, check for microphone state
+            microphone.setSelected(new_muted_state);
+
+            VoxeetSdk.getInstance().getConferenceService().muteConference(new_muted_state);
         }
     }
 
@@ -392,9 +397,9 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
             VoxeetSdk.getInstance().getConferenceService()
                     .startRecording()
-                    .then(new SuccessPromise<Boolean, Object>() {
+                    .then(new PromiseExec<Boolean, Object>() {
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
 
                         }
                     })
@@ -513,6 +518,51 @@ public class VoxeetConferenceBarView extends VoxeetView {
                 return (recording = new ImageView(getContext()));
             default:
                 return new ImageView(getContext());
+        }
+    }
+
+
+    private boolean checkMicrophonePermission() {
+        return checkPermission(Manifest.permission.RECORD_AUDIO,
+                "checkMicrophonePermission : RECORD_AUDIO permission  _is not_ set in your manifest. Please update accordingly",
+                RESULT_MICROPHONE);
+    }
+
+
+    private boolean checkCameraPermission() {
+        return checkPermission(Manifest.permission.CAMERA,
+                "checkCameraPermission: CAMERA permission _is not_ set in your manifest. Please update accordingly",
+                RESULT_CAMERA);
+    }
+
+
+    private boolean checkPermission(@NonNull String permission, @NonNull String error_message, int result_code) {
+        if (!Validate.hashPermissionInManifest(getContext(), permission)) {
+            Log.d(TAG, error_message);
+            return false;
+        } else if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_DENIED) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestMandatoryPermissions();
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void requestMandatoryPermissions() {
+        List<String> permissions_to_request = new ArrayList<>();
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String permission : MANDATORY_STRINGS) {
+                if(ContextCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                    permissions_to_request.add(permission);
+                }
+            }
+
+            Validate.requestMandatoryPermissions(VoxeetToolkit.getInstance().getCurrentActivity(),
+                    permissions_to_request.toArray(new String[permissions_to_request.size()]),
+                    RESULT_MANDATORY);
         }
     }
 

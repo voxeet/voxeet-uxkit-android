@@ -3,6 +3,7 @@ package sdk.voxeet.com.toolkit.providers.rootview;
 import android.app.Activity;
 import android.app.Application;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -24,11 +25,11 @@ public class DefaultRootViewProvider extends AbstractRootViewProvider {
         super(application, toolkit);
     }
 
-    @NonNull
+    @Nullable
     @Override
     public ViewGroup getRootView() {
         Activity activity = getCurrentActivity();
-        Log.d(TAG, "getRootView: " + activity);
+        Log.d(TAG, "getDefaultRootView: " + activity);
         if (null != activity) {
             return (ViewGroup) activity.getWindow().getDecorView().getRootView();
         } else {

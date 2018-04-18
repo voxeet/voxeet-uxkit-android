@@ -2,6 +2,7 @@ package sdk.voxeet.com.toolkit.controllers;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.voxeet.android.media.Media;
@@ -10,6 +11,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import eu.codlab.simplepromise.Promise;
+import eu.codlab.simplepromise.solve.ErrorPromise;
+import eu.codlab.simplepromise.solve.PromiseExec;
+import eu.codlab.simplepromise.solve.Solver;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.providers.containers.DefaultReplayMessageProvider;
 import sdk.voxeet.com.toolkit.providers.logics.DefaultReplayMessageSubViewProvider;
@@ -22,9 +27,6 @@ import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.GetConferenceHistoryEvent;
 import voxeet.com.sdk.models.HistoryConference;
-import voxeet.com.sdk.promise.ErrorPromise;
-import voxeet.com.sdk.promise.Promise;
-import voxeet.com.sdk.promise.SuccessPromise;
 
 /**
  * Created by kevinleperf on 15/01/2018.
@@ -69,16 +71,13 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      * @param offset       the offset in seconds from the start
      */
     public final Promise<Boolean> replay(@NonNull String conferenceId, long offset) {
-        VoxeetToolkit.getInstance().getConferenceToolkit().enable(false);
-        enable(true);
+        VoxeetToolkit.getInstance().enable(this);
 
         _wait_for_history = true;
         _last_conference = conferenceId;
         _last_conference_duration = 0;
         _wait_for_history_offset = offset;
 
-        VoxeetToolkit.getInstance().getConferenceToolkit().enable(false);
-        enable(true);
 
         SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
         service.setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
@@ -94,9 +93,9 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         //leave the current conference
         VoxeetSdk.getInstance().getConferenceService()
                 .leave()
-                .then(new SuccessPromise<Boolean, Object>() {
+                .then(new PromiseExec<Boolean, Object>() {
                     @Override
-                    public void onSuccess(Boolean result) {
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                         //do something here ?
                     }
                 })

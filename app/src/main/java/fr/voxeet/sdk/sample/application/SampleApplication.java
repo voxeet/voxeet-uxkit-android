@@ -1,9 +1,7 @@
 package fr.voxeet.sdk.sample.application;
 
-import android.app.Application;
-import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.multidex.MultiDex;
+import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
@@ -12,17 +10,18 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.codlab.simplepromise.solve.ErrorPromise;
+import eu.codlab.simplepromise.solve.PromiseExec;
+import eu.codlab.simplepromise.solve.Solver;
 import fr.voxeet.sdk.sample.BuildConfig;
 import fr.voxeet.sdk.sample.Recording;
 import fr.voxeet.sdk.sample.activities.IncomingCallActivity;
-import sdk.voxeet.com.toolkit.controllers.AbstractConferenceToolkitController;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
+import sdk.voxeet.com.toolkit.utils.EventDebugger;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.json.UserInfo;
-import voxeet.com.sdk.promise.ErrorPromise;
-import voxeet.com.sdk.promise.SuccessPromise;
 
 /**
  * Created by RomainBenmansour on 06,April,2016
@@ -34,10 +33,15 @@ public class SampleApplication extends MultiDexApplication {
     @NonNull
     private List<Recording> recordedConference = new ArrayList<>();
     private UserInfo _current_user;
+    private EventDebugger mEventDebugger;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+        mEventDebugger = new EventDebugger();
+        mEventDebugger.register();
 
         VoxeetToolkit.initialize(this, EventBus.getDefault());
         VoxeetToolkit.getInstance().enableOverlay(true);
@@ -88,9 +92,9 @@ public class SampleApplication extends MultiDexApplication {
             //we have an user
             VoxeetSdk.getInstance()
                     .logout()
-                    .then(new SuccessPromise<Boolean, Object>() {
+                    .then(new PromiseExec<Boolean, Object>() {
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                             logSelectedUser();
                         }
                     })
