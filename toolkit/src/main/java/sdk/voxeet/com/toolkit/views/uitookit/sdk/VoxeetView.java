@@ -171,13 +171,35 @@ public abstract class VoxeetView extends FrameLayout
     /**
      * On media stream updated.
      *
-     * @param userId the user id
-     * @param media_streams
+     * @param userId        the user id
+     * @param media_streams the list of media streams
      */
     public void onMediaStreamUpdated(@NonNull String userId,
                                      @NonNull Map<String, MediaStream> media_streams) {
         for (VoxeetView child : mListeners) {
             child.onMediaStreamUpdated(userId, media_streams);
+        }
+    }
+
+    /**
+     * On Screen Share media stream updated
+     *
+     * @param userId                    the user id
+     * @param screen_share_media_streams the list of screen shares media streams
+     */
+    public void onScreenShareMediaStreamUpdated(@NonNull String userId,
+                                                @NonNull Map<String, MediaStream> screen_share_media_streams) {
+        for (VoxeetView child : mListeners) {
+            child.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
+        }
+    }
+    /**
+     * @param screenShareMediaStreams the new list of screen share media streams
+     */
+    @Override
+    public void onScreenShareMediaStreamUpdated(Map<String, MediaStream> screenShareMediaStreams) {
+        for (VoxeetView child : mListeners) {
+            child.onScreenShareMediaStreamUpdated(screenShareMediaStreams);
         }
     }
 
