@@ -15,14 +15,15 @@ import com.voxeet.toolkit.R;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.codlab.simplepromise.solve.ErrorPromise;
+import eu.codlab.simplepromise.solve.PromiseExec;
+import eu.codlab.simplepromise.solve.Solver;
 import sdk.voxeet.com.toolkit.utils.IParticipantViewListener;
 import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetExpandableView;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
-import voxeet.com.sdk.promise.ErrorPromise;
-import voxeet.com.sdk.promise.SuccessPromise;
 
 /**
  * Created by romainbenmansour on 11/08/16.
@@ -163,9 +164,9 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                     //to click when already capturing and ... rendering the camera
                     VoxeetSdk.getInstance()
                             .getConferenceService().switchCamera()
-                            .then(new SuccessPromise<Boolean, Object>() {
+                            .then(new PromiseExec<Boolean, Object>() {
                                 @Override
-                                public void onSuccess(Boolean result) {
+                                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
 
                                 }
                             })
@@ -206,7 +207,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
             speakerView.setVisibility(GONE);
             speakerView.onPause();
-        } else{
+        } else {
             selectedView.setVisibility(View.GONE);
             selectedView.unAttach();
 
