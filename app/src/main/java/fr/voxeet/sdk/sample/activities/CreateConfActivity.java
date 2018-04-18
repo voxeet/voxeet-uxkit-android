@@ -64,6 +64,7 @@ import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
 import voxeet.com.sdk.events.success.StopRecordingResultEvent;
 import voxeet.com.sdk.json.ConferenceEnded;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
+import voxeet.com.sdk.json.UserInfo;
 import voxeet.com.sdk.models.RecordingStatus;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
@@ -415,9 +416,9 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
             sendText.setVisibility(VISIBLE);
         }
 
-        List<String> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
+        List<UserInfo> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
 
-        VoxeetSdk.getInstance().getConferenceService().invite(external_ids);
+        VoxeetToolkit.getInstance().getConferenceToolkit().invite(external_ids);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
