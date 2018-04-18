@@ -47,6 +47,8 @@ import voxeet.com.sdk.events.success.ConferenceUserJoinedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserLeftEvent;
 import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
 import voxeet.com.sdk.events.success.InvitationReceived;
+import voxeet.com.sdk.events.success.ScreenStreamAddedEvent;
+import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
 import voxeet.com.sdk.events.success.UserInvitedEvent;
 import voxeet.com.sdk.json.InvitationReceivedEvent;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
@@ -88,6 +90,14 @@ public abstract class AbstractConferenceToolkitController {
      */
     @NonNull
     protected Map<String, MediaStream> mMediaStreams = new HashMap<>();
+
+    /**
+     * The ScreenShare Media streams.
+     * <p>
+     * Empty by default
+     */
+    @NonNull
+    protected Map<String, MediaStream> mScreenShareMediaStreams = new HashMap<>();
 
     /**
      * The Handler.
@@ -156,6 +166,7 @@ public abstract class AbstractConferenceToolkitController {
         }
 
         mMainView.onMediaStreamsListUpdated(mMediaStreams);
+        mMainView.onScreenShareMediaStreamUpdated(mScreenShareMediaStreams);
         mMainView.onConferenceUsersListUpdate(mConferenceUsers);
     }
 
@@ -624,6 +635,7 @@ public abstract class AbstractConferenceToolkitController {
         log("onEvent: ConferenceUserJoinedEvent " + event);
         DefaultConferenceUser user = event.getUser();
 
+
         if (!mConferenceUsers.contains(user)) {
             mConferenceUsers.add(user);
             if (mMainView != null) {
@@ -639,6 +651,29 @@ public abstract class AbstractConferenceToolkitController {
             mMainView.onConferenceUserJoined(user);
         }
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ScreenStreamAddedEvent event) {
+        Log.d(TAG, "onEvent: event " + event.getMediaStream().isScreenShare() + " "
+                + event.getMediaStream().hasVideo());
+        mScreenShareMediaStreams.put(event.getPeer(), event.getMediaStream());
+
+        if (mMainView != null) {
+            mMainView.onScreenShareMediaStreamUpdated(event.getPeer(), mScreenShareMediaStreams);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ScreenStreamRemovedEvent event) {
+        String peer = event.getPeer();
+        if (mScreenShareMediaStreams.containsKey(peer)) {
+            mScreenShareMediaStreams.remove(peer);
+        }
+
+        if (mMainView != null) {
+            mMainView.onScreenShareMediaStreamUpdated(peer, mScreenShareMediaStreams);
+        }
     }
 
     /**
