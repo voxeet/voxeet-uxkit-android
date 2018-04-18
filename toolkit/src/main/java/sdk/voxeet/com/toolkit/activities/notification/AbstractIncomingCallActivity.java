@@ -17,6 +17,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import eu.codlab.simplepromise.solve.ErrorPromise;
+import eu.codlab.simplepromise.solve.PromiseExec;
+import eu.codlab.simplepromise.solve.Solver;
 import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
 import voxeet.com.sdk.core.VoxeetSdk;
@@ -24,8 +27,6 @@ import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
 import voxeet.com.sdk.events.success.DeclineConferenceResultEvent;
-import voxeet.com.sdk.promise.ErrorPromise;
-import voxeet.com.sdk.promise.SuccessPromise;
 
 public abstract class AbstractIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
 
@@ -142,9 +143,9 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
     protected void onDecline() {
         if (getConferenceId() != null) {
             VoxeetSdk.getInstance().getConferenceService().decline(getConferenceId())
-                    .then(new SuccessPromise<Boolean, Object>() {
+                    .then(new PromiseExec<Boolean, Object>() {
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                             //
                         }
                     })

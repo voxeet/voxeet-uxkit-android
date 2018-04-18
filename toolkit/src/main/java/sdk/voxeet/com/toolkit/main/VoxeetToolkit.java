@@ -5,7 +5,6 @@ import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.ViewGroup;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -69,7 +68,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
     /**
      * Replace the current provider with an other one
-     *
+     * <p>
      * TODO send event to "remove" the previous instances
      * For now, setProvider() should be called 1 time at most in production
      *
@@ -106,8 +105,8 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
     }
 
     @NonNull
-    public ViewGroup getRootView() {
-        return mProvider.getRootView();
+    public AbstractRootViewProvider getDefaultRootViewProvider() {
+        return mProvider;
     }
 
     /**
@@ -156,6 +155,35 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
     }
 
+    /**
+     * Disable every controllers
+     */
+    public void disableAll() {
+        for (AbstractConferenceToolkitController internal_controller : mConferenceToolkitControllers) {
+            internal_controller.enable(false);
+        }
+    }
+
+    /**
+     * Activate a controller, disable all others
+     *
+     * @param controller a non null controller to try to activate
+     * @return true if the controller was found and activated or already activated
+     */
+    public boolean enable(@NonNull AbstractConferenceToolkitController controller) {
+        if (mConferenceToolkitControllers.contains(controller)) {
+            for (AbstractConferenceToolkitController internal_controller : mConferenceToolkitControllers) {
+                //only check for references
+                if (controller != internal_controller) { //if different, disable the current
+                    internal_controller.enable(false);
+                }
+            }
+            //only enable if was disabled
+            if (!controller.isEnabled()) controller.enable(true);
+            return true;
+        }
+        return false;
+    }
 
     private void init(@NonNull Application application,
                       EventBus eventBus) {
@@ -188,13 +216,13 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         return null;
     }
 
-    private void registerConferenceToolkitController(AbstractConferenceToolkitController controller) {
+    public void registerConferenceToolkitController(@NonNull AbstractConferenceToolkitController controller) {
         if (mConferenceToolkitControllers.indexOf(controller) < 0) {
             mConferenceToolkitControllers.add(controller);
 
             //then call the current state of the activity for this one
             Activity activity = mProvider.getCurrentActivity();
-            if (null != activity) {
+            if (controller.isEnabled() && null != activity) {
                 if (!mProvider.isCurrentActivityResumed())
                     controller.onActivityPaused(activity);
                 else
@@ -203,16 +231,16 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
-    private void unregisterConferenceToolkitController(AbstractConferenceToolkitController controller) {
+    private void unregisterConferenceToolkitController(@NonNull AbstractConferenceToolkitController controller) {
         if (mConferenceToolkitControllers.indexOf(controller) >= 0) {
             mConferenceToolkitControllers.remove(controller);
 
 
             //then call the current state of the activity for this one
             Activity activity = mProvider.getCurrentActivity();
-            if (null != activity) {
+            if (controller.isEnabled() && null != activity) {
                 controller.onActivityPaused(activity);
-                controller.removeView(true);
+                controller.removeView(true, AbstractConferenceToolkitController.RemoveViewType.FROM_HUD);
             }
         }
     }

@@ -7,12 +7,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import eu.codlab.simplepromise.solve.ErrorPromise;
+import eu.codlab.simplepromise.solve.PromiseExec;
+import eu.codlab.simplepromise.solve.Solver;
 import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.factories.VoxeetIntentFactory;
 import voxeet.com.sdk.json.UserInfo;
-import voxeet.com.sdk.promise.ErrorPromise;
-import voxeet.com.sdk.promise.SuccessPromise;
 
 public class IncomingBundleChecker {
 
@@ -70,9 +71,9 @@ public class IncomingBundleChecker {
             VoxeetToolkit.getInstance()
                     .getConferenceToolkit()
                     .join(mConferenceId, info)
-                    .then(new SuccessPromise<Boolean, Object>() {
+                    .then(new PromiseExec<Boolean, Object>() {
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                             //possible callback to set ?
                         }
                     })

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.codlab.simplepromise.Promise;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.providers.containers.DefaultConferenceProvider;
 import sdk.voxeet.com.toolkit.providers.logics.DefaultConferenceSubViewProvider;
@@ -19,7 +20,6 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewPro
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.json.UserInfo;
-import voxeet.com.sdk.promise.Promise;
 
 /**
  * Created by kevinleperf on 15/01/2018.
@@ -55,7 +55,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
             mCachedInvited.put(from_invitation.getExternalId(), from_invitation);
         }
 
-        VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
+        VoxeetToolkit.getInstance().enable(this);
         enable(true);
 
         return VoxeetSdk.getInstance().getConferenceService().join(conference_id);
@@ -84,14 +84,14 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
     }
 
     public Promise<Boolean> demo() {
-        VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
+        VoxeetToolkit.getInstance().enable(this);
         enable(true);
 
         return VoxeetSdk.getInstance().getConferenceService().demo();
     }
 
     public Promise<Boolean> create() {
-        VoxeetToolkit.getInstance().getReplayMessageToolkit().enable(false);
+        VoxeetToolkit.getInstance().enable(this);
         enable(true);
 
         return VoxeetSdk.getInstance().getConferenceService().create();

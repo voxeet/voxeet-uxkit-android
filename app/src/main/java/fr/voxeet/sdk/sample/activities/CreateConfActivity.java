@@ -35,6 +35,10 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import eu.codlab.simplepromise.Promise;
+import eu.codlab.simplepromise.solve.ErrorPromise;
+import eu.codlab.simplepromise.solve.PromiseExec;
+import eu.codlab.simplepromise.solve.Solver;
 import fr.voxeet.sdk.sample.R;
 import fr.voxeet.sdk.sample.Recording;
 import fr.voxeet.sdk.sample.adapters.ParticipantAdapter;
@@ -51,6 +55,7 @@ import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
 import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
+import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserJoinedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserLeftEvent;
 import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
@@ -59,11 +64,9 @@ import voxeet.com.sdk.events.success.ScreenStreamAddedEvent;
 import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
 import voxeet.com.sdk.json.ConferenceEnded;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
+import voxeet.com.sdk.json.UserInfo;
 import voxeet.com.sdk.models.RecordingStatus;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
-import voxeet.com.sdk.promise.ErrorPromise;
-import voxeet.com.sdk.promise.Promise;
-import voxeet.com.sdk.promise.SuccessPromise;
 
 import static android.view.View.VISIBLE;
 
@@ -187,9 +190,9 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
     @OnClick(R.id.leaveConf)
     public void leave() {
         VoxeetSdk.getInstance().getConferenceService().leave()
-                .then(new SuccessPromise() {
+                .then(new PromiseExec<Boolean, Object>() {
                     @Override
-                    public void onSuccess(Object result) {
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
 
                     }
                 })
@@ -264,9 +267,9 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
         if (promise != null) {
             promise
-                    .then(new SuccessPromise<Boolean, Object>() {
+                    .then(new PromiseExec<Boolean, Object>() {
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
 
                         }
                     })
@@ -347,9 +350,9 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
             setTitle("Demo IConference");
 
             VoxeetToolkit.getInstance().getConferenceToolkit().demo()
-                    .then(new SuccessPromise<Boolean, Object>() {
+                    .then(new PromiseExec<Boolean, Object>() {
                         @Override
-                        public void onSuccess(Boolean result) {
+                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
 
                         }
                     })
@@ -456,12 +459,13 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
             sendText.setVisibility(VISIBLE);
         }
 
-        List<String> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
+        List<UserInfo> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
 
-        VoxeetSdk.getInstance().getConferenceService().invite(external_ids)
-                .then(new SuccessPromise() {
+        VoxeetToolkit.getInstance().getConferenceToolkit()
+                .invite(external_ids)
+                .then(new PromiseExec<List<ConferenceRefreshedEvent>, Object>() {
                     @Override
-                    public void onSuccess(Object result) {
+                    public void onCall(@Nullable List<ConferenceRefreshedEvent> result, @NonNull Solver<Object> solver) {
 
                     }
                 })
