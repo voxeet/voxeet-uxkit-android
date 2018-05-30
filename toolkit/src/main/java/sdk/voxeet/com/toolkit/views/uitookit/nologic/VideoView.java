@@ -223,6 +223,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
             this.mRenderer.init(eglBase.getEglBaseContext(), this);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }

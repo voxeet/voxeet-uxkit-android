@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:0.9.1.5.8.3.16') {
+  compile ('com.voxeet.sdk:toolkit:1.0.3') {
     transitive = true
   }
 }
@@ -30,11 +30,41 @@ The current sdk is available using the following version (used by the current to
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:public-sdk:0.9.1.5.8.3.20') {
+  compile ('com.voxeet.sdk:public-sdk:1.0.3') {
     transitive = true
   }
 }
 ```
+
+## Migrating from 0.X to 1.X
+
+ - Most calls to the SDK are now using Promises to resolve and manage error
+ - it is mandatory to use the following workflow on pre-used methods :
+```
+SDK.method.call()
+.then(<PromiseExec>)
+.error(<ErrorPromise>);
+```
+
+A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
+
+### What's New ?
+
+v1.0.3 :
+  - initialize Promises during the Voxeet initialization
+
+v1.0.2 :
+  - fix CTA
+  - fix issue with crash on same calls
+  - fix controllers behaviour
+
+v1.0 :
+  - complete rework of most internal method
+  - File Presentation management (start, stop, update)
+  - event on QualityIndicators with MOS
+
+  
+## Usage
 
 ### Recommended settings for API compatibility:
 
@@ -836,8 +866,8 @@ Only one instance of a conference is allowed to be live. Leaving the current con
 ## Version
 
 
-public-sdk: 0.9.1.5.8.3.20
-toolkit: 0.9.1.5.8.3.16
+public-sdk: 1.0.3
+toolkit: 1.0.3
 
 ## Tech
 
@@ -851,12 +881,13 @@ The Voxeet Android SDK uses a number of open source projects to work properly:
 * [Recyclerview] - An android support library.
 * [Apache Commons] - Collection of open source reusable Java components from the Apache/Jakarta community.
 * [RxAndroid] - RxJava is a Java VM implementation of Reactive Extensions: a library for composing asynchronous and event-based programs by using observable sequences.
+* [SimplePromise] - A low footprint simple Promise implementation for Android: easy and reliable Promises with chaining and resolution
 
 ## Sample Application
 
 A sample application is available on this [public repository][sample] on GitHub.
 
-© Voxeet, 2017
+© Voxeet, 2018
 
    [Official Android Documentation]: <http://developer.android.com/training/permissions/requesting.html>
    [sample]: <https://github.com/voxeet/android-sdk-sample.git>
@@ -868,3 +899,4 @@ A sample application is available on this [public repository][sample] on GitHub.
    [Apache Commons]: <https://commons.apache.org>
    [RxAndroid]: <https://github.com/ReactiveX/RxAndroid>
    [Retrofit2]: <http://square.github.io/retrofit/>
+   [SimplePromise]: <https://github.com/codlab/android_promise>

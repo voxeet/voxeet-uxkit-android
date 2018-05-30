@@ -19,6 +19,24 @@
     <ImageView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:id="@+id/microphone"
+        android:layout_gravity="center"
+        android:src="@drawable/selector_microphone"
+        android:layout_margin="15dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/camera"
+        android:layout_gravity="center"
+        android:src="@drawable/selector_camera"
+        android:layout_margin="15dp"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:src="@drawable/selector_speaker"
         android:id="@+id/speaker"
         android:layout_gravity="center"
@@ -32,24 +50,6 @@
 
         android:layout_gravity="center"
         android:src="@drawable/selector_hangup"
-        android:layout_margin="15dp"
-        android:layout_weight="1" />
-
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/microphone"
-        android:layout_gravity="center"
-        android:src="@drawable/selector_microphone"
-        android:layout_margin="15dp"
-        android:layout_weight="1" />
-
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/camera"
-        android:layout_gravity="center"
-        android:src="@drawable/selector_camera"
         android:layout_margin="15dp"
         android:layout_weight="1" />
 

@@ -19,15 +19,18 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.voxeet.android.media.MediaStream;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +49,7 @@ import fr.voxeet.sdk.sample.adapters.RecordedConferencesAdapter;
 import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.dialogs.ConferenceOutput;
 import fr.voxeet.sdk.sample.users.UsersHelper;
+import fr.voxeet.sdk.sample.utils.FileUtils;
 import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
@@ -59,12 +63,20 @@ import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserJoinedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserLeftEvent;
 import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
+import voxeet.com.sdk.events.success.FilePresentationStartedEvent;
+import voxeet.com.sdk.events.success.FilePresentationStoppedEvent;
+import voxeet.com.sdk.events.success.FilePresentationUpdatedEvent;
 import voxeet.com.sdk.events.success.MessageReceived;
+import voxeet.com.sdk.events.success.QualityIndicators;
 import voxeet.com.sdk.events.success.ScreenStreamAddedEvent;
 import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
 import voxeet.com.sdk.json.ConferenceEnded;
+import voxeet.com.sdk.json.FilePresentationStarted;
+import voxeet.com.sdk.json.FilePresentationStopped;
+import voxeet.com.sdk.json.FilePresentationUpdated;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
 import voxeet.com.sdk.json.UserInfo;
+import voxeet.com.sdk.models.FilePresentationConverted;
 import voxeet.com.sdk.models.RecordingStatus;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
@@ -136,6 +148,21 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
     @Bind(R.id.loading_view)
     protected VoxeetLoadingView loadingView;
 
+    @Bind(R.id.start_presentation)
+    protected View startPresentation;
+
+    @Bind(R.id.stop_presentation)
+    protected View stopPresentation;
+
+    @Bind(R.id.next_page)
+    protected View nextPage;
+
+    @Bind(R.id.previous_page)
+    protected View previousPage;
+
+    @Bind(R.id.presentation_lander)
+    protected ImageView presentation_lander;
+
     @NonNull
     private Map<String, MediaStream> mediaStreamMap = new HashMap<>();
 
@@ -145,6 +172,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
     private ProgressDialog dialog = null;
 
     private ConferenceOutput conferenceOutput = null;
+    private FilePresentationStarted mFilePresentationStarted;
 
 
     @Override
@@ -180,6 +208,99 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.previous_page)
+    public void onPreviousPage() {
+        if (null == mFilePresentationStarted || !mFilePresentationStarted.isOwner()) return;
+
+        if (mFilePresentationStarted.getPosition() > 0) {
+            updatePresentation(mFilePresentationStarted.getPosition() - 1);
+        }
+    }
+
+    @OnClick(R.id.next_page)
+    public void onNextPage() {
+        if (null == mFilePresentationStarted || !mFilePresentationStarted.isOwner()) return;
+
+        if (mFilePresentationStarted.getPosition() + 1 < mFilePresentationStarted.getImageCount()) {
+            updatePresentation(mFilePresentationStarted.getPosition() + 1);
+        }
+    }
+
+    @OnClick(R.id.stop_presentation)
+    public void stopPresentation() {
+        hideButtonsPresentation();
+
+        VoxeetSdk.getInstance()
+                .getFilePresentationService()
+                .stopPresentation(mFilePresentationStarted.getFileId())
+                .then(new PromiseExec<FilePresentationStopped, Object>() {
+                    @Override
+                    public void onCall(@Nullable FilePresentationStopped result, @NonNull Solver<Object> solver) {
+                        Toast.makeText(CreateConfActivity.this, "presentation stopped", Toast.LENGTH_SHORT).show();
+                        showStartPresentation();
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        Toast.makeText(CreateConfActivity.this, "error while stopping presentation", Toast.LENGTH_SHORT).show();
+                        showStartPresentation();
+                    }
+                });
+    }
+
+    @OnClick(R.id.start_presentation)
+    public void startPresentation() {
+        hideButtonsPresentation();
+
+        String asset = "iOSUnitTest.pdf";
+        File file = FileUtils.extractAssetToTempFile(CreateConfActivity.this, asset);
+
+        VoxeetSdk.getInstance()
+                .getFilePresentationService()
+                .convertFile(file)
+                .then(new PromiseExec<FilePresentationConverted, FilePresentationStarted>() {
+                    @Override
+                    public void onCall(@Nullable FilePresentationConverted result, @NonNull final Solver<FilePresentationStarted> solver) {
+                        Log.d(TAG, "onCall: " + result);
+                        VoxeetSdk.getInstance()
+                                .getFilePresentationService()
+                                .startPresentation(result)
+                                .then(new PromiseExec<FilePresentationStarted, Object>() {
+                                    @Override
+                                    public void onCall(@Nullable FilePresentationStarted result, @NonNull Solver<Object> in_solver) {
+                                        solver.resolve(result);
+                                    }
+                                })
+                                .error(new ErrorPromise() {
+                                    @Override
+                                    public void onError(@NonNull Throwable error) {
+                                        solver.reject(error);
+                                    }
+                                });
+                    }
+                })
+                .then(new PromiseExec<FilePresentationStarted, Object>() {
+                    @Override
+                    public void onCall(@Nullable FilePresentationStarted result, @NonNull Solver<Object> solver) {
+                        Toast.makeText(CreateConfActivity.this, "file started " + result.getFileId(), Toast.LENGTH_SHORT).show();
+
+                        onEvent(result);
+                        showStopPresentation();
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        error.printStackTrace();
+                        Toast.makeText(CreateConfActivity.this, "error while starting presentation", Toast.LENGTH_SHORT)
+                                .show();
+
+                        showStartPresentation();
+                    }
+                });
     }
 
     @OnClick(R.id.toggle_video)
@@ -438,6 +559,79 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    public void onEvent(FilePresentationStarted event) {
+        if (null != event) {
+            if (mFilePresentationStarted == null || !event.getFileId().equals(mFilePresentationStarted.getFileId())) {
+                mFilePresentationStarted = event;
+                loadImageFromCurrentPresentation(mFilePresentationStarted.getPosition());
+
+                if (mFilePresentationStarted.isOwner()) {
+                    showNavigationButtons();
+                } else {
+                    hideNavigationButtons();
+                }
+            }
+        }
+    }
+
+    private void loadImageFromCurrentPresentation(int page) {
+        presentation_lander.setVisibility(View.VISIBLE);
+        Picasso.with(this)
+                .load(VoxeetSdk.getInstance()
+                        .getFilePresentationService()
+                        .getImageUrl(mFilePresentationStarted.getFileId(),
+                                page))
+                .into(presentation_lander);
+    }
+
+    public void onEvent(FilePresentationStopped event) {
+        if (null != event) {
+            mFilePresentationStarted = null;
+
+            presentation_lander.setVisibility(View.GONE);
+            hideButtonsPresentation();
+            hideNavigationButtons();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(FilePresentationStartedEvent event) {
+        //You can override the event also here
+        //especially when the presentation was not started by the current user
+        onEvent(event.getEvent());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(FilePresentationStoppedEvent event) {
+        //You can override the event also here
+        //especially when the presentation was not started by the current user
+        onEvent(event.getEvent());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(FilePresentationUpdatedEvent event) {
+        onEvent(event.getEvent());
+    }
+
+
+    public void onEvent(FilePresentationUpdated event) {
+
+        Log.d(TAG, "onEvent: " + mFilePresentationStarted.getFileId() + " " + event.getFileId()
+                + " " + mFilePresentationStarted.getPosition() + " " + event.getPosition());
+        if (null != event && null != mFilePresentationStarted
+                && mFilePresentationStarted.getFileId().equals(event.getFileId())
+                && mFilePresentationStarted.getPosition() != event.getPosition()) {
+            mFilePresentationStarted.setPosition(event.getPosition());
+
+            loadImageFromCurrentPresentation(mFilePresentationStarted.getPosition());
+
+            if (mFilePresentationStarted.isOwner()) {
+                showNavigationButtons();
+            }
+        }
+    }
+
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceJoinedSuccessEvent event) {
         Log.d("CreateConfActivity", "ConferencejoinedSuccessEvent " + event.getConferenceId() + " " + event.getAliasId());
@@ -460,6 +654,8 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         }
 
         List<UserInfo> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
+
+        showStartPresentation();
 
         VoxeetToolkit.getInstance().getConferenceToolkit()
                 .invite(external_ids)
@@ -572,5 +768,76 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "error", e.getCause());
         }
+    }
+
+    private void showStartPresentation() {
+        startPresentation.setVisibility(View.VISIBLE);
+        stopPresentation.setVisibility(View.GONE);
+
+        hideNavigationButtons();
+    }
+
+    private void showStopPresentation() {
+        startPresentation.setVisibility(View.GONE);
+        stopPresentation.setVisibility(View.VISIBLE);
+
+        showNavigationButtons();
+    }
+
+    private void hideButtonsPresentation() {
+        startPresentation.setVisibility(View.GONE);
+        stopPresentation.setVisibility(View.GONE);
+    }
+
+    private void hideNavigationButtons() {
+        nextPage.setVisibility(View.GONE);
+        previousPage.setVisibility(View.GONE);
+    }
+
+    private void showNavigationButtons() {
+        if (null != mFilePresentationStarted && mFilePresentationStarted.isOwner()) {
+            nextPage.setVisibility(View.GONE);
+            previousPage.setVisibility(View.GONE);
+            if (mFilePresentationStarted.getPosition() + 1 < mFilePresentationStarted.getImageCount())
+                nextPage.setVisibility(View.VISIBLE);
+
+            if (mFilePresentationStarted.getPosition() - 1 >= 0)
+                previousPage.setVisibility(View.VISIBLE);
+        } else {
+            hideNavigationButtons();
+        }
+    }
+
+    private void updatePresentation(int new_position) {
+        if (!mFilePresentationStarted.isOwner())
+            hideButtonsPresentation();
+        else
+            showStopPresentation();
+
+        VoxeetSdk.getInstance()
+                .getFilePresentationService()
+                .updatePresentation(mFilePresentationStarted.getFileId(), new_position)
+                .then(new PromiseExec<FilePresentationUpdated, Object>() {
+                    @Override
+                    public void onCall(@Nullable FilePresentationUpdated result, @NonNull Solver<Object> solver) {
+                        //invalidate)
+                        onEvent(result);
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        error.printStackTrace();
+                        Log.d(TAG, "onError: " + error.getMessage());
+                        showNavigationButtons();
+                    }
+                });
+
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(QualityIndicators event) {
+        Log.d(TAG, "onEvent: MOS := " + event.getMos());
     }
 }

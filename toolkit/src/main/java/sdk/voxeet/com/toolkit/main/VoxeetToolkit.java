@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -40,15 +41,17 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
      * @param application The voxeet sdk instance
      */
     public static synchronized VoxeetToolkit initialize(Application application, EventBus eventBus) {
-        sInstance = new VoxeetToolkit();
 
-        DefaultRootViewProvider provider = new DefaultRootViewProvider(application, sInstance);
-        provider.registerLifecycleListener(sInstance);
-        sInstance.setProvider(provider);
+        if(null == sInstance) {
+            Log.d(TAG, "initialize: toolkit initializing");
+            sInstance = new VoxeetToolkit();
 
-        sInstance.init(application, eventBus);
+            DefaultRootViewProvider provider = new DefaultRootViewProvider(application, sInstance);
+            provider.registerLifecycleListener(sInstance);
+            sInstance.setProvider(provider);
 
-
+            sInstance.init(application, eventBus);
+        }
         return sInstance;
     }
 

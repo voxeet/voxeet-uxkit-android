@@ -48,6 +48,8 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         _last_conference_duration = 0;
         _last_conference = null;
 
+        //disable by default
+        enable(false);
         setDefaultOverlayState(overlay);
         setVoxeetOverlayViewProvider(new DefaultReplayMessageProvider(this));
         setVoxeetSubViewProvider(new DefaultReplayMessageSubViewProvider());
@@ -81,13 +83,42 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
         SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
         service.setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
-        service.conferenceHistory(conferenceId);
+        service.conferenceHistory(conferenceId)
+        .then(new PromiseExec<GetConferenceHistoryEvent, Object>() {
+            @Override
+            public void onCall(@Nullable GetConferenceHistoryEvent event, @NonNull Solver<Object> solver) {
+                //possibility to manage the conference history event right here
+                HistoryConference history_conference = findFirstMatch(event);
+
+                if (history_conference != null) {
+                    _last_conference_duration = history_conference.getConferenceRecordingDuration();
+                } else {
+                    //must be because it is not the current conference which returned something !
+                }
+
+                _wait_for_history = false;
+            }
+        })
+        .error(new ErrorPromise() {
+            @Override
+            public void onError(@NonNull Throwable throwable) {
+                Log.d(TAG, "onHistoryError: " + throwable.getMessage());
+                throwable.printStackTrace();
+
+                _wait_for_history = false;
+            }
+        });
 
         //TODO here, do a Promise.all with the two different method !
         //and resolve a returned promise with the relevant information
         return service.replay(_last_conference, _wait_for_history_offset);
     }
 
+    /**
+     * Will leave the current replay if any action is called on this method
+     *
+     * to be used internally
+     */
     @Override
     public void onActionButtonClicked() {
         //leave the current conference
@@ -105,21 +136,6 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
                         error.printStackTrace();
                     }
                 });
-    }
-
-    public void onEvent(GetConferenceHistoryErrorEvent event) {
-        Log.d(TAG, "onEvent: " + event.getClass().getSimpleName() + " " + event.message());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(GetConferenceHistoryEvent event) {
-        HistoryConference history_conference = findFirstMatch(event);
-
-        if (history_conference != null) {
-            _last_conference_duration = history_conference.getConferenceRecordingDuration();
-        } else {
-            //must be because it is not the current conference which returned something !
-        }
     }
 
     @Override
@@ -140,7 +156,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         return null != getMainView();
     }
 
-
+    @Nullable
     public String getLastConferenceCalled() {
         return _last_conference;
     }
@@ -149,7 +165,14 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         return _last_conference_duration;
     }
 
-    private HistoryConference findFirstMatch(GetConferenceHistoryEvent event) {
+    /**
+     * Retrieve the first relevant information about this history
+     *
+     * @param event the event to manage
+     * @return a nullable object corresponding to the description
+     */
+    @Nullable
+    private HistoryConference findFirstMatch(@NonNull GetConferenceHistoryEvent event) {
         for (HistoryConference item : event.getItems()) {
             if (_last_conference.equalsIgnoreCase(item.getConferenceId())
                     && item.getConferenceRecordingDuration() > 0) {
