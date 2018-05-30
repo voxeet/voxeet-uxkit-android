@@ -4,6 +4,6 @@
     <string name="upload_server_avatar_url">@string/uploadServerAvatarUrl</string>
     <string name="upload_server_file_url">@string/uploadServerFileUrl</string>
     <string name="base_url">https://staging-session.voxeet.com</string>
-    <string name="websocket_url">wss://staging-session.voxeet.com/session/</string>
+    <string name="websocket_url">wss://staging-session.voxeet.com/v2/session</string>
     <string name="session_manager_url">staging-session.voxeet.com</string>
 </resources>

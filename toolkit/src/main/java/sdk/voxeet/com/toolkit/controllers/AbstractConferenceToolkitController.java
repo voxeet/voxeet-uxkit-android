@@ -257,8 +257,10 @@ public abstract class AbstractConferenceToolkitController {
 
         Log.d(TAG, "displayView: " + mMainView + " " + in_conf + " " + isOverlayEnabled());
 
+        boolean should_send_user_join = false;
         if (mMainView == null && in_conf) {
             init();
+            should_send_user_join = true;
         }
 
         if (isOverlayEnabled()) {
@@ -292,6 +294,20 @@ public abstract class AbstractConferenceToolkitController {
                             mMainView.requestLayout();
                             mMainViewParent.requestLayout();
                             mMainView.onResume();
+
+                            try {
+                                List<DefaultConferenceUser> users = VoxeetSdk.getInstance()
+                                        .getConferenceService()
+                                        .getConferenceUsers();
+
+                                if (null != users) {
+                                    for (DefaultConferenceUser user : users) {
+                                        mMainView.onConferenceUserJoined(user);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
@@ -304,7 +320,8 @@ public abstract class AbstractConferenceToolkitController {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                if (view != null) {
+                boolean release = RemoveViewType.FROM_HUD.equals(from_type) || !isEnabled() || !isViewRetainedOnLeave();
+                if (view != null && release) {
                     ViewGroup viewHolder = (ViewGroup) view.getParent();
                     if (viewHolder != null)
                         viewHolder.removeView(view);
@@ -317,7 +334,7 @@ public abstract class AbstractConferenceToolkitController {
 
                     view.onStop();
 
-                    if (should_release && (RemoveViewType.FROM_HUD.equals(from_type) || !isEnabled() || !isViewRetainedOnLeave())) {
+                    if (should_release && release) {
                         Log.d(TAG, "run: AbstractConferenceToolkitController should release view " + view.getClass().getSimpleName());
                         view.onDestroy();
                         //if we still have the main view displayed
@@ -568,6 +585,8 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceCreationSuccess event) {
+        if (mMainView == null) init();
+
         if (validFilter(event.getConfId()) || validFilter(event.getConfAlias())) {
             mMainView.onConferenceCreation(event.getConfId());
         }
@@ -807,7 +826,7 @@ public abstract class AbstractConferenceToolkitController {
     }
 
     private void log(@NonNull String value) {
-        //Log.d(TAG, value);
+        Log.d(TAG, value);
     }
 
     private void mergeConferenceUsers(@NonNull List<DefaultConferenceUser> users) {

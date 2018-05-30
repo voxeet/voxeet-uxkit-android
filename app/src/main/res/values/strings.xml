@@ -15,5 +15,9 @@
     <string name="join">Start</string>
     <string name="disconnect">Disconnect</string>
     <string name="invalid_activity_start_intent">Invalid accessor to this activity. Please set proper values in intent</string>
+    <string name="start_presentation">Start Presentation</string>
+    <string name="stop_presentation">Stop Presentation</string>
+    <string name="previous_page">Previous page</string>
+    <string name="next_page">Next page</string>
 </resources>
 

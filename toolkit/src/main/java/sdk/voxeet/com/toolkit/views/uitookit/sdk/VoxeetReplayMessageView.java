@@ -78,6 +78,8 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
             Log.d(TAG, "onMediaStreamsUpdated: " + key + " " + mediaStreams.get(key).hasVideo());
 
             if (!found) {
+                Log.d(TAG, "updateStreams: view found, visible and attach");
+                selectedView.setVisibility(View.VISIBLE);
                 selectedView.attach(key, mediaStreams.get(key));
                 found = true;
             }
@@ -133,13 +135,5 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
 
         //addListeners for voxeet dispatch events
         //addListener(voxeetTimer);
-    }
-
-    private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent event) {
-            return true;
-        }
     }
 }

@@ -151,6 +151,7 @@ public class VoxeetRenderer extends TextureView
      */
     public void init(EglBase.Context sharedContext, RendererCommon.RendererEvents rendererEvents,
                      int[] configAttributes, RendererCommon.GlDrawer drawer) {
+        Log.d(TAG, "initializing VoxeetRenderer");
         synchronized (handlerLock) {
             if (renderThreadHandler != null) {
                 throw new IllegalStateException(getResourceName() + "Already initialized");
@@ -164,6 +165,10 @@ public class VoxeetRenderer extends TextureView
             renderThreadHandler = new Handler(renderThread.getLooper());
         }
 //        tryCreateEglSurface(surface);
+
+        if(isSurfaceCreated) {
+            tryCreateEglSurface();
+        }
     }
 
     /**
@@ -415,7 +420,7 @@ public class VoxeetRenderer extends TextureView
             pendingFrame = null;
         }
         if (eglBase == null || !eglBase.hasSurface()) {
-            Log.e(TAG, getResourceName() + "No surface to draw on");
+            Log.e(TAG, getResourceName() + "No surface to draw on " + eglBase+" "+(eglBase != null ? eglBase.hasSurface() : ""));
             VideoRenderer.renderFrameDone(frame);
             return;
         }

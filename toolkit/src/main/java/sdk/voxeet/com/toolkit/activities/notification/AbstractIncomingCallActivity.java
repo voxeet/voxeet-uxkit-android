@@ -143,9 +143,9 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
     protected void onDecline() {
         if (getConferenceId() != null) {
             VoxeetSdk.getInstance().getConferenceService().decline(getConferenceId())
-                    .then(new PromiseExec<Boolean, Object>() {
+                    .then(new PromiseExec<DeclineConferenceResultEvent, Object>() {
                         @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                        public void onCall(@Nullable DeclineConferenceResultEvent result, @NonNull Solver<Object> solver) {
                             //
                         }
                     })
@@ -169,16 +169,6 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
             overridePendingTransition(0, 0);
         }
     }
-
-    /**
-     * Return a valid class representing a voxeet activity to start
-     * Note that you can use the IncomingCallFactory getter to check for
-     * in-memory Class
-     *
-     * @return a valid Class to set in the accepted intent
-     */
-    @NonNull
-    protected abstract Class<? extends VoxeetAppCompatActivity> getActivityClassToCall();
 
     /**
      * Give the possibility to add custom extra infos before starting a conference
