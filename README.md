@@ -871,8 +871,8 @@ Only one instance of a conference is allowed to be live. Leaving the current con
 ## Version
 
 
-public-sdk: 1.0.3
-toolkit: 1.0.3
+public-sdk: 1.0.4
+toolkit: 1.0.4
 
 ## Tech
 
