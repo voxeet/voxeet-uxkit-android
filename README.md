@@ -20,17 +20,17 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:1.0.3') {
+  compile ('com.voxeet.sdk:toolkit:1.0.4') {
     transitive = true
   }
 }
 ```
 
-The current sdk is available using the following version (used by the current toolkit version) :
+The current logic-only (no UI) sdk is available using the following version (used by the current toolkit version) :
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:public-sdk:1.0.3') {
+  compile ('com.voxeet.sdk:public-sdk:1.0.4') {
     transitive = true
   }
 }
@@ -49,6 +49,11 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v1.0.4 :
+  - upgrade api calls
+  - fix issue with answers
+  - fix conference alias in history
 
 v1.0.3 :
   - initialize Promises during the Voxeet initialization
