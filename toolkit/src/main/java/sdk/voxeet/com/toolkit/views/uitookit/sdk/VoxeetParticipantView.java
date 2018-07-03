@@ -12,8 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
+
+import org.webrtc.MediaStream;
 
 import java.util.Iterator;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package sdk.voxeet.com.toolkit.utils;
 
-import com.voxeet.android.media.MediaStream;
+import org.webrtc.MediaStream;
 
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 

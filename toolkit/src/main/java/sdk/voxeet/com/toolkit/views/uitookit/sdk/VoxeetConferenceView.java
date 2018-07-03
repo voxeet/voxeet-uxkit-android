@@ -9,8 +9,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaSDK;
 import com.voxeet.toolkit.R;
+
+import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamWrapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +84,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         MediaStream mediaStream = null != mediaStreams ? mediaStreams.get(userId) : null;
         if (userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStream != null) {
-            if (mediaStream.hasVideo()) {
+            if (MediaStreamWrapper.hasVideo(mediaStream)) {
                 selfView.setVisibility(VISIBLE);
                 selfView.attach(userId, mediaStream);
             } else {
@@ -200,7 +203,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onParticipantSelected(DefaultConferenceUser user, MediaStream mediaStream) {
         speakerView.lockScreen(user.getUserId());
 
-        if (mediaStream != null && (mediaStream.hasVideo() || mediaStream.isScreenShare())) {
+        if (mediaStream != null && (MediaStreamWrapper.hasVideo(mediaStream) || MediaSDK.isScreenShare(mediaStream))) {
             selectedView.setVisibility(VISIBLE);
             selectedView.setAutoUnAttach(true);
             selectedView.attach(user.getUserId(), mediaStream, true);

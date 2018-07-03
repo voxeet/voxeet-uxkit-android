@@ -25,10 +25,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.voxeet.android.media.MediaStream;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamWrapper;
 
 import java.io.File;
 import java.util.HashMap;
@@ -541,7 +542,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         if (user.getUserId().equalsIgnoreCase(VoxeetPreferences.id())) {
             if (action == MainActivity.REPLAY)
                 addParticipant(user);
-            else if (mediaStream != null && mediaStream.hasVideo()) { //enabling own video
+            else if (mediaStream != null && MediaStreamWrapper.hasVideo(mediaStream)) { //enabling own video
                 videoStream.setVisibility(VISIBLE);
                 videoStream.attach(user.getUserId(), mediaStream);
             } else { // disabling own video
@@ -718,7 +719,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
     public void onEvent(ScreenStreamAddedEvent event) {
         Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         MediaStream mediaStream = event.getMediaStream();
-        if (mediaStream != null && mediaStream.hasVideo()) { // attaching stream
+        if (mediaStream != null && MediaStreamWrapper.hasVideo(mediaStream)) { // attaching stream
             screenShare.setVisibility(VISIBLE);
             screenShare.attach(event.getPeer(), mediaStream);
         }

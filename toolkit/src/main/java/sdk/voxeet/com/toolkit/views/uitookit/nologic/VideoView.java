@@ -9,10 +9,14 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 
-import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.video.EglBase;
-import com.voxeet.android.media.video.RendererCommon;
+import com.voxeet.android.media.MediaSDK;
 import com.voxeet.toolkit.R;
+
+import org.webrtc.EglBase;
+import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamWrapper;
+import org.webrtc.RendererCommon;
+import org.webrtc.VideoRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -288,7 +292,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
         if (autoUnAttach && isAttached())
             unAttach();
 
-        if (!isAttached() && peerId != null && mediaStream != null && (mediaStream.hasVideo() || mediaStream.isScreenShare())) {
+        if (!isAttached() && peerId != null && mediaStream != null && (MediaStreamWrapper.hasVideo(mediaStream) || MediaSDK.isScreenShare(mediaStream))) {
             setAttached(true);
 
             mPeerId = peerId;
@@ -334,7 +338,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      * @return true of false
      */
     public boolean isScreenShare() {
-        return mMediaStream != null && mMediaStream.isScreenShare();
+        return mMediaStream != null && MediaSDK.isScreenShare(mMediaStream);
     }
 
     /**
@@ -344,7 +348,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      * @return true of false
      */
     public boolean hasVideo() {
-        return mMediaStream != null && mMediaStream.hasVideo();
+        return mMediaStream != null && MediaStreamWrapper.hasVideo(mMediaStream);
     }
 
     @Override

@@ -11,13 +11,15 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.voxeet.android.media.Media;
-import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaSDK;
+import com.voxeet.android.media.audio.AudioRoute;
 import com.voxeet.toolkit.R;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -563,7 +565,7 @@ public abstract class AbstractConferenceToolkitController {
     public void onEvent(@NonNull ConferenceJoinedSuccessEvent event) {
         if (validFilter(event.getConferenceId()) || validFilter(event.getAliasId())) {
             VoxeetSdk.getInstance().getConferenceService()
-                    .setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
+                    .setAudioRoute(AudioRoute.ROUTE_SPEAKER);
 
             displayView();
 
@@ -674,8 +676,8 @@ public abstract class AbstractConferenceToolkitController {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ScreenStreamAddedEvent event) {
-        Log.d(TAG, "onEvent: event " + event.getMediaStream().isScreenShare() + " "
-                + event.getMediaStream().hasVideo());
+        Log.d(TAG, "onEvent: event " + MediaSDK.isScreenShare(event.getMediaStream()) + " "
+                + MediaStreamWrapper.hasVideo(event.getMediaStream()));
         mScreenShareMediaStreams.put(event.getPeer(), event.getMediaStream());
 
         if (mMainView != null) {

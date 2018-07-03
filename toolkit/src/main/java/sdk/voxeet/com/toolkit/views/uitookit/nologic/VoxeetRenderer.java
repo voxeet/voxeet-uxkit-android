@@ -11,12 +11,14 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.TextureView;
 
-import com.voxeet.android.media.VideoRenderer;
-import com.voxeet.android.media.video.EglBase;
-import com.voxeet.android.media.video.GlRectDrawer;
-import com.voxeet.android.media.video.GlUtil;
-import com.voxeet.android.media.video.RendererCommon;
-import com.voxeet.android.media.video.ThreadUtils;
+import org.webrtc.EglBase;
+import org.webrtc.GlRectDrawer;
+import org.webrtc.GlUtil;
+import org.webrtc.I420FrameHelper;
+import org.webrtc.RendererCommon;
+import org.webrtc.ThreadUtils;
+import org.webrtc.VideoFrameDrawer;
+import org.webrtc.VideoRenderer;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -43,8 +45,8 @@ public class VoxeetRenderer extends TextureView
     // EGL and GL resources for drawing YUV/OES textures. After initilization, these are only accessed
     // from the render thread.
     private EglBase eglBase;
-    private final RendererCommon.YuvUploader yuvUploader = new RendererCommon.YuvUploader();
     private RendererCommon.GlDrawer drawer;
+    private VideoFrameDrawer videoFrameDrawer;
     // Texture ids for YUV frames. Allocated on first arrival of a YUV frame.
     private int[] yuvTextures = null;
 
@@ -159,6 +161,7 @@ public class VoxeetRenderer extends TextureView
 
             this.rendererEvents = rendererEvents;
             this.drawer = drawer;
+            this.videoFrameDrawer = new VideoFrameDrawer();
             renderThread = new HandlerThread(TAG);
             renderThread.start();
             eglBase = EglBase.create(sharedContext, configAttributes);
@@ -412,6 +415,7 @@ public class VoxeetRenderer extends TextureView
         }
         // Fetch and render |pendingFrame|.
         final VideoRenderer.I420Frame frame;
+
         synchronized (frameLock) {
             if (pendingFrame == null) {
                 return;
@@ -460,10 +464,13 @@ public class VoxeetRenderer extends TextureView
                     yuvTextures[i] = GlUtil.generateTexture(GLES20.GL_TEXTURE_2D);
                 }
             }
-            yuvUploader.uploadYuvData(
+
+
+            videoFrameDrawer.drawFrame(I420FrameHelper.I420toVideoFrame(frame), drawer);
+            /*yuvUploader.uploadYuvData(
                     yuvTextures, frame.width, frame.height, frame.yuvStrides, frame.yuvPlanes);
             drawer.drawYuv(yuvTextures, texMatrix, frame.rotatedWidth(), frame.rotatedHeight(),
-                    0, 0, surfaceSize.x, surfaceSize.y);
+                    0, 0, surfaceSize.x, surfaceSize.y);*/
         } else {
             drawer.drawOes(frame.textureId, texMatrix, frame.rotatedWidth(), frame.rotatedHeight(),
                     0, 0, surfaceSize.x, surfaceSize.y);

@@ -12,7 +12,9 @@ import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.squareup.picasso.Picasso;
-import com.voxeet.android.media.MediaStream;
+
+import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,7 +130,7 @@ public class ParticipantAdapter extends BaseAdapter {
         if (mediaStreamMap != null && mediaStreamMap.containsKey(user.getUserId())) {
             MediaStream mediaStream = mediaStreamMap.get(user.getUserId());
             if (mediaStream != null) {
-                if (mediaStream.hasVideo()) {
+                if (MediaStreamWrapper.hasVideo(mediaStream)) {
                     holder.avatar.setVisibility(View.VISIBLE);
                     holder.avatar.attach(user.getUserId(), mediaStreamMap.get(user.getUserId()));
                 } else {
