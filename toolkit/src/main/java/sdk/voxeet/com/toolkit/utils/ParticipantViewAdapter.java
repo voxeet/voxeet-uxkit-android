@@ -14,8 +14,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaSDK;
 import com.voxeet.toolkit.R;
+
+import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -340,7 +343,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         mMediaStreamMap = mediaStreams;
         if (null != userId && mediaStreams.containsKey(userId)) {
             MediaStream stream = mediaStreams.get(userId);
-            if (null != stream && stream.hasVideo()) {
+            if (null != stream && MediaStreamWrapper.hasVideo(stream)) {
                 mRequestUserIdChanged = userId;
             }
         }
@@ -353,7 +356,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
         if (screenSharemediaStreams.containsKey(userId)) {
             MediaStream stream = screenSharemediaStreams.get(userId);
-            if (null != stream && stream.isScreenShare()) {
+            if (null != stream && MediaSDK.isScreenShare(stream)) {
                 mRequestUserIdChanged = userId;
             }
         }
@@ -425,13 +428,13 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private boolean hasScreenShareMediaStream(@NonNull String userId) {
         if (null != mScreenShareMediaStreams && mScreenShareMediaStreams.containsKey(userId))
-            return mScreenShareMediaStreams.get(userId).isScreenShare();
+            return MediaSDK.isScreenShare(mScreenShareMediaStreams.get(userId));
         return false;
     }
 
     private boolean hasCameraMediaStream(@NonNull String userId) {
         if (null != mMediaStreamMap && mMediaStreamMap.containsKey(userId))
-            return mMediaStreamMap.get(userId).hasVideo();
+            return MediaStreamWrapper.hasVideo(mMediaStreamMap.get(userId));
         return false;
     }
 }

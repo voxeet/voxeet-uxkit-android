@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.voxeet.android.media.Media;
+import com.voxeet.android.media.audio.AudioRoute;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class ConferenceOutput extends DialogFragment {
 
     protected ListView outputListView;
 
-    private List<Media.AudioRoute> currentRoutes;
+    private List<AudioRoute> currentRoutes;
 
     private List<String> routesDescription = Arrays.asList("Headset", "Phone", "Speaker", "Bluetooth");
 
@@ -63,13 +63,13 @@ public class ConferenceOutput extends DialogFragment {
         currentRoutes = VoxeetSdk.getInstance().getConferenceService().getAvailableRoutes();
 
         List<String> desc = new ArrayList<>();
-        for (Media.AudioRoute r : currentRoutes) {
+        for (AudioRoute r : currentRoutes) {
             desc.add(routesDescription.get(r.value()));
         }
 
         outputListView.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_single_choice, desc.toArray(new String[desc.size()])));
 
-        Media.AudioRoute selectedRoute = VoxeetSdk.getInstance().getConferenceService().currentRoute();
+        AudioRoute selectedRoute = VoxeetSdk.getInstance().getConferenceService().currentRoute();
 
         outputListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         outputListView.setItemChecked(currentRoutes.indexOf(selectedRoute), true);

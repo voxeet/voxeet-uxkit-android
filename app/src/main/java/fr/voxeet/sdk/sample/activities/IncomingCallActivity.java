@@ -11,9 +11,6 @@ import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
  */
 
 public class IncomingCallActivity extends AbstractIncomingCallActivity {
-    @NonNull
-    @Override
-    protected Class<? extends VoxeetAppCompatActivity> getActivityClassToCall() {
-        return MainActivity.class;
-    }
+    //TODO here, custom implementation possible, given that the default behaviour
+    //is in AbstractIncomingCallActivity
 }

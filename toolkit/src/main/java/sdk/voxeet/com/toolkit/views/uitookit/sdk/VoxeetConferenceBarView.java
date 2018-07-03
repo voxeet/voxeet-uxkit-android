@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,9 +19,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.voxeet.android.media.Media;
-import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.audio.AudioRoute;
 import com.voxeet.toolkit.R;
+
+import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -296,7 +297,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         super.onMediaStreamUpdated(userId, mediaStreams);
 
         if (camera != null && userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStreams.get(userId) != null) {
-            camera.setSelected(mediaStreams.get(userId).hasVideo());
+            camera.setSelected(MediaStreamWrapper.hasVideo(mediaStreams.get(userId)));
         }
     }
 
@@ -318,7 +319,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
                     VoxeetSdk.getInstance()
                             .getConferenceService()
-                            .setAudioRoute(speaker.isSelected() ? Media.AudioRoute.ROUTE_SPEAKER : Media.AudioRoute.ROUTE_PHONE);
+                            .setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
                 }
             });
 

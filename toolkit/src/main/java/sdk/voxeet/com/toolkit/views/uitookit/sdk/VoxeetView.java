@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.voxeet.android.media.MediaStream;
+import org.webrtc.MediaStream;
 
 import java.util.ArrayList;
 import java.util.List;

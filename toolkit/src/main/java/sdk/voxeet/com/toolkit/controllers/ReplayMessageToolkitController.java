@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.voxeet.android.media.Media;
+import com.voxeet.android.media.audio.AudioRoute;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,7 +22,6 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewProviderListener;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.services.SdkConferenceService;
-import voxeet.com.sdk.events.error.GetConferenceHistoryErrorEvent;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.GetConferenceHistoryEvent;
@@ -82,7 +81,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
 
         SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
-        service.setAudioRoute(Media.AudioRoute.ROUTE_SPEAKER);
+        service.setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
         .then(new PromiseExec<GetConferenceHistoryEvent, Object>() {
             @Override
