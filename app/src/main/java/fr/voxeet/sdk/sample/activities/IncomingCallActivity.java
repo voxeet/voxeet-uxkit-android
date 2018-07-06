@@ -1,16 +1,20 @@
 package fr.voxeet.sdk.sample.activities;
 
-import android.support.annotation.NonNull;
+import android.os.Bundle;
 
 import sdk.voxeet.com.toolkit.activities.notification.AbstractIncomingCallActivity;
-import sdk.voxeet.com.toolkit.activities.notification.IncomingCallFactory;
-import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 
 /**
- * Created by kevinleperf on 06/04/2018.
+ * Minimalist Activity receiving incoming calls from the SDK
  */
 
 public class IncomingCallActivity extends AbstractIncomingCallActivity {
-    //TODO here, custom implementation possible, given that the default behaviour
-    //is in AbstractIncomingCallActivity
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        //specific Voxeet implement is done here
+        super.onCreate(savedInstanceState);
+
+        //no need to implement setContentView when using AbstractIncomingCallActivity
+    }
 }
