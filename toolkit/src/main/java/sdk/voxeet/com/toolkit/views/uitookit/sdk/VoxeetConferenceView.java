@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import com.voxeet.android.media.MediaSDK;
 import com.voxeet.toolkit.R;
 
-import org.webrtc.MediaStream;
-import org.webrtc.MediaStreamWrapper;
+import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaStream;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +84,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         MediaStream mediaStream = null != mediaStreams ? mediaStreams.get(userId) : null;
         if (userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStream != null) {
-            if (MediaStreamWrapper.hasVideo(mediaStream)) {
+            if (mediaStream.videoTracks().size() > 0) {
                 selfView.setVisibility(VISIBLE);
                 selfView.attach(userId, mediaStream);
             } else {
@@ -203,7 +203,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onParticipantSelected(DefaultConferenceUser user, MediaStream mediaStream) {
         speakerView.lockScreen(user.getUserId());
 
-        if (mediaStream != null && (MediaStreamWrapper.hasVideo(mediaStream) || MediaSDK.isScreenShare(mediaStream))) {
+        if (mediaStream != null && (mediaStream.videoTracks().size() > 0 || MediaSDK.isScreenShare(mediaStream))) {
             selectedView.setVisibility(VISIBLE);
             selectedView.setAutoUnAttach(true);
             selectedView.attach(user.getUserId(), mediaStream, true);

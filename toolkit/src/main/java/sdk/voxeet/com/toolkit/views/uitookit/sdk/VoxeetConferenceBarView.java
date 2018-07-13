@@ -22,8 +22,8 @@ import android.widget.LinearLayout;
 import com.voxeet.android.media.audio.AudioRoute;
 import com.voxeet.toolkit.R;
 
-import org.webrtc.MediaStream;
-import org.webrtc.MediaStreamWrapper;
+import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaStream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -297,7 +297,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         super.onMediaStreamUpdated(userId, mediaStreams);
 
         if (camera != null && userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStreams.get(userId) != null) {
-            camera.setSelected(MediaStreamWrapper.hasVideo(mediaStreams.get(userId)));
+            camera.setSelected(mediaStreams.get(userId).videoTracks().size() > 0);
         }
     }
 

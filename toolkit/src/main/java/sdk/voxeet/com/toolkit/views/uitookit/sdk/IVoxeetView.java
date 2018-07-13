@@ -1,6 +1,6 @@
 package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 
-import org.webrtc.MediaStream;
+import com.voxeet.android.media.MediaStream;
 
 import java.util.List;
 import java.util.Map;

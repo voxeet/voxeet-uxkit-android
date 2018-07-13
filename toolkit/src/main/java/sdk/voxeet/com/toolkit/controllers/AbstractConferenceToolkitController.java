@@ -12,14 +12,13 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.voxeet.android.media.MediaSDK;
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.audio.AudioRoute;
 import com.voxeet.toolkit.R;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.webrtc.MediaStream;
-import org.webrtc.MediaStreamWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -677,7 +676,7 @@ public abstract class AbstractConferenceToolkitController {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ScreenStreamAddedEvent event) {
         Log.d(TAG, "onEvent: event " + MediaSDK.isScreenShare(event.getMediaStream()) + " "
-                + MediaStreamWrapper.hasVideo(event.getMediaStream()));
+                + event.getMediaStream().videoTracks().size());
         mScreenShareMediaStreams.put(event.getPeer(), event.getMediaStream());
 
         if (mMainView != null) {
