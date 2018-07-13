@@ -9,12 +9,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 
-import com.voxeet.android.media.MediaSDK;
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
 import org.webrtc.EglBase;
-import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStream;
 import org.webrtc.RendererCommon;
 
 import java.util.ArrayList;
@@ -91,6 +89,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     }
 
     private void init() {
+        Log.d(TAG, "init: VideoView " + this);
         mHandler = new Handler();
         mEventsListeners = new ArrayList<>();
         eglBase = EglBase.create();
@@ -223,6 +222,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      */
     public boolean reinit() {
         try {
+            Log.d(TAG, "reinit: " + mRenderer + " " + this);
             this.mRenderer.init(eglBase.getEglBaseContext(), this);
             return true;
         } catch (Exception e) {
@@ -271,9 +271,9 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      * @param force       force the update
      */
     public void attach(String peerId, MediaStream mediaStream, boolean force) {
-        Log.d(TAG, "attach: " + mMediaStream + " " + mediaStream + " " + peerId);
+        Log.d(TAG, "attach: " + mMediaStream + " " + mediaStream + " " + peerId + " " + this);
         if (isAttached() && mPeerId != null && mPeerId.equals(peerId)) {// this user is already attached.
-            Log.d(TAG, "attach: isattached and peer id equals " + force);
+            Log.d(TAG, "attach: isattached and peer id equals " + force + " " + this);
             if (force) {
                 //nothing, go on
                 if (mediaStream != mMediaStream || mediaStream == null) {
@@ -300,7 +300,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
             boolean result = VoxeetSdk.getInstance().getConferenceService().attachMediaStream(mediaStream, mRenderer);
 
-            Log.d(TAG, "attach: result := " + result);
+            Log.d(TAG, "attach: result := " + result + " " + this);
         }
     }
 
