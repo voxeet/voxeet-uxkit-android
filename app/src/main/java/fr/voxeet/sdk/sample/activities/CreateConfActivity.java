@@ -32,6 +32,7 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStream;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -663,13 +664,13 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
                 .then(new PromiseExec<List<ConferenceRefreshedEvent>, Object>() {
                     @Override
                     public void onCall(@Nullable List<ConferenceRefreshedEvent> result, @NonNull Solver<Object> solver) {
-
+                        Log.d(TAG, "onCall: " + Arrays.toString(result.toArray()));
                     }
                 })
                 .error(new ErrorPromise() {
                     @Override
                     public void onError(Throwable error) {
-
+                        error.printStackTrace();
                     }
                 });
     }

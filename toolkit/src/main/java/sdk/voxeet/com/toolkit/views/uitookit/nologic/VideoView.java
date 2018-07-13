@@ -16,7 +16,6 @@ import org.webrtc.EglBase;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStream;
 import org.webrtc.RendererCommon;
-import org.webrtc.VideoRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -292,7 +291,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
         if (autoUnAttach && isAttached())
             unAttach();
 
-        if (!isAttached() && peerId != null && mediaStream != null && (mediaStream.videoTracks().size() > 0 || MediaSDK.isScreenShare(mediaStream))) {
+        if (!isAttached() && peerId != null && mediaStream != null && (mediaStream.videoTracks().size() > 0 || mediaStream.isScreenShare())) {
             setAttached(true);
 
             mPeerId = peerId;
@@ -338,7 +337,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      * @return true of false
      */
     public boolean isScreenShare() {
-        return mMediaStream != null && MediaSDK.isScreenShare(mMediaStream);
+        return mMediaStream != null && mMediaStream.isScreenShare();
     }
 
     /**

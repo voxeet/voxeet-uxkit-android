@@ -356,7 +356,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
         if (screenSharemediaStreams.containsKey(userId)) {
             MediaStream stream = screenSharemediaStreams.get(userId);
-            if (null != stream && MediaSDK.isScreenShare(stream)) {
+            if (null != stream && stream.isScreenShare()) {
                 mRequestUserIdChanged = userId;
             }
         }
@@ -428,7 +428,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private boolean hasScreenShareMediaStream(@NonNull String userId) {
         if (null != mScreenShareMediaStreams && mScreenShareMediaStreams.containsKey(userId))
-            return MediaSDK.isScreenShare(mScreenShareMediaStreams.get(userId));
+            return mScreenShareMediaStreams.get(userId).isScreenShare();
         return false;
     }
 

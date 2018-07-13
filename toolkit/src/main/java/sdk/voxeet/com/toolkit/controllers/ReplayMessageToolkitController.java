@@ -81,7 +81,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
 
         SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
-        service.setAudioRoute(AudioRoute.ROUTE_SPEAKER);
+        VoxeetSdk.getInstance().getAudioService().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
         .then(new PromiseExec<GetConferenceHistoryEvent, Object>() {
             @Override
