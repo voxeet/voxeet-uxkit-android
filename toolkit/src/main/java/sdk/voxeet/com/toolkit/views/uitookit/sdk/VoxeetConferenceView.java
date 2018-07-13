@@ -203,7 +203,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onParticipantSelected(DefaultConferenceUser user, MediaStream mediaStream) {
         speakerView.lockScreen(user.getUserId());
 
-        if (mediaStream != null && (mediaStream.videoTracks().size() > 0 || MediaSDK.isScreenShare(mediaStream))) {
+        if (mediaStream != null && (mediaStream.videoTracks().size() > 0 || mediaStream.isScreenShare())) {
             selectedView.setVisibility(VISIBLE);
             selectedView.setAutoUnAttach(true);
             selectedView.attach(user.getUserId(), mediaStream, true);

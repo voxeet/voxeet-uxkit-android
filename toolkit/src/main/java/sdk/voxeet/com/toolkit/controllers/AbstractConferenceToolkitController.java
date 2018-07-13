@@ -11,7 +11,6 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.voxeet.android.media.MediaSDK;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.audio.AudioRoute;
 import com.voxeet.toolkit.R;
@@ -675,8 +674,9 @@ public abstract class AbstractConferenceToolkitController {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ScreenStreamAddedEvent event) {
-        Log.d(TAG, "onEvent: event " + MediaSDK.isScreenShare(event.getMediaStream()) + " "
-                + event.getMediaStream().videoTracks().size());
+        MediaStream mediaStream = event.getMediaStream();
+        Log.d(TAG, "onEvent: event " + mediaStream.isScreenShare() + " "
+                + (mediaStream.videoTracks().size() > 0));
         mScreenShareMediaStreams.put(event.getPeer(), event.getMediaStream());
 
         if (mMainView != null) {
