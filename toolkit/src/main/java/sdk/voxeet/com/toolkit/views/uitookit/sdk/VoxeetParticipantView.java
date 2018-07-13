@@ -14,7 +14,7 @@ import android.view.View;
 
 import com.voxeet.toolkit.R;
 
-import org.webrtc.MediaStream;
+import com.voxeet.android.media.MediaStream;
 
 import java.util.Iterator;
 import java.util.Map;

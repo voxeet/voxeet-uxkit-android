@@ -17,8 +17,8 @@ import com.squareup.picasso.Picasso;
 import com.voxeet.android.media.MediaSDK;
 import com.voxeet.toolkit.R;
 
-import org.webrtc.MediaStream;
-import org.webrtc.MediaStreamWrapper;
+import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -343,7 +343,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         mMediaStreamMap = mediaStreams;
         if (null != userId && mediaStreams.containsKey(userId)) {
             MediaStream stream = mediaStreams.get(userId);
-            if (null != stream && MediaStreamWrapper.hasVideo(stream)) {
+            if (null != stream && stream.videoTracks().size() > 0) {
                 mRequestUserIdChanged = userId;
             }
         }
@@ -434,7 +434,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private boolean hasCameraMediaStream(@NonNull String userId) {
         if (null != mMediaStreamMap && mMediaStreamMap.containsKey(userId))
-            return MediaStreamWrapper.hasVideo(mMediaStreamMap.get(userId));
+            return mMediaStreamMap.get(userId).videoTracks().size() > 0;
         return false;
     }
 }

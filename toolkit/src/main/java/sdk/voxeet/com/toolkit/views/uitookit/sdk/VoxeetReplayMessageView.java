@@ -9,8 +9,8 @@ import android.view.View;
 
 import com.voxeet.toolkit.R;
 
-import org.webrtc.MediaStream;
-import org.webrtc.MediaStreamWrapper;
+import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaStream;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +77,7 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
         Set<String> set = mediaStreams.keySet();
         boolean found = false;
         for (String key : set) {
-            Log.d(TAG, "onMediaStreamsUpdated: " + key + " " + MediaStreamWrapper.hasVideo(mediaStreams.get(key)));
+            Log.d(TAG, "onMediaStreamsUpdated: " + key + " " + mediaStreams.get(key).videoTracks().size());
 
             if (!found) {
                 Log.d(TAG, "updateStreams: view found, visible and attach");
