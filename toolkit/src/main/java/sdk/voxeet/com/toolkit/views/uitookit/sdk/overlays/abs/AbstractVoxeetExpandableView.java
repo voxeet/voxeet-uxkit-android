@@ -16,10 +16,6 @@ public abstract class AbstractVoxeetExpandableView extends VoxeetView implements
         super(context);
     }
 
-    public AbstractVoxeetExpandableView(Context context, boolean builderMode) {
-        super(context, builderMode);
-    }
-
     public AbstractVoxeetExpandableView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

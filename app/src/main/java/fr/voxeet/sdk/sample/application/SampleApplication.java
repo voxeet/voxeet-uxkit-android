@@ -48,6 +48,7 @@ public class SampleApplication extends MultiDexApplication {
         VoxeetToolkit.getInstance().enableOverlay(true);
 
         //change the overlay used by default
+        VoxeetToolkit.getInstance().getConferenceToolkit().setScreenShareEnabled(true);
         VoxeetToolkit.getInstance().getConferenceToolkit().setDefaultOverlayState(OverlayState.EXPANDED);
         VoxeetToolkit.getInstance().getReplayMessageToolkit().setDefaultOverlayState(OverlayState.EXPANDED);
 

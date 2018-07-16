@@ -27,8 +27,6 @@ public abstract class VoxeetView extends FrameLayout
 
     private final String TAG = VoxeetView.class.getSimpleName();
 
-    protected boolean builderMode = false;
-
     /**
      * Instantiates a new Voxeet view.
      *
@@ -36,20 +34,6 @@ public abstract class VoxeetView extends FrameLayout
      */
     public VoxeetView(Context context) {
         super(context);
-
-        onInit();
-    }
-
-    /**
-     * Instantiates a new Voxeet view.
-     *
-     * @param context     the context
-     * @param builderMode inflating the layout will differ depending on the value
-     */
-    public VoxeetView(Context context, boolean builderMode) {
-        super(context);
-
-        this.builderMode = builderMode;
 
         onInit();
     }

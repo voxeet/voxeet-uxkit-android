@@ -28,6 +28,7 @@ import voxeet.com.sdk.json.UserInfo;
 public class ConferenceToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
     private Map<String, UserInfo> mCachedInvited;
+    private boolean mScreenShareEnabled;
 
     public ConferenceToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
         super(context, eventbus);
@@ -95,5 +96,13 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         enable(true);
 
         return VoxeetSdk.getInstance().getConferenceService().create();
+    }
+
+    public boolean isScreenShareEnabled() {
+        return mScreenShareEnabled;
+    }
+
+    public void setScreenShareEnabled(boolean state) {
+        mScreenShareEnabled = state;
     }
 }
