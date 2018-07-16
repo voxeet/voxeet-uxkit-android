@@ -14,6 +14,7 @@ import com.voxeet.toolkit.R;
 
 import org.webrtc.EglBase;
 import org.webrtc.RendererCommon;
+import org.webrtc.SurfaceViewRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     /**
      * The Voxeet renderer.
      */
-    protected VoxeetRenderer mRenderer;
+    protected SurfaceViewRenderer mRenderer;
 
     private String mPeerId;
 
@@ -98,7 +99,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
                 LayoutParams.WRAP_CONTENT,
                 LayoutParams.MATCH_PARENT,
                 Gravity.CENTER);
-        mRenderer = new VoxeetRenderer(getContext());
+        mRenderer = new SurfaceViewRenderer(getContext());
         mRenderer.setLayoutParams(param);
 
         mRenderer.init(eglBase.getEglBaseContext(), this);
@@ -236,7 +237,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      *
      * @return the renderer
      */
-    public VoxeetRenderer getRenderer() {
+    public SurfaceViewRenderer getRenderer() {
         return mRenderer;
     }
 
