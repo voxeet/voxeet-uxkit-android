@@ -169,7 +169,7 @@ public class VoxeetRenderer extends TextureView
         }
 //        tryCreateEglSurface(surface);
 
-        if(isSurfaceCreated) {
+        if (isSurfaceCreated) {
             tryCreateEglSurface();
         }
     }
@@ -288,6 +288,7 @@ public class VoxeetRenderer extends TextureView
     // VideoRenderer.Callbacks interface.
     @Override
     public void renderFrame(VideoRenderer.I420Frame frame) {
+        Log.d(TAG, "renderFrame: " + frame);
         synchronized (statisticsLock) {
             ++framesReceived;
         }
@@ -424,10 +425,11 @@ public class VoxeetRenderer extends TextureView
             pendingFrame = null;
         }
         if (eglBase == null || !eglBase.hasSurface()) {
-            Log.e(TAG, getResourceName() + "No surface to draw on " + eglBase+" "+(eglBase != null ? eglBase.hasSurface() : ""));
+            Log.e(TAG, getResourceName() + "No surface to draw on " + eglBase + " " + (eglBase != null ? eglBase.hasSurface() : ""));
             VideoRenderer.renderFrameDone(frame);
             return;
         }
+        Log.d(TAG, "renderFrameOnRenderThread: " + checkConsistentLayout());
         if (!checkConsistentLayout()) {
             // Output intermediate black frames while the layout is updated.
             makeBlack();
@@ -439,6 +441,7 @@ public class VoxeetRenderer extends TextureView
         // changed. Such a buffer will be rendered incorrectly, so flush it with a black frame.
         synchronized (layoutLock) {
             if (eglBase.surfaceWidth() != surfaceSize.x || eglBase.surfaceHeight() != surfaceSize.y) {
+                Log.d(TAG, "renderFrameOnRenderThread: surface not equals :x -> black");
                 makeBlack();
             }
         }
@@ -465,6 +468,7 @@ public class VoxeetRenderer extends TextureView
                 }
             }
 
+            Log.d(TAG, "renderFrameOnRenderThread: " + frame);
 
             videoFrameDrawer.drawFrame(I420FrameHelper.I420toVideoFrame(frame), drawer);
             /*yuvUploader.uploadYuvData(
@@ -472,6 +476,10 @@ public class VoxeetRenderer extends TextureView
             drawer.drawYuv(yuvTextures, texMatrix, frame.rotatedWidth(), frame.rotatedHeight(),
                     0, 0, surfaceSize.x, surfaceSize.y);*/
         } else {
+            Log.d(TAG, "renderFrameOnRenderThread: drawOes "
+                    + frame.textureId + " "
+                    + texMatrix + " " + frame.rotatedWidth()
+                    + " " + frame.rotatedHeight() + " " + frame.rotationDegree);
             drawer.drawOes(frame.textureId, texMatrix, frame.rotatedWidth(), frame.rotatedHeight(),
                     0, 0, surfaceSize.x, surfaceSize.y);
         }
