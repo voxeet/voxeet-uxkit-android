@@ -12,6 +12,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import sdk.voxeet.com.toolkit.activities.notification.IncomingBundleChecker;
 import sdk.voxeet.com.toolkit.activities.notification.IncomingCallFactory;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.services.ScreenShareService;
 import voxeet.com.sdk.events.error.ConferenceJoinedError;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
@@ -80,6 +81,12 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
         if (mIncomingBundleChecker.isBundleValid()) {
             mIncomingBundleChecker.onAccept();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ScreenShareService.RequestScreenSharePermissionEvent event) {
+        VoxeetSdk.getInstance().getScreenShareService()
+                .sendUserPermissionRequest(this);
     }
 
 

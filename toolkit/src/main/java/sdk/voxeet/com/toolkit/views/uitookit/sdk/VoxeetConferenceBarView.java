@@ -11,19 +11,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.audio.AudioRoute;
 import com.voxeet.toolkit.R;
-
-import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +83,8 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
     private ImageView recording;
 
+    private View screenshare;
+
     /**
      * Instantiates a new Voxeet conference bar view.
      *
@@ -110,16 +108,6 @@ public class VoxeetConferenceBarView extends VoxeetView {
         updateAttrs(attrs);
 
         setUserPreferences();
-    }
-
-    public VoxeetConferenceBarView(Context context, Builder builder) {
-        super(context, true);
-
-        if (builder.params != null)
-            this.setLayoutParams(builder.params);
-
-        for (Builder.ConferenceBarComponent component : builder.components)
-            addButton(component.action, component.drawable, component.listener);
     }
 
     private VoxeetConferenceBarView addButton(int action, int drawable, OnClickListener listener) {
@@ -310,69 +298,77 @@ public class VoxeetConferenceBarView extends VoxeetView {
     protected void bindView(View v) {
         container = (LinearLayout) v.findViewById(R.id.container);
 
-        if (!builderMode) { // theses views are only available when default layout is selected
-            speaker = (ImageView) v.findViewById(R.id.speaker);
-            speaker.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    speaker.setSelected(!speaker.isSelected());
+        speaker = (ImageView) v.findViewById(R.id.speaker);
+        speaker.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                speaker.setSelected(!speaker.isSelected());
 
-                    VoxeetSdk.getInstance()
-                            .getConferenceService()
-                            .setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
-                }
-            });
-
-            hangup = (ImageView) v.findViewById(R.id.hangup);
-            hangup.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    VoxeetSdk.getInstance()
-                            .getConferenceService()
-                            .leave()
-                            .then(new PromiseExec<Boolean, Object>() {
-                                @Override
-                                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                                    //manage the result ?
-                                }
-                            })
-                            .error(new ErrorPromise() {
-                                @Override
-                                public void onError(Throwable error) {
-                                    //manage the error ?
-                                }
-                            });
-                }
-            });
-
-            microphone = (ImageView) v.findViewById(R.id.microphone);
-            microphone.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    toggleMute();
-                }
-            });
-
-            camera = (ImageView) v.findViewById(R.id.camera);
-            camera.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    toggleCamera();
-                }
-            });
-
-            recording = (ImageView) v.findViewById(R.id.recording);
-            recording.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    VoxeetSdk.getInstance().getConferenceService().toggleRecording();
-                }
-            });
-
-            if(!checkMicrophonePermission()) {
-                microphone.setSelected(true);
-                VoxeetSdk.getInstance().getConferenceService().muteConference(true);
+                VoxeetSdk.getInstance()
+                        .getConferenceService()
+                        .setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
             }
+        });
+
+        hangup = (ImageView) v.findViewById(R.id.hangup);
+        hangup.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VoxeetSdk.getInstance()
+                        .getConferenceService()
+                        .leave()
+                        .then(new PromiseExec<Boolean, Object>() {
+                            @Override
+                            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                                //manage the result ?
+                            }
+                        })
+                        .error(new ErrorPromise() {
+                            @Override
+                            public void onError(Throwable error) {
+                                //manage the error ?
+                            }
+                        });
+            }
+        });
+
+        microphone = (ImageView) v.findViewById(R.id.microphone);
+        microphone.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleMute();
+            }
+        });
+
+        camera = (ImageView) v.findViewById(R.id.camera);
+        camera.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleCamera();
+            }
+        });
+
+        recording = (ImageView) v.findViewById(R.id.recording);
+        recording.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VoxeetSdk.getInstance().getConferenceService().toggleRecording();
+            }
+        });
+
+        screenshare = v.findViewById(R.id.screenshare);
+        if (null != screenshare) {
+            screenshare.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleScreenShare();
+                }
+            });
+        }
+
+        if (!checkMicrophonePermission()) {
+            microphone.setSelected(true);
+            VoxeetSdk.getInstance().getConferenceService().muteConference(true);
         }
     }
 
@@ -390,6 +386,12 @@ public class VoxeetConferenceBarView extends VoxeetView {
     protected void toggleCamera() {
         if (checkCameraPermission()) {
             VoxeetSdk.getInstance().getConferenceService().toggleVideo();
+        }
+    }
+
+    protected void toggleScreenShare() {
+        if (canScreenShare()) {
+            VoxeetSdk.getInstance().getScreenShareService().toggleScreenShare();
         }
     }
 
@@ -490,8 +492,8 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
     @Override
     protected int layout() {
-        if (builderMode)
-            return R.layout.voxeet_conference_bar_view_2;
+        if (VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled())
+            return R.layout.voxeet_conference_bar_view_screenshare;
         else
             return R.layout.voxeet_conference_bar_view;
     }
@@ -536,6 +538,10 @@ public class VoxeetConferenceBarView extends VoxeetView {
                 RESULT_CAMERA);
     }
 
+    private boolean canScreenShare() {
+        return Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT;
+    }
+
 
     private boolean checkPermission(@NonNull String permission, @NonNull String error_message, int result_code) {
         if (!Validate.hashPermissionInManifest(getContext(), permission)) {
@@ -556,7 +562,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (String permission : MANDATORY_STRINGS) {
-                if(ContextCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
                     permissions_to_request.add(permission);
                 }
             }
@@ -564,102 +570,6 @@ public class VoxeetConferenceBarView extends VoxeetView {
             Validate.requestMandatoryPermissions(VoxeetToolkit.getInstance().getCurrentActivity(),
                     permissions_to_request.toArray(new String[permissions_to_request.size()]),
                     RESULT_MANDATORY);
-        }
-    }
-
-    public static class Builder {
-
-        private final static int NOT_FOUND = -1;
-        private final static int FOUND = 0;
-
-        private FrameLayout.LayoutParams params;
-
-        private Context context;
-
-        private List<ConferenceBarComponent> components;
-
-        private SparseIntArray array;
-
-        public Builder with(Context context) {
-            this.array = new SparseIntArray(5);
-
-            this.components = new ArrayList<>();
-
-            this.context = context;
-
-            return this;
-        }
-
-        public Builder setLayoutParams(LayoutParams params) {
-            this.params = params;
-
-            return this;
-        }
-
-        public Builder hangUp(int drawable, OnClickListener listener) {
-            if (array.get(HANG_UP, NOT_FOUND) == NOT_FOUND)
-                components.add(new ConferenceBarComponent(HANG_UP, drawable, listener));
-
-            array.put(HANG_UP, FOUND);
-
-            return this;
-        }
-
-        public Builder speaker(int drawable, OnClickListener listener) {
-            if (array.get(SPEAKER, NOT_FOUND) == NOT_FOUND)
-                components.add(new ConferenceBarComponent(SPEAKER, drawable, listener));
-
-            array.put(SPEAKER, FOUND);
-
-            return this;
-        }
-
-        public Builder mute(int drawable, OnClickListener listener) {
-            if (array.get(MUTE, NOT_FOUND) == NOT_FOUND)
-                components.add(new ConferenceBarComponent(MUTE, drawable, listener));
-
-            array.put(MUTE, FOUND);
-
-            return this;
-        }
-
-        public Builder record(int drawable, OnClickListener listener) {
-            if (array.get(RECORD, NOT_FOUND) == NOT_FOUND)
-                components.add(new ConferenceBarComponent(RECORD, drawable, listener));
-
-            array.put(RECORD, FOUND);
-
-            return this;
-        }
-
-        public Builder video(int drawable, OnClickListener listener) {
-            if (array.get(VIDEO, NOT_FOUND) == NOT_FOUND)
-                components.add(new ConferenceBarComponent(VIDEO, drawable, listener));
-
-            array.put(VIDEO, FOUND);
-
-            return this;
-        }
-
-        public VoxeetConferenceBarView build() {
-            return new VoxeetConferenceBarView(context, this);
-        }
-
-        private class ConferenceBarComponent {
-
-            int drawable;
-
-            int action;
-
-            OnClickListener listener;
-
-            ConferenceBarComponent(int action, int drawable, OnClickListener listener) {
-                this.action = action;
-
-                this.drawable = drawable;
-
-                this.listener = listener;
-            }
         }
     }
 }
