@@ -27,6 +27,7 @@ import voxeet.com.sdk.json.UserInfo;
  * Created by RomainBenmansour on 06,April,2016
  */
 public class SampleApplication extends MultiDexApplication {
+    private static final int ONE_MINUTE = 60 * 1000;
 
     private static final String TAG = SampleApplication.class.getSimpleName();
 
@@ -56,6 +57,8 @@ public class SampleApplication extends MultiDexApplication {
                 BuildConfig.CONSUMER_KEY,
                 BuildConfig.CONSUMER_SECRET,
                 _current_user); //can be null - will be removed in a later version
+
+        VoxeetSdk.getInstance().getConferenceService().setTimeOut(ONE_MINUTE);
 
         VoxeetPreferences.setDefaultActivity(IncomingCallActivity.class.getCanonicalName());
         //register the Application and add at least one subscriber
