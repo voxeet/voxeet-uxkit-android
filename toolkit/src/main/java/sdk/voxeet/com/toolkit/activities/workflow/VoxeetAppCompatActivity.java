@@ -20,13 +20,13 @@ import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
 
 /**
  * VoxeetAppCompatActivity manages the call state
- *
+ * <p>
  * In the current merged state, this class is not used
- *
+ * <p>
  * However, it is extremely easy to use this class now :
  * - manages automatically the bundles to join conferences when "resumed"
  * - automatically registers its subclasses's extra info to propagate to "recreated" instances
- *
+ * <p>
  * Few things to consider :
  * - singleTop / singleInstance
  */
@@ -48,21 +48,25 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if(null != VoxeetSdk.getInstance()) {
+        if (null != VoxeetSdk.getInstance()) {
             VoxeetSdk.getInstance().register(this, this);
         }
 
-        if(!EventBus.getDefault().isRegistered(this)) {
+        if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this); //registering this activity
         }
 
-        if(canBeRegisteredToReceiveCalls()) {
+        if (canBeRegisteredToReceiveCalls()) {
             IncomingCallFactory.setTempAcceptedIncomingActivity(this.getClass());
             IncomingCallFactory.setTempExtras(getIntent().getExtras());
         }
 
         if (mIncomingBundleChecker.isBundleValid()) {
             mIncomingBundleChecker.onAccept();
+        }
+
+        if(null != VoxeetSdk.getInstance()) {
+            VoxeetSdk.getInstance().getScreenShareService().consumeRightsToScreenShare();
         }
     }
 
@@ -80,6 +84,18 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
         mIncomingBundleChecker = new IncomingBundleChecker(intent, null);
         if (mIncomingBundleChecker.isBundleValid()) {
             mIncomingBundleChecker.onAccept();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        boolean managed = false;
+        if (null != VoxeetSdk.getInstance()) {
+            managed = VoxeetSdk.getInstance().getScreenShareService().onActivityResult(requestCode, resultCode, data);
+        }
+
+        if (!managed) {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -115,7 +131,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
 
     /**
      * Get the current voxeet bundle checker
-     *
+     * <p>
      * usefull to retrieve info about the notification (if such)
      * - user name
      * - avatar url

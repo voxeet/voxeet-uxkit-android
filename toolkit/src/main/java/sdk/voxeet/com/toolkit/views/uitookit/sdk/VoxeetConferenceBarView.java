@@ -21,6 +21,10 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.audio.AudioRoute;
 import com.voxeet.toolkit.R;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +35,8 @@ import eu.codlab.simplepromise.solve.Solver;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
+import voxeet.com.sdk.events.success.StartScreenShareAnswerEvent;
+import voxeet.com.sdk.events.success.StopScreenShareAnswerEvent;
 import voxeet.com.sdk.utils.Validate;
 
 /**
@@ -267,6 +273,26 @@ public class VoxeetConferenceBarView extends VoxeetView {
         setUserPreferences();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+
+        screenshare.setSelected(VoxeetSdk.getInstance().getConferenceService().isScreenShareOn());
+    }
+
+    @Override
+    public void onStop() {
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+
+        super.onStop();
+    }
+
     /**
      * Sets the recording button color if the conference is being recorded or not.
      *
@@ -286,6 +312,16 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         if (camera != null && userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStreams.get(userId) != null) {
             camera.setSelected(mediaStreams.get(userId).videoTracks().size() > 0);
+        }
+    }
+
+    @Override
+    public void onScreenShareMediaStreamUpdated(@NonNull String userId, @NonNull Map<String, MediaStream> screen_share_media_streams) {
+        super.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
+
+        MediaStream stream = screen_share_media_streams.get(userId);
+        if (screenshare != null && userId.equalsIgnoreCase(VoxeetPreferences.id()) && null != stream) {
+            screenshare.setSelected(stream.isScreenShare());
         }
     }
 
@@ -524,6 +560,16 @@ public class VoxeetConferenceBarView extends VoxeetView {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(@NonNull StopScreenShareAnswerEvent event) {
+        screenshare.setSelected(false);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(@NonNull StartScreenShareAnswerEvent event) {
+        screenshare.setSelected(true);
+    }
+
 
     private boolean checkMicrophonePermission() {
         return checkPermission(Manifest.permission.RECORD_AUDIO,
@@ -572,4 +618,6 @@ public class VoxeetConferenceBarView extends VoxeetView {
                     RESULT_MANDATORY);
         }
     }
+
+
 }
