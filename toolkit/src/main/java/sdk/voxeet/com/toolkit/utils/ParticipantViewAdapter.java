@@ -14,11 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.voxeet.android.media.MediaSDK;
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
-
-import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,8 +123,9 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder: " + position);
         final DefaultConferenceUser user = getItem(position);
+
+        Log.d(TAG, "onBindViewHolder: " + position + " " + user.getConferenceStatus());
 
 //        if ((parentWidth / getItemCount()) <= parentHeight) {
 //            holder.itemView.getLayoutParams().height = parentWidth / getItemCount();
@@ -143,6 +141,13 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         holder.name.setVisibility(namesEnabled ? View.VISIBLE : View.GONE);
 
         loadViaPicasso(user, holder.avatar);
+
+        Log.d(TAG, "onBindViewHolder: ");
+        if (ConferenceUserStatus.ON_AIR.equals(user.getConferenceStatus())) {
+            holder.avatar.setAlpha(1.0f);
+        } else {
+            holder.avatar.setAlpha(0.4f);
+        }
 
         if (selectedPosition == position) {
             holder.name.setTypeface(Typeface.DEFAULT_BOLD);

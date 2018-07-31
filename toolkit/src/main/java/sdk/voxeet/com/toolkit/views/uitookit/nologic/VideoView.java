@@ -7,7 +7,9 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
@@ -299,6 +301,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
             mMediaStream = mediaStream;
 
+            mRenderer.setVisibility(View.VISIBLE);
             boolean result = VoxeetSdk.getInstance().getConferenceService().attachMediaStream(mediaStream, mRenderer);
 
             Log.d(TAG, "attach: result := " + result + " " + this);
@@ -320,6 +323,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
             setAttached(false);
         }
+        mRenderer.setVisibility(View.GONE);
     }
 
     /**

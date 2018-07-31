@@ -6,17 +6,16 @@ import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
-import com.voxeet.android.media.MediaStream;
-
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import sdk.voxeet.com.toolkit.utils.IParticipantViewListener;
@@ -24,26 +23,13 @@ import sdk.voxeet.com.toolkit.utils.ParticipantViewAdapter;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
-/**
- * Created by ROMMM on 9/29/15.
- *
- * @in
- */
 public class VoxeetParticipantView extends VoxeetView {
-
-    private static final int USER_THRESHOLD = 4;
-
-    private final String TAG = VoxeetParticipantView.class.getSimpleName();
 
     private RecyclerView recyclerView;
 
     private ParticipantViewAdapter adapter;
 
     private RecyclerView.LayoutManager horizontalLayout;
-
-    private RecyclerView.LayoutManager gridLayout;
-
-    private boolean nameEnabled = true;
 
     private boolean displaySelf = false;
     private Handler mHandler;
@@ -112,7 +98,7 @@ public class VoxeetParticipantView extends VoxeetView {
     private void updateAttrs(AttributeSet attrs) {
         TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetParticipantView);
 
-        nameEnabled = attributes.getBoolean(R.styleable.VoxeetParticipantView_name_enabled, true);
+        boolean nameEnabled = attributes.getBoolean(R.styleable.VoxeetParticipantView_name_enabled, true);
 
         displaySelf = attributes.getBoolean(R.styleable.VoxeetParticipantView_display_self, false);
 
@@ -126,35 +112,44 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUserJoined(DefaultConferenceUser conferenceUser) {
+    public void onConferenceUserJoined(@NonNull DefaultConferenceUser conferenceUser) {
         super.onConferenceUserJoined(conferenceUser);
 
         boolean isMe = conferenceUser.getUserId().equalsIgnoreCase(VoxeetPreferences.id());
         if (!isMe || displaySelf) {
             adapter.addUser(conferenceUser);
 
-            if (adapter.getItemCount() > USER_THRESHOLD)
-                recyclerView.setLayoutManager(gridLayout);
-
             adapter.notifyDataSetChanged();
         }
     }
 
     @Override
-    public void onConferenceUserLeft(DefaultConferenceUser conferenceUser) {
+    public void onConferenceUserLeft(@NonNull DefaultConferenceUser conferenceUser) {
         super.onConferenceUserLeft(conferenceUser);
 
         adapter.removeUser(conferenceUser);
-
-        if (adapter.getItemCount() > USER_THRESHOLD)
-            recyclerView.setLayoutManager(gridLayout);
-        else recyclerView.setLayoutManager(horizontalLayout);
+        recyclerView.setLayoutManager(horizontalLayout);
 
         adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onMediaStreamUpdated(final String userId, final Map<String, MediaStream> mediaStreams) {
+    public void onConferenceUserUpdated(final DefaultConferenceUser conference_user) {
+        super.onConferenceUserUpdated(conference_user);
+
+
+        postOnUi(new Runnable() {
+            @Override
+            public void run() {
+                if (adapter != null) {
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onMediaStreamUpdated(@NonNull final String userId, @NonNull final Map<String, MediaStream> mediaStreams) {
         super.onMediaStreamUpdated(userId, mediaStreams);
 
         postOnUi(new Runnable() {
@@ -169,7 +164,7 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     @Override
-    public void onScreenShareMediaStreamUpdated(final String userId, final Map<String, MediaStream> mediaStreams) {
+    public void onScreenShareMediaStreamUpdated(@NonNull final String userId, @NonNull final Map<String, MediaStream> mediaStreams) {
         super.onScreenShareMediaStreamUpdated(userId, mediaStreams);
 
         postOnUi(new Runnable() {
@@ -225,8 +220,6 @@ public class VoxeetParticipantView extends VoxeetView {
         if (adapter == null)
             adapter = new ParticipantViewAdapter(getContext());
 
-        gridLayout = new GridLayoutManager(getContext(), 2, LinearLayoutManager.HORIZONTAL, false);
-
         horizontalLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
 
         recyclerView.setAdapter(adapter);
@@ -242,7 +235,7 @@ public class VoxeetParticipantView extends VoxeetView {
 
     @Override
     protected void bindView(View view) {
-        recyclerView = (RecyclerView) view.findViewById(R.id.participant_recycler_view);
+        recyclerView = view.findViewById(R.id.participant_recycler_view);
     }
 
     /**

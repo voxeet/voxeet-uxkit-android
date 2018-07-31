@@ -402,10 +402,10 @@ VoxeetSdk.getInstance().getConferenceService().getConferenceUsers();
 VoxeetSdk.getInstance().getConferenceService().isMuted();
 ```
 
-### Muting microphone
+### Mute/Unmute the microphone
 
 ```java
-VoxeetSdk.getInstance().getConferenceService().muteConference(boolean mute);
+VoxeetSdk.getInstance().getConferenceService().mute(boolean mute);
 ```
 
 ### Muting user

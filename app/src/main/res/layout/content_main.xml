@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
@@ -19,8 +20,9 @@
         android:layout_width="@dimen/main_logo_size"
         android:layout_height="@dimen/main_logo_size"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:src="@drawable/logo" />
+        android:layout_marginBottom="@dimen/header_margin"
+        android:layout_marginTop="@dimen/header_margin"
+        android:src="@drawable/logo_voxeet" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,7 +30,8 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:text="@string/conference_name"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/text_header" />
+        android:textSize="@dimen/text_header"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/join_conf_text"
@@ -39,13 +42,40 @@
         android:text="conference_name" />
 
 
-    <TextView
-        android:layout_width="wrap_content"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginBottom="16dp"
+        android:background="#00000000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:text="@string/select_user"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/text_header" />
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_weight="1"
+            android:text="@string/select_user"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_header"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/disconnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/default_padding"
+            android:layout_marginRight="@dimen/default_padding"
+            android:text="@string/disconnect"
+            android:textColor="@color/blue_logout"
+            android:textSize="15dp"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_users"
@@ -53,38 +83,15 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/join_conf"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/join_conf"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_marginLeft="@dimen/default_padding"
-            android:layout_marginRight="@dimen/default_padding"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/main_activity_button"
-            android:enabled="false"
-            android:text="@string/join"
-            android:textColor="@color/white" />
-
-        <Button
-            android:layout_marginLeft="@dimen/default_padding"
-            android:layout_marginRight="@dimen/default_padding"
-            android:id="@+id/disconnect"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/main_activity_button"
-            android:text="@string/disconnect"
-            android:textColor="@color/white"
-            android:visibility="gone" />
-
-    </LinearLayout>
+        android:layout_marginTop="10dp"
+        android:background="@drawable/main_activity_button"
+        android:enabled="false"
+        android:text="@string/join"
+        android:textColor="@color/white" />
 
     <requestFocus />
 </LinearLayout>

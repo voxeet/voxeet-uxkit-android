@@ -27,12 +27,16 @@ android {
             dimension "sample"
             buildConfigField "String", "CONSUMER_KEY", "\"" + project.properties["STAGING_CONSUMER_KEY"]+"\""
             buildConfigField "String", "CONSUMER_SECRET", "\"" + project.properties["STAGING_CONSUMER_SECRET"]+"\""
+
+            buildConfigField "String", "USE_SDK_OAUTH_URL", "\"" + project.properties["USE_SDK_OAUTH_URL"]+"\""
         }
 
         production {
             dimension "sample"
             buildConfigField "String", "CONSUMER_KEY", "\"" + project.properties["PROD_CONSUMER_KEY"]+"\""
             buildConfigField "String", "CONSUMER_SECRET", "\"" + project.properties["PROD_CONSUMER_SECRET"]+"\""
+
+            buildConfigField "String", "USE_SDK_OAUTH_URL", "\"" + project.properties["USE_SDK_OAUTH_URL"]+"\""
         }
     }
 
@@ -75,4 +79,9 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    //when working with our oauth example
+    //this converter is here to convert "string" only result
+    //if a regular json is sent, please use Jackson
+    compile 'com.squareup.retrofit2:converter-scalars:2.1.0'
 }
