@@ -281,7 +281,11 @@ public class VoxeetConferenceBarView extends VoxeetView {
             EventBus.getDefault().register(this);
         }
 
-        screenshare.setSelected(VoxeetSdk.getInstance().getConferenceService().isScreenShareOn());
+        speaker.setSelected(VoxeetSdk.getInstance().getAudioService().isSpeakerOn());
+
+        if(null != screenshare) {
+            screenshare.setSelected(VoxeetSdk.getInstance().getConferenceService().isScreenShareOn());
+        }
     }
 
     @Override
@@ -335,13 +339,14 @@ public class VoxeetConferenceBarView extends VoxeetView {
         container = (LinearLayout) v.findViewById(R.id.container);
 
         speaker = (ImageView) v.findViewById(R.id.speaker);
+        speaker.setSelected(VoxeetSdk.getInstance().getAudioService().isSpeakerOn());
         speaker.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 speaker.setSelected(!speaker.isSelected());
 
                 VoxeetSdk.getInstance()
-                        .getConferenceService()
+                        .getAudioService()
                         .setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
             }
         });
@@ -404,7 +409,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         if (!checkMicrophonePermission()) {
             microphone.setSelected(true);
-            VoxeetSdk.getInstance().getConferenceService().muteConference(true);
+            VoxeetSdk.getInstance().getConferenceService().mute(true);
         }
     }
 
@@ -415,7 +420,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
             //if we unmute, check for microphone state
             microphone.setSelected(new_muted_state);
 
-            VoxeetSdk.getInstance().getConferenceService().muteConference(new_muted_state);
+            VoxeetSdk.getInstance().getConferenceService().mute(new_muted_state);
         }
     }
 
@@ -562,12 +567,16 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull StopScreenShareAnswerEvent event) {
-        screenshare.setSelected(false);
+        if(null != screenshare) {
+            screenshare.setSelected(false);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull StartScreenShareAnswerEvent event) {
-        screenshare.setSelected(true);
+        if(null != screenshare) {
+            screenshare.setSelected(true);
+        }
     }
 
 

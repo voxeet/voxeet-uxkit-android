@@ -11,9 +11,9 @@
     <string name="loading">Loading, please wait…</string>
     <string name="connection_service">Voxeet connection test</string>
     <string name="conference_name">Conference name</string>
-    <string name="select_user">Select your user</string>
+    <string name="select_user">Select a user</string>
     <string name="join">Start</string>
-    <string name="disconnect">Disconnect</string>
+    <string name="disconnect">Logout</string>
     <string name="invalid_activity_start_intent">Invalid accessor to this activity. Please set proper values in intent</string>
     <string name="start_presentation">Start Presentation</string>
     <string name="stop_presentation">Stop Presentation</string>

@@ -25,11 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.voxeet.android.media.MediaStream;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStream;
 
 import java.io.File;
 import java.util.Arrays;
@@ -346,7 +345,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         else
             mute.setText("Not Muted");
 
-        VoxeetSdk.getInstance().getConferenceService().muteConference(muted);
+        VoxeetSdk.getInstance().getConferenceService().mute(muted);
     }
 
     @OnClick(R.id.audio_routes)
@@ -581,7 +580,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         Picasso.with(this)
                 .load(VoxeetSdk.getInstance()
                         .getFilePresentationService()
-                        .getImageUrl(mFilePresentationStarted.getFileId(),
+                        .getImage(mFilePresentationStarted.getFileId(),
                                 page))
                 .into(presentation_lander);
     }

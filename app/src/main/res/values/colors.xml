@@ -5,9 +5,10 @@
     <!--<color name="colorAccent">#FF4081</color>-->
     <!--<color name="white">#FFFFFF</color>-->
 
-    <color name="colorPrimary">#8BC34A</color>
-    <color name="colorPrimaryDark">#689F38</color>
-    <color name="colorAccent">#4CAF50</color>
+    <color name="colorPrimary">#72A1F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#536DFE</color>
     <color name="white">@android:color/white</color>
     <color name="darker_gray">#aaa</color>
+    <color name="blue_logout">#007AFF</color>
 </resources>

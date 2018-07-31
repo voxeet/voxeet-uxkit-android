@@ -57,7 +57,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     protected Button joinConf;
 
     @Bind(R.id.disconnect)
-    protected Button disconnect;
+    protected View disconnect;
 
     @Bind(R.id.recycler_users)
     protected RecyclerView users;

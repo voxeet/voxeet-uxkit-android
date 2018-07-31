@@ -4,16 +4,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.voxeet.android.media.MediaSDK;
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
-
-import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStream;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,15 +81,27 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         super.onMediaStreamUpdated(userId, mediaStreams);
 
         MediaStream mediaStream = null != mediaStreams ? mediaStreams.get(userId) : null;
-        if (userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStream != null) {
-            if (mediaStream.videoTracks().size() > 0) {
-                selfView.setVisibility(VISIBLE);
-                selfView.attach(userId, mediaStream);
-            } else {
-                selfView.setVisibility(GONE);
-                selfView.unAttach();
+        if (null != mediaStream) {
+            if (userId.equalsIgnoreCase(VoxeetPreferences.id())) {
+                if (mediaStream.videoTracks().size() > 0) {
+                    selfView.setVisibility(VISIBLE);
+                    selfView.attach(userId, mediaStream);
+                } else {
+                    selfView.setVisibility(GONE);
+                    selfView.unAttach();
+                }
+            } else if (userId.equalsIgnoreCase(selectedView.getPeerId())) {
+                if (mediaStream.videoTracks().size() > 0) {
+                    selectedView.setVisibility(View.VISIBLE);
+                    selectedView.attach(userId, mediaStream);
+                } else {
+                    selectedView.setVisibility(GONE);
+                    selectedView.unAttach();
+                }
             }
         }
+
+        Log.d(TAG, "onMediaStreamUpdated: " + userId + " " + mediaStream);
     }
 
     @Override
@@ -203,6 +213,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onParticipantSelected(DefaultConferenceUser user, MediaStream mediaStream) {
         speakerView.lockScreen(user.getUserId());
 
+        Log.d(TAG, "onParticipantSelected: onParticipantSelected");
         if (mediaStream != null && (mediaStream.videoTracks().size() > 0 || mediaStream.isScreenShare())) {
             selectedView.setVisibility(VISIBLE);
             selectedView.setAutoUnAttach(true);

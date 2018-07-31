@@ -69,7 +69,7 @@ public class ConferenceOutput extends DialogFragment {
 
         outputListView.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_single_choice, desc.toArray(new String[desc.size()])));
 
-        AudioRoute selectedRoute = VoxeetSdk.getInstance().getConferenceService().currentRoute();
+        AudioRoute selectedRoute = VoxeetSdk.getInstance().getAudioService().currentRoute();
 
         outputListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         outputListView.setItemChecked(currentRoutes.indexOf(selectedRoute), true);
