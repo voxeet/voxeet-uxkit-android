@@ -9,14 +9,12 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
 import org.webrtc.EglBase;
 import org.webrtc.RendererCommon;
-import org.webrtc.SurfaceViewRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +41,8 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     /**
      * The Voxeet renderer.
      */
-    protected SurfaceViewRenderer mRenderer;
+    //protected SurfaceViewRenderer mRenderer;
+    protected VoxeetRenderer mRenderer;
 
     private String mPeerId;
 
@@ -99,12 +98,14 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
         FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT,
-                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT,
                 Gravity.CENTER);
-        mRenderer = new SurfaceViewRenderer(getContext());
+
+        mRenderer = new VoxeetRenderer(getContext());
         mRenderer.setLayoutParams(param);
 
         mRenderer.init(eglBase.getEglBaseContext(), this);
+
 
         addView(mRenderer);
 
@@ -239,7 +240,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      *
      * @return the renderer
      */
-    public SurfaceViewRenderer getRenderer() {
+    public VoxeetRenderer getRenderer() {
         return mRenderer;
     }
 
@@ -296,6 +297,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
         if (!isAttached() && peerId != null && mediaStream != null && (mediaStream.videoTracks().size() > 0 || mediaStream.isScreenShare())) {
             setAttached(true);
+            reinit();
 
             mPeerId = peerId;
 
@@ -313,6 +315,8 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      */
     public void unAttach() {
         if (isAttached() && mPeerId != null) {
+            //mRenderer.release();
+
             if (mMediaStream != null) {
                 VoxeetSdk.getInstance().getConferenceService().unAttachMediaStream(mMediaStream, mRenderer);
             }

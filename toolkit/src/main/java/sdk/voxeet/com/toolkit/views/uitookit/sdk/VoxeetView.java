@@ -271,7 +271,6 @@ public abstract class VoxeetView extends FrameLayout
 
     protected void addListener(@NonNull VoxeetView voxeetView) {
         if (mListeners.indexOf(voxeetView) < 0) {
-            Log.d(TAG, "addListener: " + voxeetView.getClass().getSimpleName());
             mListeners.add(voxeetView);
         }
     }
