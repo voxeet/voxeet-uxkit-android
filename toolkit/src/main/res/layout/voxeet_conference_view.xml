@@ -9,6 +9,7 @@
         android:id="@+id/selected_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:scaleType="scale_fill"
         android:visibility="gone" />
 
     <LinearLayout
@@ -84,6 +85,7 @@
             android:layout_width="100dp"
             android:layout_height="80dp"
             android:visibility="gone"
+            app:scaleType="scale_fit"
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"/>
 
