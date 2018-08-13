@@ -417,9 +417,8 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Nullable
     private MediaStream getScreenShareMediaStream(@NonNull String userId) {
-        if (hasScreenShareMediaStream(userId)) {
+        if (null != mScreenShareMediaStreams && mScreenShareMediaStreams.containsKey(userId))
             return mScreenShareMediaStreams.get(userId);
-        }
         return null;
     }
 
@@ -432,14 +431,22 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     private boolean hasScreenShareMediaStream(@NonNull String userId) {
-        if (null != mScreenShareMediaStreams && mScreenShareMediaStreams.containsKey(userId))
-            return mScreenShareMediaStreams.get(userId).isScreenShare();
-        return false;
+        MediaStream stream = getScreenShareMediaStream(userId);
+        /*if (null != stream) return stream.isScreenShare();
+        return false;*/
+        return null != stream;
     }
 
     private boolean hasCameraMediaStream(@NonNull String userId) {
-        if (null != mMediaStreamMap && mMediaStreamMap.containsKey(userId))
-            return mMediaStreamMap.get(userId).videoTracks().size() > 0;
+        MediaStream stream = getMediaStream(userId);
+        if (null != stream) return stream.videoTracks().size() > 0;
         return false;
+    }
+
+    @Nullable
+    private MediaStream getMediaStream(@NonNull String userId) {
+        if (null != mMediaStreamMap && mMediaStreamMap.containsKey(userId))
+            return mMediaStreamMap.get(userId);
+        return null;
     }
 }
