@@ -32,6 +32,7 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.abs.AbstractConferenceSdkService;
+import voxeet.com.sdk.core.impl.ConferenceSdkService;
 import voxeet.com.sdk.events.error.ConferenceLeftError;
 import voxeet.com.sdk.events.error.ReplayConferenceErrorEvent;
 import voxeet.com.sdk.events.success.ConferenceCreationSuccess;
@@ -152,6 +153,12 @@ public abstract class AbstractConferenceToolkitController {
      */
     protected void init() {
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
+
+        ConferenceSdkService service = VoxeetSdk.getInstance().getConferenceService();
+
+        //load the maps into the view
+        mMediaStreams = service.getMapOfStreams();
+        mScreenShareMediaStreams = service.getMapOfScreenShareStreams();
 
         mMainViewParent = new FrameLayout(activity);
         mMainViewParent.setLayoutParams(createMatchParams());
@@ -377,6 +384,7 @@ public abstract class AbstractConferenceToolkitController {
      */
     private void reset() {
         mMediaStreams = new HashMap<>();
+        mScreenShareMediaStreams = new HashMap<>();
         mConferenceUsers = new ArrayList<>();
     }
 
@@ -664,7 +672,7 @@ public abstract class AbstractConferenceToolkitController {
 
         mMediaStreams.put(user.getUserId(), event.getMediaStream());
 
-        if (mMainView != null) {
+        if (null != mMainView) {
             mMainView.onMediaStreamUpdated(user.getUserId(), mMediaStreams);
 
             mMainView.onConferenceUserJoined(user);
@@ -679,7 +687,7 @@ public abstract class AbstractConferenceToolkitController {
                 + (mediaStream.videoTracks().size() > 0));
         mScreenShareMediaStreams.put(event.getPeer(), event.getMediaStream());
 
-        if (mMainView != null) {
+        if (null != mMainView) {
             mMainView.onScreenShareMediaStreamUpdated(event.getPeer(), mScreenShareMediaStreams);
         }
     }
@@ -691,7 +699,7 @@ public abstract class AbstractConferenceToolkitController {
             mScreenShareMediaStreams.remove(peer);
         }
 
-        if (mMainView != null) {
+        if (null != mMainView) {
             mMainView.onScreenShareMediaStreamUpdated(peer, mScreenShareMediaStreams);
         }
     }
@@ -703,7 +711,7 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserLeftEvent event) {
-        if (mMainView != null) {
+        if (null != mMainView) {
             DefaultConferenceUser user = event.getUser();
             if (mConferenceUsers.contains(user)) {
                 mConferenceUsers.remove(user);
@@ -722,7 +730,7 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserCallDeclinedEvent event) {
-        if (mMainView != null) {
+        if (null != mMainView) {
             int i = 0;
             DefaultConferenceUser user = null;
             while (i < mConferenceUsers.size()) {
@@ -745,7 +753,7 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceLeftSuccessEvent event) {
-        if (mMainView != null) {
+        if (null != mMainView) {
             reset();
             mMainView.onConferenceLeft();
 
@@ -760,7 +768,7 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceLeftError event) {
-        if (mMainView != null) {
+        if (null != mMainView) {
             reset();
             mMainView.onConferenceLeft();
 
@@ -776,7 +784,7 @@ public abstract class AbstractConferenceToolkitController {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPushEvent event) {
         reset();
-        if (mMainView != null) {
+        if (null != mMainView) {
             mMainView.onConferenceDestroyed();
         }
 
@@ -792,7 +800,9 @@ public abstract class AbstractConferenceToolkitController {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceEndedEvent event) {
         reset();
-        if (mMainView != null) mMainView.onConferenceDestroyed();
+        if (null != mMainView) {
+            mMainView.onConferenceDestroyed();
+        }
 
         removeView(true, RemoveViewType.FROM_EVENT);
     }
@@ -801,7 +811,9 @@ public abstract class AbstractConferenceToolkitController {
     public void onEvent(ReplayConferenceErrorEvent event) {
         reset();
         //TODO error message
-        if (mMainView != null) mMainView.onConferenceDestroyed();
+        if (null != mMainView) {
+            mMainView.onConferenceDestroyed();
+        }
 
         removeView(true, RemoveViewType.FROM_EVENT);
     }
@@ -813,7 +825,9 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull RecordingStatusUpdateEvent event) {
-        mMainView.onRecordingStatusUpdated(RecordingStatus.RECORDING.name().equalsIgnoreCase(event.getRecordingStatus()));
+        if (null != mMainView) {
+            mMainView.onRecordingStatusUpdated(RecordingStatus.RECORDING.name().equalsIgnoreCase(event.getRecordingStatus()));
+        }
     }
 
     /**
@@ -823,7 +837,9 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceUpdatedEvent event) {
-        mMainView.onConferenceUpdated(event.getEvent().getParticipants());
+        if (null != mMainView) {
+            mMainView.onConferenceUpdated(event.getEvent().getParticipants());
+        }
     }
 
     private void log(@NonNull String value) {
