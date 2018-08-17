@@ -189,7 +189,7 @@ public class VoxeetRenderer extends TextureView
         surfaceWidth = 0;
 
         setScalingType(scalingType, scalingType);
-        updateView();
+        requestLayout();
     }
 
     public void setScalingType(RendererCommon.ScalingType scalingTypeMatchOrientation,
@@ -198,7 +198,7 @@ public class VoxeetRenderer extends TextureView
         videoLayoutMeasure.setScalingType(scalingTypeMatchOrientation, scalingTypeMismatchOrientation);
 
         eglRenderer.setScalingType(scalingTypeMatchOrientation);
-        updateView();
+        requestLayout();
     }
 
     /**
