@@ -5,18 +5,21 @@
     android:layout_height="match_parent"
     android:layout_gravity="right|top">
 
+    <!-- VideoView used to display incoming video streams -->
+    <!-- possible scaleType := scale_fill, scale_fit, balanced -->
     <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
         android:id="@+id/selected_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:scaleType="scale_fill"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- in minimized mode, show the timer -->
         <LinearLayout
             android:id="@+id/layout_timer"
             android:layout_width="wrap_content"
@@ -44,7 +47,7 @@
                 android:minHeight="@dimen/conference_view_avatar_size"
                 android:visibility="gone">
 
-                <!-- dummy view representing the toggle one -->
+                <!-- dummy view representing the toggle/close -->
                 <View
                     android:layout_width="20dp"
                     android:layout_height="20dp"
@@ -62,6 +65,7 @@
 
             </LinearLayout>
 
+            <!-- display the current speaker -->
             <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetCurrentSpeakerView
                 android:id="@+id/current_speaker_view"
                 android:layout_width="match_parent"
@@ -73,13 +77,13 @@
 
     </LinearLayout>
 
-    <!--record button set to false cause png not ready-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical">
 
+        <!-- local user's video stream -->
         <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
             android:id="@+id/self_video_view"
             android:layout_width="100dp"
@@ -89,6 +93,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"/>
 
+        <!-- call action buttons -->
         <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceBarView
             android:id="@+id/conference_bar_view"
             android:layout_width="wrap_content"
