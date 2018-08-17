@@ -19,6 +19,7 @@ import org.webrtc.RendererCommon;
 import java.util.ArrayList;
 import java.util.List;
 
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceView;
 import voxeet.com.sdk.core.VoxeetSdk;
 
 /**
@@ -91,24 +92,21 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     }
 
     private void init() {
-        Log.d(TAG, "init: VideoView " + this);
         mHandler = new Handler();
         mEventsListeners = new ArrayList<>();
         eglBase = EglBase.create();
+        //createRendererIfNeeded();
+        //init(eglBase.getEglBaseContext(), this);
+        //mRenderer = this; //TODO REMOVE THIS UGLY mRenderer O_O
 
-        FrameLayout.LayoutParams param = new FrameLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER);
+        //setSurfaceViewRenderer();
+    }
 
-        mRenderer = new VoxeetRenderer(getContext());
-        mRenderer.setLayoutParams(param);
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
 
-        mRenderer.init(eglBase.getEglBaseContext(), this);
-
-
-        addView(mRenderer);
-
+        createRendererIfNeeded();
         setSurfaceViewRenderer();
     }
 
@@ -173,21 +171,26 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      * Sets surface view renderer.
      */
     public void setSurfaceViewRenderer() {
-        RendererCommon.ScalingType type;
+        RendererCommon.ScalingType type = getScalingType();
+
+        if (null != mRenderer) {
+            this.mRenderer.setScalingType(type);
+
+            this.mRenderer.setMirror(shouldMirror);
+        }
+    }
+
+    private RendererCommon.ScalingType getScalingType() {
         if (mScaleType == null) mScaleType = SCALE_FIT;
+
         switch (mScaleType) {
             case SCALE_BALANCED:
-                type = RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
-                break;
+                return RendererCommon.ScalingType.SCALE_ASPECT_BALANCED;
             case SCALE_FILL:
-                type = RendererCommon.ScalingType.SCALE_ASPECT_FILL;
-                break;
+                return RendererCommon.ScalingType.SCALE_ASPECT_FILL;
             default:
-                type = RendererCommon.ScalingType.SCALE_ASPECT_FIT;
+                return RendererCommon.ScalingType.SCALE_ASPECT_FIT;
         }
-        this.mRenderer.setScalingType(type);
-
-        this.mRenderer.setMirror(shouldMirror);
     }
 
     /**
@@ -213,7 +216,9 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      * Releases the renderer.
      */
     public void release() {
-        this.mRenderer.release();
+        if (null != mRenderer) {
+            this.mRenderer.release();
+        }
     }
 
     /**
@@ -226,8 +231,9 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      */
     public boolean reinit() {
         try {
-            Log.d(TAG, "reinit: " + mRenderer + " " + this);
-            this.mRenderer.init(eglBase.getEglBaseContext(), this);
+            if (null != mRenderer) {
+                this.mRenderer.init(eglBase.getEglBaseContext(), this);
+            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -297,16 +303,26 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
         if (!isAttached() && peerId != null && mediaStream != null && (mediaStream.videoTracks().size() > 0 || mediaStream.isScreenShare())) {
             setAttached(true);
-            reinit();
+            //reinit();
 
             mPeerId = peerId;
 
             mMediaStream = mediaStream;
 
-            mRenderer.setVisibility(View.VISIBLE);
-            boolean result = VoxeetSdk.getInstance().getConferenceService().attachMediaStream(mediaStream, mRenderer);
+            createRendererIfNeeded();
 
-            Log.d(TAG, "attach: result := " + result + " " + this);
+            if (null != mRenderer) {
+                mRenderer.setVisibility(View.VISIBLE);
+                boolean result = VoxeetSdk.getInstance().getConferenceService().attachMediaStream(mediaStream, mRenderer);
+
+                Log.d(TAG, "attach: result := " + result + " " + this);
+                setVisibility(View.VISIBLE);
+
+                forceLayout();
+                mRenderer.forceLayout();
+                requestLayout();
+                mRenderer.requestLayout();
+            }
         }
     }
 
@@ -314,8 +330,11 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      * Un attach the stream from the videoView.
      */
     public void unAttach() {
+        createRendererIfNeeded();
+
         if (isAttached() && mPeerId != null) {
             //mRenderer.release();
+
 
             if (mMediaStream != null) {
                 VoxeetSdk.getInstance().getConferenceService().unAttachMediaStream(mMediaStream, mRenderer);
@@ -327,7 +346,10 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
             setAttached(false);
         }
-        mRenderer.setVisibility(View.GONE);
+
+        if(null != mRenderer) {
+            mRenderer.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -395,5 +417,23 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
         NONE,
         VIDEO,
         SCREEN_SHARE
+    }
+
+    private void createRendererIfNeeded() {
+        if (null == mRenderer) {
+            LayoutParams param = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    Gravity.CENTER);
+
+            mRenderer = new VoxeetRenderer(getContext());
+            mRenderer.setLayoutParams(param);
+
+            addView(mRenderer);
+
+            mRenderer.init(eglBase.getEglBaseContext(), this);
+
+            if (null != mScaleType) mRenderer.setScalingType(getScalingType());
+        }
     }
 }
