@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.TextureView;
 
 import org.webrtc.EglBase;
-import org.webrtc.EglRenderer;
 import org.webrtc.GlRectDrawer;
 import org.webrtc.Logging;
 import org.webrtc.RendererCommon;
@@ -96,7 +95,7 @@ public class VoxeetRenderer extends TextureView
                      RendererCommon.RendererEvents rendererEvents, final int[] configAttributes,
                      RendererCommon.GlDrawer drawer) {
         synchronized (eglRenderer) {
-            if(isEglRendererInitialized) return;
+            if (isEglRendererInitialized) return;
 
             ThreadUtils.checkIsOnMainThread();
             this.rendererEvents = rendererEvents;
@@ -119,7 +118,7 @@ public class VoxeetRenderer extends TextureView
      */
     public void release() {
         synchronized (eglRenderer) {
-            if(!isEglRendererInitialized) return;
+            if (!isEglRendererInitialized) return;
 
             isEglRendererInitialized = false;
             setSurfaceTextureListener(null);
@@ -186,15 +185,20 @@ public class VoxeetRenderer extends TextureView
      */
     public void setScalingType(RendererCommon.ScalingType scalingType) {
         ThreadUtils.checkIsOnMainThread();
+        surfaceHeight = 0;
+        surfaceWidth = 0;
+
         setScalingType(scalingType, scalingType);
-        requestLayout();
+        updateView();
     }
 
     public void setScalingType(RendererCommon.ScalingType scalingTypeMatchOrientation,
                                RendererCommon.ScalingType scalingTypeMismatchOrientation) {
         ThreadUtils.checkIsOnMainThread();
         videoLayoutMeasure.setScalingType(scalingTypeMatchOrientation, scalingTypeMismatchOrientation);
-        requestLayout();
+
+        eglRenderer.setScalingType(scalingTypeMatchOrientation);
+        updateView();
     }
 
     /**
@@ -251,8 +255,8 @@ public class VoxeetRenderer extends TextureView
             size =
                     videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight);
         }
+
         setMeasuredDimension(size.x, size.y);
-        logD("onMeasure(). New size: " + size.x + "x" + size.y);
     }
 
     @Override
@@ -288,20 +292,22 @@ public class VoxeetRenderer extends TextureView
                     surfaceWidth = width;
                     surfaceHeight = height;
                     //getHolder().setFixedSize(width, height);
+                    requestLayout();
                 }
             } else {
                 surfaceWidth = surfaceHeight = 0;
                 //getHolder().setSizeFromLayout();
+                requestLayout();
             }
         }
     }
-
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         ThreadUtils.checkIsOnMainThread();
         eglRenderer.createEglSurface(surface);
         surfaceWidth = surfaceHeight = 0;
+
         updateSurfaceSize();
     }
 
@@ -421,5 +427,4 @@ public class VoxeetRenderer extends TextureView
     private void logD(String string) {
         Logging.d(TAG, resourceName + string);
     }
-
 }

@@ -28,6 +28,7 @@ import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.providers.containers.IVoxeetOverlayViewProvider;
 import sdk.voxeet.com.toolkit.providers.logics.IVoxeetSubViewProvider;
 import sdk.voxeet.com.toolkit.providers.rootview.AbstractRootViewProvider;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
 import voxeet.com.sdk.core.VoxeetSdk;
@@ -124,7 +125,7 @@ public abstract class AbstractConferenceToolkitController {
     private IVoxeetSubViewProvider mVoxeetSubViewProvider;
     private OverlayState mDefaultOverlayState;
     private boolean mEnabled;
-    private String TAG = AbstractConferenceSdkService.class.getSimpleName();
+    private String TAG = VoxeetConferenceView.class.getSimpleName();
     private boolean mIsViewRetainedOnLeave;
     private AbstractRootViewProvider mRootViewProvider;
 
@@ -189,6 +190,7 @@ public abstract class AbstractConferenceToolkitController {
         //set the relevant streams info
         if (mMainView != null) {
             mMainView.onMediaStreamsListUpdated(mMediaStreams);
+            mMainView.onScreenShareMediaStreamUpdated(mScreenShareMediaStreams);
             mMainView.onConferenceUsersListUpdate(mConferenceUsers);
         }
     }
@@ -271,7 +273,7 @@ public abstract class AbstractConferenceToolkitController {
         }
 
         if (isOverlayEnabled()) {
-            mHandler.post(new Runnable() {
+            mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     log("run: add view" + mMainView);
@@ -318,7 +320,7 @@ public abstract class AbstractConferenceToolkitController {
                         }
                     }
                 }
-            });
+            }, 1000);
         }
     }
 
@@ -384,7 +386,6 @@ public abstract class AbstractConferenceToolkitController {
      */
     private void reset() {
         mMediaStreams = new HashMap<>();
-        mScreenShareMediaStreams = new HashMap<>();
         mConferenceUsers = new ArrayList<>();
     }
 
@@ -685,22 +686,24 @@ public abstract class AbstractConferenceToolkitController {
         MediaStream mediaStream = event.getMediaStream();
         Log.d(TAG, "onEvent: event " + mediaStream.isScreenShare() + " "
                 + (mediaStream.videoTracks().size() > 0));
-        mScreenShareMediaStreams.put(event.getPeer(), event.getMediaStream());
+        //mScreenShareMediaStreams.put(event.getPeer(), event.getMediaStream());
 
         if (null != mMainView) {
-            mMainView.onScreenShareMediaStreamUpdated(event.getPeer(), mScreenShareMediaStreams);
+            mMainView.onScreenShareMediaStreamUpdated(event.getPeer(),
+                    VoxeetSdk.getInstance().getConferenceService().getMapOfScreenShareStreams());
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ScreenStreamRemovedEvent event) {
         String peer = event.getPeer();
-        if (mScreenShareMediaStreams.containsKey(peer)) {
+        /*if (mScreenShareMediaStreams.containsKey(peer)) {
             mScreenShareMediaStreams.remove(peer);
-        }
+        }*/
 
         if (null != mMainView) {
-            mMainView.onScreenShareMediaStreamUpdated(peer, mScreenShareMediaStreams);
+            mMainView.onScreenShareMediaStreamUpdated(peer,
+                    VoxeetSdk.getInstance().getConferenceService().getMapOfScreenShareStreams());
         }
     }
 
