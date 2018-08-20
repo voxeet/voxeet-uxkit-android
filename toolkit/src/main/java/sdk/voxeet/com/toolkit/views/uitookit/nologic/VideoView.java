@@ -19,7 +19,6 @@ import org.webrtc.RendererCommon;
 import java.util.ArrayList;
 import java.util.List;
 
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceView;
 import voxeet.com.sdk.core.VoxeetSdk;
 
 /**
@@ -174,12 +173,19 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
         RendererCommon.ScalingType type = getScalingType();
 
         if (null != mRenderer) {
-            this.mRenderer.setScalingType(type);
+            boolean update = shouldMirror != mRenderer.isMirror();
+            update |= !type.equals(mRenderer.getScalingType());
 
-            this.mRenderer.setMirror(shouldMirror);
+            if (update) {
+                this.mRenderer.setEnableHardwareScaler(true);
+                this.mRenderer.setScalingType(type);
+
+                this.mRenderer.setMirror(shouldMirror);
+            }
         }
     }
 
+    @NonNull
     private RendererCommon.ScalingType getScalingType() {
         if (mScaleType == null) mScaleType = SCALE_FIT;
 
@@ -333,21 +339,17 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
         createRendererIfNeeded();
 
         if (isAttached() && mPeerId != null) {
-            //mRenderer.release();
-
-
             if (mMediaStream != null) {
                 VoxeetSdk.getInstance().getConferenceService().unAttachMediaStream(mMediaStream, mRenderer);
             }
 
             mPeerId = null;
-
             mMediaStream = null;
 
             setAttached(false);
         }
 
-        if(null != mRenderer) {
+        if (null != mRenderer) {
             mRenderer.setVisibility(View.GONE);
         }
     }
