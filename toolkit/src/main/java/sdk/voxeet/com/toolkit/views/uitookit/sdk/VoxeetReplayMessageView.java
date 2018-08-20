@@ -3,14 +3,10 @@ package sdk.voxeet.com.toolkit.views.uitookit.sdk;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 
+import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
-
-import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStream;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,17 +73,14 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
         Set<String> set = mediaStreams.keySet();
         boolean found = false;
         for (String key : set) {
-            Log.d(TAG, "onMediaStreamsUpdated: " + key + " " + mediaStreams.get(key).videoTracks().size());
-
-            if (!found) {
-                Log.d(TAG, "updateStreams: view found, visible and attach");
+            if (!found && mediaStreams.get(key) != null) {
                 selectedView.setVisibility(View.VISIBLE);
                 selectedView.attach(key, mediaStreams.get(key));
                 found = true;
             }
         }
 
-        if(!found) {
+        if (!found) {
             selectedView.setVisibility(View.GONE);
         } else {
             selectedView.setVisibility(View.VISIBLE);
