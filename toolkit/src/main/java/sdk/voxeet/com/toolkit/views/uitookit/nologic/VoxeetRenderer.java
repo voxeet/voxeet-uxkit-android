@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.TextureView;
 
 import org.webrtc.EglBase;
@@ -54,6 +54,8 @@ public class VoxeetRenderer extends TextureView
     private int surfaceWidth;
     private int surfaceHeight;
     private boolean isEglRendererInitialized;
+
+    private RendererCommon.ScalingType setScalingType;
 
     /**
      * Standard View constructor. In order to render something, you must first call init().
@@ -180,6 +182,10 @@ public class VoxeetRenderer extends TextureView
         eglRenderer.setMirror(mirror);
     }
 
+    public boolean isMirror() {
+        return eglRenderer.isMirror();
+    }
+
     /**
      * Set how the video will fill the allowed layout area.
      */
@@ -188,8 +194,8 @@ public class VoxeetRenderer extends TextureView
         surfaceHeight = 0;
         surfaceWidth = 0;
 
+        setScalingType = scalingType;
         setScalingType(scalingType, scalingType);
-        requestLayout();
     }
 
     public void setScalingType(RendererCommon.ScalingType scalingTypeMatchOrientation,
@@ -198,7 +204,16 @@ public class VoxeetRenderer extends TextureView
         videoLayoutMeasure.setScalingType(scalingTypeMatchOrientation, scalingTypeMismatchOrientation);
 
         eglRenderer.setScalingType(scalingTypeMatchOrientation);
-        requestLayout();
+    }
+
+    /**
+     * TODO implement a way to get both types if set
+     *
+     * @return
+     */
+    @Nullable
+    public RendererCommon.ScalingType getScalingType() {
+        return setScalingType;
     }
 
     /**
@@ -297,7 +312,7 @@ public class VoxeetRenderer extends TextureView
             } else {
                 surfaceWidth = surfaceHeight = 0;
                 //getHolder().setSizeFromLayout();
-                requestLayout();
+                //requestLayout();
             }
         }
     }
