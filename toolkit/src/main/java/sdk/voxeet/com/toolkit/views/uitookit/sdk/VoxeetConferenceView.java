@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import eu.codlab.simplepromise.solve.ErrorPromise;
@@ -93,6 +94,13 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                         VoxeetSdk.getInstance().getConferenceService().getMapOfStreams());
             }
         }
+
+        HashMap<String, MediaStream> streams = VoxeetSdk.getInstance()
+                .getConferenceService().getMapOfStreams();
+
+        if (streams.containsKey(VoxeetPreferences.id())) {
+            onMediaStreamUpdated(VoxeetPreferences.id(), streams);
+        }
     }
 
     @Override
@@ -167,13 +175,15 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                     selfView.setVisibility(GONE);
                     selfView.unAttach();
                 }
-            } else if (null != selectedView && userId.equalsIgnoreCase(selectedView.getPeerId())) {
+            } else if (null != selectedView && (null == selectedView.getPeerId() || userId.equalsIgnoreCase(selectedView.getPeerId()))) {
                 if (mediaStream.videoTracks().size() > 0) {
                     selectedView.setVisibility(View.VISIBLE);
                     selectedView.attach(userId, mediaStream);
+                    speakerView.setVisibility(View.GONE);
                 } else {
                     selectedView.setVisibility(GONE);
                     selectedView.unAttach();
+                    speakerView.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -185,7 +195,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onScreenShareMediaStreamUpdated(@NonNull String userId, @NonNull Map<String, MediaStream> screen_share_media_streams) {
         super.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
 
-        MediaStream mediaStream = null != screen_share_media_streams ? screen_share_media_streams.get(userId) : null;
+        MediaStream mediaStream = screen_share_media_streams.get(userId);
         if (null != mediaStream) {
             if (!userId.equalsIgnoreCase(VoxeetPreferences.id())) {
                 if (mediaStream.videoTracks().size() > 0) {

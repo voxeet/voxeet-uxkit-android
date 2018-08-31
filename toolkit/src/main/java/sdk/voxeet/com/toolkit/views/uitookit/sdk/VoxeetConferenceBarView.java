@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -432,7 +433,10 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
     protected void toggleScreenShare() {
         if (canScreenShare()) {
-            VoxeetSdk.getInstance().getScreenShareService().toggleScreenShare();
+            Point size = VoxeetSdk.getInstance().getScreenShareService().getScreenSize(getContext());
+            VoxeetSdk.getInstance().getScreenShareService()
+                    .setScreenSizeInformation(VoxeetSdk.getInstance().getScreenShareService().getScreenSizeScaled(size, 720))
+                    .toggleScreenShare();
         }
     }
 

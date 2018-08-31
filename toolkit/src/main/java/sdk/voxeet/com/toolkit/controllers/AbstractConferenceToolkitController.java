@@ -28,16 +28,16 @@ import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.providers.containers.IVoxeetOverlayViewProvider;
 import sdk.voxeet.com.toolkit.providers.logics.IVoxeetSubViewProvider;
 import sdk.voxeet.com.toolkit.providers.rootview.AbstractRootViewProvider;
+import sdk.voxeet.com.toolkit.utils.LoadLastSavedOverlayStateEvent;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceView;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOverlayView;
 import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.abs.AbstractConferenceSdkService;
 import voxeet.com.sdk.core.impl.ConferenceSdkService;
+import voxeet.com.sdk.core.services.AudioService;
 import voxeet.com.sdk.events.error.ConferenceLeftError;
 import voxeet.com.sdk.events.error.ReplayConferenceErrorEvent;
 import voxeet.com.sdk.events.success.ConferenceCreationSuccess;
-import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
 import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
@@ -48,10 +48,12 @@ import voxeet.com.sdk.events.success.ConferenceUserCallDeclinedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserJoinedEvent;
 import voxeet.com.sdk.events.success.ConferenceUserLeftEvent;
 import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
+import voxeet.com.sdk.events.success.IncomingCallEvent;
 import voxeet.com.sdk.events.success.InvitationReceived;
 import voxeet.com.sdk.events.success.ScreenStreamAddedEvent;
 import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
 import voxeet.com.sdk.events.success.UserInvitedEvent;
+import voxeet.com.sdk.json.ConferenceDestroyedPush;
 import voxeet.com.sdk.json.InvitationReceivedEvent;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
 import voxeet.com.sdk.json.UserInfo;
@@ -128,6 +130,7 @@ public abstract class AbstractConferenceToolkitController {
     private String TAG = VoxeetConferenceView.class.getSimpleName();
     private boolean mIsViewRetainedOnLeave;
     private AbstractRootViewProvider mRootViewProvider;
+    private OverlayState mSavedOverlayState;
 
     private AbstractConferenceToolkitController() {
 
@@ -164,14 +167,17 @@ public abstract class AbstractConferenceToolkitController {
         mMainViewParent = new FrameLayout(activity);
         mMainViewParent.setLayoutParams(createMatchParams());
 
+        if (null == mSavedOverlayState) mSavedOverlayState = getDefaultOverlayState();
+
+        boolean is_new_conference = false; //TODO implement conference switch
+
+        OverlayState state = mSavedOverlayState;
         mMainView = mVoxeetOverlayViewProvider.createView(activity,
                 mVoxeetSubViewProvider,
-                getDefaultOverlayState());
+                state);
 
         List<DefaultConferenceUser> list = VoxeetSdk.getInstance().getConferenceService().getLastInvitationUsers();
-        if (null != list) {
-            mergeConferenceUsers(list);
-        }
+        mergeConferenceUsers(list);
 
         mMainView.onMediaStreamsListUpdated(mMediaStreams);
         mMainView.onScreenShareMediaStreamUpdated(mScreenShareMediaStreams);
@@ -272,10 +278,18 @@ public abstract class AbstractConferenceToolkitController {
             should_send_user_join = true;
         }
 
-        if (isOverlayEnabled()) {
+        if (isOverlayEnabled() && in_conf) {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+
+                    //request audio focus and set in voice call
+                    if(null != VoxeetSdk.getInstance()) {
+                        AudioService service = VoxeetSdk.getInstance().getAudioService();
+                        service.requestAudioFocus();
+                        service.setInVoiceCallSoundType();
+                    }
+
                     log("run: add view" + mMainView);
                     if (mMainView != null) {
                         Activity activity = getRootViewProvider().getCurrentActivity();
@@ -317,6 +331,8 @@ public abstract class AbstractConferenceToolkitController {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
+                            mEventBus.post(new LoadLastSavedOverlayStateEvent());
                         }
                     }
                 }
@@ -326,10 +342,18 @@ public abstract class AbstractConferenceToolkitController {
 
     public void removeView(final boolean should_release, final RemoveViewType from_type) {
         final AbstractVoxeetOverlayView view = mMainView;
+        final boolean release = RemoveViewType.FROM_HUD.equals(from_type) || !isEnabled() || !isViewRetainedOnLeave();
+
+        //releasing the hold on the view
+        if (should_release && release) {
+            mSavedOverlayState = null;
+
+            mMainView = null;
+        }
+
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                boolean release = RemoveViewType.FROM_HUD.equals(from_type) || !isEnabled() || !isViewRetainedOnLeave();
                 if (view != null && release) {
                     ViewGroup viewHolder = (ViewGroup) view.getParent();
                     if (viewHolder != null)
@@ -344,6 +368,9 @@ public abstract class AbstractConferenceToolkitController {
                     view.onStop();
 
                     if (should_release && release) {
+                        //restore the saved state
+                        mSavedOverlayState = null;
+
                         Log.d(TAG, "run: AbstractConferenceToolkitController should release view " + view.getClass().getSimpleName());
                         view.onDestroy();
                         //if we still have the main view displayed
@@ -398,9 +425,9 @@ public abstract class AbstractConferenceToolkitController {
         //set the new state to the view
         if (mMainView != null) {
             if (OverlayState.EXPANDED.equals(overlay)) {
-                mMainView.expand();
+                expand();
             } else {
-                mMainView.minimize();
+                minimize();
             }
         }
     }
@@ -412,6 +439,16 @@ public abstract class AbstractConferenceToolkitController {
      */
     public OverlayState getDefaultOverlayState() {
         return mDefaultOverlayState;
+    }
+
+    private void minimize() {
+        if (null != mMainView) mMainView.minimize();
+        mSavedOverlayState = OverlayState.MINIMIZED;
+    }
+
+    private void expand() {
+        if (null != mMainView) mMainView.expand();
+        mSavedOverlayState = OverlayState.EXPANDED;
     }
 
     /**
@@ -560,7 +597,6 @@ public abstract class AbstractConferenceToolkitController {
                 }
             }
         }
-
     }
 
     /**
@@ -785,12 +821,11 @@ public abstract class AbstractConferenceToolkitController {
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceDestroyedPushEvent event) {
+    public void onEvent(ConferenceDestroyedPush event) {
         reset();
         if (null != mMainView) {
             mMainView.onConferenceDestroyed();
         }
-
 
         removeView(true, RemoveViewType.FROM_EVENT);
     }
@@ -842,6 +877,28 @@ public abstract class AbstractConferenceToolkitController {
     public void onEvent(@NonNull ConferenceUpdatedEvent event) {
         if (null != mMainView) {
             mMainView.onConferenceUpdated(event.getEvent().getParticipants());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(@NonNull IncomingCallEvent event) {
+        if (null != mMainView) {
+            mMainView.minimize();
+            mSavedOverlayState = OverlayState.MINIMIZED;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(@NonNull LoadLastSavedOverlayStateEvent event) {
+        if (null != mMainView) {
+            OverlayState state = mSavedOverlayState;
+            if (null == state) state = getDefaultOverlayState();
+
+            if (OverlayState.EXPANDED.equals(state)) {
+                expand();
+            } else {
+                minimize();
+            }
         }
     }
 

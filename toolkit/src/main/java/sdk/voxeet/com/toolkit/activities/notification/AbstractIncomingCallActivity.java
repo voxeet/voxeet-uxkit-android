@@ -21,12 +21,16 @@ import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
 import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
+import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
+import sdk.voxeet.com.toolkit.utils.LoadLastSavedOverlayStateEvent;
 import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
+import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetTimer;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
 import voxeet.com.sdk.events.success.DeclineConferenceResultEvent;
+import voxeet.com.sdk.json.ConferenceDestroyedPush;
 
 public abstract class AbstractIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
 
@@ -94,6 +98,10 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
         } else {
             Toast.makeText(this, getString(R.string.invalid_bundle), Toast.LENGTH_SHORT).show();
             finish();
+        }
+
+        if(!mIncomingBundleChecker.isSameConference(VoxeetSdk.getInstance().getConferenceService().getConferenceId())) {
+            mEventBus.post(new LoadLastSavedOverlayStateEvent());
         }
     }
 

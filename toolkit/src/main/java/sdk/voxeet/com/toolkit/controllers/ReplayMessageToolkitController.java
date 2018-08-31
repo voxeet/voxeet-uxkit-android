@@ -25,6 +25,7 @@ import voxeet.com.sdk.core.services.SdkConferenceService;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.GetConferenceHistoryEvent;
+import voxeet.com.sdk.json.ConferenceDestroyedPush;
 import voxeet.com.sdk.models.HistoryConference;
 
 /**
@@ -146,7 +147,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
     @Override
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceDestroyedPushEvent event) {
+    public void onEvent(ConferenceDestroyedPush event) {
         //to allow replay - prevent super call()
         if (getMainView() != null) getMainView().onConferenceDestroyed();
     }

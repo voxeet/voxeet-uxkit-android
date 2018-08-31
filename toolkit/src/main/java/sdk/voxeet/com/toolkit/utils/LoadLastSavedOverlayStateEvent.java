@@ -5,4 +5,7 @@ package sdk.voxeet.com.toolkit.utils;
  */
 
 public class LoadLastSavedOverlayStateEvent {
+
+    public LoadLastSavedOverlayStateEvent() {
+    }
 }

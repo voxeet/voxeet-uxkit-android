@@ -3,6 +3,7 @@ package sdk.voxeet.com.toolkit.controllers;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -50,16 +51,18 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         //nothing to do
     }
 
-    public Promise<Boolean> join(@NonNull String conference_id, @Nullable UserInfo from_invitation) {
-        mCachedInvited.clear();
-        if (null != from_invitation) {
-            mCachedInvited.put(from_invitation.getExternalId(), from_invitation);
-        }
+    public Promise<Boolean> joinUsingConferenceId(@NonNull String conferenceId, @Nullable UserInfo from_invitation) {
+        Log.d("IncomingBundleChecker", "join: conferenceId := " + conferenceId);
+        internalJoin(from_invitation);
 
-        VoxeetToolkit.getInstance().enable(this);
-        enable(true);
+        return VoxeetSdk.getInstance().getConferenceService().joinUsingConferenceId(conferenceId);
+    }
 
-        return VoxeetSdk.getInstance().getConferenceService().join(conference_id);
+    public Promise<Boolean> join(@NonNull String conferenceAlias, @Nullable UserInfo from_invitation) {
+        Log.d("IncomingBundleChecker", "join: conferenceAlias := " + conferenceAlias);
+        internalJoin(from_invitation);
+
+        return VoxeetSdk.getInstance().getConferenceService().join(conferenceAlias);
     }
 
     public Promise<Boolean> join(@NonNull String conference_id) {
@@ -104,5 +107,15 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
 
     public void setScreenShareEnabled(boolean state) {
         mScreenShareEnabled = state;
+    }
+
+    private void internalJoin(@Nullable UserInfo from_invitation) {
+        mCachedInvited.clear();
+        if (null != from_invitation) {
+            mCachedInvited.put(from_invitation.getExternalId(), from_invitation);
+        }
+
+        VoxeetToolkit.getInstance().enable(this);
+        enable(true);
     }
 }

@@ -1,6 +1,7 @@
 package sdk.voxeet.com.toolkit.activities.workflow;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import sdk.voxeet.com.toolkit.activities.notification.IncomingBundleChecker;
 import sdk.voxeet.com.toolkit.activities.notification.IncomingCallFactory;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.services.AudioService;
 import voxeet.com.sdk.core.services.ScreenShareService;
 import voxeet.com.sdk.events.error.ConferenceJoinedError;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
@@ -105,11 +107,19 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
                 .sendUserPermissionRequest(this);
     }
 
+    //those two methods were here to manage sound type
+    //no longer required
+    /*@Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEven(ConferencePreJoinedEvent event) {
+        setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPushEvent event) {
         mIncomingBundleChecker.flushIntent();
-    }
+
+        setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+    }*/
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Specific event used to manage the current "incoming" call feature

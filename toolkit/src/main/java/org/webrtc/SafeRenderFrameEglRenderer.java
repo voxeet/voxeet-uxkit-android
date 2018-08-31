@@ -17,7 +17,6 @@ import android.opengl.GLES20;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Surface;
 
 import java.nio.ByteBuffer;
@@ -314,7 +313,6 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
      * Set this to 0 to disable cropping.
      */
     public void setLayoutAspectRatio(float layoutAspectRatio) {
-        logD("setLayoutAspectRatio: " + layoutAspectRatio);
         synchronized (layoutLock) {
             this.layoutAspectRatio = layoutAspectRatio;
         }
@@ -366,11 +364,11 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
     /**
      * Register a callback to be invoked when a new video frame has been received.
      *
-     * @param listener The callback to be invoked. The callback will be invoked on the render thread.
-     *                 It should be lightweight and must not call removeFrameListener.
-     * @param scale    The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
-     *                 required.
-     * @param drawer   Custom drawer to use for this frame listener or null to use the default one.
+     * @param listener    The callback to be invoked. The callback will be invoked on the render thread.
+     *                    It should be lightweight and must not call removeFrameListener.
+     * @param scale       The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
+     *                    required.
+     * @param drawerParam Custom drawer to use for this frame listener or null to use the default one.
      */
     public void addFrameListener(
             final FrameListener listener, final float scale, final RendererCommon.GlDrawer drawerParam) {
@@ -384,7 +382,7 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
      *                          It should be lightweight and must not call removeFrameListener.
      * @param scale             The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
      *                          required.
-     * @param drawer            Custom drawer to use for this frame listener or null to use the default one.
+     * @param drawerParam       Custom drawer to use for this frame listener or null to use the default one.
      * @param applyFpsReduction This callback will not be called for frames that have been dropped by
      *                          FPS reduction.
      */
@@ -402,7 +400,7 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
      * the queue, nothing happens. It is ensured that callback won't be called after this method
      * returns.
      *
-     * @param runnable The callback to remove.
+     * @param listener The callback to remove.
      */
     public void removeFrameListener(final FrameListener listener) {
         if (Thread.currentThread() == renderThreadHandler.getLooper().getThread()) {
@@ -539,6 +537,7 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
             frame = pendingFrame;
             pendingFrame = null;
         }
+
         if (eglBase == null || !eglBase.hasSurface()) {
             logD("Dropping frame - No surface");
             frame.release();

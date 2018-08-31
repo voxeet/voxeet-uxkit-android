@@ -11,7 +11,7 @@
         android:id="@+id/selected_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:scaleType="scale_fill"
+        app:scaleType="scale_fit"
         android:visibility="gone" />
 
     <LinearLayout

@@ -27,6 +27,7 @@ public class DefaultReplayMessageProvider implements IVoxeetOverlayViewProvider 
         mListener = listener;
     }
 
+    @NonNull
     @Override
     public AbstractVoxeetOverlayView createView(@NonNull Context context,
                                                 @NonNull IVoxeetSubViewProvider provider,

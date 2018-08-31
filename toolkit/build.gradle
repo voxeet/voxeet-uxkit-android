@@ -62,6 +62,11 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
@@ -85,10 +90,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:support-v4:26.1.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:support-annotations:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'org.apache.commons:commons-collections4:4.0'
     compile 'com.android.support:multidex:1.0.1'

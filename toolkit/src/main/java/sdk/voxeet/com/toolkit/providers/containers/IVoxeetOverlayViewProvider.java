@@ -9,6 +9,7 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.AbstractVoxeetOver
 
 public interface IVoxeetOverlayViewProvider {
 
+    @NonNull
     AbstractVoxeetOverlayView createView(@NonNull Context context,
                                          @NonNull IVoxeetSubViewProvider provider,
                                          @NonNull OverlayState overlayState);

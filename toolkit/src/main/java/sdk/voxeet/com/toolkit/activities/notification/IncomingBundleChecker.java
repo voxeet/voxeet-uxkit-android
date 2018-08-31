@@ -5,17 +5,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
-import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
+import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.factories.VoxeetIntentFactory;
 import voxeet.com.sdk.json.UserInfo;
 
 public class IncomingBundleChecker {
+
+    private final static String TAG = IncomingBundleChecker.class.getSimpleName();
 
     private final static String BUNDLE_EXTRA_BUNDLE = "BUNDLE_EXTRA_BUNDLE";
 
@@ -68,21 +71,47 @@ public class IncomingBundleChecker {
                     getExternalUserId(),
                     getAvatarUrl());
 
-            VoxeetToolkit.getInstance()
+            Log.d(TAG, "onAccept: mConferenceId := " + mConferenceId);
+            //join the conference
+            Promise<Boolean> join = VoxeetToolkit.getInstance()
                     .getConferenceToolkit()
-                    .join(mConferenceId, info)
-                    .then(new PromiseExec<Boolean, Object>() {
-                        @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                            //possible callback to set ?
-                        }
-                    })
-                    .error(new ErrorPromise() {
-                        @Override
-                        public void onError(Throwable error) {
-                            error.printStackTrace();
-                        }
-                    });
+                    .joinUsingConferenceId(mConferenceId, info);
+            //only when error() is called
+
+            if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
+                VoxeetSdk.getInstance().getConferenceService()
+                        .leave()
+                        .then(new PromiseExec<Boolean, Object>() {
+                            @Override
+                            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                                Log.d(TAG, "onCall: previous conference left, joining the new conference");
+                                solver.resolve(join.then(new PromiseExec<Boolean, Object>() {
+                                    @Override
+                                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                                        Log.d(TAG, "onCall: resolved 1");
+                                    }
+                                }));
+                            }
+                        })
+                        .error(new ErrorPromise() {
+                            @Override
+                            public void onError(Throwable error) {
+                                error.printStackTrace();
+                            }
+                        });
+            } else {
+                join.then(new PromiseExec<Boolean, Object>() {
+                    @Override
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                        Log.d(TAG, "onCall: resolved");
+                    }
+                }).error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
+            }
         }
     }
 
@@ -137,7 +166,7 @@ public class IncomingBundleChecker {
     /**
      * Create an intent to start the activity you want after an "accept" call
      *
-     * @param caller              the non null caller
+     * @param caller the non null caller
      * @return a valid intent
      */
     @NonNull
