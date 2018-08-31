@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.TextureView;
 
 import org.webrtc.EglBase;
@@ -38,6 +41,8 @@ public class VoxeetRenderer extends TextureView
     private final RendererCommon.VideoLayoutMeasure videoLayoutMeasure =
             new RendererCommon.VideoLayoutMeasure();
     private final SafeRenderFrameEglRenderer eglRenderer;
+    private Handler mHandler;
+    private boolean pendingLayout = false;
 
     // Callback for reporting renderer events. Read-only after initilization so no lock required.
     private RendererCommon.RendererEvents rendererEvents;
@@ -66,6 +71,8 @@ public class VoxeetRenderer extends TextureView
         this.resourceName = getResourceName();
         eglRenderer = new SafeRenderFrameEglRenderer(resourceName);
         setSurfaceTextureListener(this);
+
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -77,6 +84,8 @@ public class VoxeetRenderer extends TextureView
         this.resourceName = getResourceName();
         eglRenderer = new SafeRenderFrameEglRenderer(resourceName);
         setSurfaceTextureListener(this);
+
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -131,17 +140,19 @@ public class VoxeetRenderer extends TextureView
                 }
             });
             eglRenderer.release();
+
+            mHandler = null;
         }
     }
 
     /**
      * Register a callback to be invoked when a new video frame has been received.
      *
-     * @param listener The callback to be invoked. The callback will be invoked on the render thread.
-     *                 It should be lightweight and must not call removeFrameListener.
-     * @param scale    The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
-     *                 required.
-     * @param drawer   Custom drawer to use for this frame listener.
+     * @param listener    The callback to be invoked. The callback will be invoked on the render thread.
+     *                    It should be lightweight and must not call removeFrameListener.
+     * @param scale       The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
+     *                    required.
+     * @param drawerParam Custom drawer to use for this frame listener.
      */
     public void addFrameListener(
             SafeRenderFrameEglRenderer.FrameListener listener, float scale, RendererCommon.GlDrawer drawerParam) {
@@ -172,7 +183,7 @@ public class VoxeetRenderer extends TextureView
     public void setEnableHardwareScaler(boolean enabled) {
         ThreadUtils.checkIsOnMainThread();
         enableFixedSize = enabled;
-        updateSurfaceSize();
+        updateSurfaceSize(false);
     }
 
     /**
@@ -272,16 +283,24 @@ public class VoxeetRenderer extends TextureView
         }
 
         setMeasuredDimension(size.x, size.y);
+
+        pendingLayout = false;
+        posting = false;
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         ThreadUtils.checkIsOnMainThread();
+
         eglRenderer.setLayoutAspectRatio((right - left) / (float) (bottom - top));
-        updateSurfaceSize();
+        updateSurfaceSize(false);
     }
 
     private void updateSurfaceSize() {
+        updateSurfaceSize(true);
+    }
+
+    private void updateSurfaceSize(boolean sendLayout) {
         ThreadUtils.checkIsOnMainThread();
         synchronized (layoutLock) {
             if (enableFixedSize && rotatedFrameWidth != 0 && rotatedFrameHeight != 0 && getWidth() != 0
@@ -300,19 +319,21 @@ public class VoxeetRenderer extends TextureView
                 // Aspect ratio of the drawn frame and the view is the same.
                 final int width = Math.min(getWidth(), drawnFrameWidth);
                 final int height = Math.min(getHeight(), drawnFrameHeight);
-                logD("updateSurfaceSize. Layout size: " + getWidth() + "x" + getHeight() + ", frame size: "
-                        + rotatedFrameWidth + "x" + rotatedFrameHeight + ", requested surface size: " + width
-                        + "x" + height + ", old surface size: " + surfaceWidth + "x" + surfaceHeight);
                 if (width != surfaceWidth || height != surfaceHeight) {
+                    logD("updateSurfaceSize. Layout size: " + getWidth() + "x" + getHeight() + ", frame size: "
+                            + rotatedFrameWidth + "x" + rotatedFrameHeight + ", requested surface size: " + width
+                            + "x" + height + ", old surface size: " + surfaceWidth + "x" + surfaceHeight);
+
                     surfaceWidth = width;
                     surfaceHeight = height;
                     //getHolder().setFixedSize(width, height);
-                    requestLayout();
+                    if (sendLayout && surfaceWidth != 0 && surfaceHeight != 0)
+                        requestLayoutIfNotPending();
                 }
             } else {
                 surfaceWidth = surfaceHeight = 0;
                 //getHolder().setSizeFromLayout();
-                //requestLayout();
+                //requestLayoutIfNotPending();
             }
         }
     }
@@ -351,7 +372,7 @@ public class VoxeetRenderer extends TextureView
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
         ThreadUtils.checkIsOnMainThread();
         surfaceWidth = surfaceHeight = 0;
-        updateSurfaceSize();
+        updateSurfaceSize(false);
     }
 
     private String getResourceName() {
@@ -396,7 +417,7 @@ public class VoxeetRenderer extends TextureView
                     @Override
                     public void run() {
                         updateSurfaceSize();
-                        requestLayout();
+                        requestLayoutIfNotPending();
                     }
                 });
             }
@@ -432,7 +453,7 @@ public class VoxeetRenderer extends TextureView
                     @Override
                     public void run() {
                         updateSurfaceSize();
-                        requestLayout();
+                        requestLayoutIfNotPending();
                     }
                 });
             }
@@ -441,5 +462,24 @@ public class VoxeetRenderer extends TextureView
 
     private void logD(String string) {
         Logging.d(TAG, resourceName + string);
+    }
+
+    private boolean posting = false;
+
+    private void requestLayoutIfNotPending() {
+
+        if (posting || (null == mHandler)) return;
+
+        posting = true;
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                requestLayout();
+            }
+        }, 1000);
+        /*if(!pendingLayout) {
+            pendingLayout = true;
+            requestLayout();
+        }*/
     }
 }

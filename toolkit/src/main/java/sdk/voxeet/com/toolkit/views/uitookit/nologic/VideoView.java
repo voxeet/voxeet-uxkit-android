@@ -423,12 +423,13 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
     private void createRendererIfNeeded() {
         if (null == mRenderer) {
-            LayoutParams param = new LayoutParams(
+            final LayoutParams param = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
                     Gravity.CENTER);
 
             mRenderer = new VoxeetRenderer(getContext());
+
             mRenderer.setLayoutParams(param);
 
             addView(mRenderer);
@@ -436,6 +437,19 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
             mRenderer.init(eglBase.getEglBaseContext(), this);
 
             if (null != mScaleType) mRenderer.setScalingType(getScalingType());
+        } else {
+            LayoutParams param = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    Gravity.CENTER);
+
+            //post new layout params just to prevent issues
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mRenderer.setLayoutParams(param);
+                }
+            });
         }
     }
 }
