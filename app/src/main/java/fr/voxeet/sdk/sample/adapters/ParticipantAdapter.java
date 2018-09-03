@@ -14,7 +14,6 @@ import com.google.common.collect.Iterables;
 import com.squareup.picasso.Picasso;
 
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -201,7 +200,7 @@ public class ParticipantAdapter extends BaseAdapter {
 
         positionMap.put(userId, new RoomPosition(angle, distance));
 
-        VoxeetSdk.getInstance().getConferenceService().changePeerPosition(userId, angle, distance);
+        VoxeetSdk.getInstance().getConferenceService().setUserPosition(userId, angle, distance);
     }
 
     private class ViewHolder {

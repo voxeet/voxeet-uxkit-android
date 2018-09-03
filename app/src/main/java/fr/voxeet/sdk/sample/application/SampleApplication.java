@@ -21,12 +21,14 @@ import eu.codlab.simplepromise.solve.Solver;
 import fr.voxeet.sdk.sample.BuildConfig;
 import fr.voxeet.sdk.sample.Recording;
 import fr.voxeet.sdk.sample.activities.IncomingCallActivity;
+import fr.voxeet.sdk.sample.activities.MainActivity;
 import fr.voxeet.sdk.sample.oauth.OAuthCalls;
 import fr.voxeet.sdk.sample.oauth.OAuthCallsFactory;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import sdk.voxeet.com.toolkit.activities.notification.IncomingCallFactory;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.utils.EventDebugger;
 import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.OverlayState;
@@ -58,6 +60,8 @@ public class SampleApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        Log.d(TAG, "onCreate: starting Voxeet Sample");
+
         sdkInitialized = false;
 
         mEventDebugger = new EventDebugger();
@@ -65,6 +69,7 @@ public class SampleApplication extends MultiDexApplication {
 
         VoxeetToolkit.initialize(this, EventBus.getDefault());
         VoxeetToolkit.getInstance().enableOverlay(true);
+
 
         //change the overlay used by default
         VoxeetToolkit.getInstance().getConferenceToolkit().setScreenShareEnabled(true);
@@ -186,7 +191,7 @@ public class SampleApplication extends MultiDexApplication {
                                     String token = createOAuthCalls().retrieveRefreshToken().toBlocking().single();
                                     //when using the Web Sample, the tokens are surrounded by "
                                     //we remove them here, but in production, it should be injected into your objects
-                                    if(null != token) token = token.replaceAll("\"", "");
+                                    if (null != token) token = token.replaceAll("\"", "");
                                     return token;
                                 }
                             },
@@ -261,7 +266,8 @@ public class SampleApplication extends MultiDexApplication {
                             public void onNext(String accessToken) {
                                 //when using the Web Sample, the tokens are surrounded by "
                                 //we remove them here, but in production, it should be injected into your objects
-                                if(null != accessToken) accessToken = accessToken.replaceAll("\"", "");
+                                if (null != accessToken)
+                                    accessToken = accessToken.replaceAll("\"", "");
                                 solver.resolve(accessToken);
                             }
                         });

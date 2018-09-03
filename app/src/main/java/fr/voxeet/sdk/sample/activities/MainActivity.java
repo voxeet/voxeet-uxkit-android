@@ -20,9 +20,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Arrays;
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
@@ -34,8 +38,12 @@ import fr.voxeet.sdk.sample.users.UsersHelper;
 import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.preferences.VoxeetPreferences;
+import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
+import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.events.success.SocketConnectEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
+import voxeet.com.sdk.json.UserInfo;
 
 public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -47,8 +55,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     public static final int CREATE = 0x1010;
     public static final int DEMO = 0x1020;
     public static final int REPLAY = 0x1030;
-
-    private int lastAction;
+    public static final String ACTION = "__action";
 
     @Bind(R.id.join_conf_text)
     EditText joinConfEditText;
@@ -82,13 +89,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    switch (lastAction) {
-                        case JOIN:
-                            joinCall();
-                            break;
-                        default:
-                            throw new IllegalStateException("Invalid last option");
-                    }
+                    joinCall();
                 }
                 return;
             }
@@ -159,36 +160,40 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     }
 
     private void joinCall() {
-        conferenceActivity(lastAction = JOIN);
+        conferenceActivity();
     }
 
-    private void createConf() {
-        conferenceActivity(lastAction = CREATE);
-    }
-
-    public void conferenceActivity(int lastAction) {
+    public void conferenceActivity() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_RESULT);
         else {
-            Intent intent = new Intent(MainActivity.this, CreateConfActivity.class);
+            String conferenceAlias = joinConfEditText.getText().toString();
 
-            switch (lastAction) {
-                case DEMO:
-                    intent.putExtra("demo", true);
-                    break;
-                case CREATE:
-                    intent.putExtra("create", true);
-                    break;
-                case REPLAY:
-                    intent.putExtra("replay", true);
-                    break;
-                case JOIN:
-                default:
-                    intent.putExtra("confAlias", joinConfEditText.getText().toString());
-                    intent.putExtra("join", true);
-                    break;
+            Promise<Boolean> promise = VoxeetToolkit.getInstance().getConferenceToolkit().join(conferenceAlias);
+
+            if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
+                Promise<Boolean> finalPromise = promise;
+                VoxeetSdk.getInstance().getConferenceService()
+                        .leave()
+                        .then(new PromiseExec<Boolean, Object>() {
+                            @Override
+                            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                                solver.resolve(finalPromise);
+                            }
+                        }).error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
+            } else {
+                promise.error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
             }
-            startActivity(intent);
         }
     }
 
@@ -204,6 +209,22 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
             //startActivity(_after_relogged_intent);
             _after_relogged_intent = null;
         }
+
+        VoxeetSdk.getInstance()
+                .getConferenceService()
+                .subscribe("test_conference")
+                .then(new PromiseExec<Boolean, Object>() {
+                    @Override
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                        Log.d(TAG, "onCall: subscribe result " + result);
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -223,7 +244,9 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     protected void onResume() {
         super.onResume();
 
-        _application = (SampleApplication) getApplication();
+        if (getApplication() instanceof SampleApplication) {
+            _application = (SampleApplication) getApplication();
+        }
     }
 
     @Override
@@ -250,5 +273,26 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     @Override
     public void onUserSelected(UserItem user_item) {
         _application.selectUser(user_item.getUserInfo());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(final ConferenceJoinedSuccessEvent event) {
+        Log.d("CreateConfActivity", "ConferencejoinedSuccessEvent " + event.getConferenceId() + " " + event.getAliasId());
+        List<UserInfo> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
+
+        VoxeetToolkit.getInstance().getConferenceToolkit()
+                .invite(external_ids)
+                .then(new PromiseExec<List<ConferenceRefreshedEvent>, Object>() {
+                    @Override
+                    public void onCall(@Nullable List<ConferenceRefreshedEvent> result, @NonNull Solver<Object> solver) {
+                        Log.d(TAG, "onCall: " + Arrays.toString(result.toArray()));
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
     }
 }

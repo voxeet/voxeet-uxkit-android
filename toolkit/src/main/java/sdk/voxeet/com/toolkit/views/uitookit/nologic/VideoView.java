@@ -50,7 +50,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
     private boolean autoUnAttach = false;
 
-    private EglBase eglBase;
+    //private EglBase eglBase;
 
     private boolean shouldMirror = false;
     private String mScaleType;
@@ -93,7 +93,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     private void init() {
         mHandler = new Handler();
         mEventsListeners = new ArrayList<>();
-        eglBase = EglBase.create();
+        //eglBase = EglBase.create();
         //createRendererIfNeeded();
         //init(eglBase.getEglBaseContext(), this);
         //mRenderer = this; //TODO REMOVE THIS UGLY mRenderer O_O
@@ -238,7 +238,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     public boolean reinit() {
         try {
             if (null != mRenderer) {
-                this.mRenderer.init(eglBase.getEglBaseContext(), this);
+                this.mRenderer.init(VoxeetSdk.getInstance().getConferenceService().getEglContext(), this);
             }
             return true;
         } catch (Exception e) {
@@ -434,7 +434,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
             addView(mRenderer);
 
-            mRenderer.init(eglBase.getEglBaseContext(), this);
+            mRenderer.init(VoxeetSdk.getInstance().getConferenceService().getEglContext(), this);
 
             if (null != mScaleType) mRenderer.setScalingType(getScalingType());
         } else {

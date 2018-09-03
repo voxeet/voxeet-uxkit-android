@@ -4,8 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="header_margin">40dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="screen_preview_width">130dp</dimen>
-    <dimen name="screen_preview_height">100dp</dimen>
     <dimen name="screen_preview_width_padding">129dp</dimen>
     <dimen name="screen_preview_height_padding">99dp</dimen>
 

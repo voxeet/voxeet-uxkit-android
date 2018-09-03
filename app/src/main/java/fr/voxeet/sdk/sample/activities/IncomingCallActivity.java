@@ -2,6 +2,7 @@ package fr.voxeet.sdk.sample.activities;
 
 import android.os.Bundle;
 
+import fr.voxeet.sdk.sample.BuildConfig;
 import sdk.voxeet.com.toolkit.activities.notification.AbstractIncomingCallActivity;
 
 /**
@@ -14,7 +15,6 @@ public class IncomingCallActivity extends AbstractIncomingCallActivity {
     protected void onCreate(Bundle savedInstanceState) {
         //specific Voxeet implement is done here
         super.onCreate(savedInstanceState);
-
         //no need to implement setContentView when using AbstractIncomingCallActivity
     }
 }

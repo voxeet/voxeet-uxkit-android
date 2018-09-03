@@ -41,6 +41,7 @@ import voxeet.com.sdk.events.success.WhisperInviteAcceptedEvent;
 import voxeet.com.sdk.events.success.WhisperInviteDeclinedEvent;
 import voxeet.com.sdk.events.success.WhisperInviteReceivedEvent;
 import voxeet.com.sdk.events.success.WhisperLeftEvent;
+import voxeet.com.sdk.json.ConferenceDestroyedPush;
 import voxeet.com.sdk.json.FileAdded;
 import voxeet.com.sdk.json.FileDeleted;
 import voxeet.com.sdk.json.MeetingAddedOrUpdatedEvent;
@@ -73,6 +74,11 @@ public class EventDebugger {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPushEvent event) {
+        Log.d(TAG, "onEvent: ConferenceDestroyedPushEvent " + event + " internal call !");
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ConferenceDestroyedPush event) {
         Log.d(TAG, "onEvent: ConferenceDestroyedPushEvent " + event);
     }
 

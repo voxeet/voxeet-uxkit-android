@@ -30,7 +30,6 @@ import com.voxeet.android.media.MediaStream;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +49,6 @@ import fr.voxeet.sdk.sample.adapters.RecordedConferencesAdapter;
 import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.dialogs.ConferenceOutput;
 import fr.voxeet.sdk.sample.users.UsersHelper;
-import fr.voxeet.sdk.sample.utils.FileUtils;
 import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
@@ -77,7 +75,7 @@ import voxeet.com.sdk.json.FilePresentationStopped;
 import voxeet.com.sdk.json.FilePresentationUpdated;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
 import voxeet.com.sdk.json.UserInfo;
-import voxeet.com.sdk.models.FilePresentationConverted;
+import voxeet.com.sdk.json.VideoPresentationStarted;
 import voxeet.com.sdk.models.RecordingStatus;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
@@ -178,6 +176,13 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (getIntent().hasExtra(MainActivity.ACTION)) {
+            action = getIntent().getIntExtra(MainActivity.ACTION, MainActivity.CREATE);
+            Log.d("IncomingBundleChecker", "onCreate: " + action);
+            getIntent().removeExtra(MainActivity.ACTION);
+        }
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.create_conf_activity);
@@ -199,6 +204,11 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
         } else
             initConf();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -256,7 +266,25 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
     public void startPresentation() {
         hideButtonsPresentation();
 
-        String asset = "iOSUnitTest.pdf";
+        String url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+
+        VoxeetSdk.getInstance()
+                .getVideoPresentationService()
+                .startVideoPresentation(url)
+                .then(new PromiseExec<VideoPresentationStarted, Object>() {
+                    @Override
+                    public void onCall(@Nullable VideoPresentationStarted result, @NonNull Solver<Object> solver) {
+                        Toast.makeText(CreateConfActivity.this, "STARTED", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        /*String asset = "iOSUnitTest.pdf";
         File file = FileUtils.extractAssetToTempFile(CreateConfActivity.this, asset);
 
         VoxeetSdk.getInstance()
@@ -301,7 +329,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
 
                         showStartPresentation();
                     }
-                });
+                });*/
     }
 
     @OnClick(R.id.toggle_video)
@@ -422,80 +450,79 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
     }
 
     private void initConf() {
-        if (getIntent().hasExtra("join")) {
-            action = MainActivity.JOIN;
+        Log.d("IncomingBundleChecker", "initConf: " + action+" "+MainActivity.JOIN);
+        switch (action) {
+            case MainActivity.JOIN:
+                setTitle("");//Join IConference");
 
-            setTitle("");//Join IConference");
+                String confIdOrAlias = null;
 
-            String confIdOrAlias = null;
+                if (getIntent().hasExtra("confAlias")) {
+                    confIdOrAlias = getIntent().getStringExtra("confAlias");
+                } else if (getIntent().hasExtra("conferenceId")) {
+                    confIdOrAlias = getIntent().getStringExtra("conferenceId");
+                }
 
-            if (getIntent().hasExtra("confAlias")) {
-                confIdOrAlias = getIntent().getStringExtra("confAlias");
-            } else if (getIntent().hasExtra("conferenceId")) {
-                confIdOrAlias = getIntent().getStringExtra("conferenceId");
-            }
+                if (confIdOrAlias != null) {
+                    join(confIdOrAlias);
+                    //displayJoin();
+                } else {
+                    finish();
+                    return;
+                }
+                break;
+            case MainActivity.REPLAY:
+                setTitle("Replay IConference");
 
-            if (confIdOrAlias != null) {
-                join(confIdOrAlias);
-                //displayJoin();
-            } else {
-                finish();
-                return;
-            }
-        } else if (getIntent().hasExtra("replay")) {
-            action = MainActivity.REPLAY;
-
-            setTitle("Replay IConference");
-
-            List<Recording> confs = ((SampleApplication) getApplication()).getRecordedConferences();
-            if (confs.size() > 0) {
-                recordedConferences.setVisibility(VISIBLE);
-                recordedConferences.setAdapter(new RecordedConferencesAdapter(this, confs));
-                recordedConferences.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        VoxeetToolkit.getInstance().getReplayMessageToolkit().replay(((Recording) recordedConferences.getItemAtPosition(i)).conferenceId, 0);
-
-                        showProgress();
-
-                        joinLayout.setVisibility(View.GONE);
-                    }
-                });
-            }
-
-            displayJoin();
-        } else if (getIntent().hasExtra("demo")) {
-            action = MainActivity.DEMO;
-
-            showProgress();
-
-            setTitle("Demo IConference");
-
-            VoxeetToolkit.getInstance().getConferenceToolkit().demo()
-                    .then(new PromiseExec<Boolean, Object>() {
+                List<Recording> confs = ((SampleApplication) getApplication()).getRecordedConferences();
+                if (confs.size() > 0) {
+                    recordedConferences.setVisibility(VISIBLE);
+                    recordedConferences.setAdapter(new RecordedConferencesAdapter(this, confs));
+                    recordedConferences.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            VoxeetToolkit.getInstance().getReplayMessageToolkit().replay(((Recording) recordedConferences.getItemAtPosition(i)).conferenceId, 0);
 
-                        }
-                    })
-                    .error(new ErrorPromise() {
-                        @Override
-                        public void onError(Throwable error) {
+                            showProgress();
 
+                            joinLayout.setVisibility(View.GONE);
                         }
                     });
-        } else if (getIntent().hasExtra("create")) {
-            action = MainActivity.CREATE;
+                }
 
-            showProgress();
+                displayJoin();
+                break;
+            case MainActivity.DEMO:
 
-            setTitle("Create IConference");
+                showProgress();
 
-            VoxeetToolkit.getInstance().getConferenceToolkit().create();
-        } else {
-            Toast.makeText(this, getString(R.string.invalid_activity_start_intent), Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+                setTitle("Demo IConference");
+
+                VoxeetToolkit.getInstance().getConferenceToolkit().demo()
+                        .then(new PromiseExec<Boolean, Object>() {
+                            @Override
+                            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+
+                            }
+                        })
+                        .error(new ErrorPromise() {
+                            @Override
+                            public void onError(Throwable error) {
+
+                            }
+                        });
+                break;
+            case MainActivity.CREATE:
+                showProgress();
+
+                setTitle("Create IConference");
+
+                VoxeetToolkit.getInstance().getConferenceToolkit().create();
+                break;
+            default:
+                Toast.makeText(this, getString(R.string.invalid_activity_start_intent), Toast.LENGTH_SHORT).show();
+                finish();
+                return;
         }
 
         if (!VoxeetSdk.getInstance().register(this, this)) {
@@ -696,26 +723,26 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         finish();
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserLeftEvent event) {
         Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         adapter.removeParticipant(event.getUser());
         adapter.notifyDataSetChanged();
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserJoinedEvent event) {
         Log.d("CreateConfActivity", "ConferenceUserJoinedEvent " + event.message() + " " + event.getUser().getUserInfo().getExternalId() + " " + event.getUser().isOwner());
         updateStreams(event.getUser(), event.getMediaStream());
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserUpdatedEvent event) {
         Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         updateStreams(event.getUser(), event.getMediaStream());
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ScreenStreamAddedEvent event) {
         Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         MediaStream mediaStream = event.getMediaStream();
@@ -725,7 +752,7 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(RecordingStatusUpdateEvent event) {
         Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         if (event.getRecordingStatus().equalsIgnoreCase(RecordingStatus.RECORDING.name())) {
@@ -737,14 +764,14 @@ public class CreateConfActivity extends VoxeetAppCompatActivity {
         }
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ScreenStreamRemovedEvent event) { // unattaching stream
         Log.d(TAG, "onEvent: " + event.getClass().getSimpleName());
         screenShare.setVisibility(View.GONE);
         screenShare.unAttach();
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(MessageReceived event) {
         Log.e(TAG, event.getMessage());
     }
