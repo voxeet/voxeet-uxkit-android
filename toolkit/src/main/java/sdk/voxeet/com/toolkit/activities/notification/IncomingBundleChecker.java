@@ -13,6 +13,7 @@ import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
 import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.factories.VoxeetIntentFactory;
 import voxeet.com.sdk.json.UserInfo;
 
@@ -78,7 +79,34 @@ public class IncomingBundleChecker {
                     .joinUsingConferenceId(mConferenceId, info);
             //only when error() is called
 
-            if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
+            if (!VoxeetSdk.getInstance().isSocketOpen()) {
+                UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
+
+                if (null != userInfo) {
+                    VoxeetSdk.getInstance().logUserWithChain(userInfo)
+                            .then(new PromiseExec<Boolean, Boolean>() {
+                                @Override
+                                public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
+                                    Log.d(TAG, "onCall: log user info := " + result);
+                                    solver.resolve(join);
+                                }
+                            })
+                            .then(new PromiseExec<Boolean, Object>() {
+                                @Override
+                                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                                    Log.d(TAG, "onCall: join conference := " + result);
+                                }
+                            })
+                            .error(new ErrorPromise() {
+                                @Override
+                                public void onError(@NonNull Throwable error) {
+                                    error.printStackTrace();
+                                }
+                            });
+                } else {
+                    Log.d(TAG, "onAccept: unable to log the user");
+                }
+            } else if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
                 VoxeetSdk.getInstance().getConferenceService()
                         .leave()
                         .then(new PromiseExec<Boolean, Object>() {
@@ -121,7 +149,7 @@ public class IncomingBundleChecker {
      * @return true if the intent has notification keys
      */
     final public boolean isBundleValid() {
-        return mIntent.hasExtra(VoxeetIntentFactory.INVITER_NAME)
+        return null != mIntent && mIntent.hasExtra(VoxeetIntentFactory.INVITER_NAME)
                 && mIntent.hasExtra(VoxeetIntentFactory.INVITER_EXTERNAL_ID)
                 && mIntent.hasExtra(VoxeetIntentFactory.INVITER_ID)
                 && mIntent.hasExtra(VoxeetIntentFactory.INVITER_URL)
