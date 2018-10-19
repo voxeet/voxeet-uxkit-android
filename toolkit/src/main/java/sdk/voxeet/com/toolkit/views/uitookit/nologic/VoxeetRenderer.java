@@ -197,6 +197,9 @@ public class VoxeetRenderer extends TextureView
         return eglRenderer.isMirror();
     }
 
+    public boolean isFirstFrameRendered() {
+        return isFirstFrameRendered;
+    }
     /**
      * Set how the video will fill the allowed layout area.
      */
@@ -320,9 +323,9 @@ public class VoxeetRenderer extends TextureView
                 final int width = Math.min(getWidth(), drawnFrameWidth);
                 final int height = Math.min(getHeight(), drawnFrameHeight);
                 if (width != surfaceWidth || height != surfaceHeight) {
-                    logD("updateSurfaceSize. Layout size: " + getWidth() + "x" + getHeight() + ", frame size: "
+                    /*logD("updateSurfaceSize. Layout size: " + getWidth() + "x" + getHeight() + ", frame size: "
                             + rotatedFrameWidth + "x" + rotatedFrameHeight + ", requested surface size: " + width
-                            + "x" + height + ", old surface size: " + surfaceWidth + "x" + surfaceHeight);
+                            + "x" + height + ", old surface size: " + surfaceWidth + "x" + surfaceHeight);*/
 
                     surfaceWidth = width;
                     surfaceHeight = height;
