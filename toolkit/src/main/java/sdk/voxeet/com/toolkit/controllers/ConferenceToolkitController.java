@@ -21,6 +21,7 @@ import sdk.voxeet.com.toolkit.views.uitookit.sdk.overlays.abs.IExpandableViewPro
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.json.UserInfo;
+import voxeet.com.sdk.json.internal.MetadataHolder;
 
 /**
  * Created by kevinleperf on 15/01/2018.
@@ -58,15 +59,50 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         return VoxeetSdk.getInstance().getConferenceService().joinUsingConferenceId(conferenceId);
     }
 
+    /**
+     * Join a given conferenceAlias with parametered metadata
+     *
+     * @param conferenceAlias the valid alias to join
+     * @param from_invitation the user who invited this instance - if any
+     * @return a promise to resolve
+     */
     public Promise<Boolean> join(@NonNull String conferenceAlias, @Nullable UserInfo from_invitation) {
+        return join(conferenceAlias, null, from_invitation);
+    }
+
+    /**
+     * Join a given conferenceAlias with parametered metadata
+     *
+     * @param conferenceAlias the valid alias to join
+     * @param metadataHolder a possible metadataholder - if any
+     * @return a promise to resolve
+     */
+    public Promise<Boolean> join(@NonNull String conferenceAlias,
+                                 @Nullable MetadataHolder metadataHolder) {
+        Log.d("IncomingBundleChecker", "join: conferenceAlias := " + conferenceAlias);
+
+        return join(conferenceAlias, metadataHolder, null);
+    }
+
+    /**
+     * Join a given conferenceAlias with parametered metadata
+     *
+     * @param conferenceAlias the valid alias to join
+     * @param metadataHolder a possible metadataholder - if any
+     * @param from_invitation the user who invited this instance - if any
+     * @return a promise to resolve
+     */
+    public Promise<Boolean> join(@NonNull String conferenceAlias,
+                                 @Nullable MetadataHolder metadataHolder,
+                                 @Nullable UserInfo from_invitation) {
         Log.d("IncomingBundleChecker", "join: conferenceAlias := " + conferenceAlias);
         internalJoin(from_invitation);
 
-        return VoxeetSdk.getInstance().getConferenceService().join(conferenceAlias);
+        return VoxeetSdk.getInstance().getConferenceService().join(conferenceAlias, metadataHolder);
     }
 
-    public Promise<Boolean> join(@NonNull String conference_id) {
-        return join(conference_id, null);
+    public Promise<Boolean> join(@NonNull String conference_Alias) {
+        return join(conference_Alias, new MetadataHolder());
     }
 
     public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull List<UserInfo> to_invite) {
@@ -85,20 +121,6 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
     @Nullable
     public UserInfo getInvitedUserFromCache(@NonNull String externalId) {
         return (null != mCachedInvited) ? mCachedInvited.get(externalId) : null;
-    }
-
-    public Promise<Boolean> demo() {
-        VoxeetToolkit.getInstance().enable(this);
-        enable(true);
-
-        return VoxeetSdk.getInstance().getConferenceService().demo();
-    }
-
-    public Promise<Boolean> create() {
-        VoxeetToolkit.getInstance().enable(this);
-        enable(true);
-
-        return VoxeetSdk.getInstance().getConferenceService().create();
     }
 
     public boolean isScreenShareEnabled() {

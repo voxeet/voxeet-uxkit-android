@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -68,22 +69,23 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
             if (currentSpeaker != null && currentWidth > 0)
                 loadViaPicasso(currentSpeaker, currentWidth / 2, currentSpeakerView);
 
-            handler.postDelayed(this, REFRESH_SPEAKER);
+            if(mAttached) handler.postDelayed(this, REFRESH_SPEAKER);
         }
     };
 
     private Runnable updateVuMeterRunnable = new Runnable() {
         @Override
         public void run() {
-            if (currentSpeaker != null)
+            if (currentSpeaker != null && null != VoxeetSdk.getInstance())
                 vuMeter.updateMeter(VoxeetSdk.getInstance().getConferenceService().getPeerVuMeter(currentSpeaker.getUserId()));
 
-            handler.postDelayed(this, REFRESH_METER);
+            if(mAttached) handler.postDelayed(this, REFRESH_METER);
         }
     };
     private List<DefaultConferenceUser> mConferenceUsers;
     private boolean mDisplaySpeakerName = false;
     private TextView speakerName;
+    private boolean mAttached;
 
     /**
      * Instantiates a new Voxeet current speaker view.
@@ -117,6 +119,23 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         super(context, attrs, defStyleAttr);
 
         updateAttrs(attrs);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        mAttached = true;
+
+        onResume();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        mAttached = false;
+
+        onPause();
+        super.onDetachedFromWindow();
     }
 
     private void updateAttrs(AttributeSet attrs) {
@@ -245,48 +264,29 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
 
     private void loadViaPicasso(DefaultConferenceUser conferenceUser, int avatarSize, ImageView imageView) {
         try {
-            Picasso.with(getContext())
-                    .load(conferenceUser.getUserInfo().getAvatarUrl())
-                    .noFade()
-                    .resize(avatarSize, avatarSize)
-                    .error(R.color.transparent)
-                    .into(imageView);
+            String avatarUrl = null;
+            if(null != conferenceUser && null != conferenceUser.getUserInfo()) {
+                avatarUrl = conferenceUser.getUserInfo().getAvatarUrl();
+            }
+
+            if(!TextUtils.isEmpty(avatarUrl)) {
+                Picasso.get()
+                        .load(conferenceUser.getUserInfo().getAvatarUrl())
+                        .noFade()
+                        .resize(avatarSize, avatarSize)
+                        .placeholder(R.drawable.default_avatar)
+                        .error(R.color.transparent)
+                        .into(imageView);
+            } else {
+                Picasso.get()
+                        .load(R.drawable.default_avatar)
+                        .noFade()
+                        .resize(avatarSize, avatarSize)
+                        .into(imageView);
+            }
         } catch (Exception e) {
             Log.e(TAG, "error " + e.getMessage());
         }
-    }
-
-    /**
-     * Pauses the handler responsible of updating the vu meter and the speaker photo.
-     */
-    public void onPause() {
-        handler.removeCallbacks(null);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        handler.removeCallbacks(null);
-        handler.removeCallbacksAndMessages(null);
-    }
-
-    /**
-     * Starts the handler responsible of updating the vu meter and the speaker photo.
-     */
-    public void start() {
-        handler.post(updateSpeakerRunnable);
-        handler.post(updateVuMeterRunnable);
-    }
-
-    /**
-     * Resumes the handler responsible of updating the vu meter and the speaker photo.
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        start();
     }
 
     /**
@@ -302,8 +302,12 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
 
         selected = true;
 
+        String userName = null;
+        if(null != currentSpeaker && null != currentSpeaker.getUserInfo()) {
+            userName = currentSpeaker.getUserInfo().getName();
+        }
         if (currentSpeaker != null) {
-            speakerName.setText(currentSpeaker.getUserInfo().getName());
+            speakerName.setText(userName);
         }
     }
 
@@ -316,5 +320,23 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         onResume();
 
         selected = false;
+    }
+
+    @Nullable
+    public String getSelectedUserId() {
+        return selected && null != currentSpeaker ? currentSpeaker.getUserId() : null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        handler.post(updateSpeakerRunnable);
+        handler.post(updateVuMeterRunnable);
+    }
+
+    public void onPause() {
+        handler.removeCallbacks(null);
+        handler.removeCallbacksAndMessages(null);
     }
 }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -86,13 +85,45 @@ public abstract class VoxeetView extends FrameLayout
     }
 
     /**
+     * On conference creating.
+     */
+    public void onConferenceCreating() {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceCreating();
+        }
+    }
+
+    /**
+     * On conference creation.
+     */
+    public void onConferenceCreation(@NonNull String conferenceId) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceCreation(conferenceId);
+        }
+    }
+
+    /**
      * On conference creation.
      *
      * @param conference_id the conference id
      */
-    public void onConferenceCreation(@NonNull String conference_id) {
+    public void onConferenceJoining(@NonNull String conference_id) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceCreation(conference_id);
+            child.onConferenceJoining(conference_id);
+        }
+    }
+
+    @Override
+    public void onConferenceFromNoOneToOneUser() {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceFromNoOneToOneUser();
+        }
+    }
+
+    @Override
+    public void onConferenceNoMoreUser() {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceNoMoreUser();
         }
     }
 
@@ -168,7 +199,7 @@ public abstract class VoxeetView extends FrameLayout
     /**
      * On Screen Share media stream updated
      *
-     * @param userId                    the user id
+     * @param userId                     the user id
      * @param screen_share_media_streams the list of screen shares media streams
      */
     public void onScreenShareMediaStreamUpdated(@NonNull String userId,
@@ -177,6 +208,7 @@ public abstract class VoxeetView extends FrameLayout
             child.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
         }
     }
+
     /**
      * @param screenShareMediaStreams the new list of screen share media streams
      */
@@ -211,6 +243,16 @@ public abstract class VoxeetView extends FrameLayout
     public void onMediaStreamsUpdated(Map<String, MediaStream> mediaStreams) {
         for (VoxeetView child : mListeners) {
             child.onMediaStreamsUpdated(mediaStreams);
+        }
+    }
+
+    /**
+     * On conference leaving from this user.
+     */
+    @Override
+    public void onConferenceLeaving() {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceLeaving();
         }
     }
 

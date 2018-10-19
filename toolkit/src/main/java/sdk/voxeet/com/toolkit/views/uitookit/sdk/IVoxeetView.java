@@ -41,6 +41,16 @@ public interface IVoxeetView {
     void onConferenceUserJoined(DefaultConferenceUser conferenceUser);
 
     /**
+     * On conference for user joined
+     */
+    void onConferenceFromNoOneToOneUser();
+
+    /**
+     * On conference no more users.
+     */
+    void onConferenceNoMoreUser();
+
+    /**
      * On conference user updated.
      *
      * @param conferenceUser the conference user
@@ -95,6 +105,11 @@ public interface IVoxeetView {
      * @param screenShareMediaStreams the new list of screen share media streams
      */
     void onScreenShareMediaStreamUpdated(Map<String, MediaStream> screenShareMediaStreams);
+
+    /**
+     * On conference leaving from this user.
+     */
+    void onConferenceLeaving();
 
     /**
      * On conference destroyed.

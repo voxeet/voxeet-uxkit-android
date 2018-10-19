@@ -38,6 +38,7 @@ import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.events.success.StartScreenShareAnswerEvent;
 import voxeet.com.sdk.events.success.StopScreenShareAnswerEvent;
+import voxeet.com.sdk.utils.AudioType;
 import voxeet.com.sdk.utils.Validate;
 
 /**
@@ -324,7 +325,9 @@ public class VoxeetConferenceBarView extends VoxeetView {
     public void onScreenShareMediaStreamUpdated(@NonNull String userId, @NonNull Map<String, MediaStream> screen_share_media_streams) {
         super.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
 
+
         MediaStream stream = screen_share_media_streams.get(userId);
+
         if (screenshare != null && userId.equalsIgnoreCase(VoxeetPreferences.id()) && null != stream) {
             screenshare.setSelected(stream.isScreenShare());
         }
@@ -356,6 +359,9 @@ public class VoxeetConferenceBarView extends VoxeetView {
         hangup.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                VoxeetSdk.getInstance()
+                        .getAudioService().playSoundType(AudioType.HANGUP);
+
                 VoxeetSdk.getInstance()
                         .getConferenceService()
                         .leave()
@@ -478,6 +484,55 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         if (hangup != null)
             hangup.setVisibility(displayLeave ? VISIBLE : GONE);
+    }
+
+    @Override
+    public void onConferenceJoined(@NonNull String conference_id) {
+        super.onConferenceJoined(conference_id);
+
+        updateVisibilities(View.VISIBLE);
+    }
+
+    @Override
+    public void onConferenceCreating() {
+        super.onConferenceCreating();
+
+        updateVisibilities(View.GONE);
+    }
+
+    @Override
+    public void onConferenceCreation(@NonNull String conferenceId) {
+        super.onConferenceCreation(conferenceId);
+
+        updateVisibilities(View.GONE);
+    }
+
+    @Override
+    public void onConferenceJoining(@NonNull String conference_id) {
+        super.onConferenceJoining(conference_id);
+
+        updateVisibilities(View.GONE);
+    }
+
+    private void updateVisibilities(int visibility) {
+
+        if (recording != null)
+            recording.setVisibility(displayRecord ? visibility : GONE);
+
+        if (microphone != null)
+            microphone.setVisibility(displayMute ? visibility : GONE);
+
+        if (speaker != null)
+            speaker.setVisibility(displayAudio ? visibility : GONE);
+
+        if (camera != null)
+            camera.setVisibility(displayCamera ? visibility : GONE);
+
+        if (hangup != null)
+            hangup.setVisibility(displayLeave ? visibility : GONE);
+
+        if (screenshare != null)
+            screenshare.setVisibility(visibility);
     }
 
     /**

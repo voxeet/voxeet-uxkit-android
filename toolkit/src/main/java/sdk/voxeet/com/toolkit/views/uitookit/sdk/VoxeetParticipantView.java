@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -15,7 +16,6 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import sdk.voxeet.com.toolkit.utils.IParticipantViewListener;
@@ -250,5 +250,11 @@ public class VoxeetParticipantView extends VoxeetView {
 
     private void postOnUi(@NonNull Runnable runnable) {
         mHandler.post(runnable);
+    }
+
+    public void notifyDatasetChanged() {
+        if (null != adapter) {
+            adapter.notifyDataSetChanged();
+        }
     }
 }
