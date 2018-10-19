@@ -1,10 +1,15 @@
 package sdk.voxeet.com.toolkit.activities.notification;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -28,9 +33,11 @@ import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
 import voxeet.com.sdk.events.success.DeclineConferenceResultEvent;
 
-public abstract class AbstractIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
+public class DefaultIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
 
-    private final static String TAG = AbstractIncomingCallActivity.class.getSimpleName();
+    private final static String TAG = DefaultIncomingCallActivity.class.getSimpleName();
+    private static final String DEFAULT_VOXEET_INCOMING_CALL_DURATION_KEY = "voxeet_incoming_call_duration";
+    private static final int DEFAULT_VOXEET_INCOMING_CALL_DURATION_VALUE = 40 * 1000;
 
     protected TextView mUsername;
     protected TextView mStateTextView;
@@ -40,6 +47,7 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
     protected EventBus mEventBus;
 
     private IncomingBundleChecker mIncomingBundleChecker;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +84,20 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
                 onAccept();
             }
         });
+
+        mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (null != mHandler)
+                        finish();
+                } catch (Exception e) {
+
+                }
+            }
+        }, readMetadataInt(this, DEFAULT_VOXEET_INCOMING_CALL_DURATION_KEY,
+                DEFAULT_VOXEET_INCOMING_CALL_DURATION_VALUE));
     }
 
     @Override
@@ -108,6 +130,13 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
         }
 
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mHandler = null;
+
+        super.onDestroy();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -199,5 +228,31 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
     @Nullable
     protected IncomingBundleChecker getBundleChecker() {
         return mIncomingBundleChecker;
+    }
+
+    //TODO refactor with SDK
+    private static int readMetadataInt(@NonNull Context context, @NonNull String key, int argb) {
+        try {
+            String metaData = readMetadata(context, key, null);
+            if (!TextUtils.isEmpty(metaData)) return Integer.parseInt(metaData);
+        } catch (Exception e) {
+
+        }
+        return argb;
+    }
+
+    //TODO refactor with SDK
+    private static String readMetadata(@NonNull Context context, @NonNull String key, @NonNull String def) {
+        ApplicationInfo appInfo = null;
+        try {
+            appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(),
+                    PackageManager.GET_META_DATA);
+            Bundle bundle = appInfo.metaData;
+            String value = bundle.getString(key);
+            if (!TextUtils.isEmpty(value)) return value;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return def;
     }
 }
