@@ -20,17 +20,13 @@ import org.greenrobot.eventbus.ThreadMode;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
-import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
-import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import sdk.voxeet.com.toolkit.utils.LoadLastSavedOverlayStateEvent;
 import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
-import sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetTimer;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
 import voxeet.com.sdk.events.success.DeclineConferenceResultEvent;
-import voxeet.com.sdk.json.ConferenceDestroyedPush;
 
 public abstract class AbstractIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
 
@@ -92,7 +88,7 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
             mEventBus.register(this);
 
             mUsername.setText(mIncomingBundleChecker.getUserName());
-            Picasso.with(this)
+            Picasso.get()
                     .load(mIncomingBundleChecker.getAvatarUrl())
                     .into(mAvatar);
         } else {
@@ -100,7 +96,7 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
             finish();
         }
 
-        if(!mIncomingBundleChecker.isSameConference(VoxeetSdk.getInstance().getConferenceService().getConferenceId())) {
+        if (!mIncomingBundleChecker.isSameConference(VoxeetSdk.getInstance().getConferenceService().getConferenceId())) {
             mEventBus.post(new LoadLastSavedOverlayStateEvent());
         }
     }
@@ -149,20 +145,22 @@ public abstract class AbstractIncomingCallActivity extends AppCompatActivity imp
     }
 
     protected void onDecline() {
-        if (getConferenceId() != null) {
+        if (getConferenceId() != null && null != VoxeetSdk.getInstance()) {
             VoxeetSdk.getInstance().getConferenceService().decline(getConferenceId())
                     .then(new PromiseExec<DeclineConferenceResultEvent, Object>() {
                         @Override
                         public void onCall(@Nullable DeclineConferenceResultEvent result, @NonNull Solver<Object> solver) {
-                            //
+                            finish();
                         }
                     })
                     .error(new ErrorPromise() {
                         @Override
                         public void onError(Throwable error) {
-
+                            finish();
                         }
                     });
+        } else {
+            finish();
         }
     }
 

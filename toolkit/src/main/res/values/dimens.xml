@@ -17,5 +17,10 @@
     <dimen name="voxeet_incoming_call_activity_padding">64dp</dimen>
     <dimen name="voxeet_default_margin">16dp</dimen>
     <dimen name="voxeet_incoming_call_username">16dp</dimen>
-    <dimen name="voxeet_conference_state">24dp</dimen>
+    <dimen name="voxeet_conference_state_expanded">24dp</dimen>
+    <dimen name="voxeet_conference_state_minimized">12dp</dimen>
+    <dimen name="voxeet_conference_state">@dimen/voxeet_conference_state_expanded</dimen>
+
+    <dimen name="conference_view_self_videoview_width">100dp</dimen>
+    <dimen name="conference_view_self_videoview_height">80dp</dimen>
 </resources>

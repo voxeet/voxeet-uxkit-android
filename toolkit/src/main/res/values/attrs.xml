@@ -22,6 +22,7 @@
     <declare-styleable name="VideoView">
         <attr name="mirrored" format="boolean" />
         <attr name="scaleType" format="string" />
+        <attr name="showFlip" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="VoxeetIncomingCallButton">
