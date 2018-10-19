@@ -2,11 +2,15 @@ package sdk.voxeet.com.toolkit.views.uitookit.nologic;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.os.Handler;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -53,8 +57,13 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     //private EglBase eglBase;
 
     private boolean shouldMirror = false;
-    private String mScaleType;
+    private boolean showFlip = false;
+    private String mScaleType = SCALE_FIT;
     private Handler mHandler;
+
+    // this view holds the reference to the renderer AND the flip image
+    private View mInternalVideoView;
+    private View mFlip;
 
     /**
      * Instantiates a new Video view.
@@ -84,6 +93,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     private void updateAttrs(AttributeSet attrs) {
         TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VideoView);
         shouldMirror = attributes.getBoolean(R.styleable.VideoView_mirrored, false);
+        showFlip = attributes.getBoolean(R.styleable.VideoView_showFlip, false);
 
         mScaleType = attributes.getString(R.styleable.VideoView_scaleType);
 
@@ -93,12 +103,6 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     private void init() {
         mHandler = new Handler();
         mEventsListeners = new ArrayList<>();
-        //eglBase = EglBase.create();
-        //createRendererIfNeeded();
-        //init(eglBase.getEglBaseContext(), this);
-        //mRenderer = this; //TODO REMOVE THIS UGLY mRenderer O_O
-
-        //setSurfaceViewRenderer();
     }
 
     @Override
@@ -107,6 +111,13 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
         createRendererIfNeeded();
         setSurfaceViewRenderer();
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+
+        updateFlip();
     }
 
     /**
@@ -148,22 +159,42 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
         }
     }
 
+    @MainThread
     public void setVideoFit() {
         mScaleType = SCALE_FIT;
         setSurfaceViewRenderer();
         requestLayout();
     }
 
+    @MainThread
     public void setVideoFill() {
         mScaleType = SCALE_FILL;
         setSurfaceViewRenderer();
         requestLayout();
     }
 
+    @MainThread
     public void setVideoBalanced() {
         mScaleType = SCALE_BALANCED;
         setSurfaceViewRenderer();
         requestLayout();
+    }
+
+    @MainThread
+    public void setFlip(boolean flip) {
+        showFlip = flip;
+
+        updateFlip();
+    }
+
+    private void updateFlip() {
+        if (null != mFlip && null != mRenderer) {
+            if (showFlip && isAttached() && mRenderer.isFirstFrameRendered()) {
+                mFlip.setVisibility(View.VISIBLE);
+            } else {
+                mFlip.setVisibility(View.GONE);
+            }
+        }
     }
 
     /**
@@ -237,8 +268,8 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      */
     public boolean reinit() {
         try {
-            if (null != mRenderer) {
-                this.mRenderer.init(VoxeetSdk.getInstance().getConferenceService().getEglContext(), this);
+            if (null != mRenderer && VoxeetSdk.getInstance().getMediaService().hasMedia()) {
+                this.mRenderer.init(VoxeetSdk.getInstance().getMediaService().getEglContext(), this);
             }
             return true;
         } catch (Exception e) {
@@ -319,7 +350,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
             if (null != mRenderer) {
                 mRenderer.setVisibility(View.VISIBLE);
-                boolean result = VoxeetSdk.getInstance().getConferenceService().attachMediaStream(mediaStream, mRenderer);
+                boolean result = VoxeetSdk.getInstance().getMediaService().attachMediaStream(mediaStream, mRenderer);
 
                 Log.d(TAG, "attach: result := " + result + " " + this);
                 setVisibility(View.VISIBLE);
@@ -329,6 +360,8 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
                 requestLayout();
                 mRenderer.requestLayout();
             }
+
+            updateFlip();
         }
     }
 
@@ -340,7 +373,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
         if (isAttached() && mPeerId != null) {
             if (mMediaStream != null) {
-                VoxeetSdk.getInstance().getConferenceService().unAttachMediaStream(mMediaStream, mRenderer);
+                VoxeetSdk.getInstance().getMediaService().unAttachMediaStream(mMediaStream, mRenderer);
             }
 
             mPeerId = null;
@@ -351,6 +384,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
         if (null != mRenderer) {
             mRenderer.setVisibility(View.GONE);
+            updateFlip();
         }
     }
 
@@ -391,6 +425,8 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
             public void run() {
                 setSurfaceViewRenderer();
 
+                updateFlip();
+
                 synchronized (mEventsListeners) {
                     for (RendererCommon.RendererEvents events_listener : mEventsListeners) {
                         events_listener.onFirstFrameRendered();
@@ -422,22 +458,25 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     }
 
     private void createRendererIfNeeded() {
-        if (null == mRenderer) {
-            final LayoutParams param = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    Gravity.CENTER);
+        if (null == mRenderer && VoxeetSdk.getInstance().getMediaService().hasMedia()) {
+            EglBase.Context context = VoxeetSdk.getInstance().getMediaService().getEglContext();
 
-            mRenderer = new VoxeetRenderer(getContext());
+            //don't setup if no context
+            if (null != context) {
 
-            mRenderer.setLayoutParams(param);
+                mInternalVideoView = LayoutInflater.from(getContext())
+                        .inflate(R.layout.voxeet_internal_videoview, this, false);
+                addView(mInternalVideoView);
 
-            addView(mRenderer);
+                mRenderer = mInternalVideoView.findViewById(R.id.voxeet_videoview_renderer);//new VoxeetRenderer(getContext());
+                mFlip = mInternalVideoView.findViewById(R.id.voxeet_videoview_flip);
 
-            mRenderer.init(VoxeetSdk.getInstance().getConferenceService().getEglContext(), this);
+                updateFlip();
+                mRenderer.init(context, this);
 
-            if (null != mScaleType) mRenderer.setScalingType(getScalingType());
-        } else {
+                if (null != mScaleType) mRenderer.setScalingType(getScalingType());
+            }
+        } else if (null != mRenderer) {
             LayoutParams param = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
@@ -452,4 +491,23 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
             });
         }
     }
+
+    @Nullable
+    public Bitmap getBitmap() {
+        if (null == mRenderer) return null;
+        return mRenderer.getBitmap();
+    }
+
+    @Nullable
+    public Bitmap getBitmap(@NonNull Bitmap bitmap) {
+        if (null == mRenderer) return null;
+        return mRenderer.getBitmap(bitmap);
+    }
+
+    @Nullable
+    public Bitmap getBitmap(int width, int height) {
+        if (null == mRenderer) return null;
+        return mRenderer.getBitmap(width, height);
+    }
+
 }
