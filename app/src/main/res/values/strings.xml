@@ -19,5 +19,7 @@
     <string name="stop_presentation">Stop Presentation</string>
     <string name="previous_page">Previous page</string>
     <string name="next_page">Next page</string>
+    <string name="reset_http">RESET HTTP</string>
+    <string name="reidentify">Reidentify</string>
 </resources>
 

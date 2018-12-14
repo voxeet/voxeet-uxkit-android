@@ -12,8 +12,9 @@ import android.widget.Toast;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.squareup.picasso.Picasso;
-
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.toolkit.views.VideoView;
+import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import fr.voxeet.sdk.sample.R;
-import sdk.voxeet.com.toolkit.views.android.RoundedImageView;
-import sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.json.UserInfo;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
@@ -144,7 +143,7 @@ public class ParticipantAdapter extends BaseAdapter {
         else
             holder.userId.setText(user.getUserId());
 
-        Picasso.with(context).load(info.getAvatarUrl()).into(holder.avatarImage);
+        Picasso.get().load(info.getAvatarUrl()).into(holder.avatarImage);
         holder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

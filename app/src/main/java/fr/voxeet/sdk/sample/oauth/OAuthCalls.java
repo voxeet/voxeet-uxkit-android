@@ -1,7 +1,7 @@
 package fr.voxeet.sdk.sample.oauth;
 
+import retrofit2.Call;
 import retrofit2.http.GET;
-import rx.Observable;
 
 /**
  * Created by kevinleperf on 23/07/2018.
@@ -14,7 +14,7 @@ public interface OAuthCalls {
      * @return a callable webservice object
      */
     @GET("/api/token")
-    Observable<String> retrieveAccessToken();
+    Call<String> retrieveAccessToken();
 
     /**
      * Refresh the current thirdparty accessToken
@@ -25,5 +25,5 @@ public interface OAuthCalls {
      * @return a callable webservice object
      */
     @GET("/api/refresh")
-    Observable<String> retrieveRefreshToken();
+    Call<String> retrieveRefreshToken();
 }

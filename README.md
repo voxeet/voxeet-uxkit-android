@@ -61,7 +61,7 @@ v1.0.3 :
 v1.0.2 :
   - fix CTA
   - fix issue with crash on same calls
-  - fix controllers behaviour
+  - fix com.voxeet.toolkit.controllers behaviour
 
 v1.0 :
   - complete rework of most internal method

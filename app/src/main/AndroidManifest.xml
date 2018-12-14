@@ -40,6 +40,18 @@
             android:name="prod"
             android:value="true" />
 
+        <!-- if a push notification is received from a killed-state app, the accept/declined calls will arrive there -->
+        <!-- Note : any override in the code will replace this metadata -->
+        <meta-data
+            android:name="voxeet_incoming_class"
+            android:value="com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity" />
+
+        <!-- if a push notification is received from killed-state app, accepted calls will arrive there // possible override in code -->
+        <!-- Note : any VoxeetAppCompat activity started will override this metadata -->
+        <meta-data
+            android:name="voxeet_incoming_accepted_class"
+            android:value="fr.voxeet.sdk.sample.activities.MainActivity" />
+
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
@@ -52,18 +64,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.IncomingCallActivity"
+        <activity android:name="com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity"
             android:launchMode="singleInstance">
-            <!-- extends AbstractIncomingCallActivity -->
+            <!-- exteDefaultIncomingCallActivityvity -->
         </activity>
 
-        <activity
-            android:name=".activities.CreateConfActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/create_conf"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
-        <activity android:name=".activities.TryoutActivity" />
+        <!-- to manage push notification -->
+        <service android:name="voxeet.com.sdk.firebase.VoxeetFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name="voxeet.com.sdk.firebase.VoxeetFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
 
     </application>
 

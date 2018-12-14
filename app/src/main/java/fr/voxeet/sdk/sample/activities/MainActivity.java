@@ -1,10 +1,9 @@
 package fr.voxeet.sdk.sample.activities;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -16,11 +15,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
+import com.voxeet.toolkit.controllers.VoxeetToolkit;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -35,27 +36,26 @@ import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.main_screen.UserAdapter;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
 import fr.voxeet.sdk.sample.users.UsersHelper;
-import sdk.voxeet.com.toolkit.activities.workflow.VoxeetAppCompatActivity;
-import sdk.voxeet.com.toolkit.main.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
+import voxeet.com.sdk.core.services.LocalStatsService;
+import voxeet.com.sdk.core.services.localstats.LocalStatsUserInfo;
+import voxeet.com.sdk.events.error.ConferenceLeftError;
+import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
+import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
 import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.events.success.SocketConnectEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
 import voxeet.com.sdk.json.UserInfo;
+import voxeet.com.sdk.json.internal.MetadataHolder;
+import voxeet.com.sdk.models.abs.Conference;
+import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int RECORD_AUDIO_RESULT = 0x20;
-    private static final int REQUEST_EXTERNAL_STORAGE = 0x21;
-
-    public static final int JOIN = 0x1000;
-    public static final int CREATE = 0x1010;
-    public static final int DEMO = 0x1020;
-    public static final int REPLAY = 0x1030;
-    public static final String ACTION = "__action";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Bind(R.id.join_conf_text)
     EditText joinConfEditText;
@@ -69,41 +69,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     @Bind(R.id.recycler_users)
     protected RecyclerView users;
 
-    private final static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-
-    //In the example, this field will be set to true when "starting" a conference after login
-    private boolean _start_after_log_event = false;
-    private Intent _after_relogged_intent = null;
-
     private SampleApplication _application;
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case RECORD_AUDIO_RESULT: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    joinCall();
-                }
-                return;
-            }
-            case REQUEST_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    Toast.makeText(this, "Storage granted", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,16 +81,73 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
         ButterKnife.bind(this);
 
-        verifyStoragePermissions(this);
-
         users.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         users.setAdapter(new UserAdapter(this, UsersHelper.USER_ITEMS));
+
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (null != VoxeetSdk.getInstance() && VoxeetSdk.getInstance().getConferenceService().isLive()) {
+                    Conference conference = VoxeetSdk.getInstance().getConferenceService().getConference();
+
+                    if (null != conference) {
+                        List<DefaultConferenceUser> users = conference.getConferenceUsers();
+                        LocalStatsService service = VoxeetSdk.getInstance().getLocalStatsService();
+                        for (DefaultConferenceUser user : users) {
+                            LocalStatsUserInfo stats = service.getUserInfo(conference.getConferenceId(),
+                                    user.getUserId());
+
+                            boolean disconnected = stats.isDisconnected();
+                            boolean fluctuates = stats.isFluctuating();
+
+                            Log.d("MainActivity", "run: userId:=" + user.getUserId() + " " + user.getUserInfo() + " disconnected:=" + disconnected + " fluctuates:=" + fluctuates);
+                        }
+                    }
+                }
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.post(runnable);
     }
 
     @OnClick(R.id.join_conf)
     public void joinButton() {
         joinCall();
+    }
+
+    private boolean lock = false;
+
+    @Nullable
+    @OnClick(R.id.reidentify)
+    public void reidentify() {
+        if (!lock && null != VoxeetSdk.getInstance()) {
+            lock = true;
+            VoxeetSdk.getInstance().closeSocket();
+            VoxeetSdk.getInstance().logCurrentlySelectedUserWithChain()
+                    .then(new PromiseExec<Boolean, Object>() {
+                        @Override
+                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                            Log.d(TAG, "onCall: user identify := " + result);
+                            lock = false;
+                        }
+                    })
+                    .error(new ErrorPromise() {
+                        @Override
+                        public void onError(@NonNull Throwable error) {
+                            lock = false;
+                            error.printStackTrace();
+                        }
+                    });
+        }
+    }
+
+    @OnClick(R.id.reset_http)
+    public void resetHttp() {
+        if (null != VoxeetSdk.getInstance()) {
+            VoxeetSdk.getInstance().resetVoxeetHttp();
+        }
     }
 
     @OnClick(R.id.disconnect)
@@ -145,49 +168,123 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 });
     }
 
-    public void verifyStoragePermissions(Activity context) {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    context,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
+        switch (requestCode) {
+            case RECORD_AUDIO_RESULT: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    joinCall();
+                }
+                return;
+            }
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
-    private void joinCall() {
-        conferenceActivity();
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (getApplication() instanceof SampleApplication) {
+            _application = (SampleApplication) getApplication();
+        }
+
+        if (null != VoxeetSdk.getInstance()) {
+            if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
+                VoxeetSdk.getInstance().getLocalStatsService().startAutoFetch();
+            } else {
+                VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
+            }
+        }
     }
 
-    public void conferenceActivity() {
+    @Override
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+
+        super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (null != VoxeetSdk.getInstance() && VoxeetSdk.getInstance().getConferenceService().isLive()) {
+            VoxeetSdk.getInstance().getConferenceService().leave()
+                    .then(new PromiseExec<Boolean, Object>() {
+                        @Override
+                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+
+                        }
+                    })
+                    .error(new ErrorPromise() {
+                        @Override
+                        public void onError(@NonNull Throwable error) {
+
+                        }
+                    });
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onUserSelected(UserItem user_item) {
+        _application.selectUser(user_item.getUserInfo());
+    }
+
+    private void joinCall() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_RESULT);
         else {
             String conferenceAlias = joinConfEditText.getText().toString();
 
-            Promise<Boolean> promise = VoxeetToolkit.getInstance().getConferenceToolkit().join(conferenceAlias);
+            VoxeetToolkit.getInstance().enable(VoxeetToolkit.getInstance().getReplayMessageToolkit());
+
+            Promise<Boolean> promise = VoxeetToolkit.getInstance().getConferenceToolkit().join(conferenceAlias,
+                    new MetadataHolder().setStats(true));
 
             if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
-                Promise<Boolean> finalPromise = promise;
                 VoxeetSdk.getInstance().getConferenceService()
                         .leave()
+                        .then(new PromiseExec<Boolean, Boolean>() {
+                            @Override
+                            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
+                                solver.resolve(promise);
+                            }
+                        })
+                        .then(new PromiseExec<Boolean, Boolean>() {
+                            @Override
+                            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
+                                solver.resolve(VoxeetSdk.getInstance().getConferenceService().startVideo());
+                            }
+                        })
                         .then(new PromiseExec<Boolean, Object>() {
                             @Override
                             public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                                solver.resolve(finalPromise);
                             }
-                        }).error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable error) {
-                        error.printStackTrace();
-                    }
-                });
+                        })
+                        .error(new ErrorPromise() {
+                            @Override
+                            public void onError(@NonNull Throwable error) {
+                                error.printStackTrace();
+                            }
+                        });
             } else {
-                promise.error(new ErrorPromise() {
+                promise.then(new PromiseExec<Boolean, Boolean>() {
+                    @Override
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
+                        solver.resolve(VoxeetSdk.getInstance().getConferenceService().startVideo());
+                    }
+                }).then(new PromiseExec<Boolean, Boolean>() {
+                    @Override
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
+                    }
+                }).error(new ErrorPromise() {
                     @Override
                     public void onError(@NonNull Throwable error) {
                         error.printStackTrace();
@@ -203,28 +300,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         joinConf.setEnabled(true);
         disconnect.setVisibility(View.VISIBLE);
 
+        //TODO resume select the current logged user
         ((UserAdapter) users.getAdapter()).setSelected(_application.getCurrentUser());
-
-        if (_start_after_log_event && _after_relogged_intent != null) {
-            //startActivity(_after_relogged_intent);
-            _after_relogged_intent = null;
-        }
-
-        VoxeetSdk.getInstance()
-                .getConferenceService()
-                .subscribe("test_conference")
-                .then(new PromiseExec<Boolean, Object>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                        Log.d(TAG, "onCall: subscribe result " + result);
-                    }
-                })
-                .error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable error) {
-                        error.printStackTrace();
-                    }
-                });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -240,44 +317,10 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (getApplication() instanceof SampleApplication) {
-            _application = (SampleApplication) getApplication();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (VoxeetToolkit.getInstance().getReplayMessageToolkit().isShowing()) {
-            VoxeetSdk.getInstance().getConferenceService().leave();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public void onUserSelected(UserItem user_item) {
-        _application.selectUser(user_item.getUserInfo());
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceJoinedSuccessEvent event) {
-        Log.d("CreateConfActivity", "ConferencejoinedSuccessEvent " + event.getConferenceId() + " " + event.getAliasId());
+        VoxeetSdk.getInstance().getLocalStatsService().startAutoFetch();
+
         List<UserInfo> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
 
         VoxeetToolkit.getInstance().getConferenceToolkit()
@@ -285,7 +328,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 .then(new PromiseExec<List<ConferenceRefreshedEvent>, Object>() {
                     @Override
                     public void onCall(@Nullable List<ConferenceRefreshedEvent> result, @NonNull Solver<Object> solver) {
-                        Log.d(TAG, "onCall: " + Arrays.toString(result.toArray()));
+
                     }
                 })
                 .error(new ErrorPromise() {
@@ -294,5 +337,35 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                         error.printStackTrace();
                     }
                 });
+
+        VoxeetSdk.getInstance().getConferenceService()
+                .startVideo()
+                .then(new PromiseExec<Boolean, Object>() {
+                    @Override
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                        Toast.makeText(MainActivity.this, "start := " + result, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        error.printStackTrace();
+                    }
+                });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ConferenceLeftSuccessEvent event) {
+        VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ConferenceLeftError event) {
+        VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(ConferenceDestroyedPushEvent event) {
+        VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
     }
 }

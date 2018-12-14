@@ -28,32 +28,32 @@
         android:padding="10dp"
         android:visibility="visible">
 
-        <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetLoadingView
+        <com.voxeet.toolkit.implementation.VoxeetLoadingView
             android:id="@+id/loading_view"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
             android:visibility="gone" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetTimer
+        <com.voxeet.toolkit.implementation.VoxeetTimer
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:visibility="gone" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetParticipantView
+        <com.voxeet.toolkit.implementation.VoxeetParticipantView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:visibility="gone" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetCurrentSpeakerView
+        <com.voxeet.toolkit.implementation.VoxeetCurrentSpeakerView
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:layout_gravity="top|center"
             android:visibility="gone" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceBarView
+        <com.voxeet.toolkit.implementation.VoxeetConferenceBarView
             android:id="@+id/conference_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -277,7 +277,7 @@
 
         </LinearLayout>
 
-        <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
+        <com.voxeet.toolkit.views.VideoView
             android:id="@+id/screen_share"
             android:layout_width="@dimen/screen_preview_width"
             android:layout_height="@dimen/screen_preview_height"
@@ -285,7 +285,7 @@
             android:padding="5dp"
             android:visibility="gone" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
+        <com.voxeet.toolkit.views.VideoView
             android:id="@+id/video_stream"
             android:layout_width="75dp"
             android:layout_height="60dp"
