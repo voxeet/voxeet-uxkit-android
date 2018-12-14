@@ -8,7 +8,7 @@
 
     <!-- TODO remove this parent need tests -->
 
-    <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
+    <com.voxeet.toolkit.views.VideoView
         android:id="@+id/selected_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

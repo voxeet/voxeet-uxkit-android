@@ -22,7 +22,7 @@
         android:alpha="0.1"
         android:background="@drawable/background_incoming_overlay_button" />
 
-    <sdk.voxeet.com.toolkit.views.android.RoundedImageView
+    <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

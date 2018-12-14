@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/overlay_main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="right|top"
-    android:background="@drawable/background_conference_view">
+    android:background="@drawable/background_conference_view"
+    app:roundedCornerRadius="@dimen/voxeet_overlay_minized_corner">
 
     <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/container">
+        android:layout_height="match_parent">
         <!-- subview will be put here -->
     </FrameLayout>
 
@@ -36,10 +37,10 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="20dp"
-                    android:visibility="gone"
                     android:layout_marginTop="6dp"
                     android:background="@drawable/selector_minimize"
-                    android:src="@drawable/minimize" />
+                    android:src="@drawable/minimize"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -48,4 +49,4 @@
     </LinearLayout>
 
 
-</FrameLayout>
+</com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout>

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <sdk.voxeet.com.toolkit.views.android.RoundedImageView
+    <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
         android:id="@+id/first"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -15,7 +15,7 @@
         android:alpha="0"
         app:oval="true" />
 
-    <sdk.voxeet.com.toolkit.views.android.RoundedImageView
+    <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
         android:id="@+id/second"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -25,7 +25,7 @@
         app:mutate_background="true"
         app:oval="true" />
 
-    <sdk.voxeet.com.toolkit.views.android.RoundedImageView
+    <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
         android:id="@+id/third"
         android:layout_width="0dp"
         android:layout_height="match_parent"

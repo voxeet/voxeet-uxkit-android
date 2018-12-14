@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="10dp"
     android:orientation="vertical">
 
@@ -10,7 +11,7 @@
         android:layout_width="@dimen/meeting_list_avatar_double"
         android:layout_height="@dimen/meeting_list_avatar_double">
 
-        <sdk.voxeet.com.toolkit.views.android.RoundedImageView
+        <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
             android:id="@+id/overlay_avatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -18,7 +19,7 @@
             app:mutate_background="true"
             app:oval="true" />
 
-        <sdk.voxeet.com.toolkit.views.android.RoundedImageView
+        <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
             android:id="@+id/avatar"
             android:layout_width="match_parent"
             android:padding="2dp"
@@ -27,10 +28,12 @@
             app:mutate_background="true"
             app:oval="true" />
 
-        <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
+        <com.voxeet.toolkit.views.VideoView
             android:id="@+id/participant_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:circle="true"
+            app:scaleType="scale_fill"
             android:visibility="gone" />
 
     </FrameLayout>
@@ -41,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/dimen_3"
-        android:text="toto"
+        tools:text="name"
         android:textColor="@color/grey999" />
 
 </LinearLayout>

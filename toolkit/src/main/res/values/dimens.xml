@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="screen_preview_width">130dp</dimen>
+    <dimen name="screen_preview_height">100dp</dimen>
+    <dimen name="screen_preview_width_padding">129dp</dimen>
+    <dimen name="screen_preview_height_padding">99dp</dimen>
+
+    <dimen name="conference_view_width">100dp</dimen>
+    <dimen name="conference_view_height">140dp</dimen>
+
     <dimen name="dimen_140">140dp</dimen>
     <dimen name="dimen_100">100dp</dimen>
     <dimen name="border_size">1dp</dimen>
@@ -22,5 +30,9 @@
     <dimen name="voxeet_conference_state">@dimen/voxeet_conference_state_expanded</dimen>
 
     <dimen name="conference_view_self_videoview_width">100dp</dimen>
-    <dimen name="conference_view_self_videoview_height">80dp</dimen>
+    <dimen name="conference_view_self_videoview_height">120dp</dimen>
+    <dimen name="voxeet_overlay_minized_corner">10dp</dimen>
+    <dimen name="voxeet_overlay_margin">16dp</dimen>
+    <dimen name="conference_view_self_videoview_flip_marginTop">2dp</dimen>
+    <dimen name="conference_view_self_videoview_flip_marginRight">0dp</dimen>
 </resources>

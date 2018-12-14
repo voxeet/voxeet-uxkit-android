@@ -7,11 +7,12 @@
 
     <!-- VideoView used to display incoming video streams -->
     <!-- possible scaleType := scale_fill, scale_fit, balanced -->
-    <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
+    <com.voxeet.toolkit.views.VideoView
         android:id="@+id/selected_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
+        app:cornerRadius="@dimen/voxeet_overlay_minized_corner"
         app:scaleType="scale_fit" />
 
     <TextView
@@ -38,7 +39,7 @@
             android:layout_gravity="center"
             android:padding="5dp">
 
-            <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetTimer
+            <com.voxeet.toolkit.implementation.VoxeetTimer
                 android:id="@+id/voxeet_timer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,7 +68,7 @@
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="6dp" />
 
-                <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetParticipantView
+                <com.voxeet.toolkit.implementation.VoxeetParticipantView
                     android:id="@+id/participant_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -77,7 +78,7 @@
             </LinearLayout>
 
             <!-- display the current speaker -->
-            <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetCurrentSpeakerView
+            <com.voxeet.toolkit.implementation.VoxeetCurrentSpeakerView
                 android:id="@+id/current_speaker_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -96,17 +97,19 @@
 
         <!-- local user's video stream -->
 
-        <sdk.voxeet.com.toolkit.views.uitookit.nologic.VideoView
+        <com.voxeet.toolkit.views.VideoView
             android:id="@+id/self_video_view"
             android:layout_width="@dimen/conference_view_self_videoview_width"
             android:layout_height="@dimen/conference_view_self_videoview_height"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginBottom="32dp"
             android:layout_marginLeft="16dp"
+            app:cornerRadius="5dp"
             app:scaleType="scale_fit"
             app:showFlip="true" />
 
         <!-- call action buttons -->
-        <sdk.voxeet.com.toolkit.views.uitookit.sdk.VoxeetConferenceBarView
+        <com.voxeet.toolkit.implementation.VoxeetConferenceBarView
             android:id="@+id/conference_bar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

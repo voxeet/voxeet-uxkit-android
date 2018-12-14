@@ -4,19 +4,26 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center">
 
-    <sdk.voxeet.com.toolkit.views.uitookit.nologic.VoxeetRenderer
-        android:id="@+id/voxeet_videoview_renderer"
+    <com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout
+        android:id="@+id/voxeet_videoview_cornerradius"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_height="wrap_content">
+
+        <com.voxeet.toolkit.views.video.VoxeetRenderer
+            android:id="@+id/voxeet_videoview_renderer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout>
 
     <ImageView
         android:id="@+id/voxeet_videoview_flip"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_gravity="top|end"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginRight="@dimen/conference_view_self_videoview_flip_marginRight"
+        android:layout_marginTop="@dimen/conference_view_self_videoview_flip_marginTop"
         android:scaleType="centerInside"
         android:src="@drawable/flip" />
+
 </FrameLayout>

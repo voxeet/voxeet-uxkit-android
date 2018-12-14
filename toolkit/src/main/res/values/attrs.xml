@@ -21,8 +21,19 @@
 
     <declare-styleable name="VideoView">
         <attr name="mirrored" format="boolean" />
-        <attr name="scaleType" format="string" />
+        <attr name="scaleType" format="enum">
+            <enum name="scale_fit" value="0"/>
+            <enum name="scale_fill" value="1"/>
+            <enum name="scale_balanced" value="2"/>
+        </attr>
         <attr name="showFlip" format="boolean" />
+        <attr name="circle" format="boolean" />
+        <attr name="cornerRadius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundedFrameLayout">
+        <attr name="roundedCircle" format="boolean" />
+        <attr name="roundedCornerRadius" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="VoxeetIncomingCallButton">

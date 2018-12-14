@@ -9,8 +9,8 @@
         android:color="@color/darkGrey" />
 
     <corners
-        android:bottomLeftRadius="10dp"
-        android:bottomRightRadius="10dp"
-        android:topLeftRadius="10dp"
-        android:topRightRadius="10dp" />
+        android:bottomLeftRadius="@dimen/voxeet_overlay_minized_corner"
+        android:bottomRightRadius="@dimen/voxeet_overlay_minized_corner"
+        android:topLeftRadius="@dimen/voxeet_overlay_minized_corner"
+        android:topRightRadius="@dimen/voxeet_overlay_minized_corner" />
 </shape>

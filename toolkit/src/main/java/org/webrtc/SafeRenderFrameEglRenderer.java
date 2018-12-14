@@ -79,6 +79,8 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
         }
     }
 
+    private boolean enableLog = false;
+
     private final String name;
 
     // |renderThreadHandler| is a handler for communicating with |renderThread|, and is synchronized
@@ -139,8 +141,10 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
             synchronized (handlerLock) {
                 if (renderThreadHandler != null) {
                     renderThreadHandler.removeCallbacks(logStatisticsRunnable);
-                    renderThreadHandler.postDelayed(
-                            logStatisticsRunnable, TimeUnit.SECONDS.toMillis(LOG_INTERVAL_SEC));
+                    if (enableLog) {
+                        renderThreadHandler.postDelayed(
+                                logStatisticsRunnable, TimeUnit.SECONDS.toMillis(LOG_INTERVAL_SEC));
+                    }
                 }
             }
         }
@@ -186,14 +190,30 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
                     eglBase = EglBase.createEgl10(configAttributes);
                 } else {
                     logD("EglBase.create shared context");
-                    eglBase = EglBase.create(sharedContext, configAttributes);
+                    try {
+                        eglBase = EglBase.create(sharedContext, configAttributes);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        try {
+                            if (EglBase14.isEGL14Supported()) {
+                                eglBase = EglBase.createEgl14(configAttributes);
+                            } else {
+                                eglBase = EglBase.createEgl10(configAttributes);
+                            }
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
+                            eglBase = null;
+                        }
+                    }
                 }
             });
             renderThreadHandler.post(eglSurfaceCreationRunnable);
             final long currentTimeNs = System.nanoTime();
             resetStatistics(currentTimeNs);
-            renderThreadHandler.postDelayed(
-                    logStatisticsRunnable, TimeUnit.SECONDS.toMillis(LOG_INTERVAL_SEC));
+            if (enableLog) {
+                renderThreadHandler.postDelayed(
+                        logStatisticsRunnable, TimeUnit.SECONDS.toMillis(LOG_INTERVAL_SEC));
+            }
         }
     }
 
@@ -539,9 +559,11 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
         }
 
         if (eglBase == null || !eglBase.hasSurface()) {
-            logD("Dropping frame - No surface");
+            logD("Dropping frame - No surface " + this);
             frame.release();
             return;
+        } else {
+            logD("Showing frame " + this);
         }
         // Check if fps reduction is active.
         final boolean shouldRenderFrame;
@@ -615,15 +637,10 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
             GLES20.glClearColor(0 /* red */, 0 /* green */, 0 /* blue */, 0 /* alpha */);
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-            GLES20.glClearColor(0, 0, 0, 100);
-            try {
-                //TODO check here ?
-                frameDrawer.drawFrame(frame, drawer, drawMatrix, 0 /* viewportX */, 0 /* viewportY */,
-                        eglBase.surfaceWidth(), eglBase.surfaceHeight());
+            //GLES20.glClearColor(0, 0, 0, 100);
+            frameDrawer.drawFrame(frame, drawer, drawMatrix, 0 /* viewportX */, 0 /* viewportY */,
+                    eglBase.surfaceWidth(), eglBase.surfaceHeight());
 
-            } catch (Exception e) {
-
-            }
             final long swapBuffersStartTimeNs = System.nanoTime();
             eglBase.swapBuffers();
 
