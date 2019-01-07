@@ -562,8 +562,6 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
             logD("Dropping frame - No surface " + this);
             frame.release();
             return;
-        } else {
-            logD("Showing frame " + this);
         }
         // Check if fps reduction is active.
         final boolean shouldRenderFrame;
