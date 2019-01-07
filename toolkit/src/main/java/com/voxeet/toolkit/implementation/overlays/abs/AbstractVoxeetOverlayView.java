@@ -481,14 +481,17 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     private ValueAnimator.AnimatorUpdateListener HEIGHT_LISTENER = new ValueAnimator.AnimatorUpdateListener() {
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
-            int value = (int) animation.getAnimatedValue();
+            ViewGroup.LayoutParams params = getLayoutParams();
+            if (null != params) {
+                int value = (int) animation.getAnimatedValue();
+                params.height = value;
+                if (null != container && null != container.getLayoutParams()) {
+                    container.getLayoutParams().height = value;
+                }
 
-            getLayoutParams().height = value;
-
-            container.getLayoutParams().height = value;
-
-            requestLayout();
-            Log.d(TAG, "onAnimationUpdate: height " + value);
+                requestLayout();
+                Log.d(TAG, "onAnimationUpdate: height " + value);
+            }
         }
     };
 
@@ -496,13 +499,16 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
             int value = (int) animation.getAnimatedValue();
+            ViewGroup.LayoutParams params = getLayoutParams();
+            if (null != params) {
+                params.width = value;
+                if (null != container && null != container.getLayoutParams()) {
+                    container.getLayoutParams().width = value;
+                }
 
-            getLayoutParams().width = value;
-
-            container.getLayoutParams().width = value;
-
-            requestLayout();
-            Log.d(TAG, "onAnimationUpdate: width " + value);
+                requestLayout();
+                Log.d(TAG, "onAnimationUpdate: width " + value);
+            }
         }
     };
 

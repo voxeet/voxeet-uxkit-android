@@ -300,7 +300,7 @@ public class VoxeetRenderer extends TextureView
             size = videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight);
         }
 
-        Log.d(TAG, "onMeasure: " + size.x + " " + size.y);
+        //Log.d(TAG, "onMeasure: " + size.x + " " + size.y);
 
         if(size.y > getScreenHeight()) size.y = getScreenHeight();
         if(size.x > getScreenWidth()) size.x = getScreenWidth();
