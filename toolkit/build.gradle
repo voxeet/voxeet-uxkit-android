@@ -103,9 +103,7 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 
-    compile project(':public-sdk')
-    //compile 'com.voxeet.sdk:public-sdk:1.1.0'
-
+    compile "com.voxeet.sdk:public-sdk:${VOXEET_SDK_VERSION}"
 }
 
 apply from: "../tasks.gradle"
