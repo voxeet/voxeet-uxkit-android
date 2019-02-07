@@ -35,13 +35,10 @@ import voxeet.com.sdk.models.ConferenceResponse;
 
 public class ConferenceToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
-    private Map<String, UserInfo> mCachedInvited;
     private boolean mScreenShareEnabled;
 
     public ConferenceToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
         super(context, eventbus);
-
-        mCachedInvited = new HashMap<>();
 
         setDefaultOverlayState(overlay);
         setVoxeetOverlayViewProvider(new DefaultConferenceProvider(this));
@@ -174,22 +171,13 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
     }
 
     public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull List<UserInfo> to_invite) {
-        List<String> to_list = new ArrayList<>();
-
-        for (UserInfo infos : to_invite) {
-            if (null != infos) {
-                to_list.add(infos.getExternalId());
-                mCachedInvited.put(infos.getExternalId(), infos);
-            }
-        }
-
-        return VoxeetSdk.getInstance().getConferenceService().invite(to_list);
+        return VoxeetSdk.getInstance().getConferenceService().inviteUserInfos(to_invite);
     }
 
-    @Nullable
+    /*@Nullable
     public UserInfo getInvitedUserFromCache(@NonNull String externalId) {
         return (null != mCachedInvited) ? mCachedInvited.get(externalId) : null;
-    }
+    }*/
 
     public boolean isScreenShareEnabled() {
         return mScreenShareEnabled;
@@ -201,10 +189,10 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
     }
 
     private void internalJoin(@Nullable UserInfo from_invitation) {
-        mCachedInvited.clear();
-        if (null != from_invitation) {
-            mCachedInvited.put(from_invitation.getExternalId(), from_invitation);
-        }
+        //mCachedInvited.clear();
+        //if (null != from_invitation) {
+        //    mCachedInvited.put(from_invitation.getExternalId(), from_invitation);
+        //}
 
         VoxeetToolkit.getInstance().enable(this);
         enable(true);

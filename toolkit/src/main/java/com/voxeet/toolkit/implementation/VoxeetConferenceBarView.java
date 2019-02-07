@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.audio.AudioRoute;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,9 +34,9 @@ import java.util.Map;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
-import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
+import voxeet.com.sdk.events.AudioRouteChangeEvent;
 import voxeet.com.sdk.events.error.PermissionRefusedEvent;
 import voxeet.com.sdk.events.success.StartScreenShareAnswerEvent;
 import voxeet.com.sdk.events.success.StopScreenShareAnswerEvent;
@@ -281,9 +282,9 @@ public class VoxeetConferenceBarView extends VoxeetView {
             EventBus.getDefault().register(this);
         }
 
-        speaker.setSelected(VoxeetSdk.getInstance().getAudioService().isSpeakerOn());
+        updateSpeakerButton();
 
-        if(null != screenshare) {
+        if (null != screenshare) {
             screenshare.setSelected(VoxeetSdk.getInstance().getConferenceService().isScreenShareOn());
         }
     }
@@ -341,7 +342,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         container = (LinearLayout) v.findViewById(R.id.container);
 
         speaker = (ImageView) v.findViewById(R.id.speaker);
-        speaker.setSelected(VoxeetSdk.getInstance().getAudioService().isSpeakerOn());
+        updateSpeakerButton();
         speaker.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -624,16 +625,21 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull StopScreenShareAnswerEvent event) {
-        if(null != screenshare) {
+        if (null != screenshare) {
             screenshare.setSelected(false);
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull StartScreenShareAnswerEvent event) {
-        if(null != screenshare) {
+        if (null != screenshare) {
             screenshare.setSelected(true);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(AudioRouteChangeEvent event) {
+        updateSpeakerButton();
     }
 
 
@@ -662,7 +668,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         } else if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_DENIED) {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Validate.requestMandatoryPermissions(VoxeetToolkit.getInstance().getCurrentActivity(),
-                        new String[]{ permission }, result_code);
+                        new String[]{permission}, result_code);
             }
             return false;
         } else {
@@ -683,6 +689,22 @@ public class VoxeetConferenceBarView extends VoxeetView {
             Validate.requestMandatoryPermissions(VoxeetToolkit.getInstance().getCurrentActivity(),
                     permissions_to_request.toArray(new String[permissions_to_request.size()]),
                     PermissionRefusedEvent.RESULT_MANDATORY);
+        }
+    }
+
+    private void updateSpeakerButton() {
+        if (null != VoxeetSdk.getInstance()) {
+            boolean headset = VoxeetSdk.getInstance().getAudioService().isWiredHeadsetOn();
+            headset |= VoxeetSdk.getInstance().getAudioService().isBluetoothHeadsetConnected();
+            if (headset) {
+                speaker.setAlpha(0.5f);
+                speaker.setEnabled(false);
+                speaker.setSelected(false);
+            } else {
+                speaker.setAlpha(1.0f);
+                speaker.setEnabled(true);
+                speaker.setSelected(VoxeetSdk.getInstance().getAudioService().isSpeakerOn());
+            }
         }
     }
 

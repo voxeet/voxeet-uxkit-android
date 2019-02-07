@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.voxeet.android.media.audio.AudioManager;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.toolkit.activities.notification.IncomingCallFactory;
 
@@ -18,7 +19,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
+import voxeet.com.sdk.audio.SoundManager;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.services.AudioService;
 import voxeet.com.sdk.core.services.ScreenShareService;
 import voxeet.com.sdk.events.error.ConferenceJoinedError;
 import voxeet.com.sdk.events.error.PermissionRefusedEvent;
@@ -85,8 +88,14 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
             //stop fetching stats if any pending
             if (!VoxeetSdk.getInstance().getConferenceService().isLive()) {
                 VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
+            } else {
+                SoundManager manager = AudioService.getSoundManager();
+                if(null != manager) {
+                    manager.requestAudioFocus();
+                }
             }
         }
+
         EventBus.getDefault().unregister(this);
 
         super.onPause();
