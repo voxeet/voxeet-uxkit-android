@@ -9,12 +9,24 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
         classpath 'com.github.dcendents:android-maven-plugin:1.2'
+        classpath 'com.jaredsburrows:gradle-license-plugin:0.8.42'
     }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
+
+apply plugin: 'com.jaredsburrows.license'
+
+licenseReport {
+    generateHtmlReport = false
+    generateJsonReport = true
+
+    // These options are ignored for Java projects
+    copyHtmlReportToAssets = false
+    copyJsonReportToAssets = true
+}
 
 repositories {
     google()
@@ -103,7 +115,10 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 
-    compile "com.voxeet.sdk:public-sdk:${VOXEET_SDK_VERSION}"
+    compile "com.voxeet.sdk:media:0.7.2"
+    compile ("com.voxeet.sdk:public-sdk:${VOXEET_SDK_VERSION}") {
+        transitive = true
+    }
 }
 
 apply from: "../tasks.gradle"
