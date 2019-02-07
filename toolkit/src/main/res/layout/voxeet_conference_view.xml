@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|center_vertical"
         android:alpha="0.2"
+        android:gravity="center_horizontal"
         android:text="@string/voxeet_call"
         android:textColor="@color/white"
         android:textSize="@dimen/voxeet_conference_state_expanded"
@@ -65,8 +66,8 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="30dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="6dp" />
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="20dp" />
 
                 <com.voxeet.toolkit.implementation.VoxeetParticipantView
                     android:id="@+id/participant_view"
@@ -101,9 +102,9 @@
             android:id="@+id/self_video_view"
             android:layout_width="@dimen/conference_view_self_videoview_width"
             android:layout_height="@dimen/conference_view_self_videoview_height"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="32dp"
-            android:layout_marginLeft="16dp"
             app:cornerRadius="5dp"
             app:scaleType="scale_fit"
             app:showFlip="true" />
