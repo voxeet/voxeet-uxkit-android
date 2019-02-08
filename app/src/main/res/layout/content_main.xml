@@ -93,25 +93,5 @@
         android:text="@string/join"
         android:textColor="@color/white" />
 
-    <Button
-        android:id="@+id/reset_http"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/main_activity_button"
-        android:enabled="true"
-        android:text="@string/reset_http"
-        android:textColor="@color/white" />
-
-    <Button
-        android:id="@+id/reidentify"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/main_activity_button"
-        android:enabled="true"
-        android:text="@string/reidentify"
-        android:textColor="@color/white" />
-
     <requestFocus />
 </LinearLayout>

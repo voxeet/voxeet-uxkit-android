@@ -11,42 +11,26 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.1"
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "fr.voxeet.sdk.sample"
-        minSdkVersion 14
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+
+        buildConfigField "String", "CONSUMER_KEY", "\"" + project.properties["PROD_CONSUMER_KEY"]+"\""
+        buildConfigField "String", "CONSUMER_SECRET", "\"" + project.properties["PROD_CONSUMER_SECRET"]+"\""
+
+        buildConfigField "String", "USE_SDK_OAUTH_URL", "\"" + project.properties["USE_SDK_OAUTH_URL"]+"\""
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    flavorDimensions "sample"
-
-    productFlavors {
-        staging {
-            dimension "sample"
-            buildConfigField "String", "CONSUMER_KEY", "\"" + project.properties["STAGING_CONSUMER_KEY"]+"\""
-            buildConfigField "String", "CONSUMER_SECRET", "\"" + project.properties["STAGING_CONSUMER_SECRET"]+"\""
-
-            buildConfigField "String", "USE_SDK_OAUTH_URL", "\"" + project.properties["USE_SDK_OAUTH_URL"]+"\""
-        }
-
-        production {
-            dimension "sample"
-            buildConfigField "String", "CONSUMER_KEY", "\"" + project.properties["PROD_CONSUMER_KEY"]+"\""
-            buildConfigField "String", "CONSUMER_SECRET", "\"" + project.properties["PROD_CONSUMER_SECRET"]+"\""
-
-            buildConfigField "String", "USE_SDK_OAUTH_URL", "\"" + project.properties["USE_SDK_OAUTH_URL"]+"\""
         }
     }
 
@@ -84,11 +68,11 @@ dependencies {
     implementation 'com.jakewharton:butterknife:7.0.1'
     annotationProcessor 'com.jakewharton:butterknife:7.0.1'
 
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support:design:27.1.1'
-    compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'com.android.support:multidex:1.0.3'
-    compile 'com.squareup.picasso:picasso:2.71828'
+    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    compile "com.android.support:design:${rootProject.ext.supportLibVersion}"
+    compile "org.greenrobot:eventbus:3.0.0"
+    compile "com.android.support:multidex:1.0.3"
+    compile "com.squareup.picasso:picasso:2.71828"
 
     //when working with our oauth example
     //this converter is here to convert "string" only result
@@ -96,4 +80,5 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-scalars:2.1.0'
 }
 
-apply plugin: 'com.google.gms.google-services'
+//uncomment for firebase tests
+//apply plugin: 'com.google.gms.google-services'
