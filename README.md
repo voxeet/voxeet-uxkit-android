@@ -14,27 +14,19 @@ The SDK is a Java library allowing users to:
   - If you use External login like O365, LDAP, or custom login to retrieve contact details, it is now possible to also add your contact ID with the display name and the photo url avatar.
    This allows you to ask guest users to introduce themselves and provide their display name and for your authenticated users in your enterprise or for your clients the ID that can be retrieved from O365 (name, department, etc).
 
-### Installing the Android SDK using Gradle
+## Installing the Android SDK using Gradle
 
 To install the SDK directly into your Android project using the Grade build system and an IDE like Android Studio, add the following entry to your build.gradle file as shown below:
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:1.0.4') {
+  compile ('com.voxeet.sdk:toolkit:1.4.7') {
     transitive = true
   }
 }
 ```
 
-The current logic-only (no UI) sdk is available using the following version (used by the current toolkit version) :
-
-```gradle
-dependencies {
-  compile ('com.voxeet.sdk:public-sdk:1.0.4') {
-    transitive = true
-  }
-}
-```
+The current logic-only (no UI) sdk is available as well: [public-sdk](https://github.com/voxeet/android-sdk)
 
 ## Migrating from 0.X to 1.X
 
@@ -49,6 +41,63 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+v1.4 :
+  - improve headsets management (internal)
+  - fix issues with non firebase projects
+  - fix VideoView UI behaviour
+  - capability to recover from egl internal crashes
+
+v1.3 :
+  - fix various network connectivity
+  - improve socket management
+  - fix issue in oauth management
+  - fix screen recording calls
+
+v1.1.8.32 :
+  - add localstats with support of auto management and report event
+
+v1.1.8.28/31 :
+  - fix default toolkit behaviour
+  - add local stats management
+
+v1.1.8.27 :
+  - fix incoming calls issues
+  - improve integration
+  - lighter sample application to work with
+
+v1.1.8.26 :
+  - fix crash on peer vu meter
+
+v1.1.8.24 : 
+  - add sound in incoming calls
+
+v1.1.8.23 : 
+  - improves the overall SDK experience
+  - fix workflows
+  - improve video management
+  - sync experience with the iOS implementation
+
+v1.1.7.1.1 :
+  - fix a crash when SDK is not initialized and using `VoxeetAppCompatActivity`
+
+v1.1.7.1 :
+  - fix overlay behaviour
+
+v1.1.6 :
+  - new Media management
+
+v1.1.5 :
+  - from previous vversion, Media.AudioRoute is now AudioRoute
+  - Audio related APIs are now in `VoxeetSdk.getInstance().getAudioService()`
+  - fix issues with ids from the SDK
+  - add VideoPresentation api
+  - sample app : integration of the api and fix with butterknife
+
+v1.1.0 :
+  - various fixes (issue with speaker button)
+  - add screenshare capabilities
+  - easier integration
+  - dual initialization mode (keys or oauth)
 
 v1.0.4 :
   - upgrade api calls
@@ -61,14 +110,14 @@ v1.0.3 :
 v1.0.2 :
   - fix CTA
   - fix issue with crash on same calls
-  - fix com.voxeet.toolkit.controllers behaviour
+  - fix controllers behaviour
 
 v1.0 :
   - complete rework of most internal method
   - File Presentation management (start, stop, update)
   - event on QualityIndicators with MOS
 
-  
+
 ## Usage
 
 ### Recommended settings for API compatibility:
@@ -146,6 +195,70 @@ ActivityCompat.requestPermissions(this,
 
 See the [Official Android Documentation] for more details.
 
+### Application initialization
+
+To help you integrate the SDK, we provide the `VoxeetApplication`, this class ensures that you'll initialize the SDK and have a fully integrated experience as developer to enrich your UX.
+
+This class makes mandatory to return a `Promise` which will `resolve` as soon as the SDK is initialized. A simple implementation is :
+This method will then be internally used by the various components of the SDK.
+
+```
+    @NonNull
+    @Override
+    public Promise<Boolean> uniqueInitializeSDK() {
+        return new Promise<>(new PromiseSolver<Boolean>() {
+            @Override
+            public void onCall(@NonNull Solver<Boolean> solver) {
+                VoxeetSdk.initialize(SampleApplication.this,
+                        BuildConfig.CONSUMER_KEY,
+                        BuildConfig.CONSUMER_SECRET,
+                        _current_user);
+
+                solver.resolve(true);
+            }
+        });
+    }
+```
+
+Make sure to use this method to initialize the sdk (.then.error or .execute)
+
+### Activity management
+
+Every activities extending the `VoxeetAppCompatActivity` will manage the incoming call invitation and the accepted calls.
+
+### Incoming call management
+
+The sample provides a way to easily deal with the incoming calls. The SDK can be configured to reflect the configuration.
+To help integrate with the below FCM configuration, it's also possible to set default values into the AndroidManifest.
+
+Add 2 *<meta-data />* values in the Manifest to reflect the :
+  - incoming call activity
+  - default activity to start when the call is accepted
+
+The value of each of those *<meta-data />* needs to be the fully qualified name of those. For instance :
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- if a push notification is received from a killed-state app, the accept/declined calls will arrive there -->
+        <!-- Note : any override in the code will replace this metadata -->
+        <meta-data
+            android:name="voxeet_incoming_class"
+            android:value="com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity" />
+
+        <!-- if a push notification is received from killed-state app, accepted calls will arrive there // possible override in code -->
+        <!-- Note : any VoxeetAppCompat activity started will override this metadata -->
+        <meta-data
+            android:name="voxeet_incoming_accepted_class"
+            android:value="fr.voxeet.sdk.sample.activities.MainActivity" />
+
+    </application>
+
+</manifest>
+```
+
+
 ### FCM
 
 Please notice the following steps are required only if you plan on using fcm.
@@ -160,12 +273,12 @@ To enable Voxeet notifications (getting a new call, conference ended and so on..
 <manifest>
   <application>
     <service android:name="voxeet.com.sdk.firebase.VoxeetFirebaseMessagingService">
-      <intent-filter>
+      <intent-filter android:priority="999">
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
     <service android:name="voxeet.com.sdk.firebase.VoxeetFirebaseInstanceIDService">
-      <intent-filter>
+      <intent-filter android:priority="999">
         <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
       </intent-filter>
     </service>
@@ -183,668 +296,9 @@ A logger has been added to the SDK allowing users to track events more easily. 3
 
 Please also note that WebRTC has its own logger for WebRTC related events.
 
-## Available methods
+## Online documentation
 
-### Initializing  
-
-```java
-// To be called from the application class
-
-// if you have external info
-UserInfo externalInfo = new UserInfo(externalName, externalName, externalPhotoUrl);
-// else
-UserInfo externalInfo = new UserInfo();
-
-VoxeetSdk.sdkInitialize(this, consumerKey, consumerSecret, externalInfo);
-
-// Set Default activity to launch when receiving notifications if enabled
-VoxeetSdk.setDefaultActivity(YourIncomingCall.class.getCanonicalName());
-
-// Set a timer to stop the conference if none has joined it at the end of the defined timeout
-VoxeetSdk.getInstance().getConferenceService().setTimeOut(45000);
-
-// requires the voxeet toolkit lib in the gradle app file
-VoxeetToolkit.initialize(this, EventBus.getDefault());
-VoxeetToolkit.getInstance().enableOverlay(true);
-```
-
-### Incoming Calls
-
-The new workflow to receive incoming calls has been updated.
-
-You can now have the following implementations to do in order to have invitations :
-
-- make every Activity extends `VoxeetAppCompatActivity`
-VoxeetAppCompatActivity will manage and call the proper methods to join a conference if detected
-
-- For push notification or in SDK, register an Activity which extends `AbstractIncomingCallActivity`
-```
-VoxeetPreferences.setDefaultActivity(IncomingCallActivity.class.getCanonicalName());
-```
-
-In this snippet, `IncomingCallActivity` extends `AbstractIncomingCallActivity`. A method must be overriden :
-```
-@NonNull
-@Override
-protected Class<? extends VoxeetAppCompatActivity> getActivityClassToCall() {
-    return MainActivity.class;
-}
-```
-
-Note that in the case of multiple Activities in the app, you can use the VoxeetAppCompatActivity to automatically register the activity to start when "accepting" a call.
-Instead of returning `MainActivity.class` in the sample, use `IncomingCallFactory.getAcceptedIncomingActivityKlass()`:
-
-```
-@NonNull
-@Override
-protected Class<? extends VoxeetAppCompatActivity> getActivityClassToCall() {
-    VoxeetAppCompatActivity temp = IncomingCallFactory.getAcceptedIncomingActivityKlass();
-
-    if(null != temp)
-        return temp;
-    
-    return MainActivity.class;
-}
-
-```
-
-
-
-
-### Registering the SDK
-
-Registering is mandatory before starting a conference or else it will crash. Since version 0.8.001, the context and the object subscribing to receive the conference events are now decoupled offering more flexibility.
-
-```java
-// Susbcribe to the SDK events
-VoxeetSdk.register(Context context, Object subscriber);
-```
-
-### Unregistering the SDK
-
-It's important to use this method once the conference is ended and that you want to finish your current view/activiy/ fragment.
-
-```java
-// Unsusbcribe from the SDK events
-// Mandatory
-VoxeetSdk.unregister(Context context);
-```
-
-### Open Session
-
-```java
-// Open Sdk Session. Equivalent to login. Included in the initialize method. Use it after disconnecting or encountering an issue requiring to reidentify. (Opens the websocket if call is successful)
-VoxeetSdk.getInstance().logUser(user_info);
-```
-
-### Logout
-
-```java
-// Basic logout and socket disconnect
-VoxeetSdk.getInstance().logout();
-```
-
-### Enabling / Disabling the Voxeet overlay
-Enables a view (VoxeetConferenceView) on top of your current view when joining/creating a conference and will allow you to manage the current conference easily and in a stylish fashion. It regroups many objects from the Voxeet UI toolkit. Can be turned on/off at any point in time.
-
-```java
-VoxeetToolkit.getInstance().enableOverlay(boolean enable);
-```
-
-### Creating a demo conference  
-
-```java
-VoxeetSdk.getInstance().getConferenceService().demo();
-```
-
-### Creating a conference  
-
-```java
-VoxeetSdk.getInstance().getConferenceService().create();
-```
-
-### Joining a conference
-
-```java
-// Used to join someone's conference otherwise joining is automatic
-// Joining a non-existing conference will create it
-VoxeetSdk.getInstance().getConferenceService().join(String conferenceId);
-```
-
-### Joining a conference as a listener (no camera nor microphone)
-
-```java
-VoxeetSdk.getInstance().getConferenceService().listenConference(String conferenceId);
-```
-
-### Leaving a conference  
-
-```java
-VoxeetSdk.getInstance().getConferenceService().leave();
-```
-
-### Toggling own video
-
-```java
-// if successful, a ConferenceUserUpdatedEvent will be posted with the mediastream updated
-VoxeetSdk.getInstance().getConferenceService().toggleVideo();
-```
-
-### Change the camera
-
-It is possible to set the default camera the app will use :
-
-```java
-VoxeetSdk.getInstance().getConferenceService().setDefaultCamera(String cameraName);
-```
-
-In this sample, the cameraName can be used with the following calls :
-
-```java
-CameraEnumerationAndroid.getNameOfBackFacingDevice();
-CameraEnumerationAndroid.getNameOfFrontFacingDevice();
-```
-
-When using the toolkit, note that a "clic" on the "self" video will trigger a switchCamera() :
-```java
-VoxeetSdk.getInstance().getConferenceService().switchCamera();
-```
-
-### Retrieving list of invited (not in the conference yet) users to the conference
-
-```java
-VoxeetSdk.getInstance().getConferenceService().getInvitedUsers();
-```
-
-### Enabling/disabling conference recording
-
-```java
-// if successful, a RecordingStatusUpdateEvent will be posted with the updated recording conference status
-VoxeetSdk.getInstance().getConferenceService().toggleRecording();
-```
-
-### Replaying a recorded conference
-
-```java
-VoxeetSdk.getInstance().getConferenceService().replay(String conferenceId, long offset_in_ms);
-```
-
-### Checking if a conference is live  
-
-```java
-VoxeetSdk.getInstance().getConferenceService().isLive();
-```
-
-### Changing user position  
-
-```java
-// Change user position using an angle and a distance
-// Values for x, y are between : x = [-1, 1] and y = [0, 1]
-VoxeetSdk.getInstance().getConferenceService().cheangePeerPosition(String userId, double x, double y);
-```
-
-### Sending message in a conference
-
-```java
-// Send messages such as JSON commands...
-VoxeetSdk.getInstance().getConferenceService().sendBroadcastMessage(String message);
-```
-
-### Getting current conference users
-
-```java
-VoxeetSdk.getInstance().getConferenceService().getConferenceUsers();
-```
-
-### Getting microphone state
-
-```java
-VoxeetSdk.getInstance().getConferenceService().isMuted();
-```
-
-### Mute/Unmute the microphone
-
-```java
-VoxeetSdk.getInstance().getConferenceService().mute(boolean mute);
-```
-
-### Muting user
-
-```java
-// Muting or unmmuting an user depending on the boolean value
-VoxeetSdk.getInstance().getConferenceService().muteUser(String userId, boolean mute);
-```
-
-### Checking if an user is muted
-
-```java
-VoxeetSdk.getInstance().getConferenceService().isUserMuted(String userId);
-```
-
-### Getting available audio routes
-
-```java
-// Get available audio routes
-VoxeetSdk.getInstance().getConferenceService().getAvailableRoutes();
-```
-
-### Getting current audio route
-
-```java
-VoxeetSdk.getInstance().getConferenceService().currentRoute();
-```
-
-### Setting audio route
-
-```java
-VoxeetSdk.getInstance().getConferenceService().setOutputRoute(AudioRoute route);
-```
-
-### Setting a timeout
-
-```java
-// Set a timer to stop the conference if none has joined it at the end of the defined timeout
-VoxeetSdk.getInstance().getConferenceService().setTimeout(45000);
-```
-
-### Attaching the media stream
-
-It is advised to use the VideoView object available in the SDK. Check the part about the Voxeet UI Toolkit below.
-
-```java
-// Attach the renderer to the media so we can get the rendering working
-VoxeetSdk.getInstance().getConferenceService().attachMediaStream(MediaStream stream, VideoRenderer.Callbacks render);
-```
-
-### Unattaching the media stream
-
-```java
-// Unattach the renderers to avoid leaks
-VoxeetSdk.getInstance().getConferenceService().unAttachMediaStream(MediaStream stream);
-```
-
-## SDK Initialization
-
-In this example, initialize the SDK in the onCreate() method of your custom application class:
-
-```java
-@Override
-public void onCreate() {
-    super.onCreate();
-
-    // if you have external info
-    //UserInfo externalInfo = new UserInfo(externalName, externalName, externalPhotoUrl);
-    // else
-    //UserInfo externalInfo = new UserInfo();
-
-    //init the SDK
-    VoxeetSdk.initialize(this,
-            BuildConfig.CONSUMER_KEY,
-            BuildConfig.CONSUMER_SECRET,
-            _current_user); //can be null - will be removed in a later version
-
-    //register the Application and add at least one subscriber
-    VoxeetSdk.getInstance().register(this, this);
-}
-```
-
-## Activity Structure
-
-In order to work properly, it is necessary to register and unregister the SDK respectively in the onCreate() and onDestroy() methods of your activity/fragment holding the conference.
-
-```java
-@Override
-
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    VoxeetSdk.getInstance().register(getApplicationContext(), this);
-}
-
-@Override
-protected void onDestroy() {
-    VoxeetSdk.getInstance().unregister(this);  
-
-    super.onDestroy();
-}   
-```
-
-## ConferenceUser Model
-
-ConferenceUser model now has an userInfo object where infos are stored such as the external user id, the url avatar and display name. It has to be passed when initializing the sdk in the application class.
-
-```java
-public UserInfo getUserInfo();
-```
-
-## Events
-
-The SDK will dispatch events to the suscribed classes such as activities and fragments holding the conferences. To get notified, the only necessary step is to add those methods below:
-
-### Conference creation success
-
-```java
-@Subscribe
-public void onEvent(final ConferenceCreationSuccess event) {
-}
-```
-
-### Conference creation error
-
-```java
-@Subscribe
-public void onEvent(final ConferenceCreatedError event) {
-}
-```
-
-### Conference joined successfully
-
-```java
-@Subscribe
-public void onEvent(final ConferenceJoinedSuccessEvent event) {
-    // Action to be called when joining successfully the conference
-}
-```
-
-### Conference joined error
-
-```java
-@Subscribe
-public void onEvent(final ConferenceJoinedError event) {
-    // Action to be called if joining failed
-}
-```
-
-### Conference left success
-
-```java
-@Subscribe
-public void onEvent(final ConferenceLeftSuccessEvent event) {
-    // Action to be called when leaving successfully the conference
-}
-```
-
-### Conference left error
-
-```java
-@Subscribe
-public void onEvent(final ConferenceLeftError event) {
-    // Action to be called when leaving the conference failed
-}
-```
-
-### Conference ended
-
-```java
-@Subscribe
-public void onEvent(final ConferenceEnded event) {
-    // Action to be called when a conference has ended (typically a replay ending)
-}
-```
-
-### Conference user joined
-```java
-@Subscribe
-public void onEvent(final ConferenceUserJoinedEvent event) {
-    // Action to be called when a new participant joins the conference
-}
-```
-
-### Conference user updated
-```java
-@Subscribe
-public void onEvent(final ConferenceUserUpdatedEvent event) {
-    // Action to be called when a participant has been updated (e.g conference user's camera has been turned on/off)
-}
-```
-
-### Conference user left
-```java
-@Subscribe
-public void onEvent(final ConferenceUserLeftEvent event) {
-    // Action to be called when a participant has left (e.g unattaching mediastream if needed)
-}
-```
-
-### Screen stream added
-```java
-@Subscribe
-public void onEvent(final ScreenStreamAddedEvent event) {
-    // Action to be called when a screen share stream is available
-}
-```
-
-### Screen stream removed
-```java
-@Subscribe
-public void onEvent(final ScreenStreamRemovedEvent event) {
-    // Action to be called when a screen share stream is no longer available
-}
-```
-
-### Recording conference status updated
-```java
-@Subscribe
-public void onEvent(final RecordingStatusUpdateEvent event) {
-    // Action to be called when the recording status has changed (RECORDING or NOT_RECORDING)
-}
-```
-
-### Message received
-```java
-@Subscribe
-public void onEvent(MessageReceived event) {
-    // Action to be called when a message is received
-}
-```
-
-## MediaStream
-
-Present in the ConferenceUserJoinedEvent and ConferenceUserUpdatedEvent, this object is supposed to be attached/unattached from a renderer to display/hide a conference user video or screen share stream.
-It has a boolean flag called hasVideo set to true if the user associated with it is currently streaming his camera/screen. Set to false, it means the user is not streaming or has stopped streaming his camera/screen.
-
-## Voxeet UI toolkit
-
-A few UI objects are available such as the VideoView made to ease up the use of mediastreams and many others. All of them have customizable attributes you can use programmaticaly or in the xml. Here is a comprehensive list:
-
-### VoxeetConferenceView
-
-This view regroups all of the others custom components available. We will now go into further details about each one of them.
-
-### VoxeetTimer
-
-It displays a timer for the conference which starts when you join the conference. Also shows a green light which turns to red when the conference is being recorded.
-
-```java
-
-  // indicator color when conference is being recorded
-  <attr name="recording_color" format="color" />
-
-  // indicator color when conference is live
-  <attr name="default_color" format="color" />
-
-  // indicator color when you not in a conference
-  <attr name="not_in_conference_color" format="color" />
-
-  // text color of the timer
-  <attr name="text_color" format="color" />
-
-  // defines when the timer starts (when joining a conference or when the view is created...)
-  <attr name="timer_mode" format="integer" />
-
-  // display indicator or not
-  <attr name="color_enabled" format="boolean" />
-```
-
-### VideoView
-
-This is the component used to display someone's stream. Two main methods are available to attach and unattach the different streams:
-
-```java
-// Sets the videoview's behavior when already attached. Should it auto attach or just stay attached to the previous stream.
- public void setAutoUnAttach(boolean autoUnAttach) {
-        this.autoUnAttach = autoUnAttach;
-}
-```
-
-```java
-// Determines if the videovideo is already attached to a stream
- public boolean isAttached()
-```
-
-```java
-// Sets the videoview to mirrored or not depending on the boolean value
-public void getRenderer().setMirror(shouldBeMirrored);
-
-<attr name="mirrored" format="boolean" />
-```
-
-```java
-// Attach the renderer to the media so we can get the rendering working
-public void attach(String peerId, MediaStream stream);
-```
-
-```java
-public void unAttach();
-```
-
-### VoxeetIncomingCallButton
-
-Press and swipe out type of button used to answer/decline a call for example. Callback listener will be triggered if set when the swipe has reached the minimum distance.
-
-```java
-public void setIncomingCallListener(IncomingCallListener listener)
-```
-
-```java
-<attr name="view_src" format="integer" />
-```
-
-### VoxeetCurrentSpeakerView
-
-Displays the current speaker with it's avatar picture and a scaling circle representating it's current voice level.
-
-```java
-<attr name="vu_meter_color" format="color" />
-```
-
-### VoxeetVuMeter
-
-It's a part of the VoxeetCurrentSpeakerView mentionned above but can definitely work on it's own.
-
-```java
-<attr name="background_color" format="color" />
-```
-
-## VoxeetConferenceBarView
-
-Contains different buttons allowing you to manage the conference. Here are the different available buttons:
-
-  - toggle own camera
-  - leave conference
-  - mute
-  - change audio output
-  - toggle conference recording
-
-
-All of them are supposed to have a default state as well as a selected state. Since (1.0.012) you can set your own drawables to the conference bar's buttons through the xml or by using one the following methods:
-
-```java
-public void setCameraSelector(Drawable drawable);
-public void setCameraSelector(int cameraSelector);
-
-public void setRecordSelector(Drawable drawable);
-public void setRecordSelector(int recordSelector);
-
-public void setHangUpSelector(Drawable drawable);
-public void setHangUpSelector(int hangUpSelector);
-
-public void setAudioSelector(Drawable drawable);
-public void setAudioSelector(int audioSelector);
-
-public void setMuteSelector(Drawable drawable);
-public void setMuteSelector(int muteSelector);
-```
-
-
-```java
-// set your own selector to each button
-<attr name="mute_selector" format="integer" />
-<attr name="audio_selector" format="integer" />
-<attr name="hang_up_selector" format="integer" />
-<attr name="camera_selector" format="integer" />
-<attr name="record_selector" format="integer" />
-```
-
-To hide/make visible buttons, here are the different methods:
-
-```java
-public void setDisplayRecord(boolean displayRecord);
-
-public void setDisplayAudio(boolean displayAudio);
-
-public void setDisplayMute(boolean displayMute);
-
-public void setDisplayCamera(boolean displayCamera);
-
-public void setDisplayLeave(boolean displayLeave);
-```
-
-```java
-<attr name="record_button" format="boolean" />
-<attr name="audio_button" format="boolean" />
-<attr name="mute_button" format="boolean" />
-<attr name="video_button" format="boolean" />
-<attr name="leave_button" format="boolean" />
-```
-
-You can also use the builder provided, set the buttons order as you wish and finally add the conference bar programmatically:
-
-```java
-FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-        FrameLayout.LayoutParams.WRAP_CONTENT,
-        FrameLayout.LayoutParams.WRAP_CONTENT);
-         params.gravity = Gravity.BOTTOM | Gravity.CENTER;
-
-VoxeetConferenceBarView conferenceBarView = new VoxeetConferenceBarView.Builder()
-        .with(this)
-        .setLayoutParams(params)
-        .hangUp(R.drawable.selector_hangup, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e(TAG, "hangup");
-            }
-        }).mute(R.drawable.selector_mute, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e(TAG, "mute");
-            }
-        }).build();
-
-addContentView(conferenceBarView, conferenceBarView.getLayoutParams());
-```
-
-## VoxeetParticipantView
-
-The participant view shows the current conference's participants. Also displays the users' cams when they are enabled. You can set a listener so you get notified when a participant is selected/unselected. This allows interactions with others views. You can check the VoxeetConferenceView which locks the currentSpeakerView when someone is selected.
-
-```java
-public void setParticipantListener(ParticipantViewListener listener)
-```
-
-```java
-<attr name="overlay_color" format="color" />
-<attr name="name_enabled" format="boolean" />
-<attr name="display_self" format="boolean" />
-```
-
-## VoxeetLoadingView
-
-A custom view designed to display an ongoing task like an outgoing/incoming call.
-
-```java
-<attr name="loading_color" format="color" />
-```
+You can check our documentation directly on our [developer portal](https://developer.voxeet.com/reference/android/reference-Android/)
 
 ## Conference event flow
 
@@ -868,11 +322,112 @@ A custom view designed to display an ongoing task like an outgoing/incoming call
 
 Only one instance of a conference is allowed to be live. Leaving the current conference before creating or joining another one is mandatory. Otherwise, a IllegalStateException will be thrown.
 
+You can check for the current status directly using : 
+
+```
+VoxeetSdk.getInstance().getConferenceService().isLive()
+```
+
+## Conference stats
+
+It is possible to retrieve the conference information using 2 solutions.
+
+### Pull the conference information from the local WebRTC instance
+
+The documentation concerning the Local Stats are available in the [Stats.md](Stats.md) file
+
+- usage
+- result
+- behaviour 
+
+### Get (pull) the conference information from the server
+
+This method will make a network call to get the information. The method `getConferenceStatus` available in the `ConferenceService`.
+The obtained promise resolves a `GetConferenceStatusEvent`
+
+### Subscribe to conference information
+
+This method will post regularly the information about the conference. It is mandatory to use this method when the implementation needs the Audio/Video statistics of the conference. This method is available via the `subscribe` in the `ConferenceService`.
+
+Any registered objects will then receive at regular intervals the following event `ConferenceStatsEvent`. This event gives access to a `ConferenceStats` object which has various accessors.
+
+#### Event
+
+```
+@Subscribe
+public void onEvent(ConferenceStatsEvent event) {
+  ConferenceStats stats = event.getEvent();
+  
+  //... manage the stats here -> reposting, saving, etc...
+}
+```
+
+#### Structure
+
+The `ConferenceStats` object gives access to `Infos`. Each `Infos` corresponds to a specific `userId`. The `Infos` contains an array of `Stats`
+
+```
+public class Stats {
+    public String media;
+    public float score;
+    public long ssrc;
+    public String lastPkt;
+    public String firstPkt;
+    public double jitter;
+    public long lostPkt;
+    public long fracLostPkt;
+    public long recvBitrate;
+    public long recvPkt;
+    public long recvOct;
+    public int audioLevel;
+}
+```
+
+ - `media`: Audio or Video
+ - `score`: the overall score (higher is better)
+ - `ssrc`: the current Ssrc of this user/media
+ - `lastPkt`: the last network packet received from this user
+ - `firstPkt`: the first network package received from this user
+ - `jitter`: the current jitter
+ - `lostPkt`: count of lost packets
+ - `fracLostPkt`: ratio of lost packets
+ - `recvBitrate`: received bitrate from this user
+ - `recvPkt`: count of packets received from this user
+ - `recvOct`: count of bytes received from this user
+ - `audioLevel`: the average 'current' user audio level (if audio)
+
+## Network management
+
+### Local management
+
+The Voxeet SDK is made to automatically manage network reconnection and network errors. Any attempt from the SDK to reconnect will follow this lifecycle :
+
+- "CLOSED" (initial state)
+- CONNECTING
+- CONNECTED (if ok)
+- CLOSING
+- CLOSED
+
+Those states are available through the `SocketStateChangeEvent`
+Note that any connectivity success will also trigger the `SocketConnectEvent`
+
+It is possible to check for the current connectivity via the SDK directly :
+```
+VoxeetSdk.getInstance().isSocketOpen()
+```
+
+### Remote management
+
+If any remote users leave a conference "safely", the corresponding event will be fired (see the Conference lifecycle).
+
+In the case of network failure of any remote user, the server will try to reconnect this userwith a `40s` timeout delay. After that moment, a `ConferenceUserLeftEvent` is fired.
+
+
 ## Version
 
 
-public-sdk: 1.0.4
-toolkit: 1.0.4
+public-sdk: 1.4.7
+toolkit: 1.4.7
 
 ## Tech
 
