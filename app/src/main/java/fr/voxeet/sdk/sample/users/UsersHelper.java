@@ -7,10 +7,6 @@ import fr.voxeet.sdk.sample.R;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
 import voxeet.com.sdk.json.UserInfo;
 
-/**
- * Created by kevinleperf on 24/11/2017.
- */
-
 public class UsersHelper {
 
     public final static UserItem[] USER_ITEMS = {

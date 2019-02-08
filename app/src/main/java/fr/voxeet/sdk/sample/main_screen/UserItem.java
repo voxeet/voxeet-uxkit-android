@@ -4,10 +4,6 @@ import android.support.annotation.DrawableRes;
 
 import voxeet.com.sdk.json.UserInfo;
 
-/**
- * Created by kevinleperf on 24/11/2017.
- */
-
 public class UserItem {
 
     @DrawableRes

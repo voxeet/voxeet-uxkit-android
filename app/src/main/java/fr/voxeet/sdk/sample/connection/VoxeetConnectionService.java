@@ -13,10 +13,6 @@ import android.telecom.RemoteConnection;
 import android.telecom.TelecomManager;
 import android.util.Log;
 
-/**
- * Created by romainbenmansour on 13/03/2017.
- */
-
 @TargetApi(Build.VERSION_CODES.M)
 public class VoxeetConnectionService extends ConnectionService {
 

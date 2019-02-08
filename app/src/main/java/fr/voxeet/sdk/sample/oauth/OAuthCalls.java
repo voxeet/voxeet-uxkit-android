@@ -3,10 +3,6 @@ package fr.voxeet.sdk.sample.oauth;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
-/**
- * Created by kevinleperf on 23/07/2018.
- */
-
 public interface OAuthCalls {
     /**
      * Get the current thirdparty accessToken

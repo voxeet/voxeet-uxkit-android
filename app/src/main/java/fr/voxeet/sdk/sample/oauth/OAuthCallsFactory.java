@@ -5,10 +5,6 @@ import android.support.annotation.NonNull;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
-/**
- * Created by kevinleperf on 23/07/2018.
- */
-
 public class OAuthCallsFactory {
 
     private OAuthCallsFactory() {

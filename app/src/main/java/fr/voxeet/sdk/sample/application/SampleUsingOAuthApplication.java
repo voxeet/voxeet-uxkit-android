@@ -31,9 +31,6 @@ import voxeet.com.sdk.core.services.authenticate.token.RefreshTokenCallback;
 import voxeet.com.sdk.core.services.authenticate.token.TokenCallback;
 import voxeet.com.sdk.json.UserInfo;
 
-/**
- * Created by RomainBenmansour on 06,April,2016
- */
 public class SampleUsingOAuthApplication extends VoxeetApplication {
     /**
      * When testing the OAuth feature, please change the USE_SDK_OAUTH_URL from the gradle.properties

@@ -23,9 +23,6 @@ import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.json.UserInfo;
 
-/**
- * Created by RomainBenmansour on 06,April,2016
- */
 public class SampleApplication extends VoxeetApplication {
     /**
      * When testing the OAuth feature, please change the USE_SDK_OAUTH_URL from the gradle.properties

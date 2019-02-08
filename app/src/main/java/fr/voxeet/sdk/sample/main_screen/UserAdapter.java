@@ -13,10 +13,6 @@ import butterknife.ButterKnife;
 import fr.voxeet.sdk.sample.R;
 import voxeet.com.sdk.json.UserInfo;
 
-/**
- * Created by kevinleperf on 24/11/2017.
- */
-
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
     private UserClickListener _listener;
