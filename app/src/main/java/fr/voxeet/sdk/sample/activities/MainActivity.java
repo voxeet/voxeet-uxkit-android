@@ -3,7 +3,6 @@ package fr.voxeet.sdk.sample.activities;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -38,8 +37,6 @@ import fr.voxeet.sdk.sample.main_screen.UserItem;
 import fr.voxeet.sdk.sample.users.UsersHelper;
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.core.services.LocalStatsService;
-import voxeet.com.sdk.core.services.localstats.LocalStatsUserInfo;
 import voxeet.com.sdk.events.error.ConferenceLeftError;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
@@ -49,8 +46,6 @@ import voxeet.com.sdk.events.success.SocketConnectEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
 import voxeet.com.sdk.json.UserInfo;
 import voxeet.com.sdk.json.internal.MetadataHolder;
-import voxeet.com.sdk.models.abs.Conference;
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
 
@@ -84,32 +79,6 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         users.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         users.setAdapter(new UserAdapter(this, UsersHelper.USER_ITEMS));
-
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (null != VoxeetSdk.getInstance() && VoxeetSdk.getInstance().getConferenceService().isLive()) {
-                    Conference conference = VoxeetSdk.getInstance().getConferenceService().getConference();
-
-                    if (null != conference) {
-                        List<DefaultConferenceUser> users = conference.getConferenceUsers();
-                        LocalStatsService service = VoxeetSdk.getInstance().getLocalStatsService();
-                        for (DefaultConferenceUser user : users) {
-                            LocalStatsUserInfo stats = service.getUserInfo(conference.getConferenceId(),
-                                    user.getUserId());
-
-                            boolean disconnected = stats.isDisconnected();
-                            boolean fluctuates = stats.isFluctuating();
-
-                            Log.d("MainActivity", "run: userId:=" + user.getUserId() + " " + user.getUserInfo() + " disconnected:=" + disconnected + " fluctuates:=" + fluctuates);
-                        }
-                    }
-                }
-                handler.postDelayed(this, 1000);
-            }
-        };
-        handler.post(runnable);
     }
 
     @OnClick(R.id.join_conf)
@@ -117,55 +86,12 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         joinCall();
     }
 
-    private boolean lock = false;
-
-    @Nullable
-    @OnClick(R.id.reidentify)
-    public void reidentify() {
-        if (!lock && null != VoxeetSdk.getInstance()) {
-            lock = true;
-            VoxeetSdk.getInstance().closeSocket();
-            VoxeetSdk.getInstance().logCurrentlySelectedUserWithChain()
-                    .then(new PromiseExec<Boolean, Object>() {
-                        @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                            Log.d(TAG, "onCall: user identify := " + result);
-                            lock = false;
-                        }
-                    })
-                    .error(new ErrorPromise() {
-                        @Override
-                        public void onError(@NonNull Throwable error) {
-                            lock = false;
-                            error.printStackTrace();
-                        }
-                    });
-        }
-    }
-
-    @OnClick(R.id.reset_http)
-    public void resetHttp() {
-        if (null != VoxeetSdk.getInstance()) {
-            VoxeetSdk.getInstance().resetVoxeetHttp();
-        }
-    }
-
     @OnClick(R.id.disconnect)
     public void onDisconnectClick() {
 
         VoxeetSdk.getInstance().logout()
-                .then(new PromiseExec<Boolean, Object>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-
-                    }
-                })
-                .error(new ErrorPromise() {
-                    @Override
-                    public void onError(Throwable error) {
-
-                    }
-                });
+                .then(defaultConsume())
+                .error(createErrorDump());
     }
 
     @Override
@@ -215,18 +141,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     public void onBackPressed() {
         if (null != VoxeetSdk.getInstance() && VoxeetSdk.getInstance().getConferenceService().isLive()) {
             VoxeetSdk.getInstance().getConferenceService().leave()
-                    .then(new PromiseExec<Boolean, Object>() {
-                        @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-
-                        }
-                    })
-                    .error(new ErrorPromise() {
-                        @Override
-                        public void onError(@NonNull Throwable error) {
-
-                        }
-                    });
+                    .then(defaultConsume())
+                    .error(createErrorDump());
         } else {
             super.onBackPressed();
         }
@@ -251,45 +167,14 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
             if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
                 VoxeetSdk.getInstance().getConferenceService()
                         .leave()
-                        .then(new PromiseExec<Boolean, Boolean>() {
-                            @Override
-                            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
-                                solver.resolve(promise);
-                            }
-                        })
-                        .then(new PromiseExec<Boolean, Boolean>() {
-                            @Override
-                            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
-                                solver.resolve(VoxeetSdk.getInstance().getConferenceService().startVideo());
-                            }
-                        })
-                        .then(new PromiseExec<Boolean, Object>() {
-                            @Override
-                            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                            }
-                        })
-                        .error(new ErrorPromise() {
-                            @Override
-                            public void onError(@NonNull Throwable error) {
-                                error.printStackTrace();
-                            }
-                        });
+                        .then(promise)
+                        .then(VoxeetSdk.getInstance().getConferenceService().startVideo())
+                        .then(defaultConsume())
+                        .error(createErrorDump());
             } else {
-                promise.then(new PromiseExec<Boolean, Boolean>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
-                        solver.resolve(VoxeetSdk.getInstance().getConferenceService().startVideo());
-                    }
-                }).then(new PromiseExec<Boolean, Boolean>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
-                    }
-                }).error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable error) {
-                        error.printStackTrace();
-                    }
-                });
+                promise.then(VoxeetSdk.getInstance().getConferenceService().startVideo())
+                        .then(defaultConsume())
+                        .error(createErrorDump());
             }
         }
     }
@@ -325,33 +210,13 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
         VoxeetToolkit.getInstance().getConferenceToolkit()
                 .invite(external_ids)
-                .then(new PromiseExec<List<ConferenceRefreshedEvent>, Object>() {
-                    @Override
-                    public void onCall(@Nullable List<ConferenceRefreshedEvent> result, @NonNull Solver<Object> solver) {
-
-                    }
-                })
-                .error(new ErrorPromise() {
-                    @Override
-                    public void onError(Throwable error) {
-                        error.printStackTrace();
-                    }
-                });
+                .then(defaultConsume())
+                .error(createErrorDump());
 
         VoxeetSdk.getInstance().getConferenceService()
                 .startVideo()
-                .then(new PromiseExec<Boolean, Object>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                        Toast.makeText(MainActivity.this, "start := " + result, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable error) {
-                        error.printStackTrace();
-                    }
-                });
+                .then(defaultConsume())
+                .error(createErrorDump());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -367,5 +232,23 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPushEvent event) {
         VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
+    }
+
+    private <TYPE> PromiseExec<TYPE, Object> defaultConsume() {
+        return new PromiseExec<TYPE, Object>() {
+            @Override
+            public void onCall(@Nullable TYPE result, @NonNull Solver<Object> solver) {
+                Log.d(TAG, "onCall: promise managed done");
+            }
+        };
+    }
+
+    private ErrorPromise createErrorDump() {
+        return new ErrorPromise() {
+            @Override
+            public void onError(Throwable error) {
+                error.printStackTrace();
+            }
+        };
     }
 }
