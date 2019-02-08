@@ -35,16 +35,16 @@ repositories {
     jcenter()
 }
 
-System.out.println("creating for ${project.properties["VOXEET_SDK_TOOLKIT_VERSION"]}")
+System.out.println("creating for ${rootProject.ext.voxeetSdkToolkitVersion}")
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.1"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName project.properties["VOXEET_SDK_TOOLKIT_VERSION"]
+        versionName rootProject.ext.voxeetSdkToolkitVersion
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -82,7 +82,7 @@ android {
 }
 
 group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-version = project.properties["VOXEET_SDK_TOOLKIT_VERSION"]
+version = rootProject.ext.voxeetSdkToolkitVersion
 
 bintray {
     user = project.properties["VOXEET_DEVELOPER_ID"]
@@ -106,17 +106,16 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:support-compat:27.1.1'
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support:recyclerview-v7:27.1.1'
+    compile "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
+    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
     compile 'com.squareup.picasso:picasso:2.71828'
     compile 'org.apache.commons:commons-collections4:4.0'
     compile 'com.android.support:multidex:1.0.3'
 
     testCompile 'junit:junit:4.12'
 
-    compile "com.voxeet.sdk:media:0.7.2"
-    compile ("com.voxeet.sdk:public-sdk:${VOXEET_SDK_VERSION}") {
+    compile ("com.voxeet.sdk:public-sdk:${rootProject.ext.voxeetSdkVersion}") {
         transitive = true
     }
 }
