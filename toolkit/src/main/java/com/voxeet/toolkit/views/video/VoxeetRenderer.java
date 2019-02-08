@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -132,7 +133,12 @@ public class VoxeetRenderer extends TextureView
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         if (wm != null) {
             Display display = wm.getDefaultDisplay();
-            display.getSize(size);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                display.getRealSize(size);
+            } else {
+                display.getSize(size);
+            }
         }
     }
 
@@ -299,8 +305,6 @@ public class VoxeetRenderer extends TextureView
         synchronized (layoutLock) {
             size = videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight);
         }
-
-        //Log.d(TAG, "onMeasure: " + size.x + " " + size.y);
 
         if(size.y > getScreenHeight()) size.y = getScreenHeight();
         if(size.x > getScreenWidth()) size.x = getScreenWidth();
