@@ -68,16 +68,12 @@ dependencies {
     implementation 'com.jakewharton:butterknife:7.0.1'
     annotationProcessor 'com.jakewharton:butterknife:7.0.1'
 
-    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:design:${rootProject.ext.supportLibVersion}"
-    compile "org.greenrobot:eventbus:3.0.0"
-    compile "com.android.support:multidex:1.0.3"
-    compile "com.squareup.picasso:picasso:2.71828"
 
     //when working with our oauth example
     //this converter is here to convert "string" only result
     //if a regular json is sent, please use Jackson
-    compile 'com.squareup.retrofit2:converter-scalars:2.1.0'
+    compile 'com.squareup.retrofit2:converter-scalars:2.3.0'
 }
 
 //uncomment for firebase tests

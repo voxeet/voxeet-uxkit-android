@@ -34,13 +34,6 @@
             </intent-filter>
         </service>
 
-        <meta-data
-            android:name="voxeet"
-            android:value="false" />
-        <meta-data
-            android:name="prod"
-            android:value="true" />
-
         <!-- if a push notification is received from a killed-state app, the accept/declined calls will arrive there -->
         <!-- Note : any override in the code will replace this metadata -->
         <meta-data
