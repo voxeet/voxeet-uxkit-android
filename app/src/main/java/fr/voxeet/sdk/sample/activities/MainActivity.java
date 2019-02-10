@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
@@ -41,7 +40,6 @@ import voxeet.com.sdk.events.error.ConferenceLeftError;
 import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
 import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
-import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.events.success.SocketConnectEvent;
 import voxeet.com.sdk.events.success.SocketStateChangeEvent;
 import voxeet.com.sdk.json.UserInfo;
@@ -120,21 +118,6 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         if (getApplication() instanceof SampleApplication) {
             _application = (SampleApplication) getApplication();
         }
-
-        if (null != VoxeetSdk.getInstance()) {
-            if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
-                VoxeetSdk.getInstance().getLocalStatsService().startAutoFetch();
-            } else {
-                VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
-            }
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        EventBus.getDefault().unregister(this);
-
-        super.onPause();
     }
 
     @Override
@@ -154,9 +137,9 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     }
 
     private void joinCall() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_RESULT);
-        else {
+        } else {
             String conferenceAlias = joinConfEditText.getText().toString();
 
             VoxeetToolkit.getInstance().enable(VoxeetToolkit.getInstance().getReplayMessageToolkit());
@@ -217,21 +200,6 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 .startVideo()
                 .then(defaultConsume())
                 .error(createErrorDump());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceLeftSuccessEvent event) {
-        VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceLeftError event) {
-        VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceDestroyedPushEvent event) {
-        VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
     }
 
     private <TYPE> PromiseExec<TYPE, Object> defaultConsume() {
