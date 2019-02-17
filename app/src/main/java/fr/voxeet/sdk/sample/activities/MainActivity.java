@@ -184,8 +184,6 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceJoinedSuccessEvent event) {
-        VoxeetSdk.getInstance().getLocalStatsService().startAutoFetch();
-
         List<UserInfo> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
 
         VoxeetToolkit.getInstance().getConferenceToolkit()
