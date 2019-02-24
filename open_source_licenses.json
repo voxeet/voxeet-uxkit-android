@@ -853,7 +853,7 @@
     {
         "project": "Kernel",
         "description": null,
-        "version": "1.4.8",
+        "version": "1.4.11",
         "developers": [
             
         ],
@@ -862,7 +862,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:kernel:1.4.8"
+        "dependency": "com.voxeet.sdk:kernel:1.4.11"
     },
     {
         "project": "Media",
@@ -1014,7 +1014,7 @@
     {
         "project": "Public-sdk",
         "description": null,
-        "version": "1.4.8",
+        "version": "1.4.11",
         "developers": [
             
         ],
@@ -1023,7 +1023,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:public-sdk:1.4.8"
+        "dependency": "com.voxeet.sdk:public-sdk:1.4.11"
     },
     {
         "project": "Retrofit",
