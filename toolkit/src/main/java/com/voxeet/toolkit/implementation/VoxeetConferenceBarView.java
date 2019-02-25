@@ -35,6 +35,8 @@ import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.abs.information.ConferenceInformation;
+import voxeet.com.sdk.core.impl.ConferenceSdkService;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
 import voxeet.com.sdk.events.AudioRouteChangeEvent;
 import voxeet.com.sdk.events.error.PermissionRefusedEvent;
@@ -275,6 +277,31 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (null != VoxeetSdk.getInstance() && null != VoxeetSdk.getInstance().getConferenceService()) {
+            ConferenceSdkService service = VoxeetSdk.getInstance().getConferenceService();
+            ConferenceInformation information = service.getCurrentConferenceInformation();
+
+            if (null != information && information.isOwnVideoStarted() && !service.isVideoOn()) {
+                service.startVideo().then(new PromiseExec<Boolean, Object>() {
+                    @Override
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                        Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + result);
+                    }
+                }).error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        Log.d(TAG, "onAttachedToWindow: starting video ? thrown:=" + error);
+                        error.printStackTrace();
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -432,6 +459,12 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
     protected void toggleCamera() {
         if (checkCameraPermission()) {
+            ConferenceInformation information = VoxeetSdk.getInstance()
+                    .getConferenceService().getCurrentConferenceInformation();
+
+            if (null != information) {
+                information.setOwnVideoStarted(!VoxeetSdk.getInstance().getConferenceService().isVideoOn());
+            }
             VoxeetSdk.getInstance().getConferenceService().toggleVideo();
         }
     }
@@ -532,61 +565,6 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         if (screenshare != null)
             screenshare.setVisibility(visibility);
-    }
-
-    /**
-     * Display or not the record conference button.
-     *
-     * @param displayRecord the display record value
-     */
-    public void setDisplayRecord(boolean displayRecord) {
-        this.displayRecord = displayRecord;
-
-        setUserPreferences();
-    }
-
-    /**
-     * Display or not the audio routes popup.
-     *
-     * @param displayAudio the display audio value
-     */
-    public void setDisplayAudio(boolean displayAudio) {
-        this.displayAudio = displayAudio;
-
-        setUserPreferences();
-    }
-
-    /**
-     * Display or not the mute myself button.
-     *
-     * @param displayMute the display mute value
-     */
-    public void setDisplayMute(boolean displayMute) {
-        this.displayMute = displayMute;
-
-        setUserPreferences();
-    }
-
-    /**
-     * Display or not the own camera button
-     *
-     * @param displayCamera the display camera value
-     */
-    public void setDisplayCamera(boolean displayCamera) {
-        this.displayCamera = displayCamera;
-
-        setUserPreferences();
-    }
-
-    /**
-     * Display or not the hangup button
-     *
-     * @param displayLeave the display leave value
-     */
-    public void setDisplayLeave(boolean displayLeave) {
-        this.displayLeave = displayLeave;
-
-        setUserPreferences();
     }
 
     @Override
