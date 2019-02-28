@@ -83,7 +83,6 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @OnClick(R.id.disconnect)
     public void onDisconnectClick() {
-
         VoxeetSdk.getInstance().logout()
                 .then(defaultConsume())
                 .error(createErrorDump());
@@ -92,13 +91,9 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
-
         switch (requestCode) {
             case RECORD_AUDIO_RESULT: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     joinCall();
                 }
                 return;

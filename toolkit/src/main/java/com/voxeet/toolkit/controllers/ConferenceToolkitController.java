@@ -35,7 +35,7 @@ import voxeet.com.sdk.models.ConferenceResponse;
 
 public class ConferenceToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
-    private boolean mScreenShareEnabled;
+    private boolean mScreenShareEnabled = false;
 
     public ConferenceToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
         super(context, eventbus);
