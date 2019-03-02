@@ -64,7 +64,6 @@
                     android:id="@+id/notch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
                     app:below_system_bar="true" />
 
                 <LinearLayout
