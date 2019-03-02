@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 import com.voxeet.toolkit.views.VideoView;
+
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.models.ConferenceUserStatus;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
@@ -129,6 +130,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
         Log.d(TAG, "onBindViewHolder: " + position + " " + user.getConferenceStatus());
 
+        boolean on_air = ConferenceUserStatus.ON_AIR.equals(user.getConferenceStatus());
         if (user.getStatus() != null && !user.getStatus().equalsIgnoreCase(ConferenceUserStatus.ON_AIR.name())) {
             holder.itemView.setAlpha(0.5f);
         } else
@@ -144,7 +146,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         loadViaPicasso(user, holder.avatar);
 
         Log.d(TAG, "onBindViewHolder: ");
-        if (ConferenceUserStatus.ON_AIR.equals(user.getConferenceStatus())) {
+        if (on_air) {
             holder.avatar.setAlpha(1.0f);
         } else {
             holder.avatar.setAlpha(0.4f);
@@ -223,6 +225,11 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!on_air) {
+                    Log.d(TAG, "onClick: click on an invalid user, we can't select him");
+                    return;
+                }
+
                 String userId = user.getUserId();
                 //toggle media screen call next stream
                 VideoView.MediaStreamType current_type = holder.videoView.getCurrentMediaStreamType();
@@ -380,6 +387,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     private void loadViaPicasso(DefaultConferenceUser conferenceUser, ImageView imageView) {
         try {
             String url = conferenceUser.getUserInfo().getAvatarUrl();
+            Log.d(TAG, "loadViaPicasso: loading " + url + " for user " + conferenceUser.getUserInfo().getExternalId() + " instance := " + Picasso.get());
             if (!TextUtils.isEmpty(url)) {
                 Picasso.get()
                         .load(url)
