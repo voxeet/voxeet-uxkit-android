@@ -15,6 +15,10 @@
   -->
 
 <resources>
+    <declare-styleable name="NotchAvoidView">
+        <attr name="below_system_bar" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="VoxeetCurrentSpeakerView">
         <attr name="vu_meter_color" format="color" />
     </declare-styleable>
