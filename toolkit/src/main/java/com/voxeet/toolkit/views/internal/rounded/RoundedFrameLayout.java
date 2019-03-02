@@ -17,7 +17,7 @@ import com.voxeet.toolkit.R;
 
 /**
  * RoundedFrameLayout :: simple view to manage corners
- *
+ * <p>
  * not as optimised as a Shadder/Program in the Renderer but will ensure compatibilities
  * in the first releases of this feature
  */
@@ -55,7 +55,7 @@ public class RoundedFrameLayout extends FrameLayout {
     }
 
     public void init(Context context, @Nullable AttributeSet attrs) {
-        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VideoView);
+        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.RoundedFrameLayout);
         isCircle = attributes.getBoolean(R.styleable.RoundedFrameLayout_roundedCircle, false);
         cornerRadius = attributes.getDimension(R.styleable.RoundedFrameLayout_roundedCornerRadius, 0);
         attributes.recycle();
@@ -96,14 +96,14 @@ public class RoundedFrameLayout extends FrameLayout {
         int width = getWidth();
         int height = getHeight();
 
-        if(width > 0 && height > 0) {
+        if (width > 0 && height > 0) {
             updateSize(width, height);
             postInvalidate();
         }
     }
 
     private void updateSize(int width, int height) {
-        if(isCircle) {
+        if (isCircle) {
             float halfWidth = width / 2f;
             float halfHeight = height / 2f;
             path.reset();
@@ -111,8 +111,10 @@ public class RoundedFrameLayout extends FrameLayout {
             path.close();
         } else {
             path.reset();
+            float[] radii = {cornerRadius, cornerRadius, cornerRadius, cornerRadius,
+                    cornerRadius, cornerRadius, cornerRadius, cornerRadius};
             rect.set(0, 0, width, height);
-            path.addRoundRect(rect, cornerRadius, cornerRadius, Path.Direction.CW);
+            path.addRoundRect(rect, radii, Path.Direction.CW);
             path.close();
         }
     }
