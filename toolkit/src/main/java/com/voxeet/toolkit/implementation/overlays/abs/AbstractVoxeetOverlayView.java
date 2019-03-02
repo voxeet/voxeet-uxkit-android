@@ -20,6 +20,7 @@ import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.providers.logics.IVoxeetSubViewProvider;
 import com.voxeet.toolkit.utils.CornerHelper;
+import com.voxeet.toolkit.utils.WindowHelper;
 import com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout;
 
 import java.util.ArrayList;
@@ -128,6 +129,13 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
                 minimize();
             }
         }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        WindowHelper.hideKeyboard(this);
     }
 
     @Override
