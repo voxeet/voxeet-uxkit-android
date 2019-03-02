@@ -22,31 +22,33 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="16dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:minHeight="@dimen/conference_view_avatar_size">
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                app:roundedCornerRadius="6dp">
 
-                <ImageView
+                <LinearLayout
                     android:id="@+id/action_button"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/selector_minimize"
-                    android:src="@drawable/minimize"
-                    android:visibility="gone" />
+                    android:minHeight="@dimen/conference_view_avatar_size"
+                    android:padding="16dp">
 
-            </LinearLayout>
-
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/minimize" />
+                </LinearLayout>
+            </com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout>
         </FrameLayout>
-
     </LinearLayout>
-
-
 </com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout>
