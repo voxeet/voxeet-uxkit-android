@@ -88,11 +88,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
             //stop fetching stats if any pending
             if (!VoxeetSdk.getInstance().getConferenceService().isLive()) {
                 VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
-            } else {
-                SoundManager manager = AudioService.getSoundManager();
-                if(null != manager) {
-                    manager.requestAudioFocus();
-                }
             }
         }
 
@@ -170,20 +165,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
         VoxeetSdk.getInstance().getScreenShareService()
                 .sendUserPermissionRequest(this);
     }
-
-    //those two methods were here to manage sound type
-    //no longer required
-    /*@Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEven(ConferencePreJoinedEvent event) {
-        setVolumeControlStream(SoundManager.STREAM_VOICE_CALL);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceDestroyedPushEvent event) {
-        mIncomingBundleChecker.flushIntent();
-
-        setVolumeControlStream(SoundManager.USE_DEFAULT_STREAM_TYPE);
-    }*/
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Specific event used to manage the current "incoming" call feature
