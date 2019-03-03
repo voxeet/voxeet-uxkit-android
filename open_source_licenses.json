@@ -853,7 +853,7 @@
     {
         "project": "Kernel",
         "description": null,
-        "version": "1.4.13",
+        "version": "1.4.14",
         "developers": [
             
         ],
@@ -862,12 +862,12 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:kernel:1.4.13"
+        "dependency": "com.voxeet.sdk:kernel:1.4.14"
     },
     {
         "project": "Media",
         "description": null,
-        "version": "0.8.3",
+        "version": "0.8.2",
         "developers": [
             
         ],
@@ -876,7 +876,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:media:0.8.3"
+        "dependency": "com.voxeet.sdk:media:0.8.2"
     },
     {
         "project": "OkHttp",
@@ -1014,7 +1014,7 @@
     {
         "project": "Public-sdk",
         "description": null,
-        "version": "1.4.13",
+        "version": "1.4.14",
         "developers": [
             
         ],
@@ -1023,7 +1023,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:public-sdk:1.4.13"
+        "dependency": "com.voxeet.sdk:public-sdk:1.4.14"
     },
     {
         "project": "Retrofit",
