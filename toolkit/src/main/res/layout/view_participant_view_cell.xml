@@ -43,6 +43,7 @@
         android:layout_width="@dimen/meeting_list_avatar_double"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:singleLine="true"
         android:ellipsize="end"
         android:layout_marginTop="@dimen/dimen_3"
         tools:text="name"
