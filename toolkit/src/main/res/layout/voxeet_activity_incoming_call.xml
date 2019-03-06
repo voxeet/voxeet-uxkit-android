@@ -32,6 +32,7 @@
             android:layout_height="100dp"
             android:layout_gravity="center_horizontal"
             android:visibility="visible"
+            android:scaleType="centerCrop"
             app:mutate_background="true"
             app:oval="true" />
     </LinearLayout>

@@ -8,6 +8,7 @@
     android:orientation="vertical">
 
     <FrameLayout
+        android:layout_gravity="center_horizontal"
         android:layout_width="@dimen/meeting_list_avatar_double"
         android:layout_height="@dimen/meeting_list_avatar_double">
 
