@@ -237,6 +237,8 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         //isMaxedOut = true;
         overlayState = OverlayState.EXPANDED;
 
+        WindowHelper.hideKeyboard(this);
+
         onPreExpandedView();
         expandView();
     }
