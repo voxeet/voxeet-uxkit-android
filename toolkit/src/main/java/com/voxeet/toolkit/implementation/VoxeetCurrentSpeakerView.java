@@ -29,6 +29,7 @@ import java.util.List;
 
 import voxeet.com.sdk.core.VoxeetSdk;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
+import voxeet.com.sdk.exceptions.ExceptionManager;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
@@ -296,6 +297,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
                         .into(imageView);
             }
         } catch (Exception e) {
+            ExceptionManager.sendException(e);
             Log.e(TAG, "error " + e.getMessage());
         }
     }

@@ -23,6 +23,8 @@ import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.PromiseSolver;
 import eu.codlab.simplepromise.solve.Solver;
 import voxeet.com.sdk.core.VoxeetSdk;
+import voxeet.com.sdk.core.abs.information.ConferenceInformation;
+import voxeet.com.sdk.events.promises.NotInConferenceException;
 import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
 import voxeet.com.sdk.json.UserInfo;
 import voxeet.com.sdk.json.internal.MetadataHolder;
@@ -170,9 +172,31 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         });
     }
 
-    public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull List<UserInfo> to_invite) {
-        return VoxeetSdk.getInstance().getConferenceService().inviteUserInfos(to_invite);
+    public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull String conferenceId, @NonNull List<UserInfo> to_invite) {
+        return VoxeetSdk.getInstance().getConferenceService().inviteUserInfos(conferenceId, to_invite);
     }
+
+    @Deprecated
+    public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull List<UserInfo> to_invite) {
+        ConferenceInformation information = VoxeetSdk.getInstance().getConferenceService().getCurrentConferenceInformation();
+        if (null != information) {
+            String conferenceId = information.getConference().getConferenceId();
+
+            return VoxeetSdk.getInstance().getConferenceService().inviteUserInfos(conferenceId, to_invite);
+        }
+
+        return new Promise<>(new PromiseSolver<List<ConferenceRefreshedEvent>>() {
+            @Override
+            public void onCall(@NonNull Solver<List<ConferenceRefreshedEvent>> solver) {
+                try {
+                    throw new NotInConferenceException();
+                } catch (@NonNull NotInConferenceException e) {
+                    solver.reject(e);
+                }
+            }
+        });
+    }
+
 
     /*@Nullable
     public UserInfo getInvitedUserFromCache(@NonNull String externalId) {

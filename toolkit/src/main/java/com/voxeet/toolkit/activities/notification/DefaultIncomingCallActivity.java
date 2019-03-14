@@ -41,6 +41,7 @@ import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
 import voxeet.com.sdk.events.success.ConferenceEndedEvent;
 import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
 import voxeet.com.sdk.events.success.DeclineConferenceResultEvent;
+import voxeet.com.sdk.exceptions.ExceptionManager;
 import voxeet.com.sdk.json.UserInfo;
 import voxeet.com.sdk.utils.AndroidManifest;
 import voxeet.com.sdk.utils.AudioType;
@@ -110,7 +111,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
                     if (null != mHandler)
                         finish();
                 } catch (Exception e) {
-
+                    ExceptionManager.sendException(e);
                 }
             }
         }, AndroidManifest.readMetadataInt(this, DEFAULT_VOXEET_INCOMING_CALL_DURATION_KEY,

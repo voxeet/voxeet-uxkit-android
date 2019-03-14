@@ -25,6 +25,7 @@ import com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout;
 
 import java.util.ArrayList;
 
+import voxeet.com.sdk.exceptions.ExceptionManager;
 import voxeet.com.sdk.utils.ScreenHelper;
 
 /**
@@ -568,6 +569,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
             //nothing particular to do here, print crash just in case
             //one could happen
             e.printStackTrace();
+            ExceptionManager.sendException(e);
         }
 
         mCurrentAnimations.clear();

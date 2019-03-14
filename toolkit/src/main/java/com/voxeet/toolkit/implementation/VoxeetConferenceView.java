@@ -40,6 +40,7 @@ import voxeet.com.sdk.core.abs.information.ConferenceInformation;
 import voxeet.com.sdk.core.abs.information.ConferenceState;
 import voxeet.com.sdk.core.impl.ConferenceSdkService;
 import voxeet.com.sdk.core.preferences.VoxeetPreferences;
+import voxeet.com.sdk.exceptions.ExceptionManager;
 import voxeet.com.sdk.models.ConferenceUserStatus;
 import voxeet.com.sdk.models.abs.ConferenceUser;
 import voxeet.com.sdk.models.impl.DefaultConferenceUser;
@@ -721,6 +722,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
             updateUi();
         } catch (Exception e) {
+            ExceptionManager.sendException(e);
             e.printStackTrace();
         }
     }

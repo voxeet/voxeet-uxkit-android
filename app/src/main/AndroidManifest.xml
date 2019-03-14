@@ -64,12 +64,12 @@
         </activity>
 
         <!-- to manage push notification -->
-        <service android:name="voxeet.com.sdk.firebase.VoxeetFirebaseMessagingService">
+        <service android:name="com.voxeet.push.firebase.VoxeetFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="voxeet.com.sdk.firebase.VoxeetFirebaseInstanceIDService">
+        <service android:name="com.voxeet.push.firebase.VoxeetFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
