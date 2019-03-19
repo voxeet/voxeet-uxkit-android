@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * This class is intended to be used as a helper class for rendering on SurfaceViews and
  * TextureViews.
  */
-public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, VideoSink {
+public class SafeRenderFrameEglRenderer implements VideoSink {
     private static final String TAG = "EglRenderer";
     private static final long LOG_INTERVAL_SEC = 4;
     private static final int MAX_SURFACE_CLEAR_COUNT = 3;
@@ -439,15 +439,6 @@ public class SafeRenderFrameEglRenderer implements VideoRenderer.Callbacks, Vide
         ThreadUtils.awaitUninterruptibly(latch);
     }
 
-    // VideoRenderer.Callbacks interface.
-    @Override
-    public void renderFrame(VideoRenderer.I420Frame frame) {
-        VideoFrame videoFrame = frame.toVideoFrame();
-        onFrame(videoFrame);
-        videoFrame.release();
-    }
-
-    // VideoSink interface.
     @Override
     public void onFrame(VideoFrame frame) {
         synchronized (statisticsLock) {

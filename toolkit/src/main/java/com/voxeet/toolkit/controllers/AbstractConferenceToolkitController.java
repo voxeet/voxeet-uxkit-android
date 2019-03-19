@@ -56,6 +56,7 @@ import voxeet.com.sdk.events.success.InvitationReceived;
 import voxeet.com.sdk.events.success.ScreenStreamAddedEvent;
 import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
 import voxeet.com.sdk.events.success.UserInvitedEvent;
+import voxeet.com.sdk.exceptions.ExceptionManager;
 import voxeet.com.sdk.json.ConferenceDestroyedPush;
 import voxeet.com.sdk.json.InvitationReceivedEvent;
 import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
@@ -279,62 +280,73 @@ public abstract class AbstractConferenceToolkitController {
             init();
             should_send_user_join = true;
         }
+        /*if (!isOverlayEnabled() || !in_conf) {
+            try {
+                throw new Exception("trying to load view when not in proper state");
+            } catch (Exception e) {
+                //ExceptionManager.sendException(e);
+            }
+        }*/
 
         if (isOverlayEnabled() && in_conf) {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-
-                    //request audio focus and set in voice call
-                    if (null != VoxeetSdk.getInstance()) {
-                        AudioService service = VoxeetSdk.getInstance().getAudioService();
-                        service.requestAudioFocus();
-                        service.setInVoiceCallSoundType();
-                    }
-
-                    log("run: add view" + mMainView);
-                    if (mMainView != null) {
-                        Activity activity = getRootViewProvider().getCurrentActivity();
-                        ViewGroup root = getRootViewProvider().getRootView();
-
-
-                        ViewGroup viewHolder = (ViewGroup) mMainViewParent.getParent();
-                        if (null != viewHolder && null != root && root != viewHolder) {
-                            viewHolder.removeView(mMainViewParent);
-
-                            viewHolder = (ViewGroup) mMainView.getParent();
-                            if (viewHolder != null)
-                                viewHolder.removeView(mMainView);
+                    try {
+                        //request audio focus and set in voice call
+                        if (null != VoxeetSdk.getInstance()) {
+                            AudioService service = VoxeetSdk.getInstance().getAudioService();
+                            service.requestAudioFocus();
+                            service.setInVoiceCallSoundType();
                         }
 
-                        if (null != root && null != activity && !activity.isFinishing()) {
-                            if (null == mMainViewParent.getParent()) {
-                                root.addView(mMainViewParent, createMatchParams());
+                        log("run: add view" + mMainView);
+                        if (mMainView != null) {
+                            Activity activity = getRootViewProvider().getCurrentActivity();
+                            ViewGroup root = getRootViewProvider().getRootView();
+
+
+                            ViewGroup viewHolder = (ViewGroup) mMainViewParent.getParent();
+                            if (null != viewHolder && null != root && root != viewHolder) {
+                                viewHolder.removeView(mMainViewParent);
+
+                                viewHolder = (ViewGroup) mMainView.getParent();
+                                if (viewHolder != null)
+                                    viewHolder.removeView(mMainView);
                             }
 
-                            if (null == mMainView.getParent()) {
-                                mMainViewParent.addView(mMainView, mParams);
-                            }
-
-                            mMainView.requestLayout();
-                            mMainViewParent.requestLayout();
-                            mMainView.onResume();
-
-                            try {
-                                List<DefaultConferenceUser> users = VoxeetSdk.getInstance()
-                                        .getConferenceService()
-                                        .getConferenceUsers();
-
-                                for (DefaultConferenceUser user : users) {
-                                    Log.d(TAG, "run: view added user := " + user);
-                                    mMainView.onConferenceUserJoined(user);
+                            if (null != root && null != activity && !activity.isFinishing()) {
+                                if (null == mMainViewParent.getParent()) {
+                                    root.addView(mMainViewParent, createMatchParams());
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
 
-                            mEventBus.post(new LoadLastSavedOverlayStateEvent());
+                                if (null == mMainView.getParent()) {
+                                    mMainViewParent.addView(mMainView, mParams);
+                                }
+
+                                mMainView.requestLayout();
+                                mMainViewParent.requestLayout();
+                                mMainView.onResume();
+
+                                try {
+                                    List<DefaultConferenceUser> users = VoxeetSdk.getInstance()
+                                            .getConferenceService()
+                                            .getConferenceUsers();
+
+                                    for (DefaultConferenceUser user : users) {
+                                        Log.d(TAG, "run: view added user := " + user);
+                                        mMainView.onConferenceUserJoined(user);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    ExceptionManager.sendException(e);
+                                }
+
+                                mEventBus.post(new LoadLastSavedOverlayStateEvent());
+                            }
                         }
+                    } catch (Exception e) {
+                        ExceptionManager.sendException(e);
                     }
                 }
             }, 1000);

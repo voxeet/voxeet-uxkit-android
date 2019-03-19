@@ -21,7 +21,6 @@ import org.webrtc.RendererCommon;
 import org.webrtc.SafeRenderFrameEglRenderer;
 import org.webrtc.ThreadUtils;
 import org.webrtc.VideoFrame;
-import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSink;
 
 import java.util.concurrent.CountDownLatch;
@@ -36,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
  * Interaction with the layout framework in onMeasure and onSizeChanged.
  */
 public class VoxeetRenderer extends TextureView
-        implements TextureView.SurfaceTextureListener, VideoRenderer.Callbacks, VideoSink {
+        implements TextureView.SurfaceTextureListener, VideoSink {
     private static final String TAG = "VoxeetRenderer";
 
     private Point size = new Point();
@@ -279,14 +278,6 @@ public class VoxeetRenderer extends TextureView
         eglRenderer.pauseVideo();
     }
 
-    // VideoRenderer.Callbacks interface.
-    @Override
-    public void renderFrame(VideoRenderer.I420Frame frame) {
-        updateFrameDimensionsAndReportEvents(frame);
-        eglRenderer.renderFrame(frame);
-    }
-
-    // VideoSink interface.
     @Override
     public void onFrame(VideoFrame frame) {
         try {
@@ -416,40 +407,6 @@ public class VoxeetRenderer extends TextureView
      */
     public void clearImage() {
         eglRenderer.clearImage();
-    }
-
-    // Update frame dimensions and report any changes to |rendererEvents|.
-    private void updateFrameDimensionsAndReportEvents(VideoRenderer.I420Frame frame) {
-        synchronized (layoutLock) {
-            if (isRenderingPaused) {
-                return;
-            }
-            if (!isFirstFrameRendered) {
-                isFirstFrameRendered = true;
-                logD("Reporting first rendered frame.");
-                if (rendererEvents != null) {
-                    rendererEvents.onFirstFrameRendered();
-                }
-            }
-            if (rotatedFrameWidth != frame.rotatedWidth() || rotatedFrameHeight != frame.rotatedHeight()
-                    || frameRotation != frame.rotationDegree) {
-                logD("Reporting frame resolution changed to " + frame.width + "x" + frame.height
-                        + " with rotation " + frame.rotationDegree);
-                if (rendererEvents != null) {
-                    rendererEvents.onFrameResolutionChanged(frame.width, frame.height, frame.rotationDegree);
-                }
-                rotatedFrameWidth = frame.rotatedWidth();
-                rotatedFrameHeight = frame.rotatedHeight();
-                frameRotation = frame.rotationDegree;
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateSurfaceSize();
-                        requestLayoutIfNotPending();
-                    }
-                });
-            }
-        }
     }
 
     // Update frame dimensions and report any changes to |rendererEvents|.
