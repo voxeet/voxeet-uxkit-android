@@ -459,12 +459,6 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
     protected void toggleCamera() {
         if (checkCameraPermission()) {
-            ConferenceInformation information = VoxeetSdk.getInstance()
-                    .getConferenceService().getCurrentConferenceInformation();
-
-            if (null != information) {
-                information.setOwnVideoStarted(!VoxeetSdk.getInstance().getConferenceService().isVideoOn());
-            }
             VoxeetSdk.getInstance().getConferenceService().toggleVideo();
         }
     }
