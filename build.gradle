@@ -16,8 +16,8 @@ ext {
     compileSdkVersion = 28
     targetSdkVersion = 27
     supportLibVersion = "28.0.0"
-    voxeetSdkVersion = "2.0.1"
-    voxeetSdkToolkitVersion = "2.0.1"
+    voxeetSdkVersion = "2.0.2"
+    voxeetSdkToolkitVersion = "2.0.2"
 }
 
 allprojects {
