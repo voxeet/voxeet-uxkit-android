@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,7 +18,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.audio.AudioRoute;
+import com.voxeet.audio.AudioRoute;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.abs.information.ConferenceInformation;
+import com.voxeet.sdk.core.abs.information.ConferenceUserType;
+import com.voxeet.sdk.core.impl.ConferenceSdkService;
+import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.events.AudioRouteChangeEvent;
+import com.voxeet.sdk.events.error.PermissionRefusedEvent;
+import com.voxeet.sdk.events.success.StartScreenShareAnswerEvent;
+import com.voxeet.sdk.events.success.StopScreenShareAnswerEvent;
+import com.voxeet.sdk.utils.AudioType;
+import com.voxeet.sdk.utils.Validate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
@@ -34,16 +44,6 @@ import java.util.Map;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.abs.information.ConferenceInformation;
-import voxeet.com.sdk.core.impl.ConferenceSdkService;
-import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.events.AudioRouteChangeEvent;
-import voxeet.com.sdk.events.error.PermissionRefusedEvent;
-import voxeet.com.sdk.events.success.StartScreenShareAnswerEvent;
-import voxeet.com.sdk.events.success.StopScreenShareAnswerEvent;
-import voxeet.com.sdk.utils.AudioType;
-import voxeet.com.sdk.utils.Validate;
 
 /**
  * Created by ROMMM on 9/29/15.
@@ -71,28 +71,31 @@ public class VoxeetConferenceBarView extends VoxeetView {
      * handling buttons visibility
      */
     private boolean displayRecord = true;
-
     private boolean displayAudio = true;
-
     private boolean displayMute = true;
-
     private boolean displayCamera = true;
-
     private boolean displayLeave = true;
+    private boolean displayScreenshare = true;
 
     private LinearLayout container;
 
     private ImageView microphone;
-
     private ImageView speaker;
-
     private ImageView camera;
-
     private ImageView hangup;
-
     private ImageView recording;
-
     private View screenshare;
+
+    private ViewGroup microphone_wrapper;
+    private ViewGroup speaker_wrapper;
+    private ViewGroup camera_wrapper;
+    private ViewGroup hangup_wrapper;
+    private ViewGroup recording_wrapper;
+    private ViewGroup screenshare_wrapper;
+    private ViewGroup view_3d_wrapper;
+
+    private View view_3d;
+    private OnView3D view3d_listener;
 
     /**
      * Instantiates a new Voxeet conference bar view.
@@ -144,121 +147,43 @@ public class VoxeetConferenceBarView extends VoxeetView {
         TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetConferenceBarView);
 
         displayRecord = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_record_button, true);
-
         displayAudio = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_audio_button, true);
-
         displayMute = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_mute_button, true);
-
         displayCamera = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_video_button, true);
-
+        displayScreenshare = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_screenshare_button, true);
         displayLeave = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_leave_button, true);
-
-        setSpeakerSelector(attributes.getDrawable(R.styleable.VoxeetConferenceBarView_audio_selector));
-
-        setCameraSelector(attributes.getDrawable(R.styleable.VoxeetConferenceBarView_camera_selector));
-
-        setHangUpSelector(attributes.getDrawable(R.styleable.VoxeetConferenceBarView_hang_up_selector));
-
-        setMuteSelector(attributes.getDrawable(R.styleable.VoxeetConferenceBarView_mute_selector));
-
-        setRecordSelector(attributes.getDrawable(R.styleable.VoxeetConferenceBarView_record_selector));
 
         attributes.recycle();
     }
 
-    /**
-     * Sets camera button drawable. Should be a selector.
-     *
-     * @param drawable the drawable
-     */
-    public void setCameraSelector(Drawable drawable) {
-        if (drawable != null && camera != null)
-            camera.setImageDrawable(drawable);
+    public void setDisplayRecord(boolean displayRecord) {
+        this.displayRecord = displayRecord;
+        setUserPreferences();
     }
 
-    /**
-     * Sets camera button drawable. Should be a selector.
-     *
-     * @param cameraSelector the drawable
-     */
-    public void setCameraSelector(int cameraSelector) {
-        setCameraSelector(getContext().getResources().getDrawable(cameraSelector));
+    public void setDisplayAudio(boolean displayAudio) {
+        this.displayAudio = displayAudio;
+        setUserPreferences();
     }
 
-    /**
-     * Sets record drawable. Should be a selector.
-     *
-     * @param drawable the drawable
-     */
-    public void setRecordSelector(Drawable drawable) {
-        if (drawable != null && recording != null)
-            recording.setImageDrawable(drawable);
+    public void setDisplayMute(boolean displayMute) {
+        this.displayMute = displayMute;
+        setUserPreferences();
     }
 
-    /**
-     * Sets record drawable. Should be a selector.
-     *
-     * @param recordSelector the record selector
-     */
-    public void setRecordSelector(int recordSelector) {
-        setRecordSelector(getContext().getResources().getDrawable(recordSelector));
+    public void setDisplayCamera(boolean displayCamera) {
+        this.displayCamera = displayCamera;
+        setUserPreferences();
     }
 
-    /**
-     * Sets hang up drawable. Should be a selector.
-     *
-     * @param drawable the drawable
-     */
-    public void setHangUpSelector(Drawable drawable) {
-        if (drawable != null && hangup != null)
-            hangup.setImageDrawable(drawable);
+    public void setDisplayLeave(boolean displayLeave) {
+        this.displayLeave = displayLeave;
+        setUserPreferences();
     }
 
-    /**
-     * Sets hang up drawable. Should be a selector.
-     *
-     * @param hangUpSelector the hang up selector
-     */
-    public void setHangUpSelector(int hangUpSelector) {
-        setHangUpSelector(getContext().getResources().getDrawable(hangUpSelector));
-    }
-
-    /**
-     * Sets audio drawable. Should be a selector.
-     *
-     * @param drawable the drawable
-     */
-    public void setSpeakerSelector(Drawable drawable) {
-        if (drawable != null && microphone != null)
-            speaker.setImageDrawable(drawable);
-    }
-
-    /**
-     * Sets audio drawable. Should be a selector.
-     *
-     * @param audioSelector the audio selector
-     */
-    public void setSpeakerSelector(int audioSelector) {
-        setSpeakerSelector(getContext().getResources().getDrawable(audioSelector));
-    }
-
-    /**
-     * Sets mute drawable. Should be a selector.
-     *
-     * @param drawable the drawable
-     */
-    public void setMuteSelector(Drawable drawable) {
-        if (drawable != null && microphone != null)
-            microphone.setImageDrawable(drawable);
-    }
-
-    /**
-     * Sets mute drawable. Should be a selector.
-     *
-     * @param muteSelector the mute selector
-     */
-    public void setMuteSelector(int muteSelector) {
-        setMuteSelector(getContext().getResources().getDrawable(muteSelector));
+    public void setDisplayScreenshare(boolean displayScreenshare) {
+        this.displayScreenshare = displayScreenshare;
+        setUserPreferences();
     }
 
     /**
@@ -368,7 +293,19 @@ public class VoxeetConferenceBarView extends VoxeetView {
     protected void bindView(View v) {
         container = (LinearLayout) v.findViewById(R.id.container);
 
+        view_3d = v.findViewById(R.id.view_3d);
+        view_3d_wrapper = v.findViewById(R.id.view_3d_wrapper);
+        if (null != view_3d) {
+            invalidateView3D();
+            view_3d.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    on3DView();
+                }
+            });
+        }
         speaker = (ImageView) v.findViewById(R.id.speaker);
+        speaker_wrapper = v.findViewById(R.id.speaker_wrapper);
         updateSpeakerButton();
         speaker.setOnClickListener(new OnClickListener() {
             @Override
@@ -382,6 +319,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         });
 
         hangup = (ImageView) v.findViewById(R.id.hangup);
+        hangup_wrapper = v.findViewById(R.id.hangup_wrapper);
         hangup.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -406,7 +344,8 @@ public class VoxeetConferenceBarView extends VoxeetView {
             }
         });
 
-        microphone = (ImageView) v.findViewById(R.id.microphone);
+        microphone = v.findViewById(R.id.microphone);
+        microphone_wrapper = v.findViewById(R.id.microphone_wrapper);
         microphone.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -415,6 +354,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         });
 
         camera = (ImageView) v.findViewById(R.id.camera);
+        camera_wrapper = v.findViewById(R.id.camera_wrapper);
         camera.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -423,6 +363,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         });
 
         recording = (ImageView) v.findViewById(R.id.recording);
+        recording_wrapper = v.findViewById(R.id.recording_wrapper);
         recording.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -431,6 +372,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         });
 
         screenshare = v.findViewById(R.id.screenshare);
+        screenshare_wrapper = v.findViewById(R.id.screenshare_wrapper);
         if (null != screenshare) {
             screenshare.setOnClickListener(new OnClickListener() {
                 @Override
@@ -444,6 +386,10 @@ public class VoxeetConferenceBarView extends VoxeetView {
             microphone.setSelected(true);
             VoxeetSdk.getInstance().getConferenceService().mute(true);
         }
+    }
+
+    private void on3DView() {
+        if (null != view3d_listener) view3d_listener.onView3D();
     }
 
     protected void toggleMute() {
@@ -496,20 +442,26 @@ public class VoxeetConferenceBarView extends VoxeetView {
      * Updating buttons visibility when changing one of the attributes programmatically.
      */
     private void setUserPreferences() {
+        boolean listener = isListener();
+
         if (recording != null)
-            recording.setVisibility(displayRecord ? VISIBLE : GONE);
+            recording_wrapper.setVisibility(displayRecord && !listener? VISIBLE : GONE);
 
         if (microphone != null)
-            microphone.setVisibility(displayMute ? VISIBLE : GONE);
+            microphone_wrapper.setVisibility(displayMute && !listener ? VISIBLE : GONE);
 
         if (speaker != null)
-            speaker.setVisibility(displayAudio ? VISIBLE : GONE);
+            speaker_wrapper.setVisibility(displayAudio ? VISIBLE : GONE);
 
         if (camera != null)
-            camera.setVisibility(displayCamera ? VISIBLE : GONE);
+            camera_wrapper.setVisibility(displayCamera && !listener ? VISIBLE : GONE);
 
         if (hangup != null)
-            hangup.setVisibility(displayLeave ? VISIBLE : GONE);
+            hangup_wrapper.setVisibility(displayLeave ? VISIBLE : GONE);
+
+        boolean screenShareEnabled = VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled();
+        if (screenshare != null)
+            screenshare_wrapper.setVisibility(displayScreenshare && !listener && screenShareEnabled ? VISIBLE : GONE);
     }
 
     @Override
@@ -541,32 +493,32 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     private void updateVisibilities(int visibility) {
+        boolean listener = isListener();
 
         if (recording != null)
-            recording.setVisibility(displayRecord ? visibility : GONE);
+            recording_wrapper.setVisibility(displayRecord && !listener? visibility : GONE);
 
         if (microphone != null)
-            microphone.setVisibility(displayMute ? visibility : GONE);
+            microphone_wrapper.setVisibility(displayMute && !listener ? visibility : GONE);
 
         if (speaker != null)
-            speaker.setVisibility(displayAudio ? visibility : GONE);
+            speaker_wrapper.setVisibility(displayAudio && !listener ? visibility : GONE);
 
         if (camera != null)
-            camera.setVisibility(displayCamera ? visibility : GONE);
+            camera_wrapper.setVisibility(displayCamera && !listener ? visibility : GONE);
 
         if (hangup != null)
-            hangup.setVisibility(displayLeave ? visibility : GONE);
+            hangup_wrapper.setVisibility(displayLeave ? visibility : GONE);
 
+
+        boolean screenShareEnabled = VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled();
         if (screenshare != null)
-            screenshare.setVisibility(visibility);
+            screenshare_wrapper.setVisibility(displayScreenshare && screenShareEnabled ? visibility : GONE);
     }
 
     @Override
     protected int layout() {
-        if (VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled())
-            return R.layout.voxeet_conference_bar_view_screenshare;
-        else
-            return R.layout.voxeet_conference_bar_view;
+        return R.layout.voxeet_conference_bar_view;
     }
 
     /**
@@ -680,5 +632,22 @@ public class VoxeetConferenceBarView extends VoxeetView {
         }
     }
 
+    public void setView3dListener(OnView3D listener) {
+        view3d_listener = listener;
+        invalidateView3D();
+    }
 
+    private void invalidateView3D() {
+        view_3d_wrapper.setVisibility(view3d_listener != null ? View.VISIBLE : View.GONE);
+    }
+
+    public interface OnView3D {
+        void onView3D();
+    }
+
+    private boolean isListener() {
+        ConferenceInformation information =  VoxeetSdk.getInstance().getConferenceService()
+                .getCurrentConferenceInformation();
+        return null == information || ConferenceUserType.LISTENER.equals(information.getConferenceUserType());
+    }
 }
