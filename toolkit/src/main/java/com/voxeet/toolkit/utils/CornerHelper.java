@@ -9,7 +9,7 @@ import android.view.WindowManager;
 
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.VoxeetView;
-import voxeet.com.sdk.utils.ScreenHelper;
+import com.voxeet.sdk.utils.ScreenHelper;
 
 /**
  * Created by kevinleperf on 15/01/2018.

@@ -1,22 +1,8 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        maven {
-            url "https://dl.bintray.com/voxeet/maven"
-        }
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
-        classpath 'com.github.dcendents:android-maven-plugin:1.2'
-        classpath 'com.jaredsburrows:gradle-license-plugin:0.8.42'
-    }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
+apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.jaredsburrows.license'
 
 licenseReport {
@@ -45,7 +31,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName rootProject.ext.voxeetSdkToolkitVersion
-        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -110,8 +95,6 @@ dependencies {
     compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
     compile 'com.squareup.picasso:picasso:2.71828'
-    compile 'org.apache.commons:commons-collections4:4.0'
-    compile 'com.android.support:multidex:1.0.3'
     compile("com.voxeet.sdk:public-sdk:${rootProject.ext.voxeetSdkVersion}") {
         transitive = true
     }
