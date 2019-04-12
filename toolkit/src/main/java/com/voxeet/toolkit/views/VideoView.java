@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 
 import com.voxeet.android.media.EglBaseRefreshEvent;
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout;
 import com.voxeet.toolkit.views.video.VoxeetRenderer;
@@ -24,13 +25,11 @@ import com.voxeet.toolkit.views.video.VoxeetRenderer;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.webrtc.EglBase;
+import org.webrtc.EglBaseMethods;
 import org.webrtc.RendererCommon;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import voxeet.com.sdk.core.VoxeetSdk;
 
 /**
  * VideoView implementation
@@ -210,6 +209,14 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
         showFlip = flip;
 
         updateFlip();
+    }
+
+    @MainThread
+    public void setMirror(boolean mirror) {
+        shouldMirror = mirror;
+        if(null != mRenderer) {
+            mRenderer.setMirror(mirror);
+        }
     }
 
     private void updateFlip() {
@@ -500,7 +507,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
     private void createRendererIfNeeded() {
         if (null == mRenderer && VoxeetSdk.getInstance().getMediaService().hasMedia()) {
-            EglBase.Context context = VoxeetSdk.getInstance().getMediaService().getEglContext();
+            EglBaseMethods.Context context = VoxeetSdk.getInstance().getMediaService().getEglContext();
 
             //don't setup if no context
             if (null != context) {
