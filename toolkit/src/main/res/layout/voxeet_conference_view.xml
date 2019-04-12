@@ -5,15 +5,6 @@
     android:layout_height="match_parent"
     android:layout_gravity="right|top">
 
-    <!-- VideoView used to display incoming video streams -->
-    <!-- possible scaleType := scale_fill, scale_fit, balanced -->
-    <com.voxeet.toolkit.views.VideoView
-        android:id="@+id/selected_video_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        app:cornerRadius="@dimen/voxeet_overlay_minized_corner"
-        app:scaleType="scale_fit" />
 
     <TextView
         android:id="@+id/conference_state"
@@ -26,6 +17,16 @@
         android:textColor="@color/white"
         android:textSize="@dimen/voxeet_conference_state_expanded"
         android:textStyle="bold" />
+
+    <!-- VideoView used to display incoming video streams -->
+    <!-- possible scaleType := scale_fill, scale_fit, balanced -->
+    <com.voxeet.toolkit.views.VideoView
+        android:id="@+id/selected_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:cornerRadius="@dimen/voxeet_overlay_minized_corner"
+        app:scaleType="scale_fill" />
 
     <LinearLayout
         android:layout_width="match_parent"

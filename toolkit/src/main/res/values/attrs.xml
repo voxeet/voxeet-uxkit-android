@@ -61,15 +61,12 @@
 
     <declare-styleable name="VoxeetConferenceBarView">
         <attr name="record_button" format="boolean" />
-        <attr name="audio_button" format="boolean" />
         <attr name="mute_button" format="boolean" />
         <attr name="video_button" format="boolean" />
+        <attr name="audio_button" format="boolean" />
+        <attr name="mix3d_button" format="boolean" />
+        <attr name="screenshare_button" format="boolean" />
         <attr name="leave_button" format="boolean" />
-        <attr name="mute_selector" format="integer" />
-        <attr name="audio_selector" format="integer" />
-        <attr name="hang_up_selector" format="integer" />
-        <attr name="camera_selector" format="integer" />
-        <attr name="record_selector" format="integer" />
     </declare-styleable>
 
     <declare-styleable name="VoxeetVuMeter">

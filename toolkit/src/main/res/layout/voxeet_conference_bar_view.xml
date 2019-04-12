@@ -1,56 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    android:layout_margin="15dp"
     android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/recording"
+    <LinearLayout
+        android:id="@+id/recording_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
         android:layout_weight="1"
-        android:src="@drawable/selector_speaker"
-        android:visibility="gone" />
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/conferencebar_view_padding_left_right"
+        android:paddingRight="@dimen/conferencebar_view_padding_left_right"
+        android:visibility="gone">
 
-    <ImageView
-        android:id="@+id/microphone"
+        <ImageView
+            android:id="@+id/recording"
+            android:layout_width="@dimen/conferencebar_view_item_height"
+            android:layout_height="@dimen/conferencebar_view_item_height"
+            android:layout_gravity="center"
+            android:src="@drawable/selector_speaker" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/microphone_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
         android:layout_weight="1"
-        android:src="@drawable/selector_microphone" />
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/conferencebar_view_padding_left_right"
+        android:paddingRight="@dimen/conferencebar_view_padding_left_right">
 
-    <ImageView
-        android:id="@+id/camera"
+        <ImageView
+            android:id="@+id/microphone"
+            android:layout_width="@dimen/conferencebar_view_item_height"
+            android:layout_height="@dimen/conferencebar_view_item_height"
+            android:layout_gravity="center"
+            android:src="@drawable/selector_microphone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/camera_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
         android:layout_weight="1"
-        android:src="@drawable/selector_camera" />
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/conferencebar_view_padding_left_right"
+        android:paddingRight="@dimen/conferencebar_view_padding_left_right">
 
-    <ImageView
-        android:id="@+id/speaker"
+        <ImageView
+            android:id="@+id/camera"
+            android:layout_width="@dimen/conferencebar_view_item_height"
+            android:layout_height="@dimen/conferencebar_view_item_height"
+            android:layout_gravity="center"
+            android:src="@drawable/selector_camera" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/speaker_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
         android:layout_weight="1"
-        android:src="@drawable/selector_speaker" />
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/conferencebar_view_padding_left_right"
+        android:paddingRight="@dimen/conferencebar_view_padding_left_right">
 
-    <ImageView
-        android:id="@+id/hangup"
+        <ImageView
+            android:id="@+id/speaker"
+            android:layout_width="@dimen/conferencebar_view_item_height"
+            android:layout_height="@dimen/conferencebar_view_item_height"
+            android:layout_gravity="center"
+            android:src="@drawable/selector_speaker" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/view_3d_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
-        android:layout_gravity="center"
-        android:layout_margin="15dp"
         android:layout_weight="1"
-        android:src="@drawable/selector_hangup" />
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/conferencebar_view_padding_left_right"
+        android:paddingRight="@dimen/conferencebar_view_padding_left_right">
+
+
+        <ImageView
+            android:id="@+id/view_3d"
+            android:layout_width="@dimen/conferencebar_view_item_height"
+            android:layout_height="@dimen/conferencebar_view_item_height"
+            android:layout_gravity="center"
+            android:src="@drawable/view_3d" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/screenshare_wrapper"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/conferencebar_view_padding_left_right"
+        android:paddingRight="@dimen/conferencebar_view_padding_left_right">
+
+        <ImageView
+            android:id="@+id/screenshare"
+            android:layout_width="@dimen/conferencebar_view_item_height"
+            android:layout_height="@dimen/conferencebar_view_item_height"
+            android:layout_gravity="center"
+            android:src="@drawable/selector_screenshare" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/hangup_wrapper"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/conferencebar_view_padding_left_right"
+        android:paddingRight="@dimen/conferencebar_view_padding_left_right">
+
+        <ImageView
+            android:id="@+id/hangup"
+            android:layout_width="@dimen/conferencebar_view_item_height"
+            android:layout_height="@dimen/conferencebar_view_item_height"
+            android:layout_gravity="center"
+            android:src="@drawable/selector_hangup" />
+    </LinearLayout>
 
 </LinearLayout>
