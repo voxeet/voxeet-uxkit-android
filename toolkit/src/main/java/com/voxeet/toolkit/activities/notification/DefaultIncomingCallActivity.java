@@ -2,16 +2,12 @@ package com.voxeet.toolkit.activities.notification;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,6 +15,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.voxeet.sdk.audio.SoundManager;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.core.services.AudioService;
+import com.voxeet.sdk.events.success.ConferenceDestroyedPushEvent;
+import com.voxeet.sdk.events.success.ConferenceEndedEvent;
+import com.voxeet.sdk.events.success.ConferencePreJoinedEvent;
+import com.voxeet.sdk.events.success.DeclineConferenceResultEvent;
+import com.voxeet.sdk.exceptions.ExceptionManager;
+import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.utils.AndroidManifest;
+import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.application.VoxeetApplication;
 import com.voxeet.toolkit.utils.LoadLastSavedOverlayStateEvent;
@@ -33,18 +41,6 @@ import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.PromiseSolver;
 import eu.codlab.simplepromise.solve.Solver;
-import voxeet.com.sdk.audio.SoundManager;
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.core.services.AudioService;
-import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
-import voxeet.com.sdk.events.success.ConferenceEndedEvent;
-import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
-import voxeet.com.sdk.events.success.DeclineConferenceResultEvent;
-import voxeet.com.sdk.exceptions.ExceptionManager;
-import voxeet.com.sdk.json.UserInfo;
-import voxeet.com.sdk.utils.AndroidManifest;
-import voxeet.com.sdk.utils.AudioType;
 
 public class DefaultIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
 

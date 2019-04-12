@@ -1,6 +1,5 @@
 package com.voxeet.toolkit.activities;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,7 +7,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.voxeet.android.media.audio.AudioManager;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.services.ScreenShareService;
+import com.voxeet.sdk.events.error.ConferenceJoinedError;
+import com.voxeet.sdk.events.error.PermissionRefusedEvent;
+import com.voxeet.sdk.events.success.ConferenceJoinedSuccessEvent;
+import com.voxeet.sdk.events.success.ConferencePreJoinedEvent;
+import com.voxeet.sdk.utils.Validate;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.toolkit.activities.notification.IncomingCallFactory;
 
@@ -19,15 +24,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
-import voxeet.com.sdk.audio.SoundManager;
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.services.AudioService;
-import voxeet.com.sdk.core.services.ScreenShareService;
-import voxeet.com.sdk.events.error.ConferenceJoinedError;
-import voxeet.com.sdk.events.error.PermissionRefusedEvent;
-import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
-import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
-import voxeet.com.sdk.utils.Validate;
 
 /**
  * VoxeetAppCompatActivity manages the call state

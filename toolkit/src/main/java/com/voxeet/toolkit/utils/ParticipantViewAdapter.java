@@ -16,19 +16,17 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.models.ConferenceUserStatus;
+import com.voxeet.sdk.models.abs.ConferenceUser;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.views.VideoView;
+import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
-import com.voxeet.toolkit.views.VideoView;
-
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.models.ConferenceUserStatus;
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
  * Created by romainbenmansour on 22/02/2017.
@@ -39,7 +37,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private boolean namesEnabled = true;
 
-    private List<DefaultConferenceUser> users;
+    private List<ConferenceUser> users;
 
     private Context context;
 
@@ -89,7 +87,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param conferenceUser the conference user
      */
-    public void removeUser(DefaultConferenceUser conferenceUser) {
+    public void removeUser(ConferenceUser conferenceUser) {
         if (users.contains(conferenceUser))
             users.remove(conferenceUser);
     }
@@ -99,7 +97,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param conferenceUser the conference user
      */
-    public void addUser(DefaultConferenceUser conferenceUser) {
+    public void addUser(ConferenceUser conferenceUser) {
         if (!users.contains(conferenceUser))
             users.add(conferenceUser);
     }
@@ -126,7 +124,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final DefaultConferenceUser user = getItem(position);
+        final ConferenceUser user = getItem(position);
 
         Log.d(TAG, "onBindViewHolder: " + position + " " + user.getConferenceStatus());
 
@@ -374,7 +372,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         }
     }
 
-    private DefaultConferenceUser getItem(int position) {
+    private ConferenceUser getItem(int position) {
         return users.get(position);
     }
 
@@ -384,7 +382,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      * @param conferenceUser
      * @param imageView
      */
-    private void loadViaPicasso(DefaultConferenceUser conferenceUser, ImageView imageView) {
+    private void loadViaPicasso(ConferenceUser conferenceUser, ImageView imageView) {
         try {
             String url = conferenceUser.getUserInfo().getAvatarUrl();
             Log.d(TAG, "loadViaPicasso: loading " + url + " for user " + conferenceUser.getUserInfo().getExternalId() + " instance := " + Picasso.get());

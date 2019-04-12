@@ -2,7 +2,6 @@ package com.voxeet.toolkit.utils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.annotation.NonNull;

@@ -5,7 +5,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.voxeet.android.media.audio.AudioRoute;
+import com.voxeet.audio.AudioRoute;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.impl.ConferenceSdkService;
+import com.voxeet.sdk.events.success.ConferenceEndedEvent;
+import com.voxeet.sdk.events.success.GetConferenceHistoryEvent;
+import com.voxeet.sdk.json.ConferenceDestroyedPush;
+import com.voxeet.sdk.models.HistoryConference;
+import com.voxeet.toolkit.implementation.overlays.OverlayState;
+import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
+import com.voxeet.toolkit.providers.containers.DefaultReplayMessageProvider;
+import com.voxeet.toolkit.providers.logics.DefaultReplayMessageSubViewProvider;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -15,16 +25,6 @@ import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
-import com.voxeet.toolkit.providers.containers.DefaultReplayMessageProvider;
-import com.voxeet.toolkit.providers.logics.DefaultReplayMessageSubViewProvider;
-import com.voxeet.toolkit.implementation.overlays.OverlayState;
-import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.services.SdkConferenceService;
-import voxeet.com.sdk.events.success.ConferenceEndedEvent;
-import voxeet.com.sdk.events.success.GetConferenceHistoryEvent;
-import voxeet.com.sdk.json.ConferenceDestroyedPush;
-import voxeet.com.sdk.models.HistoryConference;
 
 /**
  * Created by kevinleperf on 15/01/2018.
@@ -79,7 +79,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         _wait_for_history_offset = offset;
 
 
-        SdkConferenceService service = VoxeetSdk.getInstance().getConferenceService();
+        ConferenceSdkService service = VoxeetSdk.getInstance().getConferenceService();
         VoxeetSdk.getInstance().getAudioService().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
         .then(new PromiseExec<GetConferenceHistoryEvent, Object>() {

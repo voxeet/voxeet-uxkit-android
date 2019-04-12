@@ -4,10 +4,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.voxeet.toolkit.R;
-
-import com.voxeet.toolkit.providers.logics.IVoxeetSubViewProvider;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetOverlayView;
 import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
+import com.voxeet.toolkit.providers.logics.IVoxeetSubViewProvider;
 
 public class VoxeetOverlayBackView extends AbstractVoxeetOverlayView {
 

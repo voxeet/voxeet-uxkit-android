@@ -5,6 +5,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.abs.information.ConferenceInformation;
+import com.voxeet.sdk.events.promises.NotInConferenceException;
+import com.voxeet.sdk.events.success.ConferenceRefreshedEvent;
+import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.json.internal.MetadataHolder;
+import com.voxeet.sdk.json.internal.ParamsHolder;
+import com.voxeet.sdk.models.ConferenceResponse;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
 import com.voxeet.toolkit.providers.containers.DefaultConferenceProvider;
@@ -12,24 +20,13 @@ import com.voxeet.toolkit.providers.logics.DefaultConferenceSubViewProvider;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.PromiseSolver;
 import eu.codlab.simplepromise.solve.Solver;
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.abs.information.ConferenceInformation;
-import voxeet.com.sdk.events.promises.NotInConferenceException;
-import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
-import voxeet.com.sdk.json.UserInfo;
-import voxeet.com.sdk.json.internal.MetadataHolder;
-import voxeet.com.sdk.json.internal.ParamsHolder;
-import voxeet.com.sdk.models.ConferenceResponse;
 
 /**
  * Created by kevinleperf on 15/01/2018.
@@ -152,7 +149,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
                             @Override
                             public void onCall(@Nullable ConferenceResponse result, @NonNull Solver<Boolean> s) {
                                 Log.d("ConferenceToolkitController", "onCall: creating conference done");
-                                s.resolve(VoxeetSdk.getInstance().getConferenceService().join(result.getConfId()));
+                                s.resolve(VoxeetSdk.getInstance().getConferenceService().broadcastConference(result.getConfId()));
                             }
                         })
                         .then(new PromiseExec<Boolean, Object>() {

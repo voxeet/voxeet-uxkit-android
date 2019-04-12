@@ -7,9 +7,9 @@ import android.os.Looper;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.VoxeetView;
-import com.voxeet.sdk.utils.ScreenHelper;
 
 /**
  * Created by kevinleperf on 15/01/2018.

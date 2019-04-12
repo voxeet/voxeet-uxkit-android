@@ -2,50 +2,50 @@ package com.voxeet.toolkit.utils;
 
 import android.util.Log;
 
+import com.voxeet.sdk.events.ConferenceTimeoutUserJoinedEvent;
+import com.voxeet.sdk.events.success.BadgeUpdate;
+import com.voxeet.sdk.events.success.ConferenceDestroyedPushEvent;
+import com.voxeet.sdk.events.success.ConferenceEndedEvent;
+import com.voxeet.sdk.events.success.ConferenceUpdatedEvent;
+import com.voxeet.sdk.events.success.ConferenceUserAddedEvent;
+import com.voxeet.sdk.events.success.ConferenceUserCallDeclinedEvent;
+import com.voxeet.sdk.events.success.ConferenceUserSwitchEvent;
+import com.voxeet.sdk.events.success.ContactAddedEvent;
+import com.voxeet.sdk.events.success.FileConvertedEvent;
+import com.voxeet.sdk.events.success.InvitationReceived;
+import com.voxeet.sdk.events.success.MeetingActivityAdded;
+import com.voxeet.sdk.events.success.MeetingActivityDeleted;
+import com.voxeet.sdk.events.success.MeetingActivityUpdated;
+import com.voxeet.sdk.events.success.MeetingDeleted;
+import com.voxeet.sdk.events.success.MeetingEventAddedOrUpdated;
+import com.voxeet.sdk.events.success.MeetingReadTimeStampUpdated;
+import com.voxeet.sdk.events.success.OfferCreatedEvent;
+import com.voxeet.sdk.events.success.OwnConferenceStartedEvent;
+import com.voxeet.sdk.events.success.OwnConferenceUserSwitchEvent;
+import com.voxeet.sdk.events.success.OwnContactRemoved;
+import com.voxeet.sdk.events.success.OwnExternalInvitationSent;
+import com.voxeet.sdk.events.success.OwnProfileUpdatedEvent;
+import com.voxeet.sdk.events.success.OwnUserInvitedEvent;
+import com.voxeet.sdk.events.success.ParticipantUpdatedEvent;
+import com.voxeet.sdk.events.success.PeerConnectionStatusUpdatedEvent;
+import com.voxeet.sdk.events.success.ProfileUpdated;
+import com.voxeet.sdk.events.success.QualityUpdatedEvent;
+import com.voxeet.sdk.events.success.RecordingStatusUpdate;
+import com.voxeet.sdk.events.success.RenegociationUpdate;
+import com.voxeet.sdk.events.success.UserInvitedEvent;
+import com.voxeet.sdk.events.success.WhisperInviteAcceptedEvent;
+import com.voxeet.sdk.events.success.WhisperInviteDeclinedEvent;
+import com.voxeet.sdk.events.success.WhisperInviteReceivedEvent;
+import com.voxeet.sdk.events.success.WhisperLeftEvent;
+import com.voxeet.sdk.json.ConferenceDestroyedPush;
+import com.voxeet.sdk.json.FileAdded;
+import com.voxeet.sdk.json.FileDeleted;
+import com.voxeet.sdk.json.MeetingAddedOrUpdatedEvent;
+import com.voxeet.sdk.json.OfferCreated;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import voxeet.com.sdk.events.ConferenceTimeoutUserJoinedEvent;
-import voxeet.com.sdk.events.success.BadgeUpdate;
-import voxeet.com.sdk.events.success.ConferenceDestroyedPushEvent;
-import voxeet.com.sdk.events.success.ConferenceEndedEvent;
-import voxeet.com.sdk.events.success.ConferenceUpdatedEvent;
-import voxeet.com.sdk.events.success.ConferenceUserAddedEvent;
-import voxeet.com.sdk.events.success.ConferenceUserCallDeclinedEvent;
-import voxeet.com.sdk.events.success.ConferenceUserSwitchEvent;
-import voxeet.com.sdk.events.success.ContactAddedEvent;
-import voxeet.com.sdk.events.success.FileConvertedEvent;
-import voxeet.com.sdk.events.success.InvitationReceived;
-import voxeet.com.sdk.events.success.MeetingActivityAdded;
-import voxeet.com.sdk.events.success.MeetingActivityDeleted;
-import voxeet.com.sdk.events.success.MeetingActivityUpdated;
-import voxeet.com.sdk.events.success.MeetingDeleted;
-import voxeet.com.sdk.events.success.MeetingEventAddedOrUpdated;
-import voxeet.com.sdk.events.success.MeetingReadTimeStampUpdated;
-import voxeet.com.sdk.events.success.OfferCreatedEvent;
-import voxeet.com.sdk.events.success.OwnConferenceStartedEvent;
-import voxeet.com.sdk.events.success.OwnConferenceUserSwitchEvent;
-import voxeet.com.sdk.events.success.OwnContactRemoved;
-import voxeet.com.sdk.events.success.OwnExternalInvitationSent;
-import voxeet.com.sdk.events.success.OwnProfileUpdatedEvent;
-import voxeet.com.sdk.events.success.OwnUserInvitedEvent;
-import voxeet.com.sdk.events.success.ParticipantUpdatedEvent;
-import voxeet.com.sdk.events.success.PeerConnectionStatusUpdatedEvent;
-import voxeet.com.sdk.events.success.ProfileUpdated;
-import voxeet.com.sdk.events.success.QualityUpdatedEvent;
-import voxeet.com.sdk.events.success.RecordingStatusUpdate;
-import voxeet.com.sdk.events.success.RenegociationUpdate;
-import voxeet.com.sdk.events.success.UserInvitedEvent;
-import voxeet.com.sdk.events.success.WhisperInviteAcceptedEvent;
-import voxeet.com.sdk.events.success.WhisperInviteDeclinedEvent;
-import voxeet.com.sdk.events.success.WhisperInviteReceivedEvent;
-import voxeet.com.sdk.events.success.WhisperLeftEvent;
-import voxeet.com.sdk.json.ConferenceDestroyedPush;
-import voxeet.com.sdk.json.FileAdded;
-import voxeet.com.sdk.json.FileDeleted;
-import voxeet.com.sdk.json.MeetingAddedOrUpdatedEvent;
-import voxeet.com.sdk.json.OfferCreated;
 
 /**
  * Simple class with the sole purpose of tracing the different events
@@ -73,7 +73,7 @@ public class EventDebugger {
 
         Log.d(TAG, "onEvent: time := " + System.currentTimeMillis());
         Log.d(TAG, "onEvent: userId := " + offer.getUserId());
-        Log.d(TAG, "onEvent: sdp := " + offer.getDescription().getSdp());
+        Log.d(TAG, "onEvent: sdp := " + offer.getDescription().sdp);
 
     }
 

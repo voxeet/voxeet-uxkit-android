@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.voxeet.toolkit.R;
-
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 /**

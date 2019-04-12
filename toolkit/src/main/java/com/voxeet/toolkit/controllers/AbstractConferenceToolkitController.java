@@ -12,7 +12,46 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.audio.AudioRoute;
+import com.voxeet.audio.AudioRoute;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.abs.information.ConferenceInformation;
+import com.voxeet.sdk.core.abs.information.ConferenceUserType;
+import com.voxeet.sdk.core.impl.ConferenceSdkService;
+import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.core.services.AudioService;
+import com.voxeet.sdk.events.error.ConferenceCreatedError;
+import com.voxeet.sdk.events.error.ConferenceJoinedError;
+import com.voxeet.sdk.events.error.ConferenceLeftError;
+import com.voxeet.sdk.events.error.ReplayConferenceErrorEvent;
+import com.voxeet.sdk.events.success.ConferenceCreatingEvent;
+import com.voxeet.sdk.events.success.ConferenceCreationSuccess;
+import com.voxeet.sdk.events.success.ConferenceEndedEvent;
+import com.voxeet.sdk.events.success.ConferenceJoinedSuccessEvent;
+import com.voxeet.sdk.events.success.ConferenceLeftSuccessEvent;
+import com.voxeet.sdk.events.success.ConferencePreJoinedEvent;
+import com.voxeet.sdk.events.success.ConferenceRefreshedEvent;
+import com.voxeet.sdk.events.success.ConferenceUpdatedEvent;
+import com.voxeet.sdk.events.success.ConferenceUserCallDeclinedEvent;
+import com.voxeet.sdk.events.success.ConferenceUserJoinedEvent;
+import com.voxeet.sdk.events.success.ConferenceUserLeftEvent;
+import com.voxeet.sdk.events.success.ConferenceUserUpdatedEvent;
+import com.voxeet.sdk.events.success.IncomingCallEvent;
+import com.voxeet.sdk.events.success.InvitationReceived;
+import com.voxeet.sdk.events.success.ScreenStreamAddedEvent;
+import com.voxeet.sdk.events.success.ScreenStreamRemovedEvent;
+import com.voxeet.sdk.events.success.UserInvitedEvent;
+import com.voxeet.sdk.exceptions.ExceptionManager;
+import com.voxeet.sdk.json.ConferenceDestroyedPush;
+import com.voxeet.sdk.json.InvitationReceivedEvent;
+import com.voxeet.sdk.json.RecordingStatusUpdateEvent;
+import com.voxeet.sdk.json.UserInvited;
+import com.voxeet.sdk.models.ConferenceUserStatus;
+import com.voxeet.sdk.models.RecordingStatus;
+import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.models.impl.DefaultInvitation;
+import com.voxeet.sdk.models.impl.DefaultUserProfile;
+import com.voxeet.sdk.utils.AudioType;
+import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.VoxeetConferenceView;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
@@ -31,43 +70,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.impl.ConferenceSdkService;
-import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.core.services.AudioService;
-import voxeet.com.sdk.events.error.ConferenceCreatedError;
-import voxeet.com.sdk.events.error.ConferenceJoinedError;
-import voxeet.com.sdk.events.error.ConferenceLeftError;
-import voxeet.com.sdk.events.error.ReplayConferenceErrorEvent;
-import voxeet.com.sdk.events.success.ConferenceCreatingEvent;
-import voxeet.com.sdk.events.success.ConferenceCreationSuccess;
-import voxeet.com.sdk.events.success.ConferenceEndedEvent;
-import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
-import voxeet.com.sdk.events.success.ConferenceLeftSuccessEvent;
-import voxeet.com.sdk.events.success.ConferencePreJoinedEvent;
-import voxeet.com.sdk.events.success.ConferenceRefreshedEvent;
-import voxeet.com.sdk.events.success.ConferenceUpdatedEvent;
-import voxeet.com.sdk.events.success.ConferenceUserCallDeclinedEvent;
-import voxeet.com.sdk.events.success.ConferenceUserJoinedEvent;
-import voxeet.com.sdk.events.success.ConferenceUserLeftEvent;
-import voxeet.com.sdk.events.success.ConferenceUserUpdatedEvent;
-import voxeet.com.sdk.events.success.IncomingCallEvent;
-import voxeet.com.sdk.events.success.InvitationReceived;
-import voxeet.com.sdk.events.success.ScreenStreamAddedEvent;
-import voxeet.com.sdk.events.success.ScreenStreamRemovedEvent;
-import voxeet.com.sdk.events.success.UserInvitedEvent;
-import voxeet.com.sdk.exceptions.ExceptionManager;
-import voxeet.com.sdk.json.ConferenceDestroyedPush;
-import voxeet.com.sdk.json.InvitationReceivedEvent;
-import voxeet.com.sdk.json.RecordingStatusUpdateEvent;
-import voxeet.com.sdk.json.UserInvited;
-import voxeet.com.sdk.models.ConferenceUserStatus;
-import voxeet.com.sdk.models.RecordingStatus;
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
-import voxeet.com.sdk.models.impl.DefaultInvitation;
-import voxeet.com.sdk.models.impl.DefaultUserProfile;
-import voxeet.com.sdk.utils.AudioType;
-import voxeet.com.sdk.utils.ScreenHelper;
 
 /**
  * Implements the common logic to any controller this SDK provides
@@ -175,7 +177,7 @@ public abstract class AbstractConferenceToolkitController {
                 mVoxeetSubViewProvider,
                 state);
 
-        List<DefaultConferenceUser> list = VoxeetSdk.getInstance().getConferenceService().getLastInvitationUsers();
+        List<ConferenceUser> list = VoxeetSdk.getInstance().getConferenceService().getLastInvitationUsers();
         mergeConferenceUsers(list);
 
         mMainView.onMediaStreamsListUpdated(mMediaStreams);
@@ -329,11 +331,11 @@ public abstract class AbstractConferenceToolkitController {
                                 mMainView.onResume();
 
                                 try {
-                                    List<DefaultConferenceUser> users = VoxeetSdk.getInstance()
+                                    List<ConferenceUser> users = VoxeetSdk.getInstance()
                                             .getConferenceService()
                                             .getConferenceUsers();
 
-                                    for (DefaultConferenceUser user : users) {
+                                    for (ConferenceUser user : users) {
                                         Log.d(TAG, "run: view added user := " + user);
                                         mMainView.onConferenceUserJoined(user);
                                     }
@@ -586,7 +588,15 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferencePreJoinedEvent event) {
-        VoxeetSdk.getInstance().getAudioService().playSoundType(AudioType.RING);
+        ConferenceInformation information = VoxeetSdk.getInstance().getConferenceService().getCurrentConferenceInformation();
+
+        if (null != information && ConferenceUserType.NORMAL.equals(information.getConferenceUserType())) {
+            VoxeetSdk.getInstance().getAudioService().playSoundType(AudioType.RING);
+        } else {
+            VoxeetSdk.getInstance().getAudioService().stopSoundType(AudioType.RING);
+            Log.d(TAG, "onEvent: your current conference type is not compatible with ringing");
+        }
+
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
 
         log("onEvent: " + event.getClass().getSimpleName()
@@ -610,9 +620,9 @@ public abstract class AbstractConferenceToolkitController {
         UserInvited invited = event.getEvent();
         List<DefaultUserProfile> profiles = invited.getParticipants();
 
-        List<DefaultConferenceUser> users = getConferenceUsers();
+        List<ConferenceUser> users = getConferenceUsers();
         for (DefaultUserProfile profile : profiles) {
-            DefaultConferenceUser user = new DefaultConferenceUser(profile);
+            ConferenceUser user = new ConferenceUser(profile);
             if (!users.contains(user)) {
                 users.add(user);
 
@@ -632,9 +642,9 @@ public abstract class AbstractConferenceToolkitController {
     public void onEvent(final InvitationReceived invitation) {
         InvitationReceivedEvent event = invitation.getEvent();
         if (null != event && null != event.getInvitations()) {
-            List<DefaultConferenceUser> users = getConferenceUsers();
+            List<ConferenceUser> users = getConferenceUsers();
             for (DefaultInvitation invite : event.getInvitations()) {
-                DefaultConferenceUser temp = new DefaultConferenceUser(invite.getProfile());
+                ConferenceUser temp = new ConferenceUser(invite.getProfile());
 
                 if (mMainView != null) {
                     mMainView.onConferenceUserUpdated(temp);
@@ -659,12 +669,12 @@ public abstract class AbstractConferenceToolkitController {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceJoinedSuccessEvent event) {
         if (validFilter(event.getConferenceId()) || validFilter(event.getAliasId())) {
-            VoxeetSdk.getInstance().getConferenceService()
+            VoxeetSdk.getInstance().getAudioService()
                     .setAudioRoute(AudioRoute.ROUTE_SPEAKER);
 
             displayView();
 
-            List<DefaultConferenceUser> users = VoxeetSdk.getInstance().getConferenceService().getConferenceUsers();
+            List<ConferenceUser> users = VoxeetSdk.getInstance().getConferenceService().getConferenceUsers();
             log("onEvent: ConferenceJoinedSuccessEvent");
             if (mMainView != null) {
                 mMainView.onConferenceUsersListUpdate(users);
@@ -683,7 +693,15 @@ public abstract class AbstractConferenceToolkitController {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceCreationSuccess event) {
-        VoxeetSdk.getInstance().getAudioService().playSoundType(AudioType.RING);
+        ConferenceInformation information = VoxeetSdk.getInstance().getConferenceService().getCurrentConferenceInformation();
+
+        if (null != information && ConferenceUserType.NORMAL.equals(information.getConferenceUserType())) {
+            VoxeetSdk.getInstance().getAudioService().playSoundType(AudioType.RING);
+        } else {
+            VoxeetSdk.getInstance().getAudioService().stopSoundType(AudioType.RING);
+            Log.d(TAG, "onEvent: your current conference type is not compatible with ringing");
+        }
+
         if (mMainView == null) init();
 
         if (validFilter(event.getConfId()) || validFilter(event.getConfAlias())) {
@@ -693,7 +711,7 @@ public abstract class AbstractConferenceToolkitController {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceRefreshedEvent event) {
-        DefaultConferenceUser user = event.getUser();
+        ConferenceUser user = event.getUser();
         /*if (user == null) {
             UserInfo profile = VoxeetToolkit.getInstance().getConferenceToolkit()
                     .getInvitedUserFromCache(event.getUserId());
@@ -703,7 +721,7 @@ public abstract class AbstractConferenceToolkitController {
             }
         }*/
 
-        List<DefaultConferenceUser> users = getConferenceUsers();
+        List<ConferenceUser> users = getConferenceUsers();
         if (null != user) {
             if (!users.contains(user)) {
                 users.add(user);
@@ -726,9 +744,9 @@ public abstract class AbstractConferenceToolkitController {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceUserUpdatedEvent event) {
         log("onEvent: ConferenceUserUpdatedEvent " + event.getUser());
-        DefaultConferenceUser user = event.getUser();
+        ConferenceUser user = event.getUser();
 
-        List<DefaultConferenceUser> users = getConferenceUsers();
+        List<ConferenceUser> users = getConferenceUsers();
         if (!users.contains(user)) {
             checkStopOutgoingCall();
             users.add(user);
@@ -760,10 +778,10 @@ public abstract class AbstractConferenceToolkitController {
         checkStopOutgoingCall();
 
         log("onEvent: ConferenceUserJoinedEvent " + event);
-        DefaultConferenceUser user = event.getUser();
+        ConferenceUser user = event.getUser();
 
 
-        List<DefaultConferenceUser> users = getConferenceUsers();
+        List<ConferenceUser> users = getConferenceUsers();
         if (!users.contains(user)) {
             users.add(user);
         }
@@ -817,8 +835,8 @@ public abstract class AbstractConferenceToolkitController {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserLeftEvent event) {
         if (null != mMainView) {
-            DefaultConferenceUser user = event.getUser();
-            List<DefaultConferenceUser> users = getConferenceUsers();
+            ConferenceUser user = event.getUser();
+            List<ConferenceUser> users = getConferenceUsers();
 
             if (users.contains(user)) {
                 users.remove(user);
@@ -839,8 +857,8 @@ public abstract class AbstractConferenceToolkitController {
     public void onEvent(final ConferenceUserCallDeclinedEvent event) {
         if (null != mMainView) {
             int i = 0;
-            DefaultConferenceUser user = null;
-            List<DefaultConferenceUser> users = getConferenceUsers();
+            ConferenceUser user = null;
+            List<ConferenceUser> users = getConferenceUsers();
             while (i < users.size()) {
                 user = users.get(i);
                 if (user.getUserId() != null && user.getUserId().equals(event.getUserId())) {
@@ -1018,10 +1036,10 @@ public abstract class AbstractConferenceToolkitController {
         Log.d(TAG, value);
     }
 
-    private void mergeConferenceUsers(@NonNull List<DefaultConferenceUser> users) {
-        List<DefaultConferenceUser> current_users = getConferenceUsers();
+    private void mergeConferenceUsers(@NonNull List<ConferenceUser> users) {
+        List<ConferenceUser> current_users = getConferenceUsers();
         if (users != current_users) {
-            for (DefaultConferenceUser user : users) {
+            for (ConferenceUser user : users) {
                 if (null != user && !current_users.contains(user)) {
                     log("init: adding " + user + " " + user.getUserInfo());
                     current_users.add(user);
@@ -1033,9 +1051,9 @@ public abstract class AbstractConferenceToolkitController {
     private void checkStopOutgoingCall() {
         boolean found = false;
 
-        List<DefaultConferenceUser> users = VoxeetSdk.getInstance()
+        List<ConferenceUser> users = VoxeetSdk.getInstance()
                 .getConferenceService().getConferenceUsers();
-        for (DefaultConferenceUser user : users) {
+        for (ConferenceUser user : users) {
             if (null != user.getUserId() && !user.getUserId().equals(VoxeetPreferences.id())
                     && ConferenceUserStatus.ON_AIR.equals(user.getConferenceStatus())) {
                 found = true;
@@ -1049,7 +1067,7 @@ public abstract class AbstractConferenceToolkitController {
     }
 
 
-    private List<DefaultConferenceUser> getConferenceUsers() {
+    private List<ConferenceUser> getConferenceUsers() {
         if (null != VoxeetSdk.getInstance()) {
             return VoxeetSdk.getInstance().getConferenceService().getConferenceUsers();
         }

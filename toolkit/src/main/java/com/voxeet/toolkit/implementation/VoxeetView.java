@@ -8,12 +8,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.sdk.models.abs.ConferenceUser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
  * Created by romainbenmansour on 20/02/2017.
@@ -78,7 +77,7 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_users the conference id
      */
-    public void onConferenceUpdated(@NonNull List<DefaultConferenceUser> conference_users) {
+    public void onConferenceUpdated(@NonNull List<ConferenceUser> conference_users) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUpdated(conference_users);
         }
@@ -132,7 +131,7 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_user the conference user
      */
-    public void onConferenceUserJoined(@NonNull DefaultConferenceUser conference_user) {
+    public void onConferenceUserJoined(@NonNull ConferenceUser conference_user) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUserJoined(conference_user);
         }
@@ -143,7 +142,7 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_user the conference user
      */
-    public void onConferenceUserUpdated(@NonNull DefaultConferenceUser conference_user) {
+    public void onConferenceUserUpdated(@NonNull ConferenceUser conference_user) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUserUpdated(conference_user);
         }
@@ -154,7 +153,7 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_user the conference user
      */
-    public void onConferenceUserLeft(@NonNull DefaultConferenceUser conference_user) {
+    public void onConferenceUserLeft(@NonNull ConferenceUser conference_user) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUserLeft(conference_user);
         }
@@ -223,7 +222,7 @@ public abstract class VoxeetView extends FrameLayout
      * @param conference_users the new list of users
      */
     @Override
-    public void onConferenceUsersListUpdate(List<DefaultConferenceUser> conference_users) {
+    public void onConferenceUsersListUpdate(List<ConferenceUser> conference_users) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUsersListUpdate(conference_users);
         }

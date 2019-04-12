@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.voxeet.toolkit.R;
-
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 /**

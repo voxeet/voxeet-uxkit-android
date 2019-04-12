@@ -10,9 +10,7 @@ import android.util.AttributeSet;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-
-import java.util.Queue;
+import java.util.ArrayList;
 
 /**
  * Created by romainbenmansour on 20/02/2017.
@@ -26,7 +24,7 @@ public class VoxeetVuMeter extends RoundedImageView {
     private int width;
 
     @NonNull
-    private Queue<Double> temporalSmoothing = new CircularFifoQueue(TEMPORAL_SMOOTHING_COUNT);
+    private ArrayList<Double> temporalSmoothing = new ArrayList<>(TEMPORAL_SMOOTHING_COUNT);
 
     /**
      * Instantiates a new Voxeet vu meter.

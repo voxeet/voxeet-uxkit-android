@@ -1,22 +1,23 @@
 package com.voxeet.toolkit.application;
 
+import android.app.Application;
 import android.support.annotation.NonNull;
-import android.support.multidex.MultiDexApplication;
 
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.toolkit.utils.EventDebugger;
 
 import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.PromiseSolver;
 import eu.codlab.simplepromise.solve.Solver;
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.json.UserInfo;
+
 
 /**
  * This class guide the users to implement the SDK following the standard features
  */
 
-public abstract class VoxeetApplication extends MultiDexApplication {
+public abstract class VoxeetApplication extends Application {
 
 
     private EventDebugger eventDebugger;

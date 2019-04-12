@@ -6,13 +6,12 @@ import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
+import com.voxeet.toolkit.views.VideoView;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.voxeet.toolkit.views.VideoView;
-import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
 
 /**
  * Created by romainbenmansour on 11/08/16.

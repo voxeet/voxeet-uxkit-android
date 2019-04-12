@@ -20,9 +20,6 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
     @NonNull
     private Application mApp; //initialized by constructor
 
-    @Nullable
-    private VoxeetToolkit mToolkit;
-
     private boolean mIsActivityResumed;
 
     @Nullable

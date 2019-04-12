@@ -1,8 +1,7 @@
 package com.voxeet.toolkit.utils;
 
 import com.voxeet.android.media.MediaStream;
-
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
+import com.voxeet.sdk.models.abs.ConferenceUser;
 
 /**
  * Participants selection callbacks
@@ -15,12 +14,12 @@ public interface IParticipantViewListener {
      *
      * @param user the user
      */
-    void onParticipantSelected(DefaultConferenceUser user, MediaStream requested_mediaStream);
+    void onParticipantSelected(ConferenceUser user, MediaStream requested_mediaStream);
 
     /**
      * A conference user has been unselected.
      *
      * @param user the user
      */
-    void onParticipantUnselected(DefaultConferenceUser user);
+    void onParticipantUnselected(ConferenceUser user);
 }

@@ -12,15 +12,14 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.models.abs.ConferenceUser;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.utils.IParticipantViewListener;
+import com.voxeet.toolkit.utils.ParticipantViewAdapter;
 
 import java.util.Iterator;
 import java.util.Map;
-
-import com.voxeet.toolkit.utils.IParticipantViewListener;
-import com.voxeet.toolkit.utils.ParticipantViewAdapter;
-import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 public class VoxeetParticipantView extends VoxeetView {
 
@@ -111,7 +110,7 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUserJoined(@NonNull DefaultConferenceUser conferenceUser) {
+    public void onConferenceUserJoined(@NonNull ConferenceUser conferenceUser) {
         super.onConferenceUserJoined(conferenceUser);
 
         boolean isMe = conferenceUser.getUserId().equalsIgnoreCase(VoxeetPreferences.id());
@@ -123,7 +122,7 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUserLeft(@NonNull DefaultConferenceUser conferenceUser) {
+    public void onConferenceUserLeft(@NonNull ConferenceUser conferenceUser) {
         super.onConferenceUserLeft(conferenceUser);
 
         adapter.removeUser(conferenceUser);
@@ -133,7 +132,7 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUserUpdated(final DefaultConferenceUser conference_user) {
+    public void onConferenceUserUpdated(final ConferenceUser conference_user) {
         super.onConferenceUserUpdated(conference_user);
 
 

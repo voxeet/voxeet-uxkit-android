@@ -13,10 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.toolkit.R;
-
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
-import voxeet.com.sdk.core.VoxeetSdk;
 
 /**
  * Created by ROMMM on 9/29/15.

@@ -17,20 +17,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.squareup.picasso.Picasso;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.exceptions.ExceptionManager;
+import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.utils.ConferenceUtils;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.VoxeetVuMeter;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.exceptions.ExceptionManager;
-import voxeet.com.sdk.models.impl.DefaultConferenceUser;
 
 /**
  * Created by ROMMM on 9/29/15.
@@ -53,7 +50,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     @NonNull
     private RoundedImageView currentSpeakerView;
 
-    private DefaultConferenceUser currentSpeaker = null;
+    private ConferenceUser currentSpeaker = null;
 
     private boolean selected = false;
 
@@ -92,7 +89,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
             if (mAttached) handler.postDelayed(this, REFRESH_METER);
         }
     };
-    private List<DefaultConferenceUser> mConferenceUsers;
+    private List<ConferenceUser> mConferenceUsers;
     private boolean mDisplaySpeakerName = false;
     private TextView speakerName;
     private boolean mAttached;
@@ -195,7 +192,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUsersListUpdate(List<DefaultConferenceUser> conferenceUsers) {
+    public void onConferenceUsersListUpdate(List<ConferenceUser> conferenceUsers) {
         super.onConferenceUsersListUpdate(conferenceUsers);
 
         mConferenceUsers = conferenceUsers;
@@ -265,16 +262,11 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
      * @param userId the user id
      * @return the conference user
      */
-    public DefaultConferenceUser findUserById(@Nullable final String userId) {
-        return Iterables.find(mConferenceUsers, new Predicate<DefaultConferenceUser>() {
-            @Override
-            public boolean apply(DefaultConferenceUser input) {
-                return input.getUserId() != null && input.getUserId().equalsIgnoreCase(userId) && input.getUserInfo() != null;
-            }
-        }, null);
+    public ConferenceUser findUserById(@Nullable final String userId) {
+        return ConferenceUtils.findUserById(userId, mConferenceUsers);
     }
 
-    private void loadViaPicasso(DefaultConferenceUser conferenceUser, int avatarSize, ImageView imageView) {
+    private void loadViaPicasso(ConferenceUser conferenceUser, int avatarSize, ImageView imageView) {
         try {
             String avatarUrl = null;
             if (null != conferenceUser && null != conferenceUser.getUserInfo()) {
