@@ -1,9 +1,15 @@
 package fr.voxeet.sdk.sample.application;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
+import com.voxeet.push.firebase.FirebaseController;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity;
 import com.voxeet.toolkit.application.VoxeetApplication;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
@@ -18,18 +24,8 @@ import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.PromiseSolver;
 import eu.codlab.simplepromise.solve.Solver;
 import fr.voxeet.sdk.sample.BuildConfig;
-import voxeet.com.sdk.core.FirebaseController;
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.json.UserInfo;
 
 public class SampleApplication extends VoxeetApplication {
-    /**
-     * When testing the OAuth feature, please change the USE_SDK_OAUTH_URL from the gradle.properties
-     * file to a valid String value
-     */
-    private final static String USE_SDK_OAUTH_URL = BuildConfig.USE_SDK_OAUTH_URL;
-
     private static final int ONE_MINUTE = 60 * 1000;
 
     private static final String TAG = SampleApplication.class.getSimpleName();
@@ -71,6 +67,14 @@ public class SampleApplication extends VoxeetApplication {
             }
         });
     }
+
+    //when enabling multidex in your app
+    /*
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }*/
 
     /**
      * Select an user, tells the sdk to wether validate or

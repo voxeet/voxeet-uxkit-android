@@ -13,6 +13,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.core.services.AudioService;
+import com.voxeet.sdk.events.success.ConferenceJoinedSuccessEvent;
+import com.voxeet.sdk.events.success.SocketConnectEvent;
+import com.voxeet.sdk.events.success.SocketStateChangeEvent;
+import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.json.internal.MetadataHolder;
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
@@ -34,13 +42,6 @@ import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.main_screen.UserAdapter;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
 import fr.voxeet.sdk.sample.users.UsersHelper;
-import voxeet.com.sdk.core.VoxeetSdk;
-import voxeet.com.sdk.core.preferences.VoxeetPreferences;
-import voxeet.com.sdk.events.success.ConferenceJoinedSuccessEvent;
-import voxeet.com.sdk.events.success.SocketConnectEvent;
-import voxeet.com.sdk.events.success.SocketStateChangeEvent;
-import voxeet.com.sdk.json.UserInfo;
-import voxeet.com.sdk.json.internal.MetadataHolder;
 
 public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
 
@@ -134,7 +135,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         } else {
             String conferenceAlias = joinConfEditText.getText().toString();
 
-            VoxeetToolkit.getInstance().enable(VoxeetToolkit.getInstance().getReplayMessageToolkit());
+            VoxeetToolkit.getInstance().enable(VoxeetToolkit.getInstance().getConferenceToolkit());
 
             Promise<Boolean> promise = VoxeetToolkit.getInstance().getConferenceToolkit().join(conferenceAlias,
                     new MetadataHolder().setStats(true));
@@ -143,11 +144,11 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 VoxeetSdk.getInstance().getConferenceService()
                         .leave()
                         .then(promise)
-                        .then(VoxeetSdk.getInstance().getConferenceService().startVideo())
+                        //.then(VoxeetSdk.getInstance().getConferenceService().startVideo())
                         .then(defaultConsume())
                         .error(createErrorDump());
             } else {
-                promise.then(VoxeetSdk.getInstance().getConferenceService().startVideo())
+                promise//.then(VoxeetSdk.getInstance().getConferenceService().startVideo())
                         .then(defaultConsume())
                         .error(createErrorDump());
             }
@@ -186,10 +187,10 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 .then(defaultConsume())
                 .error(createErrorDump());
 
-        VoxeetSdk.getInstance().getConferenceService()
+        /*VoxeetSdk.getInstance().getConferenceService()
                 .startVideo()
                 .then(defaultConsume())
-                .error(createErrorDump());
+                .error(createErrorDump());*/
     }
 
     private <TYPE> PromiseExec<TYPE, Object> defaultConsume() {

@@ -2,7 +2,7 @@ package fr.voxeet.sdk.sample.main_screen;
 
 import android.support.annotation.DrawableRes;
 
-import voxeet.com.sdk.json.UserInfo;
+import com.voxeet.sdk.json.UserInfo;
 
 public class UserItem {
 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import fr.voxeet.sdk.sample.R;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
-import voxeet.com.sdk.json.UserInfo;
+import com.voxeet.sdk.json.UserInfo;
 
 public class UsersHelper {
 
