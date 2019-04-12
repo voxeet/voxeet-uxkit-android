@@ -14,7 +14,7 @@ import android.view.Display;
 import android.view.TextureView;
 import android.view.WindowManager;
 
-import org.webrtc.EglBase;
+import org.webrtc.EglBaseMethods;
 import org.webrtc.GlRectDrawer;
 import org.webrtc.Logging;
 import org.webrtc.RendererCommon;
@@ -96,8 +96,8 @@ public class VoxeetRenderer extends TextureView
      * Initialize this class, sharing resources with |sharedContext|. It is allowed to call init() to
      * reinitialize the renderer after a previous init()/release() cycle.
      */
-    public void init(EglBase.Context sharedContext, RendererCommon.RendererEvents rendererEvents) {
-        init(sharedContext, rendererEvents, EglBase.CONFIG_RGBA, new GlRectDrawer());
+    public void init(EglBaseMethods.Context sharedContext, RendererCommon.RendererEvents rendererEvents) {
+        init(sharedContext, rendererEvents, EglBaseMethods.CONFIG_RGBA, new GlRectDrawer());
     }
 
     /**
@@ -106,7 +106,7 @@ public class VoxeetRenderer extends TextureView
      * |drawer|. It is allowed to call init() to reinitialize the renderer after a previous
      * init()/release() cycle.
      */
-    public void init(final EglBase.Context sharedContext,
+    public void init(final EglBaseMethods.Context sharedContext,
                      RendererCommon.RendererEvents rendererEvents, final int[] configAttributes,
                      RendererCommon.GlDrawer drawer) {
         synchronized (eglRenderer) {
@@ -133,7 +133,7 @@ public class VoxeetRenderer extends TextureView
         if (wm != null) {
             Display display = wm.getDefaultDisplay();
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 display.getRealSize(size);
             } else {
                 display.getSize(size);
@@ -297,10 +297,11 @@ public class VoxeetRenderer extends TextureView
             size = videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight);
         }
 
-        if(size.y > getScreenHeight()) size.y = getScreenHeight();
-        if(size.x > getScreenWidth()) size.x = getScreenWidth();
+        if (size.y > getScreenHeight()) size.y = getScreenHeight();
+        if (size.x > getScreenWidth()) size.x = getScreenWidth();
 
         setMeasuredDimension(size.x, size.y);
+        Log.d(TAG, "onMeasure: " + widthSpec + " " + heightSpec);
 
         pendingLayout = false;
         posting = false;
@@ -309,6 +310,7 @@ public class VoxeetRenderer extends TextureView
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         ThreadUtils.checkIsOnMainThread();
+        Log.d(TAG, "onLayout: " + left + " " + top + " " + right + " " + bottom);
 
         eglRenderer.setLayoutAspectRatio((right - left) / (float) (bottom - top));
         updateSurfaceSize(false);
@@ -450,18 +452,25 @@ public class VoxeetRenderer extends TextureView
     }
 
     private boolean posting = false;
+    private boolean lock = false;
+
+    private final Runnable post = new Runnable() {
+        @Override
+        public void run() {
+            lock = false;
+            mHandler.removeCallbacks(this);
+            requestLayout();
+        }
+    };
 
     private void requestLayoutIfNotPending() {
 
         if (posting || (null == mHandler)) return;
+        if(lock) return;
 
+        lock = true;
         posting = true;
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                requestLayout();
-            }
-        }, 1000);
+        mHandler.postDelayed(post, 1000);
         /*if(!pendingLayout) {
             pendingLayout = true;
             requestLayout();
