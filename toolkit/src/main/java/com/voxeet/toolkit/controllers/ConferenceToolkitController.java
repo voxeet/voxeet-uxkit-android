@@ -149,7 +149,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
                             @Override
                             public void onCall(@Nullable ConferenceResponse result, @NonNull Solver<Boolean> s) {
                                 Log.d("ConferenceToolkitController", "onCall: creating conference done");
-                                s.resolve(VoxeetSdk.getInstance().getConferenceService().broadcastConference(result.getConfId()));
+                                s.resolve(VoxeetSdk.getInstance().getConferenceService().join(result.getConfId()));
                             }
                         })
                         .then(new PromiseExec<Boolean, Object>() {
