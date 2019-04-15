@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.sdk.audio.SoundManager;
@@ -172,7 +171,6 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
                             .load(mIncomingBundleChecker.getAvatarUrl())
                             .into(mAvatar);
                 } else {
-                    Toast.makeText(activity, getString(R.string.invalid_bundle), Toast.LENGTH_SHORT).show();
                     finish();
                 }
 
