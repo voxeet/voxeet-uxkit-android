@@ -42,6 +42,7 @@ public class ConferenceViewRendererControl {
             }
         }
     };
+    private boolean clickEnabled;
 
 
     private ConferenceViewRendererControl() {
@@ -136,10 +137,10 @@ public class ConferenceViewRendererControl {
                 selfView.setVisibility(View.GONE);
 
                 selectedView.setVideoFill();
-                selectedView.setOnClickListener(selectedFromSelf);
                 selectedView.setMirror(VoxeetSdk.getInstance().getMediaService().isFrontCamera());
                 selectedView.setVisibility(View.VISIBLE);
                 selectedView.attach(ownUserId, stream, true);
+                setClickForSelectedIfNecessary();
                 getParent().hideSpeakerView();
             } else {
                 if (selectedView.isAttached() && ownUserId.equals(selectedView.getPeerId())) {
@@ -153,6 +154,19 @@ public class ConferenceViewRendererControl {
                 selfView.attach(VoxeetPreferences.id(), stream, true);
                 selfView.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    private void setClickForSelectedIfNecessary() {
+        VideoView selectedView = getOtherVideoView();
+        String ownUserId = VoxeetPreferences.id();
+        if(null == ownUserId) ownUserId = "";
+
+        if(clickEnabled && ownUserId.equals(selectedView.getPeerId())) {
+            selectedView.setOnClickListener(selectedFromSelf);
+        } else {
+            selectedView.setOnClickListener(null);
+            selectedView.setClickable(false);
         }
     }
 
@@ -238,4 +252,9 @@ public class ConferenceViewRendererControl {
         }
     }
 
+    public void enableClick(boolean state) {
+        clickEnabled = state;
+
+        setClickForSelectedIfNecessary();
+    }
 }

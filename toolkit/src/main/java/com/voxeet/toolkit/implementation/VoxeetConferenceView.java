@@ -663,6 +663,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             selectedView.setCornerRadius(0);
         }
 
+        mConferenceViewRendererControl.enableClick(true);
+
         checkForLocalUserStreamVideo();
     }
 
@@ -673,6 +675,9 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @Override
     public void onMinizedView() {
+
+        mConferenceViewRendererControl.enableClick(false);
+
         isExpanded = false;
         layoutTimer.setVisibility(View.VISIBLE);
 
