@@ -137,7 +137,7 @@ public class ConferenceViewRendererControl {
 
                 selectedView.setVideoFill();
                 selectedView.setOnClickListener(selectedFromSelf);
-                selectedView.setMirror(true);
+                selectedView.setMirror(VoxeetSdk.getInstance().getMediaService().isFrontCamera());
                 selectedView.setVisibility(View.VISIBLE);
                 selectedView.attach(ownUserId, stream, true);
                 getParent().hideSpeakerView();
@@ -149,7 +149,7 @@ public class ConferenceViewRendererControl {
                     selectedView.setVisibility(View.GONE);
                     getParent().showSpeakerView();
                 }
-                selfView.setMirror(true);
+                selfView.setMirror(VoxeetSdk.getInstance().getMediaService().isFrontCamera());
                 selfView.attach(VoxeetPreferences.id(), stream, true);
                 selfView.setVisibility(View.VISIBLE);
             }
@@ -213,7 +213,7 @@ public class ConferenceViewRendererControl {
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override
                     public void onCall(@android.support.annotation.Nullable Boolean result, @NonNull Solver<Object> solver) {
-
+                        updateMirror(VoxeetSdk.getInstance().getMediaService().isFrontCamera());
                     }
                 })
                 .error(new ErrorPromise() {
@@ -222,6 +222,20 @@ public class ConferenceViewRendererControl {
                         error.printStackTrace();
                     }
                 });
+    }
+
+    public void updateMirror(boolean isFrontCamera) {
+        String ownUserId = VoxeetPreferences.id();
+        VideoView selectedView = getOtherVideoView();
+        VideoView selfView = getSelfVideoView();
+
+        if(null != ownUserId) {
+            if (null != selectedView && ownUserId.equals(selectedView.getPeerId())) {
+                selectedView.setMirror(isFrontCamera);
+            } else if (null != selfView && ownUserId.equals(selfView.getPeerId())) {
+                selfView.setMirror(isFrontCamera);
+            }
+        }
     }
 
 }

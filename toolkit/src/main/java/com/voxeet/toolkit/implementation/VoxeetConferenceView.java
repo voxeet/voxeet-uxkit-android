@@ -24,6 +24,7 @@ import com.voxeet.sdk.core.abs.information.ConferenceState;
 import com.voxeet.sdk.core.abs.information.ConferenceUserType;
 import com.voxeet.sdk.core.impl.ConferenceSdkService;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.events.success.CameraSwitchSuccessEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.abs.ConferenceUser;
 import com.voxeet.toolkit.R;
@@ -35,6 +36,9 @@ import com.voxeet.toolkit.utils.IParticipantViewListener;
 import com.voxeet.toolkit.views.NotchAvoidView;
 import com.voxeet.toolkit.views.VideoView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.webrtc.RendererCommon;
 
 import java.util.ArrayList;
@@ -46,6 +50,7 @@ import java.util.Set;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
+import io.sentry.event.EventBuilder;
 
 public class VoxeetConferenceView extends AbstractVoxeetExpandableView implements IParticipantViewListener {
     private final String TAG = VoxeetConferenceView.class.getSimpleName();
@@ -165,6 +170,19 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         super.onAttachedToWindow();
 
         updateUi();
+
+        if(!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if(EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+
+        super.onDetachedFromWindow();
     }
 
     @Override
@@ -885,5 +903,10 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         boolean hide = null == information || ConferenceUserType.LISTENER.equals(information.getConferenceUserType());
 
         conferenceBarView.setVisibility(hide ? View.GONE : View.VISIBLE);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(CameraSwitchSuccessEvent event) {
+        mConferenceViewRendererControl.updateMirror(event.isFront());
     }
 }
