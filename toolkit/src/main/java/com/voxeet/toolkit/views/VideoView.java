@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,6 +70,8 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     private float mCornerRadius;
     private boolean enableRefreshEglBase = false;
 
+    private boolean layoutOnAttached = false;
+
     /**
      * Instantiates a new Video view.
      *
@@ -99,6 +100,8 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
     @Override
     protected void onAttachedToWindow() {
         EventBus.getDefault().register(this);
+
+        layoutOnAttached = false;
 
         super.onAttachedToWindow();
     }
@@ -362,22 +365,17 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
      * @param force       force the update
      */
     public void attach(String peerId, MediaStream mediaStream, boolean force) {
-        Log.d(TAG, "attach: " + mMediaStream + " " + mediaStream + " " + peerId + " " + this);
         if (isAttached() && mPeerId != null && mPeerId.equals(peerId)) {// this user is already attached.
-            Log.d(TAG, "attach: isattached and peer id equals " + force + " " + this);
             if (force) {
                 //nothing, go on
                 if (mediaStream != mMediaStream || mediaStream == null) {
-                    Log.d(TAG, "attach: we unattach, it's different");
                     unAttach();
                 } else {
-                    Log.d(TAG, "attach: we don't unattach - exactly the same");
                     return;
                 }
             } else if (null != mMediaStream && null != mediaStream && !force) {
                 return;
             } else if (null == mediaStream) {
-                Log.d(TAG, "attach: unattaching > was null");
                 unAttach();
                 return;
             }
@@ -400,7 +398,6 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
                 mRenderer.setVisibility(View.VISIBLE);
                 boolean result = VoxeetSdk.getInstance().getMediaService().attachMediaStream(mediaStream, mRenderer);
 
-                Log.d(TAG, "attach: result := " + result + " " + this);
                 setVisibility(View.VISIBLE);
 
                 forceLayout();
@@ -505,6 +502,7 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
         SCREEN_SHARE
     }
 
+
     private void createRendererIfNeeded() {
         if (null == mRenderer && VoxeetSdk.getInstance().getMediaService().hasMedia()) {
             EglBaseMethods.Context context = VoxeetSdk.getInstance().getMediaService().getEglContext();
@@ -538,7 +536,8 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (null != mRenderer) {
+                    if (null != mRenderer && !layoutOnAttached) {
+                        layoutOnAttached = true;
                         mRenderer.setLayoutParams(param);
                     }
                 }
@@ -595,7 +594,6 @@ public class VideoView extends FrameLayout implements RendererCommon.RendererEve
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EglBaseRefreshEvent event) {
-        Log.d(TAG, "onEvent: EglBaseRefreshEvent, received a call to refresh it !");
         if (!enableRefreshEglBase || null == VoxeetSdk.getInstance() || null == mRenderer) {
             return;
         }
