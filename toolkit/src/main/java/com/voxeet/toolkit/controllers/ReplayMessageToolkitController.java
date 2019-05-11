@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.impl.ConferenceSdkService;
+import com.voxeet.sdk.core.abs.ConferenceService;
 import com.voxeet.sdk.events.success.ConferenceEndedEvent;
 import com.voxeet.sdk.events.success.GetConferenceHistoryEvent;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
@@ -79,7 +79,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         _wait_for_history_offset = offset;
 
 
-        ConferenceSdkService service = VoxeetSdk.getInstance().getConferenceService();
+        ConferenceService service = VoxeetSdk.getInstance().getConferenceService();
         VoxeetSdk.getInstance().getAudioService().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
         .then(new PromiseExec<GetConferenceHistoryEvent, Object>() {

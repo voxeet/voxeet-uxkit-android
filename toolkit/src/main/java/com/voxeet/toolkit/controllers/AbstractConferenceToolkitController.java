@@ -14,9 +14,9 @@ import android.widget.FrameLayout;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.abs.ConferenceService;
 import com.voxeet.sdk.core.abs.information.ConferenceInformation;
 import com.voxeet.sdk.core.abs.information.ConferenceUserType;
-import com.voxeet.sdk.core.impl.ConferenceSdkService;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.core.services.AudioService;
 import com.voxeet.sdk.events.error.ConferenceCreatedError;
@@ -159,7 +159,7 @@ public abstract class AbstractConferenceToolkitController {
     protected void init() {
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
 
-        ConferenceSdkService service = VoxeetSdk.getInstance().getConferenceService();
+        ConferenceService service = VoxeetSdk.getInstance().getConferenceService();
 
         //load the maps into the view
         mMediaStreams = service.getMapOfStreams();
@@ -299,7 +299,7 @@ public abstract class AbstractConferenceToolkitController {
                         if (null != VoxeetSdk.getInstance()) {
                             AudioService service = VoxeetSdk.getInstance().getAudioService();
                             service.requestAudioFocus();
-                            service.setInVoiceCallSoundType();
+                            service.checkOutputRoute();
                         }
 
                         log("run: add view" + mMainView);

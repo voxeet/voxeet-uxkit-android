@@ -20,9 +20,9 @@ import android.widget.LinearLayout;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.abs.ConferenceService;
 import com.voxeet.sdk.core.abs.information.ConferenceInformation;
 import com.voxeet.sdk.core.abs.information.ConferenceUserType;
-import com.voxeet.sdk.core.impl.ConferenceSdkService;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.events.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
@@ -206,7 +206,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         super.onAttachedToWindow();
 
         if (null != VoxeetSdk.getInstance() && null != VoxeetSdk.getInstance().getConferenceService()) {
-            ConferenceSdkService service = VoxeetSdk.getInstance().getConferenceService();
+            ConferenceService service = VoxeetSdk.getInstance().getConferenceService();
             ConferenceInformation information = service.getCurrentConferenceInformation();
 
             if (null != information && information.isOwnVideoStarted() && !service.isVideoOn()) {
@@ -648,6 +648,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
     private boolean isListener() {
         ConferenceInformation information =  VoxeetSdk.getInstance().getConferenceService()
                 .getCurrentConferenceInformation();
+        Log.d(TAG, "isListener: " + information);
         return null == information || ConferenceUserType.LISTENER.equals(information.getConferenceUserType());
     }
 }

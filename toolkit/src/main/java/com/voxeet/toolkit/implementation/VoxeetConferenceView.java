@@ -1,7 +1,5 @@
 package com.voxeet.toolkit.implementation;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -14,15 +12,14 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.abs.ConferenceService;
 import com.voxeet.sdk.core.abs.information.ConferenceInformation;
 import com.voxeet.sdk.core.abs.information.ConferenceState;
 import com.voxeet.sdk.core.abs.information.ConferenceUserType;
-import com.voxeet.sdk.core.impl.ConferenceSdkService;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.events.success.CameraSwitchSuccessEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
@@ -30,9 +27,9 @@ import com.voxeet.sdk.models.abs.ConferenceUser;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
-import com.voxeet.toolkit.utils.ToolkitUtils;
 import com.voxeet.toolkit.utils.ConferenceViewRendererControl;
 import com.voxeet.toolkit.utils.IParticipantViewListener;
+import com.voxeet.toolkit.utils.ToolkitUtils;
 import com.voxeet.toolkit.views.NotchAvoidView;
 import com.voxeet.toolkit.views.VideoView;
 
@@ -46,11 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.Solver;
-import io.sentry.event.EventBuilder;
 
 public class VoxeetConferenceView extends AbstractVoxeetExpandableView implements IParticipantViewListener {
     private final String TAG = VoxeetConferenceView.class.getSimpleName();
@@ -779,7 +771,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     private void checkStateValue() {
-        ConferenceSdkService service = VoxeetSdk.getInstance().getConferenceService();
+        ConferenceService service = VoxeetSdk.getInstance().getConferenceService();
 
         mState = ConferenceState.DEFAULT;
         boolean isInConference = service.isInConference();
@@ -810,7 +802,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         checkStateValue();
 
         String conferenceId = null;
-        ConferenceSdkService service = VoxeetSdk.getInstance().getConferenceService();
+        ConferenceService service = VoxeetSdk.getInstance().getConferenceService();
         if (service.isInConference() && null != service.getConferenceId()) {
             ConferenceInformation information = service.getCurrentConferenceInformation();
             if (information != null) {
