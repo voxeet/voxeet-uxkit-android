@@ -3,6 +3,8 @@ package com.voxeet.toolkit.activities.notification;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -14,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.audio.SoundManager;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
@@ -57,6 +60,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     private IncomingBundleChecker mIncomingBundleChecker;
     private Handler mHandler;
     private boolean isResumed;
+    private Ringtone ringTone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,8 +120,8 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
             @Override
             public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
                 Log.d(TAG, "onCall: initialized ? " + result);
-                
-                if(!VoxeetSdk.getInstance().isSocketOpen()) {
+
+                if (!VoxeetSdk.getInstance().isSocketOpen()) {
                     Log.d(TAG, "onCall: try to log user");
                     UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
@@ -143,16 +147,27 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
         super.onResume();
         isResumed = true;
 
+        boolean useRingtone = "true".equals(AndroidManifest.readMetadata(this, "voxeet_use_ringtone", "false"));
         SoundManager soundManager = AudioService.getSoundManager();
+
         if (null != soundManager) {
-            soundManager.setInVoiceCallSoundType().playSoundType(AudioType.RING);
+            ringTone = soundManager.getSystemRingtone();
+            if (useRingtone && null != ringTone) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    ringTone.setLooping(true);
+                }
+                if (!ringTone.isPlaying()) ringTone.play();
+            } else {
+                soundManager.setAudioRoute(AudioRoute.ROUTE_SPEAKER);
+                soundManager.playSoundType(AudioType.RING);
+            }
         }
 
 
         tryInitializedSDK().then(new PromiseExec<Boolean, Object>() {
             @Override
             public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                if(!isResumed) {
+                if (!isResumed) {
                     Log.d(TAG, "onCall: not resumed, quit promise");
                     return;
                 }
@@ -162,7 +177,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
                 mEventBus = VoxeetSdk.getInstance().getEventBus();
 
                 if (mIncomingBundleChecker.isBundleValid() && mEventBus != null) {
-                    if(!mEventBus.isRegistered(activity)) {
+                    if (!mEventBus.isRegistered(activity)) {
                         mEventBus.register(activity);
                     }
 
@@ -183,6 +198,10 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
 
     @Override
     protected void onPause() {
+
+        if (null != ringTone && ringTone.isPlaying()) {
+            ringTone.stop();
+        }
         isResumed = false;
 
         SoundManager soundManager = AudioService.getSoundManager();
