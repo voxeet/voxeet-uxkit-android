@@ -563,7 +563,7 @@
     {
         "project": "Audio",
         "description": null,
-        "version": "1.0.0",
+        "version": "1.0.3",
         "developers": [
             
         ],
@@ -572,7 +572,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:audio:1.0.0"
+        "dependency": "com.voxeet.sdk:audio:1.0.3"
     },
     {
         "project": "Converter: Jackson",
@@ -884,23 +884,9 @@
         "dependency": "com.fasterxml.jackson.core:jackson-databind:2.8.7"
     },
     {
-        "project": "Kernel",
-        "description": null,
-        "version": "2.0.8",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            
-        ],
-        "dependency": "com.voxeet.sdk:kernel:2.0.8"
-    },
-    {
         "project": "Media",
         "description": null,
-        "version": "1.72.4",
+        "version": "1.72.6",
         "developers": [
             
         ],
@@ -909,7 +895,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:media:1.72.4"
+        "dependency": "com.voxeet.sdk:media:1.72.6"
     },
     {
         "project": "OkHttp",
@@ -927,6 +913,23 @@
             }
         ],
         "dependency": "com.squareup.okhttp3:okhttp:3.10.0"
+    },
+    {
+        "project": "OkHttp Logging Interceptor",
+        "description": null,
+        "version": null,
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Apache 2.0",
+                "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        ],
+        "dependency": "com.squareup.okhttp3:logging-interceptor:3.8.0"
     },
     {
         "project": "Okio",
@@ -1084,7 +1087,7 @@
     {
         "project": "Promise",
         "description": null,
-        "version": "1.7",
+        "version": "1.7.2",
         "developers": [
             
         ],
@@ -1093,12 +1096,12 @@
         "licenses": [
             
         ],
-        "dependency": "eu.codlab:promise:1.7"
+        "dependency": "eu.codlab:promise:1.7.2"
     },
     {
         "project": "Public-sdk",
         "description": null,
-        "version": "2.0.8",
+        "version": "2.0.21",
         "developers": [
             
         ],
@@ -1107,12 +1110,12 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:public-sdk:2.0.8"
+        "dependency": "com.voxeet.sdk:public-sdk:2.0.21"
     },
     {
         "project": "Push",
         "description": null,
-        "version": "2.0.8",
+        "version": "2.0.21",
         "developers": [
             
         ],
@@ -1121,7 +1124,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:push:2.0.8"
+        "dependency": "com.voxeet.sdk:push:2.0.21"
     },
     {
         "project": "Retrofit",
@@ -1177,7 +1180,7 @@
     {
         "project": "Sentry",
         "description": null,
-        "version": "2.0.8",
+        "version": "2.0.21",
         "developers": [
             
         ],
@@ -1186,7 +1189,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:sentry:2.0.8"
+        "dependency": "com.voxeet.sdk:sentry:2.0.21"
     },
     {
         "project": "Sentry-Java client",

@@ -136,23 +136,6 @@
         "dependency": "android.arch.lifecycle:common:1.1.1"
     },
     {
-        "project": "Android Multi-Dex Library",
-        "description": "Library for legacy multi-dex support",
-        "version": "1.0.3",
-        "developers": [
-            "The Android Open Source Project"
-        ],
-        "url": null,
-        "year": "2013",
-        "licenses": [
-            {
-                "license": "The Apache Software License",
-                "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        ],
-        "dependency": "com.android.support:multidex:1.0.3"
-    },
-    {
         "project": "Android Support AnimatedVectorDrawable",
         "description": "Android Support AnimatedVectorDrawable",
         "version": "28.0.0",
@@ -512,7 +495,7 @@
     {
         "project": "Android Support Library media compat",
         "description": "The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs. Compatible on devices running API 14 or later.",
-        "version": "26.1.0",
+        "version": "28.0.0",
         "developers": [
             "The Android Open Source Project"
         ],
@@ -524,12 +507,12 @@
                 "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         ],
-        "dependency": "com.android.support:support-media-compat:26.1.0"
+        "dependency": "com.android.support:support-media-compat:28.0.0"
     },
     {
         "project": "Android Support Library v4",
         "description": "The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs. Compatible on devices running API 14 or later.",
-        "version": "26.1.0",
+        "version": "28.0.0",
         "developers": [
             "The Android Open Source Project"
         ],
@@ -541,7 +524,7 @@
                 "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         ],
-        "dependency": "com.android.support:support-v4:26.1.0"
+        "dependency": "com.android.support:support-v4:28.0.0"
     },
     {
         "project": "Android Support RecyclerView v7",
@@ -578,36 +561,18 @@
         "dependency": "com.android.support:support-vector-drawable:28.0.0"
     },
     {
-        "project": "Apache Commons Collections",
-        "description": "The Apache Commons Collections package contains types that extend and augment the Java Collections Framework.",
-        "version": "4.0",
+        "project": "Audio",
+        "description": null,
+        "version": "1.0.3",
         "developers": [
-            "Matt Benson",
-            "James Carman",
-            "Stephen Colebourne",
-            "Robert Burrell Donkin",
-            "Morgan Delagrange",
-            "Gary D. Gregory",
-            "Matthew Hawthorne",
-            "Geir Magnusson",
-            "Luc Maisonobe",
-            "Craig McClanahan",
-            "Adrian Nistor",
-            "Phil Steitz",
-            "Arun M. Thomas",
-            "Rodney Waldhoff",
-            "Henri Yandell",
-            "Thomas Neidhart"
+            
         ],
-        "url": "http://commons.apache.org/proper/commons-collections/",
-        "year": "2001",
+        "url": null,
+        "year": null,
         "licenses": [
-            {
-                "license": "The Apache Software License, Version 2.0",
-                "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
+            
         ],
-        "dependency": "org.apache.commons:commons-collections4:4.0"
+        "dependency": "com.voxeet.sdk:audio:1.0.3"
     },
     {
         "project": "Converter: Jackson",
@@ -644,6 +609,57 @@
         "dependency": "org.greenrobot:eventbus:3.0.0"
     },
     {
+        "project": "FindBugs-jsr305",
+        "description": "JSR305 Annotations for Findbugs",
+        "version": "3.0.2",
+        "developers": [
+            
+        ],
+        "url": "http://findbugs.sourceforge.net/",
+        "year": null,
+        "licenses": [
+            {
+                "license": "The Apache Software License, Version 2.0",
+                "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        ],
+        "dependency": "com.google.code.findbugs:jsr305:3.0.2"
+    },
+    {
+        "project": "Firebase-analytics",
+        "description": null,
+        "version": "16.3.0",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Android Software Development Kit License",
+                "license_url": "https://developer.android.com/studio/terms.html"
+            }
+        ],
+        "dependency": "com.google.firebase:firebase-analytics:16.3.0"
+    },
+    {
+        "project": "Firebase-analytics-impl",
+        "description": null,
+        "version": "16.3.0",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Android Software Development Kit License",
+                "license_url": "https://developer.android.com/studio/terms.html"
+            }
+        ],
+        "dependency": "com.google.firebase:firebase-analytics-impl:16.3.0"
+    },
+    {
         "project": "Firebase-common",
         "description": null,
         "version": "16.0.3",
@@ -661,9 +677,9 @@
         "dependency": "com.google.firebase:firebase-common:16.0.3"
     },
     {
-        "project": "Firebase-iid",
+        "project": "Firebase-core",
         "description": null,
-        "version": "17.0.4",
+        "version": "16.0.7",
         "developers": [
             
         ],
@@ -675,7 +691,24 @@
                 "license_url": "https://developer.android.com/studio/terms.html"
             }
         ],
-        "dependency": "com.google.firebase:firebase-iid:17.0.4"
+        "dependency": "com.google.firebase:firebase-core:16.0.7"
+    },
+    {
+        "project": "Firebase-iid",
+        "description": null,
+        "version": "17.1.0",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Android Software Development Kit License",
+                "license_url": "https://developer.android.com/studio/terms.html"
+            }
+        ],
+        "dependency": "com.google.firebase:firebase-iid:17.1.0"
     },
     {
         "project": "Firebase-iid-interop",
@@ -712,9 +745,9 @@
         "dependency": "com.google.firebase:firebase-measurement-connector:17.0.1"
     },
     {
-        "project": "Firebase-messaging",
+        "project": "Firebase-measurement-connector-impl",
         "description": null,
-        "version": "17.3.4",
+        "version": "17.0.5",
         "developers": [
             
         ],
@@ -726,7 +759,24 @@
                 "license_url": "https://developer.android.com/studio/terms.html"
             }
         ],
-        "dependency": "com.google.firebase:firebase-messaging:17.3.4"
+        "dependency": "com.google.firebase:firebase-measurement-connector-impl:17.0.5"
+    },
+    {
+        "project": "Firebase-messaging",
+        "description": null,
+        "version": "17.4.0",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Android Software Development Kit License",
+                "license_url": "https://developer.android.com/studio/terms.html"
+            }
+        ],
+        "dependency": "com.google.firebase:firebase-messaging:17.4.0"
     },
     {
         "project": "Gson",
@@ -744,23 +794,6 @@
             }
         ],
         "dependency": "com.google.code.gson:gson:2.8.5"
-    },
-    {
-        "project": "Guava: Google Core Libraries for Java",
-        "description": "Guava is a suite of core and expanded libraries that include\n    utility classes, google's collections, io classes, and much\n    much more.\n\n    Guava has only one code dependency - javax.annotation,\n    per the JSR-305 spec.",
-        "version": null,
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "The Apache Software License, Version 2.0",
-                "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        ],
-        "dependency": "com.google.guava:guava:20.0"
     },
     {
         "project": "Hamcrest Core",
@@ -802,7 +835,7 @@
     {
         "project": "Jackson-annotations",
         "description": "Core annotations used for value types, used by Jackson data binding package.",
-        "version": "2.7.2",
+        "version": "2.8.7",
         "developers": [
             
         ],
@@ -814,12 +847,12 @@
                 "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         ],
-        "dependency": "com.fasterxml.jackson.core:jackson-annotations:2.7.2"
+        "dependency": "com.fasterxml.jackson.core:jackson-annotations:2.8.7"
     },
     {
         "project": "Jackson-core",
         "description": "Core Jackson abstractions, basic JSON streaming API implementation",
-        "version": "2.7.2",
+        "version": "2.8.7",
         "developers": [
             
         ],
@@ -831,12 +864,12 @@
                 "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         ],
-        "dependency": "com.fasterxml.jackson.core:jackson-core:2.7.2"
+        "dependency": "com.fasterxml.jackson.core:jackson-core:2.8.7"
     },
     {
         "project": "Jackson-databind",
         "description": "General data-binding functionality for Jackson: works on core streaming API",
-        "version": "2.7.2",
+        "version": "2.8.7",
         "developers": [
             
         ],
@@ -848,26 +881,12 @@
                 "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         ],
-        "dependency": "com.fasterxml.jackson.core:jackson-databind:2.7.2"
-    },
-    {
-        "project": "Kernel",
-        "description": null,
-        "version": "1.4.15",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            
-        ],
-        "dependency": "com.voxeet.sdk:kernel:1.4.15"
+        "dependency": "com.fasterxml.jackson.core:jackson-databind:2.8.7"
     },
     {
         "project": "Media",
         "description": null,
-        "version": "0.8.2",
+        "version": "1.72.6",
         "developers": [
             
         ],
@@ -876,7 +895,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:media:0.8.2"
+        "dependency": "com.voxeet.sdk:media:1.72.6"
     },
     {
         "project": "OkHttp",
@@ -894,6 +913,23 @@
             }
         ],
         "dependency": "com.squareup.okhttp3:okhttp:3.10.0"
+    },
+    {
+        "project": "OkHttp Logging Interceptor",
+        "description": null,
+        "version": null,
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Apache 2.0",
+                "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        ],
+        "dependency": "com.squareup.okhttp3:logging-interceptor:3.8.0"
     },
     {
         "project": "Okio",
@@ -930,6 +966,23 @@
         "dependency": "com.squareup.picasso:picasso:2.71828"
     },
     {
+        "project": "Play-services-ads-identifier",
+        "description": null,
+        "version": "16.0.0",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Android Software Development Kit License",
+                "license_url": "https://developer.android.com/studio/terms.html"
+            }
+        ],
+        "dependency": "com.google.android.gms:play-services-ads-identifier:16.0.0"
+    },
+    {
         "project": "Play-services-base",
         "description": null,
         "version": "16.0.1",
@@ -962,6 +1015,40 @@
             }
         ],
         "dependency": "com.google.android.gms:play-services-basement:16.0.1"
+    },
+    {
+        "project": "Play-services-measurement-api",
+        "description": null,
+        "version": "16.3.0",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Android Software Development Kit License",
+                "license_url": "https://developer.android.com/studio/terms.html"
+            }
+        ],
+        "dependency": "com.google.android.gms:play-services-measurement-api:16.3.0"
+    },
+    {
+        "project": "Play-services-measurement-base",
+        "description": null,
+        "version": "16.3.0",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "Android Software Development Kit License",
+                "license_url": "https://developer.android.com/studio/terms.html"
+            }
+        ],
+        "dependency": "com.google.android.gms:play-services-measurement-base:16.3.0"
     },
     {
         "project": "Play-services-stats",
@@ -1000,7 +1087,7 @@
     {
         "project": "Promise",
         "description": null,
-        "version": "1.7",
+        "version": "1.7.2",
         "developers": [
             
         ],
@@ -1009,12 +1096,12 @@
         "licenses": [
             
         ],
-        "dependency": "eu.codlab:promise:1.7"
+        "dependency": "eu.codlab:promise:1.7.2"
     },
     {
         "project": "Public-sdk",
         "description": null,
-        "version": "1.4.15",
+        "version": "2.0.21",
         "developers": [
             
         ],
@@ -1023,7 +1110,21 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:public-sdk:1.4.15"
+        "dependency": "com.voxeet.sdk:public-sdk:2.0.21"
+    },
+    {
+        "project": "Push",
+        "description": null,
+        "version": "2.0.21",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:push:2.0.21"
     },
     {
         "project": "Retrofit",
@@ -1041,6 +1142,88 @@
             }
         ],
         "dependency": "com.squareup.retrofit2:retrofit:2.3.0"
+    },
+    {
+        "project": "SLF4J API Module",
+        "description": "The slf4j API",
+        "version": null,
+        "developers": [
+            
+        ],
+        "url": "http://www.slf4j.org",
+        "year": null,
+        "licenses": [
+            {
+                "license": "MIT License",
+                "license_url": "http://www.opensource.org/licenses/mit-license.php"
+            }
+        ],
+        "dependency": "org.slf4j:slf4j-api:1.7.25"
+    },
+    {
+        "project": "SLF4J NOP Binding",
+        "description": "SLF4J NOP Binding",
+        "version": null,
+        "developers": [
+            
+        ],
+        "url": "http://www.slf4j.org",
+        "year": null,
+        "licenses": [
+            {
+                "license": "MIT License",
+                "license_url": "http://www.opensource.org/licenses/mit-license.php"
+            }
+        ],
+        "dependency": "org.slf4j:slf4j-nop:1.7.25"
+    },
+    {
+        "project": "Sentry",
+        "description": null,
+        "version": "2.0.21",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:sentry:2.0.21"
+    },
+    {
+        "project": "Sentry-Java client",
+        "description": "Sentry client written in Java.",
+        "version": null,
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "BSD New",
+                "license_url": "http://opensource.org/licenses/BSD-3-Clause"
+            }
+        ],
+        "dependency": "io.sentry:sentry:1.7.16"
+    },
+    {
+        "project": "Sentry-Java for Android",
+        "description": "Android Sentry-Java client.",
+        "version": null,
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            {
+                "license": "BSD New",
+                "license_url": "http://opensource.org/licenses/BSD-3-Clause"
+            }
+        ],
+        "dependency": "io.sentry:sentry-android:1.7.16"
     },
     {
         "project": "VersionedParcelable and friends",
