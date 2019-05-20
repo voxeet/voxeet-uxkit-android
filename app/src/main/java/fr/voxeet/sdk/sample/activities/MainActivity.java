@@ -15,7 +15,6 @@ import android.widget.EditText;
 
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
-import com.voxeet.sdk.core.services.AudioService;
 import com.voxeet.sdk.events.success.ConferenceJoinedSuccessEvent;
 import com.voxeet.sdk.events.success.SocketConnectEvent;
 import com.voxeet.sdk.events.success.SocketStateChangeEvent;
@@ -178,8 +177,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final ConferenceJoinedSuccessEvent event) {
+    @Override
+    protected void onConferenceJoinedSuccessEvent() {
         List<UserInfo> external_ids = UsersHelper.getExternalIds(VoxeetPreferences.id());
 
         VoxeetToolkit.getInstance().getConferenceToolkit()

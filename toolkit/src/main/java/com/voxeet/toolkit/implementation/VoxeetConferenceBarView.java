@@ -502,7 +502,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
             microphone_wrapper.setVisibility(displayMute && !listener ? visibility : GONE);
 
         if (speaker != null)
-            speaker_wrapper.setVisibility(displayAudio && !listener ? visibility : GONE);
+            speaker_wrapper.setVisibility(displayAudio ? visibility : GONE);
 
         if (camera != null)
             camera_wrapper.setVisibility(displayCamera && !listener ? visibility : GONE);

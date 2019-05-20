@@ -166,18 +166,33 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
      * Specific event used to manage the current "incoming" call feature
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferencePreJoinedEvent event) {
+    public final void onEvent(ConferencePreJoinedEvent event) {
         mIncomingBundleChecker.flushIntent();
+        onConferencePreJoinedEvent();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceJoinedSuccessEvent event) {
+    public final void onEvent(ConferenceJoinedSuccessEvent event) {
         mIncomingBundleChecker.flushIntent();
+        onConferenceJoinedSuccessEvent();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceJoinedError event) {
+    public final void onEvent(ConferenceJoinedError event) {
         mIncomingBundleChecker.flushIntent();
+        onConferenceJoinedError();
+    }
+
+    protected void onConferencePreJoinedEvent() {
+
+    }
+
+    protected void onConferenceJoinedSuccessEvent() {
+
+    }
+
+    protected void onConferenceJoinedError() {
+
     }
 
     /**
