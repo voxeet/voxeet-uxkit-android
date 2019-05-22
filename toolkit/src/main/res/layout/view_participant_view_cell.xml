@@ -8,9 +8,9 @@
     android:orientation="vertical">
 
     <FrameLayout
-        android:layout_gravity="center_horizontal"
         android:layout_width="@dimen/meeting_list_avatar_double"
-        android:layout_height="@dimen/meeting_list_avatar_double">
+        android:layout_height="@dimen/meeting_list_avatar_double"
+        android:layout_gravity="center_horizontal">
 
         <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
             android:id="@+id/overlay_avatar"
@@ -29,13 +29,20 @@
             app:mutate_background="true"
             app:oval="true" />
 
-        <com.voxeet.toolkit.views.VideoView
-            android:id="@+id/participant_video_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            app:circle="true"
-            app:scaleType="scale_fill" />
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <com.voxeet.toolkit.views.VideoView
+                android:id="@+id/participant_video_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:circle="true"
+                app:scaleType="scale_fill" />
+        </LinearLayout>
 
     </FrameLayout>
 
