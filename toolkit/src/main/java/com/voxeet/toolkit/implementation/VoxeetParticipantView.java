@@ -117,7 +117,7 @@ public class VoxeetParticipantView extends VoxeetView {
         if (!isMe || displaySelf) {
             adapter.addUser(conferenceUser);
 
-            adapter.notifyDataSetChanged();
+            adapter.updateUsers();
         }
     }
 
@@ -128,11 +128,11 @@ public class VoxeetParticipantView extends VoxeetView {
         adapter.removeUser(conferenceUser);
         recyclerView.setLayoutManager(horizontalLayout);
 
-        adapter.notifyDataSetChanged();
+        adapter.updateUsers();
     }
 
     @Override
-    public void onConferenceUserUpdated(final ConferenceUser conference_user) {
+    public void onConferenceUserUpdated(@NonNull final ConferenceUser conference_user) {
         super.onConferenceUserUpdated(conference_user);
 
 
@@ -140,7 +140,7 @@ public class VoxeetParticipantView extends VoxeetView {
             @Override
             public void run() {
                 if (adapter != null) {
-                    adapter.notifyDataSetChanged();
+                    adapter.updateUsers();
                 }
             }
         });
@@ -155,7 +155,7 @@ public class VoxeetParticipantView extends VoxeetView {
             public void run() {
                 if (adapter != null) {
                     adapter.onMediaStreamUpdated(userId, mediaStreams);
-                    adapter.notifyDataSetChanged();
+                    adapter.updateUsers();
                 }
             }
         });
@@ -170,7 +170,7 @@ public class VoxeetParticipantView extends VoxeetView {
             public void run() {
                 if (adapter != null) {
                     adapter.onScreenShareMediaStreamUpdated(userId, mediaStreams);
-                    adapter.notifyDataSetChanged();
+                    adapter.updateUsers();
                 }
             }
         });
@@ -192,7 +192,7 @@ public class VoxeetParticipantView extends VoxeetView {
                 }
 
                 adapter.onMediaStreamUpdated(userId, screenShareMediaStreams);
-                adapter.notifyDataSetChanged();
+                adapter.updateUsers();
             }
         });
     }
@@ -202,7 +202,7 @@ public class VoxeetParticipantView extends VoxeetView {
         super.onConferenceDestroyed();
 
         adapter.clearParticipants();
-        adapter.notifyDataSetChanged();
+        adapter.updateUsers();
     }
 
     @Override
@@ -210,7 +210,7 @@ public class VoxeetParticipantView extends VoxeetView {
         super.onConferenceLeft();
 
         adapter.clearParticipants();
-        adapter.notifyDataSetChanged();
+        adapter.updateUsers();
     }
 
     @Override
@@ -252,6 +252,7 @@ public class VoxeetParticipantView extends VoxeetView {
 
     public void notifyDatasetChanged() {
         if (null != adapter) {
+            adapter.updateUsers();
             adapter.notifyDataSetChanged();
         }
     }

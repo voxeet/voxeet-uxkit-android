@@ -19,11 +19,14 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.models.ConferenceUserStatus;
 import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.utils.ConferenceUtils;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.VideoView;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,23 +48,16 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private int lastPosition = -1;
 
-    private int selectedPosition = -1;
+    private String selectedUserId = null;
 
     private IParticipantViewListener listener;
 
-    //private Map<String, MediaStream> mMediaStreamMap;
-    //private Map<String, MediaStream> mScreenShareMediaStreams;
-
     private int overlayColor;
-
-    private int parentWidth;
-    private int parentHeight;
 
     private String mRequestUserIdChanged;
 
     private ParticipantViewAdapter() {
-        //mScreenShareMediaStreams = new HashMap<>();
-        //mMediaStreamMap = new HashMap<>();
+
     }
 
     /**
@@ -90,6 +86,16 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     public void removeUser(ConferenceUser conferenceUser) {
         if (users.contains(conferenceUser))
             users.remove(conferenceUser);
+
+        filter();
+        sort();
+    }
+
+    public void updateUsers() {
+        filter();
+        sort();
+
+        notifyDataSetChanged();
     }
 
     /**
@@ -100,6 +106,34 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     public void addUser(ConferenceUser conferenceUser) {
         if (!users.contains(conferenceUser))
             users.add(conferenceUser);
+
+        filter();
+        sort();
+    }
+
+    private void filter() {
+        List<ConferenceUser> temp_users = new ArrayList<>();
+
+        for (ConferenceUser user : users) {
+            if (!ConferenceUserStatus.LEFT.equals(user.getConferenceStatus())) temp_users.add(user);
+        }
+
+        users = temp_users;
+    }
+
+    private void sort() {
+        if (null != users) {
+            Collections.sort(users, new Comparator<ConferenceUser>() {
+                @Override
+                public int compare(ConferenceUser left, ConferenceUser right) {
+                    if (null != left && ConferenceUserStatus.ON_AIR.equals(left.getConferenceStatus()))
+                        return -1;
+                    if (null != right && ConferenceUserStatus.ON_AIR.equals(right.getConferenceStatus()))
+                        return 1;
+                    return 0;
+                }
+            });
+        }
     }
 
     /**
@@ -111,28 +145,21 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         overlayColor = color;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_participant_view_cell, parent, false);
-
-        parentWidth = parent.getWidth();
-
-        parentHeight = parent.getHeight();
 
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final ConferenceUser user = getItem(position);
 
         Log.d(TAG, "onBindViewHolder: " + position + " " + user.getConferenceStatus());
 
         boolean on_air = ConferenceUserStatus.ON_AIR.equals(user.getConferenceStatus());
-        if (user.getStatus() != null && !user.getStatus().equalsIgnoreCase(ConferenceUserStatus.ON_AIR.name())) {
-            holder.itemView.setAlpha(0.5f);
-        } else
-            holder.itemView.setAlpha(1f);
 
         if (null != user.getUserInfo()) {
             holder.name.setText(user.getUserInfo().getName());
@@ -145,12 +172,14 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
         Log.d(TAG, "onBindViewHolder: ");
         if (on_air) {
+            holder.itemView.setAlpha(1f);
             holder.avatar.setAlpha(1.0f);
         } else {
+            holder.itemView.setAlpha(0.5f);
             holder.avatar.setAlpha(0.4f);
         }
 
-        if (selectedPosition == position) {
+        if (equalsToUser(selectedUserId, user)) {
             holder.name.setTypeface(Typeface.DEFAULT_BOLD);
             holder.name.setTextColor(context.getResources().getColor(R.color.white));
 
@@ -168,11 +197,12 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
             @Override
             public boolean onLongClick(View view) {
 
-                if (selectedPosition == holder.getAdapterPosition()) {
-                    selectedPosition = -1;
+                if (equalsToUser(selectedUserId, user)) {
+                    selectedUserId = null;
 
                     if (listener != null)
                         listener.onParticipantUnselected(user);
+                    notifyDataSetChanged();
                 }
                 return true;
             }
@@ -252,12 +282,32 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                 }
                 Log.d(TAG, "onClick: sending stream type to listener " + next);
 
-                if (listener != null)
-                    listener.onParticipantSelected(user, stream);
+                if (null != user.getUserId()) {
+                    Log.d(TAG, "onClick: selecting the user " + user.getUserId());
+                    if (null == selectedUserId || !equalsToUser(selectedUserId, user)) {
+                        selectedUserId = user.getUserId();
+
+                        if (listener != null)
+                            listener.onParticipantSelected(user, stream);
+                    } else {
+                        selectedUserId = null; //deselecting
+
+                        if (listener != null)
+                            listener.onParticipantUnselected(user);
+                    }
+
+                    notifyDataSetChanged();
+                }
             }
         });
 
         setAnimation(holder.itemView, position);
+    }
+
+    private boolean equalsToUser(String selectedUserId, ConferenceUser user) {
+        boolean areEquals = null != selectedUserId && null != user && selectedUserId.equals(user.getUserId());
+        Log.d(TAG, "equalsToUser: are equals ? " + selectedUserId + " " + user + " := " + areEquals);
+        return areEquals;
     }
 
     private void loadStreamOnto(String userId, @Nullable VideoView.MediaStreamType type, ViewHolder holder) {
@@ -358,10 +408,10 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     /**
      * Animation when a new participant is joining the conference.
      *
-     * @param viewToAnimate
-     * @param position
+     * @param viewToAnimate the valid view which must be animated
+     * @param position      the position in the list
      */
-    private void setAnimation(View viewToAnimate, int position) {
+    private void setAnimation(@NonNull View viewToAnimate, int position) {
         if (position > lastPosition) { // If the bound view wasn't previously displayed on screen, it's animated
             AlphaAnimation animation = new AlphaAnimation(0.2f, 1.0f);
             animation.setDuration(500);
@@ -379,10 +429,10 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     /**
      * Displays user's avatar in the specified imageView.
      *
-     * @param conferenceUser
-     * @param imageView
+     * @param conferenceUser a valid user to bind into picasso
+     * @param imageView      the landing image view
      */
-    private void loadViaPicasso(ConferenceUser conferenceUser, ImageView imageView) {
+    private void loadViaPicasso(@NonNull ConferenceUser conferenceUser, ImageView imageView) {
         try {
             String url = conferenceUser.getUserInfo().getAvatarUrl();
             Log.d(TAG, "loadViaPicasso: loading " + url + " for user " + conferenceUser.getUserInfo().getExternalId() + " instance := " + Picasso.get());
@@ -518,8 +568,13 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     private boolean hasScreenShareMediaStream(@NonNull String userId) {
-        MediaStream stream = getScreenShareMediaStream(userId);
-        return null != stream;
+        //MediaStream stream = getScreenShareMediaStream(userId);
+        //return null != stream;
+
+        //We are disabling the attachment of screen share stream from this adapter for now
+        //the behaviour will evolve in the future
+
+        return false;
     }
 
     private boolean hasCameraMediaStream(@NonNull String userId) {
