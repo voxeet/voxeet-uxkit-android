@@ -226,6 +226,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                 type = getPrevious(userId, VideoView.MediaStreamType.VIDEO);
             }
 
+            if(!on_air) type = VideoView.MediaStreamType.NONE;
             Log.d(TAG, "onBindViewHolder: load previous " + type);
 
             loadStreamOnto(mRequestUserIdChanged, type, holder);
@@ -245,6 +246,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                 type = VideoView.MediaStreamType.VIDEO;
             }
 
+            if(!on_air) type = VideoView.MediaStreamType.NONE;
             Log.d(TAG, "onBindViewHolder: loading stream ? " + type);
             loadStreamOnto(userId, type, holder);
             //}
@@ -264,6 +266,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
                 VideoView.MediaStreamType next = getNext(user.getUserId(), current_type);
 
+                if(!on_air) next = VideoView.MediaStreamType.NONE;
                 Log.d(TAG, "onClick: loading stream type " + next);
                 loadStreamOnto(userId, next, holder);
 
