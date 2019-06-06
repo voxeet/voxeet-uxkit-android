@@ -48,6 +48,7 @@
         <attr name="overlay_color" format="color" />
         <attr name="name_enabled" format="boolean" />
         <attr name="display_self" format="boolean" />
+        <attr name="display_non_air" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="VoxeetTimer">

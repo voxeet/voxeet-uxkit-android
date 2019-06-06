@@ -30,6 +30,8 @@ public class VoxeetParticipantView extends VoxeetView {
     private RecyclerView.LayoutManager horizontalLayout;
 
     private boolean displaySelf = false;
+    private boolean displayNonAir = true;
+
     private Handler mHandler;
 
     /**
@@ -93,12 +95,22 @@ public class VoxeetParticipantView extends VoxeetView {
         adapter.notifyDataSetChanged();
     }
 
+    public boolean isDisplaySelf() {
+        return displaySelf;
+    }
+
+    public boolean isDisplayNonAir() {
+        return displayNonAir;
+    }
+
     private void updateAttrs(AttributeSet attrs) {
         TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetParticipantView);
 
         boolean nameEnabled = attributes.getBoolean(R.styleable.VoxeetParticipantView_name_enabled, true);
 
         displaySelf = attributes.getBoolean(R.styleable.VoxeetParticipantView_display_self, false);
+
+        displayNonAir = attributes.getBoolean(R.styleable.VoxeetParticipantView_display_non_air, true);
 
         ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetParticipantView_overlay_color);
         if (color != null)
@@ -114,7 +126,7 @@ public class VoxeetParticipantView extends VoxeetView {
         super.onConferenceUserJoined(conferenceUser);
 
         boolean isMe = conferenceUser.getUserId().equalsIgnoreCase(VoxeetPreferences.id());
-        if (!isMe || displaySelf) {
+        if (!isMe || isDisplaySelf()) {
             adapter.addUser(conferenceUser);
 
             adapter.updateUsers();
@@ -125,16 +137,16 @@ public class VoxeetParticipantView extends VoxeetView {
     public void onConferenceUserLeft(@NonNull ConferenceUser conferenceUser) {
         super.onConferenceUserLeft(conferenceUser);
 
-        adapter.removeUser(conferenceUser);
-        recyclerView.setLayoutManager(horizontalLayout);
-
-        adapter.updateUsers();
+        if(!isDisplayNonAir()) {
+            adapter.removeUser(conferenceUser);
+            recyclerView.setLayoutManager(horizontalLayout);
+            adapter.updateUsers();
+        }
     }
 
     @Override
     public void onConferenceUserUpdated(@NonNull final ConferenceUser conference_user) {
         super.onConferenceUserUpdated(conference_user);
-
 
         postOnUi(new Runnable() {
             @Override

@@ -31,9 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by romainbenmansour on 22/02/2017.
- */
 public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantViewAdapter.ViewHolder> {
 
     private final String TAG = ParticipantViewAdapter.class.getSimpleName();
@@ -191,7 +188,6 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
             holder.overlay.setVisibility(View.GONE);
         }
-
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
