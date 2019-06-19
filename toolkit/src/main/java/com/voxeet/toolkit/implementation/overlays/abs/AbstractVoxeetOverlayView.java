@@ -18,12 +18,12 @@ import android.view.animation.AccelerateInterpolator;
 
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.utils.ScreenHelper;
+import com.voxeet.sdk.views.RoundedFrameLayout;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.providers.logics.IVoxeetSubViewProvider;
 import com.voxeet.toolkit.utils.CornerHelper;
 import com.voxeet.toolkit.utils.WindowHelper;
-import com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout;
 
 import java.util.ArrayList;
 

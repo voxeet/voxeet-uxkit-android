@@ -8,9 +8,9 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.camera.CameraInformationProvider;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.media.camera.CameraInformationProvider;
 import com.voxeet.toolkit.implementation.VoxeetConferenceView;
 import com.voxeet.toolkit.views.VideoView;
 
