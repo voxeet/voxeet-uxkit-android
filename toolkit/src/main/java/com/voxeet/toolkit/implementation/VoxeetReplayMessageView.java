@@ -5,9 +5,9 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
-import com.voxeet.toolkit.views.VideoView;
 
 import java.util.HashMap;
 import java.util.Map;

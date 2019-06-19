@@ -34,8 +34,6 @@
     <dimen name="conference_view_self_videoview_height">120dp</dimen>
     <dimen name="voxeet_overlay_minized_corner">10dp</dimen>
     <dimen name="voxeet_overlay_margin">16dp</dimen>
-    <dimen name="conference_view_self_videoview_flip_marginTop">2dp</dimen>
-    <dimen name="conference_view_self_videoview_flip_marginRight">0dp</dimen>
     <dimen name="conferencebar_view_item_height">60dp</dimen>
     <dimen name="conferencebar_view_padding_left_right">6dp</dimen>
 </resources>

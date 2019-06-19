@@ -20,7 +20,7 @@
 
     <!-- VideoView used to display incoming video streams -->
     <!-- possible scaleType := scale_fill, scale_fit, balanced -->
-    <com.voxeet.toolkit.views.VideoView
+    <com.voxeet.sdk.views.VideoView
         android:id="@+id/selected_video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -116,7 +116,7 @@
 
         <!-- local user's video stream -->
 
-        <com.voxeet.toolkit.views.VideoView
+        <com.voxeet.sdk.views.VideoView
             android:id="@+id/self_video_view"
             android:layout_width="@dimen/conference_view_self_videoview_width"
             android:layout_height="@dimen/conference_view_self_videoview_height"

@@ -35,7 +35,7 @@
             android:orientation="vertical"
             android:padding="2dp">
 
-            <com.voxeet.toolkit.views.VideoView
+            <com.voxeet.sdk.views.VideoView
                 android:id="@+id/participant_video_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
