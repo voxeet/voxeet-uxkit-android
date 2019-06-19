@@ -121,12 +121,12 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
             public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
                 Log.d(TAG, "onCall: initialized ? " + result);
 
-                if (!VoxeetSdk.getInstance().isSocketOpen()) {
+                if (!VoxeetSdk.user().isSocketOpen()) {
                     Log.d(TAG, "onCall: try to log user");
                     UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                     if (null != userInfo) {
-                        solver.resolve(VoxeetSdk.getInstance().logUserWithChain(userInfo));
+                        solver.resolve(VoxeetSdk.user().logUserWithChain(userInfo));
                     } else {
                         solver.resolve(false);
                     }
@@ -174,7 +174,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
 
                 Activity activity = DefaultIncomingCallActivity.this;
 
-                mEventBus = VoxeetSdk.getInstance().getEventBus();
+                mEventBus = VoxeetSdk.instance().getEventBus();
 
                 if (mIncomingBundleChecker.isBundleValid() && mEventBus != null) {
                     if (!mEventBus.isRegistered(activity)) {
@@ -189,7 +189,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
                     finish();
                 }
 
-                if (!mIncomingBundleChecker.isSameConference(VoxeetSdk.getInstance().getConferenceService().getConferenceId())) {
+                if (!mIncomingBundleChecker.isSameConference(VoxeetSdk.conference().getConferenceId())) {
                     mEventBus.post(new LoadLastSavedOverlayStateEvent());
                 }
             }
@@ -261,8 +261,8 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
         tryInitializedSDK().then(new PromiseExec<Boolean, DeclineConferenceResultEvent>() {
             @Override
             public void onCall(@Nullable Boolean result, @NonNull Solver<DeclineConferenceResultEvent> solver) {
-                if (getConferenceId() != null && null != VoxeetSdk.getInstance()) {
-                    solver.resolve(VoxeetSdk.getInstance().getConferenceService().decline(getConferenceId()));
+                if (getConferenceId() != null && null != VoxeetSdk.conference()) {
+                    solver.resolve(VoxeetSdk.conference().decline(getConferenceId()));
                 } else {
                     solver.resolve((DeclineConferenceResultEvent) null);
                 }
@@ -329,7 +329,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
             @Override
             public void onCall(@NonNull Solver<Boolean> solver) {
                 Application app = getApplication();
-                if (null != VoxeetSdk.getInstance()) {
+                if (null != VoxeetSdk.instance()) {
                     //the SDK is already initialized
                     solver.resolve(true);
                 } else if (null != app && app instanceof VoxeetApplication) {

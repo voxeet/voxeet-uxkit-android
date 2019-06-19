@@ -88,7 +88,7 @@ v1.1.6 :
 
 v1.1.5 :
   - from previous vversion, Media.AudioRoute is now AudioRoute
-  - Audio related APIs are now in `VoxeetSdk.getInstance().getAudioService()`
+  - Audio related APIs are now in `VoxeetSdk.audio()`
   - fix issues with ids from the SDK
   - add VideoPresentation api
   - sample app : integration of the api and fix with butterknife
@@ -325,7 +325,7 @@ Only one instance of a conference is allowed to be live. Leaving the current con
 You can check for the current status directly using : 
 
 ```
-VoxeetSdk.getInstance().getConferenceService().isLive()
+VoxeetSdk.conference().isLive()
 ```
 
 ## Conference stats

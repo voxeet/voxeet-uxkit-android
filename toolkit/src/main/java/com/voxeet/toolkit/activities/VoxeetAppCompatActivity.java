@@ -56,8 +56,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (null != VoxeetSdk.getInstance()) {
-            VoxeetSdk.getInstance().register(this, this);
+        if (null != VoxeetSdk.instance()) {
+            VoxeetSdk.instance().register(this, this);
         }
 
         if (!EventBus.getDefault().isRegistered(this)) {
@@ -73,17 +73,17 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
             mIncomingBundleChecker.onAccept();
         }
 
-        if (null != VoxeetSdk.getInstance()) {
-            VoxeetSdk.getInstance().getScreenShareService().consumeRightsToScreenShare();
+        if (null != VoxeetSdk.screenShare()) {
+            VoxeetSdk.screenShare().consumeRightsToScreenShare();
         }
     }
 
     @Override
     protected void onPause() {
-        if (null != VoxeetSdk.getInstance()) {
+        if (null != VoxeetSdk.localStats()) {
             //stop fetching stats if any pending
-            if (!VoxeetSdk.getInstance().getConferenceService().isLive()) {
-                VoxeetSdk.getInstance().getLocalStatsService().stopAutoFetch();
+            if (!VoxeetSdk.conference().isLive()) {
+                VoxeetSdk.localStats().stopAutoFetch();
             }
         }
 
@@ -121,8 +121,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
         switch (requestCode) {
             case PermissionRefusedEvent.RESULT_CAMERA: {
                 Log.d(TAG, "onActivityResult: camera is ok now");
-                if (null != VoxeetSdk.getInstance() && VoxeetSdk.getInstance().getConferenceService().isLive()) {
-                    VoxeetSdk.getInstance().getConferenceService().startVideo()
+                if (null != VoxeetSdk.conference() && VoxeetSdk.conference().isLive()) {
+                    VoxeetSdk.conference().startVideo()
                             .then(new PromiseExec<Boolean, Object>() {
                                 @Override
                                 public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
@@ -147,8 +147,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean managed = false;
 
-        if (null != VoxeetSdk.getInstance()) {
-            managed = VoxeetSdk.getInstance().getScreenShareService().onActivityResult(requestCode, resultCode, data);
+        if (null != VoxeetSdk.screenShare()) {
+            managed = VoxeetSdk.screenShare().onActivityResult(requestCode, resultCode, data);
         }
 
         if (!managed) {
@@ -158,7 +158,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ScreenShareService.RequestScreenSharePermissionEvent event) {
-        VoxeetSdk.getInstance().getScreenShareService()
+        VoxeetSdk.screenShare()
                 .sendUserPermissionRequest(this);
     }
 

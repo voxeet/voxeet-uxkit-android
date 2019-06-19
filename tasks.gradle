@@ -9,7 +9,8 @@ task javadoc(type: Javadoc) {
     configurations.javadocDeps.setCanBeResolved(true)
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     classpath += configurations.javadocDeps
-    exclude "**/org/webrtc/**"
+    exclude "org/webrtc/**"
+    exclude " com/voxeet/sdk/**"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

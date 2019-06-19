@@ -66,7 +66,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
             }
 
             if (!selected) {
-                currentSpeaker = findUserById(VoxeetSdk.getInstance().getConferenceService().currentSpeaker());
+                currentSpeaker = findUserById(VoxeetSdk.conference().currentSpeaker());
                 if (currentSpeaker != null && currentSpeaker.getUserInfo() != null) {
                     speakerName.setText(currentSpeaker.getUserInfo().getName());
                     invalidateSpeakerName();
@@ -83,8 +83,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     private Runnable updateVuMeterRunnable = new Runnable() {
         @Override
         public void run() {
-            if (currentSpeaker != null && null != VoxeetSdk.getInstance())
-                vuMeter.updateMeter(VoxeetSdk.getInstance().getConferenceService().getPeerVuMeter(currentSpeaker.getUserId()));
+            if (currentSpeaker != null && null != VoxeetSdk.instance())
+                vuMeter.updateMeter(VoxeetSdk.conference().getPeerVuMeter(currentSpeaker.getUserId()));
 
             if (mAttached) handler.postDelayed(this, REFRESH_METER);
         }

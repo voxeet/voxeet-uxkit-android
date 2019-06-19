@@ -20,10 +20,10 @@ import android.widget.LinearLayout;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.abs.ConferenceService;
-import com.voxeet.sdk.core.abs.information.ConferenceInformation;
-import com.voxeet.sdk.core.abs.information.ConferenceUserType;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.core.services.ConferenceService;
+import com.voxeet.sdk.core.services.conferences.information.ConferenceInformation;
+import com.voxeet.sdk.core.services.conferences.information.ConferenceUserType;
 import com.voxeet.sdk.events.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.success.StartScreenShareAnswerEvent;
@@ -205,8 +205,8 @@ public class VoxeetConferenceBarView extends VoxeetView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if (null != VoxeetSdk.getInstance() && null != VoxeetSdk.getInstance().getConferenceService()) {
-            ConferenceService service = VoxeetSdk.getInstance().getConferenceService();
+        if (null != VoxeetSdk.conference()) {
+            ConferenceService service = VoxeetSdk.conference();
             ConferenceInformation information = service.getCurrentConferenceInformation();
 
             if (null != information && information.isOwnVideoStarted() && !service.isVideoOn()) {
@@ -237,7 +237,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         updateSpeakerButton();
 
         if (null != screenshare) {
-            screenshare.setSelected(VoxeetSdk.getInstance().getConferenceService().isScreenShareOn());
+            screenshare.setSelected(VoxeetSdk.conference().isScreenShareOn());
         }
     }
 
@@ -312,9 +312,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
             public void onClick(View v) {
                 speaker.setSelected(!speaker.isSelected());
 
-                VoxeetSdk.getInstance()
-                        .getAudioService()
-                        .setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
+                VoxeetSdk.audio().setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
             }
         });
 
@@ -323,12 +321,9 @@ public class VoxeetConferenceBarView extends VoxeetView {
         hangup.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                VoxeetSdk.getInstance()
-                        .getAudioService().playSoundType(AudioType.HANGUP);
+                VoxeetSdk.audio().playSoundType(AudioType.HANGUP);
 
-                VoxeetSdk.getInstance()
-                        .getConferenceService()
-                        .leave()
+                VoxeetSdk.conference().leave()
                         .then(new PromiseExec<Boolean, Object>() {
                             @Override
                             public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
@@ -367,7 +362,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         recording.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                VoxeetSdk.getInstance().getConferenceService().toggleRecording();
+                VoxeetSdk.conference().toggleRecording();
             }
         });
 
@@ -384,7 +379,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         if (!checkMicrophonePermission()) {
             microphone.setSelected(true);
-            VoxeetSdk.getInstance().getConferenceService().mute(true);
+            VoxeetSdk.conference().mute(true);
         }
     }
 
@@ -393,27 +388,27 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     protected void toggleMute() {
-        boolean new_muted_state = !VoxeetSdk.getInstance().getConferenceService().isMuted();
+        boolean new_muted_state = !VoxeetSdk.conference().isMuted();
 
         if (new_muted_state || checkMicrophonePermission()) {
             //if we unmute, check for microphone state
             microphone.setSelected(new_muted_state);
 
-            VoxeetSdk.getInstance().getConferenceService().mute(new_muted_state);
+            VoxeetSdk.conference().mute(new_muted_state);
         }
     }
 
     protected void toggleCamera() {
         if (checkCameraPermission()) {
-            VoxeetSdk.getInstance().getConferenceService().toggleVideo();
+            VoxeetSdk.conference().toggleVideo();
         }
     }
 
     protected void toggleScreenShare() {
         if (canScreenShare()) {
-            Point size = VoxeetSdk.getInstance().getScreenShareService().getScreenSize(getContext());
-            VoxeetSdk.getInstance().getScreenShareService()
-                    .setScreenSizeInformation(VoxeetSdk.getInstance().getScreenShareService().getScreenSizeScaled(size, 720))
+            Point size = VoxeetSdk.screenShare().getScreenSize(getContext());
+            VoxeetSdk.screenShare()
+                    .setScreenSizeInformation(VoxeetSdk.screenShare().getScreenSizeScaled(size, 720))
                     .toggleScreenShare();
         }
     }
@@ -421,7 +416,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
     protected void turnCamera(boolean on) {
         if (checkCameraPermission()) {
 
-            VoxeetSdk.getInstance().getConferenceService()
+            VoxeetSdk.conference()
                     .startRecording()
                     .then(new PromiseExec<Boolean, Object>() {
                         @Override
@@ -617,9 +612,9 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     private void updateSpeakerButton() {
-        if (null != VoxeetSdk.getInstance()) {
-            boolean headset = VoxeetSdk.getInstance().getAudioService().isWiredHeadsetOn();
-            headset |= VoxeetSdk.getInstance().getAudioService().isBluetoothHeadsetConnected();
+        if (null != VoxeetSdk.instance()) {
+            boolean headset = VoxeetSdk.audio().isWiredHeadsetOn();
+            headset |= VoxeetSdk.audio().isBluetoothHeadsetConnected();
             if (headset) {
                 speaker.setAlpha(0.5f);
                 speaker.setEnabled(false);
@@ -627,7 +622,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
             } else {
                 speaker.setAlpha(1.0f);
                 speaker.setEnabled(true);
-                speaker.setSelected(VoxeetSdk.getInstance().getAudioService().isSpeakerOn());
+                speaker.setSelected(VoxeetSdk.audio().isSpeakerOn());
             }
         }
     }
@@ -646,7 +641,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     private boolean isListener() {
-        ConferenceInformation information =  VoxeetSdk.getInstance().getConferenceService()
+        ConferenceInformation information =  VoxeetSdk.conference()
                 .getCurrentConferenceInformation();
         Log.d(TAG, "isListener: " + information);
         return null == information || ConferenceUserType.LISTENER.equals(information.getConferenceUserType());

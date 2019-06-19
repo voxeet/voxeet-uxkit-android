@@ -17,8 +17,8 @@ public class ActiveSpeakerTimer {
         public void run() {
             if (null != handler) {
                 try {
-                    if (null != listener && null != VoxeetSdk.getInstance()) {
-                        listener.onActiveSpeaker(VoxeetSdk.getInstance().getConferenceService().currentSpeaker());
+                    if (null != listener && null != VoxeetSdk.instance()) {
+                        listener.onActiveSpeaker(VoxeetSdk.conference().currentSpeaker());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

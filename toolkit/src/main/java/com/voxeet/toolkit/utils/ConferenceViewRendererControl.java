@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.camera.CameraInformationProvider;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.media.camera.CameraInformationProvider;
+import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.implementation.VoxeetConferenceView;
-import com.voxeet.toolkit.views.VideoView;
 
 import java.lang.ref.WeakReference;
 
@@ -117,7 +117,7 @@ public class ConferenceViewRendererControl {
 
         selectedView.unAttach();
 
-        MediaStream stream = VoxeetSdk.getInstance().getConferenceService()
+        MediaStream stream = VoxeetSdk.conference()
                 .getMapOfStreams().get(ownUserId);
 
         if (!ToolkitUtils.hasParticipants() && null != stream && stream.videoTracks().size() > 0) {
@@ -132,7 +132,7 @@ public class ConferenceViewRendererControl {
         VideoView selectedView = getOtherVideoView();
         VideoView selfView = getSelfVideoView();
 
-        CameraInformationProvider provider = VoxeetSdk.getInstance().getMediaService().getCameraInformationProvider();
+        CameraInformationProvider provider = VoxeetSdk.mediaDevice().getCameraInformationProvider();
 
         if (null != stream && stream.videoTracks().size() > 0) {
             String ownUserId = VoxeetPreferences.id();
@@ -226,12 +226,11 @@ public class ConferenceViewRendererControl {
             animatorSet.start();
         }
 
-        VoxeetSdk.getInstance()
-                .getConferenceService().switchCamera()
+        VoxeetSdk.conference().switchCamera()
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override
                     public void onCall(@android.support.annotation.Nullable Boolean result, @NonNull Solver<Object> solver) {
-                        CameraInformationProvider provider = VoxeetSdk.getInstance().getMediaService().getCameraInformationProvider();
+                        CameraInformationProvider provider = VoxeetSdk.mediaDevice().getCameraInformationProvider();
                         updateMirror(provider.isDefaultFrontFacing());
                     }
                 })

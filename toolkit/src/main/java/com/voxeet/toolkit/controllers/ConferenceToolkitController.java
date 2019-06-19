@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.abs.information.ConferenceInformation;
+import com.voxeet.sdk.core.services.conferences.information.ConferenceInformation;
 import com.voxeet.sdk.events.promises.NotInConferenceException;
 import com.voxeet.sdk.events.success.ConferenceRefreshedEvent;
 import com.voxeet.sdk.json.UserInfo;
@@ -58,7 +58,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         Log.d("IncomingBundleChecker", "join: conferenceId := " + conferenceId);
         internalJoin(from_invitation);
 
-        return VoxeetSdk.getInstance().getConferenceService().join(conferenceId);
+        return VoxeetSdk.conference().join(conferenceId);
     }
 
     /**
@@ -144,12 +144,12 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         return new Promise<>(new PromiseSolver<Boolean>() {
             @Override
             public void onCall(@NonNull Solver<Boolean> solver) {
-                VoxeetSdk.getInstance().getConferenceService().create(conferenceAlias, metadataHolder, paramsHolder)
+                VoxeetSdk.conference().create(conferenceAlias, metadataHolder, paramsHolder)
                         .then(new PromiseExec<ConferenceResponse, Boolean>() {
                             @Override
                             public void onCall(@Nullable ConferenceResponse result, @NonNull Solver<Boolean> s) {
                                 Log.d("ConferenceToolkitController", "onCall: creating conference done");
-                                s.resolve(VoxeetSdk.getInstance().getConferenceService().join(result.getConfId()));
+                                s.resolve(VoxeetSdk.conference().join(result.getConfId()));
                             }
                         })
                         .then(new PromiseExec<Boolean, Object>() {
@@ -170,16 +170,16 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
     }
 
     public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull String conferenceId, @NonNull List<UserInfo> to_invite) {
-        return VoxeetSdk.getInstance().getConferenceService().inviteUserInfos(conferenceId, to_invite);
+        return VoxeetSdk.conference().inviteUserInfos(conferenceId, to_invite);
     }
 
     @Deprecated
     public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull List<UserInfo> to_invite) {
-        ConferenceInformation information = VoxeetSdk.getInstance().getConferenceService().getCurrentConferenceInformation();
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
         if (null != information) {
             String conferenceId = information.getConference().getConferenceId();
 
-            return VoxeetSdk.getInstance().getConferenceService().inviteUserInfos(conferenceId, to_invite);
+            return VoxeetSdk.conference().inviteUserInfos(conferenceId, to_invite);
         }
 
         return new Promise<>(new PromiseSolver<List<ConferenceRefreshedEvent>>() {

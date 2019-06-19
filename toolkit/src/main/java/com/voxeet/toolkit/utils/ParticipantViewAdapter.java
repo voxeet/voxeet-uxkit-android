@@ -19,9 +19,8 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.models.ConferenceUserStatus;
 import com.voxeet.sdk.models.abs.ConferenceUser;
-import com.voxeet.sdk.utils.ConferenceUtils;
+import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.R;
-import com.voxeet.toolkit.views.VideoView;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 import java.util.ArrayList;
@@ -552,8 +551,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         //if (null != mScreenShareMediaStreams && mScreenShareMediaStreams.containsKey(userId))
         //    return mScreenShareMediaStreams.get(userId);
         //return null;
-        HashMap<String, MediaStream> streams = VoxeetSdk.getInstance()
-                .getConferenceService().getMapOfScreenShareStreams();
+        HashMap<String, MediaStream> streams = VoxeetSdk.conference().getMapOfScreenShareStreams();
         return streams.containsKey(userId) ? streams.get(userId) : null;
     }
 
@@ -561,8 +559,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     private MediaStream getCameraMediaStream(@NonNull String userId) {
         //if (hasCameraMediaStream(userId)) return mMediaStreamMap.get(userId);
         //return null;
-        HashMap<String, MediaStream> streams = VoxeetSdk.getInstance()
-                .getConferenceService().getMapOfStreams();
+        HashMap<String, MediaStream> streams = VoxeetSdk.conference().getMapOfStreams();
         return streams.containsKey(userId) ? streams.get(userId) : null;
     }
 
@@ -587,8 +584,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         //if (null != mMediaStreamMap && mMediaStreamMap.containsKey(userId))
         //    return mMediaStreamMap.get(userId);
         //return null;
-        HashMap<String, MediaStream> streams = VoxeetSdk.getInstance()
-                .getConferenceService().getMapOfStreams();
+        HashMap<String, MediaStream> streams = VoxeetSdk.conference().getMapOfStreams();
         return streams.containsKey(userId) ? streams.get(userId) : null;
     }
 }

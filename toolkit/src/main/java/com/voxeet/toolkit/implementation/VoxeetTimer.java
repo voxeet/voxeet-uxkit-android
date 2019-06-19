@@ -198,7 +198,7 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     private void updateColors() {
-        if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
+        if (VoxeetSdk.conference().isLive()) {
             recordingImage.setColorFilter(inConferenceColor);
             recordingImageAlpha.setColorFilter(inConferenceColor);
         } else {
