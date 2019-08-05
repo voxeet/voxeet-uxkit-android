@@ -2,30 +2,25 @@ package com.voxeet.toolkit.views.internal;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
 
+import com.voxeet.sdk.views.RoundedFrameLayout;
 import com.voxeet.toolkit.R;
-import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 import java.util.ArrayList;
 
-/**
- * Created by romainbenmansour on 20/02/2017.
- */
-public class VoxeetVuMeter extends RoundedImageView {
+public class VoxeetVuMeter extends RoundedFrameLayout {
     private final static int METER_UPDATE_TIMER = 20;
     private final String TAG = VoxeetVuMeter.class.getSimpleName();
-
-    private final int TEMPORAL_SMOOTHING_COUNT = 5;
+    private final int white;
+    private final int yellowOrange;
+    private final View view;
 
     private int width;
-
-    @NonNull
-    private ArrayList<Double> temporalSmoothing = new ArrayList<>(TEMPORAL_SMOOTHING_COUNT);
-
     /**
      * Instantiates a new Voxeet vu meter.
      *
@@ -35,15 +30,18 @@ public class VoxeetVuMeter extends RoundedImageView {
     public VoxeetVuMeter(final Context context, final AttributeSet attrs) {
         super(context, attrs);
 
-        setImageDrawable(new ColorDrawable(getResources().getColor(R.color.grey999)));
+        //setImageDrawable(new ColorDrawable(getResources().getColor(R.color.grey999)));
 
         updateAttrs(attrs);
 
-        setAlpha(0.65f);
+        Resources resources = context.getResources();
+        white = resources.getColor(R.color.white);
+        yellowOrange = resources.getColor(R.color.yellowOrange);
 
-        setMutateBackground(true);
+        view = new View(context);
+        view.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        setOval(true);
+        addView(view);
     }
 
     /**
@@ -52,7 +50,7 @@ public class VoxeetVuMeter extends RoundedImageView {
      * @param color the color
      */
     public void setMeterColor(int color) {
-        setColorFilter(color);
+
     }
 
     private void updateAttrs(AttributeSet attrs) {
@@ -70,30 +68,9 @@ public class VoxeetVuMeter extends RoundedImageView {
 
         width = w / 2;
 
-        animate().scaleY(0).scaleX(0).setDuration(METER_UPDATE_TIMER).start();
+        //animate().scaleY(0).scaleX(0).setDuration(METER_UPDATE_TIMER).start();
 
         requestLayout();
-    }
-
-    private void setLevel(double level) {
-        temporalSmoothing.add(level);
-
-        double max = 0;
-        double factor = 0;
-        int count = 0;
-
-        for (Double l : temporalSmoothing) {
-            factor += ((count + 1) / TEMPORAL_SMOOTHING_COUNT);
-            max += l * ((count + 1) / TEMPORAL_SMOOTHING_COUNT);
-            count++;
-
-            if (factor != 0)
-                max /= factor;
-
-            scale((float) max);
-        }
-
-        postInvalidate();
     }
 
     /**
@@ -101,13 +78,9 @@ public class VoxeetVuMeter extends RoundedImageView {
      *
      * @param vuMeter the vu meter
      */
-    public void updateMeter(double vuMeter) { // minimum is half width, max is full width
-        if (vuMeter > 10)
-            setLevel((((Math.abs(vuMeter/* / 32767.0f*/) * (0.5f * width)) + width / 2) / width));
-    }
-
-    private void scale(float scale) {
-        animate().scaleY(scale).scaleX(scale).setDuration(METER_UPDATE_TIMER).start();
+    public void updateMeter(double vuMeter) {
+        Log.d(TAG, "updateMeter: vuMeter:="+vuMeter);
+        view.setBackgroundColor(vuMeter > 0.02 ? yellowOrange : white);
     }
 
     /**
@@ -121,17 +94,13 @@ public class VoxeetVuMeter extends RoundedImageView {
      * On participant unselected.
      */
     public void onParticipantUnselected() {
-        temporalSmoothing.clear();
-
-        setLevel(0);
+        updateMeter(0);
     }
 
     /**
      * Resets the queue.
      */
     public void reset() {
-        temporalSmoothing.clear();
-
-        setLevel(0);
+        updateMeter(0);
     }
 }

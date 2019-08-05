@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by romainbenmansour on 20/02/2017.
- */
 public abstract class VoxeetView extends FrameLayout
         implements IVoxeetView {
 

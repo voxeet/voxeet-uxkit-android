@@ -121,12 +121,12 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
             public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
                 Log.d(TAG, "onCall: initialized ? " + result);
 
-                if (!VoxeetSdk.user().isSocketOpen()) {
+                if (!VoxeetSdk.getInstance().isSocketOpen()) {
                     Log.d(TAG, "onCall: try to log user");
                     UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                     if (null != userInfo) {
-                        solver.resolve(VoxeetSdk.user().logUserWithChain(userInfo));
+                        solver.resolve(VoxeetSdk.getInstance().logUserWithChain(userInfo));
                     } else {
                         solver.resolve(false);
                     }

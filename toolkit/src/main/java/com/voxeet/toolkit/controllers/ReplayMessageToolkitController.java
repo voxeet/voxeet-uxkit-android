@@ -7,11 +7,12 @@ import android.util.Log;
 
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.ConferenceService;
+import com.voxeet.sdk.core.abs.ConferenceService;
 import com.voxeet.sdk.events.success.ConferenceEndedEvent;
 import com.voxeet.sdk.events.success.GetConferenceHistoryEvent;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.models.HistoryConference;
+import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
 import com.voxeet.toolkit.providers.containers.DefaultReplayMessageProvider;
@@ -33,11 +34,14 @@ import eu.codlab.simplepromise.solve.Solver;
 public class ReplayMessageToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
     private final static String TAG = ReplayMessageToolkitController.class.getSimpleName();
+    public final com.voxeet.toolkit.configuration.Configuration Configuration = new Configuration();
 
     private boolean _wait_for_history;
     private String _last_conference;
     private long _wait_for_history_offset;
     private long _last_conference_duration;
+
+
 
     public ReplayMessageToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
         super(context, eventbus);

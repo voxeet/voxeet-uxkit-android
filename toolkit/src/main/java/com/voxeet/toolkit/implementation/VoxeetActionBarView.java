@@ -20,17 +20,19 @@ import android.widget.LinearLayout;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.abs.ConferenceService;
+import com.voxeet.sdk.core.abs.information.ConferenceInformation;
+import com.voxeet.sdk.core.abs.information.ConferenceUserType;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
-import com.voxeet.sdk.core.services.ConferenceService;
-import com.voxeet.sdk.core.services.conferences.information.ConferenceInformation;
-import com.voxeet.sdk.core.services.conferences.information.ConferenceUserType;
 import com.voxeet.sdk.events.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.success.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.success.StopScreenShareAnswerEvent;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Validate;
+import com.voxeet.sdk.utils.annotate;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,22 +47,15 @@ import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
 
-/**
- * Created by ROMMM on 9/29/15.
- */
-public class VoxeetConferenceBarView extends VoxeetView {
+@annotate
+public class VoxeetActionBarView extends VoxeetView {
 
-    private final String TAG = VoxeetConferenceBarView.class.getSimpleName();
+    private final String TAG = VoxeetActionBarView.class.getSimpleName();
 
-    /**
-     * The constant RESULT_CAMERA.
-     */
-
-    public static final int RECORD = 0x0200;
-    public static final int MUTE = 0x201;
-    public static final int HANG_UP = 0x202;
-    public static final int SPEAKER = 0x203;
-    public static final int VIDEO = 0x204;
+    private final static int MUTE = 0x201;
+    private final static int HANG_UP = 0x202;
+    private final static int SPEAKER = 0x203;
+    private final static int VIDEO = 0x204;
 
     private static final String[] MANDATORY_STRINGS = new String[]{
             Manifest.permission.RECORD_AUDIO,
@@ -70,12 +65,11 @@ public class VoxeetConferenceBarView extends VoxeetView {
     /**
      * handling buttons visibility
      */
-    private boolean displayRecord = true;
-    private boolean displayAudio = true;
+    private boolean displaySpeaker = true;
     private boolean displayMute = true;
     private boolean displayCamera = true;
     private boolean displayLeave = true;
-    private boolean displayScreenshare = true;
+    private boolean displayScreenShare = true;
 
     private LinearLayout container;
 
@@ -83,14 +77,12 @@ public class VoxeetConferenceBarView extends VoxeetView {
     private ImageView speaker;
     private ImageView camera;
     private ImageView hangup;
-    private ImageView recording;
     private View screenshare;
 
     private ViewGroup microphone_wrapper;
     private ViewGroup speaker_wrapper;
     private ViewGroup camera_wrapper;
     private ViewGroup hangup_wrapper;
-    private ViewGroup recording_wrapper;
     private ViewGroup screenshare_wrapper;
     private ViewGroup view_3d_wrapper;
 
@@ -102,7 +94,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
      *
      * @param context the context
      */
-    public VoxeetConferenceBarView(Context context) {
+    public VoxeetActionBarView(Context context) {
         super(context);
 
         setUserPreferences();
@@ -114,7 +106,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
      * @param context the context
      * @param attrs   the attrs
      */
-    public VoxeetConferenceBarView(Context context, AttributeSet attrs) {
+    public VoxeetActionBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         updateAttrs(attrs);
@@ -122,7 +114,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
         setUserPreferences();
     }
 
-    private VoxeetConferenceBarView addButton(int action, int drawable, OnClickListener listener) {
+    private VoxeetActionBarView addButton(int action, int drawable, OnClickListener listener) {
         ImageView imageView = from(action);
         imageView.setImageResource(drawable);
 
@@ -144,26 +136,15 @@ public class VoxeetConferenceBarView extends VoxeetView {
     }
 
     private void updateAttrs(AttributeSet attrs) {
-        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetConferenceBarView);
+        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetActionBarView);
 
-        displayRecord = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_record_button, true);
-        displayAudio = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_audio_button, true);
-        displayMute = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_mute_button, true);
-        displayCamera = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_video_button, true);
-        displayScreenshare = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_screenshare_button, true);
-        displayLeave = attributes.getBoolean(R.styleable.VoxeetConferenceBarView_leave_button, true);
+        displaySpeaker = attributes.getBoolean(R.styleable.VoxeetActionBarView_speaker_button, true);
+        displayMute = attributes.getBoolean(R.styleable.VoxeetActionBarView_mute_button, true);
+        displayCamera = attributes.getBoolean(R.styleable.VoxeetActionBarView_video_button, true);
+        displayScreenShare = attributes.getBoolean(R.styleable.VoxeetActionBarView_screenshare_button, true);
+        displayLeave = attributes.getBoolean(R.styleable.VoxeetActionBarView_leave_button, true);
 
         attributes.recycle();
-    }
-
-    public void setDisplayRecord(boolean displayRecord) {
-        this.displayRecord = displayRecord;
-        setUserPreferences();
-    }
-
-    public void setDisplayAudio(boolean displayAudio) {
-        this.displayAudio = displayAudio;
-        setUserPreferences();
     }
 
     public void setDisplayMute(boolean displayMute) {
@@ -176,13 +157,18 @@ public class VoxeetConferenceBarView extends VoxeetView {
         setUserPreferences();
     }
 
-    public void setDisplayLeave(boolean displayLeave) {
-        this.displayLeave = displayLeave;
+    public void setDisplaySpeaker(boolean displaySpeaker) {
+        this.displaySpeaker = displaySpeaker;
         setUserPreferences();
     }
 
-    public void setDisplayScreenshare(boolean displayScreenshare) {
-        this.displayScreenshare = displayScreenshare;
+    public void setDisplayScreenShare(boolean displayScreenShare) {
+        this.displayScreenShare = displayScreenShare;
+        setUserPreferences();
+    }
+
+    public void setDisplayLeave(boolean displayLeave) {
+        this.displayLeave = displayLeave;
         setUserPreferences();
     }
 
@@ -193,7 +179,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
-    public VoxeetConferenceBarView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public VoxeetActionBarView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         updateAttrs(attrs);
@@ -248,19 +234,6 @@ public class VoxeetConferenceBarView extends VoxeetView {
         }
 
         super.onStop();
-    }
-
-    /**
-     * Sets the recording button color if the conference is being recorded or not.
-     *
-     * @param isRecording
-     */
-    @Override
-    public void onRecordingStatusUpdated(boolean isRecording) {
-        super.onRecordingStatusUpdated(isRecording);
-
-        if (recording != null)
-            recording.setSelected(isRecording);
     }
 
     @Override
@@ -357,15 +330,6 @@ public class VoxeetConferenceBarView extends VoxeetView {
             }
         });
 
-        recording = (ImageView) v.findViewById(R.id.recording);
-        recording_wrapper = v.findViewById(R.id.recording_wrapper);
-        recording.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                VoxeetSdk.conference().toggleRecording();
-            }
-        });
-
         screenshare = v.findViewById(R.id.screenshare);
         screenshare_wrapper = v.findViewById(R.id.screenshare_wrapper);
         if (null != screenshare) {
@@ -439,14 +403,11 @@ public class VoxeetConferenceBarView extends VoxeetView {
     private void setUserPreferences() {
         boolean listener = isListener();
 
-        if (recording != null)
-            recording_wrapper.setVisibility(displayRecord && !listener? VISIBLE : GONE);
-
         if (microphone != null)
             microphone_wrapper.setVisibility(displayMute && !listener ? VISIBLE : GONE);
 
         if (speaker != null)
-            speaker_wrapper.setVisibility(displayAudio ? VISIBLE : GONE);
+            speaker_wrapper.setVisibility(displaySpeaker ? VISIBLE : GONE);
 
         if (camera != null)
             camera_wrapper.setVisibility(displayCamera && !listener ? VISIBLE : GONE);
@@ -456,7 +417,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         boolean screenShareEnabled = VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled();
         if (screenshare != null)
-            screenshare_wrapper.setVisibility(displayScreenshare && !listener && screenShareEnabled ? VISIBLE : GONE);
+            screenshare_wrapper.setVisibility(displayScreenShare && !listener && screenShareEnabled ? VISIBLE : GONE);
     }
 
     @Override
@@ -490,14 +451,11 @@ public class VoxeetConferenceBarView extends VoxeetView {
     private void updateVisibilities(int visibility) {
         boolean listener = isListener();
 
-        if (recording != null)
-            recording_wrapper.setVisibility(displayRecord && !listener? visibility : GONE);
-
         if (microphone != null)
             microphone_wrapper.setVisibility(displayMute && !listener ? visibility : GONE);
 
         if (speaker != null)
-            speaker_wrapper.setVisibility(displayAudio ? visibility : GONE);
+            speaker_wrapper.setVisibility(displaySpeaker ? visibility : GONE);
 
         if (camera != null)
             camera_wrapper.setVisibility(displayCamera && !listener ? visibility : GONE);
@@ -508,7 +466,7 @@ public class VoxeetConferenceBarView extends VoxeetView {
 
         boolean screenShareEnabled = VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled();
         if (screenshare != null)
-            screenshare_wrapper.setVisibility(displayScreenshare && screenShareEnabled ? visibility : GONE);
+            screenshare_wrapper.setVisibility(displayScreenShare && screenShareEnabled ? visibility : GONE);
     }
 
     @Override
@@ -535,8 +493,6 @@ public class VoxeetConferenceBarView extends VoxeetView {
                 return (speaker = new ImageView(getContext()));
             case VIDEO:
                 return (camera = new ImageView(getContext()));
-            case RECORD:
-                return (recording = new ImageView(getContext()));
             default:
                 return new ImageView(getContext());
         }

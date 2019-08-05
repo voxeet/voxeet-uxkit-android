@@ -26,6 +26,9 @@ import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.webrtc.CodecDescriptorFactory;
+import org.webrtc.MediaCodecVideoHelperFactory;
+import org.webrtc.VideoCodecType;
 
 import java.util.List;
 
@@ -136,18 +139,17 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
             VoxeetToolkit.getInstance().enable(VoxeetToolkit.getInstance().getConferenceToolkit());
 
-            Promise<Boolean> promise = VoxeetToolkit.getInstance().getConferenceToolkit().join(conferenceAlias,
-                    new MetadataHolder().setStats(true));
+            Promise<Boolean> promise = VoxeetToolkit.getInstance().getConferenceToolkit().join(conferenceAlias);
 
             if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
                 VoxeetSdk.getInstance().getConferenceService()
                         .leave()
                         .then(promise)
-                        //.then(VoxeetSdk.getInstance().getConferenceService().startVideo())
+                        //.then(VoxeetSdk.conference().startVideo())
                         .then(defaultConsume())
                         .error(createErrorDump());
             } else {
-                promise//.then(VoxeetSdk.getInstance().getConferenceService().startVideo())
+                promise//.then(VoxeetSdk.conference().startVideo())
                         .then(defaultConsume())
                         .error(createErrorDump());
             }
@@ -186,7 +188,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 .then(defaultConsume())
                 .error(createErrorDump());
 
-        /*VoxeetSdk.getInstance().getConferenceService()
+        /*VoxeetSdk.conference()
                 .startVideo()
                 .then(defaultConsume())
                 .error(createErrorDump());*/

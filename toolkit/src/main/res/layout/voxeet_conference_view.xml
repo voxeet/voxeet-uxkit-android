@@ -85,7 +85,7 @@
                         android:layout_marginTop="6dp"
                         android:layout_marginRight="20dp" />
 
-                    <com.voxeet.toolkit.implementation.VoxeetParticipantView
+                    <com.voxeet.toolkit.implementation.VoxeetUsersView
                         android:id="@+id/participant_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
             </LinearLayout>
 
             <!-- display the current speaker -->
-            <com.voxeet.toolkit.implementation.VoxeetCurrentSpeakerView
+            <com.voxeet.toolkit.implementation.VoxeetSpeakerView
                 android:id="@+id/current_speaker_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -128,7 +128,7 @@
             app:showFlip="true" />
 
         <!-- call action buttons -->
-        <com.voxeet.toolkit.implementation.VoxeetConferenceBarView
+        <com.voxeet.toolkit.implementation.VoxeetActionBarView
             android:id="@+id/conference_bar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

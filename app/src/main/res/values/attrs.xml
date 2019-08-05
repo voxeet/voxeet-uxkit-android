@@ -15,7 +15,7 @@
   -->
 
 <resources>
-    <declare-styleable name="VoxeetCurrentSpeakerView">
+    <declare-styleable name="VoxeetSpeakerView">
         <attr name="vu_meter_color" format="color" />
     </declare-styleable>
 
@@ -23,9 +23,9 @@
         <attr name="view_src" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="VoxeetParticipantView">
+    <declare-styleable name="VoxeetUsersView">
         <attr name="overlay_color" format="color" />
-        <attr name="name_enabled" format="boolean" />
+        <attr name="display_name" format="boolean" />
         <attr name="display_self" format="boolean" />
     </declare-styleable>
 
@@ -37,7 +37,7 @@
         <attr name="timer_mode" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="VoxeetConferenceBarView">
+    <declare-styleable name="VoxeetActionBarView">
         <attr name="record_button" format="boolean" />
         <attr name="audio_button" format="boolean" />
         <attr name="mute_button" format="boolean" />

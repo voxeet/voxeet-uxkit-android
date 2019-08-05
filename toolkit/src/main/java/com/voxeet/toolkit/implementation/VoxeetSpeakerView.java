@@ -22,22 +22,22 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.abs.ConferenceUser;
 import com.voxeet.sdk.utils.ConferenceUtils;
+import com.voxeet.sdk.utils.annotate;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.utils.WindowHelper;
 import com.voxeet.toolkit.views.internal.VoxeetVuMeter;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by ROMMM on 9/29/15.
- */
-public class VoxeetCurrentSpeakerView extends VoxeetView {
-    private final String TAG = VoxeetCurrentSpeakerView.class.getSimpleName();
+@annotate
+public class VoxeetSpeakerView extends VoxeetView {
+    private final String TAG = VoxeetSpeakerView.class.getSimpleName();
 
     private final int REFRESH_SPEAKER = 500;
 
-    private final int REFRESH_METER = 500;
+    private final int REFRESH_METER = 100;
 
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -65,7 +65,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
                 selected = false;
             }
 
-            if (!selected) {
+            if (!selected && null != VoxeetSdk.conference()) {
                 currentSpeaker = findUserById(VoxeetSdk.conference().currentSpeaker());
                 if (currentSpeaker != null && currentSpeaker.getUserInfo() != null) {
                     speakerName.setText(currentSpeaker.getUserInfo().getName());
@@ -83,8 +83,13 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     private Runnable updateVuMeterRunnable = new Runnable() {
         @Override
         public void run() {
-            if (currentSpeaker != null && null != VoxeetSdk.instance())
-                vuMeter.updateMeter(VoxeetSdk.conference().getPeerVuMeter(currentSpeaker.getUserId()));
+            if (currentSpeaker != null && null != VoxeetSdk.conference()) {
+                double value = VoxeetSdk.conference().getPeerVuMeter(currentSpeaker.getUserId());
+                Log.d(TAG, "run: currentSpeaker := " + currentSpeaker + " value:=" + value);
+                vuMeter.updateMeter(value);
+            } else {
+                Log.d(TAG, "run: no currentSpeaker");
+            }
 
             if (mAttached) handler.postDelayed(this, REFRESH_METER);
         }
@@ -93,13 +98,14 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     private boolean mDisplaySpeakerName = false;
     private TextView speakerName;
     private boolean mAttached;
+    private float delta;
 
     /**
      * Instantiates a new Voxeet current speaker view.
      *
      * @param context the context
      */
-    public VoxeetCurrentSpeakerView(Context context) {
+    public VoxeetSpeakerView(Context context) {
         super(context);
     }
 
@@ -109,7 +115,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
      * @param context the context
      * @param attrs   the attrs
      */
-    public VoxeetCurrentSpeakerView(Context context, AttributeSet attrs) {
+    public VoxeetSpeakerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         updateAttrs(attrs);
@@ -122,7 +128,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
-    public VoxeetCurrentSpeakerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public VoxeetSpeakerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         updateAttrs(attrs);
@@ -133,21 +139,22 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         super.onAttachedToWindow();
 
         mAttached = true;
-
         onResume();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         mAttached = false;
-
         onPause();
+
         super.onDetachedFromWindow();
     }
 
     private void updateAttrs(AttributeSet attrs) {
-        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetCurrentSpeakerView);
-        ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetCurrentSpeakerView_vu_meter_color);
+        delta = WindowHelper.dpToPx(getContext(), 10);
+
+        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetSpeakerView);
+        ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetSpeakerView_vu_meter_color);
         attributes.recycle();
 
         if (color != null)
@@ -189,6 +196,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         super.onConfigurationChanged(newConfig);
 
         orientation = newConfig.orientation;
+        if(orientation <= 0) orientation = 0;
     }
 
     @Override
@@ -203,18 +211,19 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         super.onSizeChanged(w, h, oldw, oldh);
 
         currentWidth = w / orientation;
+        int width = currentWidth / 2;
 
         FrameLayout.LayoutParams paramsMeter = (FrameLayout.LayoutParams) vuMeter.getLayoutParams();
         paramsMeter.gravity = Gravity.CENTER;
-        paramsMeter.width = currentWidth;
-        paramsMeter.height = currentWidth;
+        paramsMeter.width = (int) (width + delta);
+        paramsMeter.height = (int) (width + delta);
+        vuMeter.setLayoutParams(paramsMeter);
 
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) currentSpeakerView.getLayoutParams();
         params.gravity = Gravity.CENTER;
-        params.width = currentWidth / 2;
-        params.height = currentWidth / 2;
-
-        requestLayout();
+        params.width = width;
+        params.height = width;
+        currentSpeakerView.setLayoutParams(params);
     }
 
     @Override
@@ -252,7 +261,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
     }
 
     private void invalidateSpeakerName() {
-        vuMeter.setVisibility(mDisplaySpeakerName ? View.GONE : View.VISIBLE);
+        vuMeter.setVisibility(/*mDisplaySpeakerName ? View.GONE : */View.VISIBLE);
         speakerName.setVisibility(mDisplaySpeakerName ? View.VISIBLE : View.GONE);
     }
 
@@ -311,7 +320,7 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         if (null != currentSpeaker && null != currentSpeaker.getUserInfo()) {
             userName = currentSpeaker.getUserInfo().getName();
         }
-        if (currentSpeaker != null) {
+        if (userName != null) {
             speakerName.setText(userName);
         }
     }
@@ -332,12 +341,8 @@ public class VoxeetCurrentSpeakerView extends VoxeetView {
         return selected && null != currentSpeaker ? currentSpeaker.getUserId() : null;
     }
 
-
-
     @Override
     public void onResume() {
-        super.onResume();
-
         handler.removeCallbacks(updateSpeakerRunnable);
         handler.removeCallbacks(updateVuMeterRunnable);
 

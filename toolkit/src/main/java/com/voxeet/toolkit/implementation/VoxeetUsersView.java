@@ -14,14 +14,18 @@ import android.view.View;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.utils.annotate;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.configuration.Users;
+import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.utils.IParticipantViewListener;
 import com.voxeet.toolkit.utils.ParticipantViewAdapter;
 
 import java.util.Iterator;
 import java.util.Map;
 
-public class VoxeetParticipantView extends VoxeetView {
+@annotate
+public class VoxeetUsersView extends VoxeetView {
 
     private RecyclerView recyclerView;
 
@@ -39,7 +43,7 @@ public class VoxeetParticipantView extends VoxeetView {
      *
      * @param context the context
      */
-    public VoxeetParticipantView(Context context) {
+    public VoxeetUsersView(Context context) {
         super(context);
 
         internalInit();
@@ -51,7 +55,7 @@ public class VoxeetParticipantView extends VoxeetView {
      * @param context the context
      * @param attrs   the attrs
      */
-    public VoxeetParticipantView(Context context, AttributeSet attrs) {
+    public VoxeetUsersView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         internalInit();
@@ -69,7 +73,7 @@ public class VoxeetParticipantView extends VoxeetView {
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
-    public VoxeetParticipantView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public VoxeetUsersView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         updateAttrs(attrs);
@@ -90,8 +94,8 @@ public class VoxeetParticipantView extends VoxeetView {
      *
      * @param color the color
      */
-    public void setOverlayColor(int color) {
-        adapter.setOverlayColor(color);
+    public void setSelectedUserColor(int color) {
+        adapter.setSelectedUserColor(color);
         adapter.notifyDataSetChanged();
     }
 
@@ -104,17 +108,20 @@ public class VoxeetParticipantView extends VoxeetView {
     }
 
     private void updateAttrs(AttributeSet attrs) {
-        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetParticipantView);
+        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetUsersView);
 
-        boolean nameEnabled = attributes.getBoolean(R.styleable.VoxeetParticipantView_name_enabled, true);
+        boolean nameEnabled = attributes.getBoolean(R.styleable.VoxeetUsersView_display_name, true);
 
-        displaySelf = attributes.getBoolean(R.styleable.VoxeetParticipantView_display_self, false);
+        displaySelf = attributes.getBoolean(R.styleable.VoxeetUsersView_display_self, false);
 
-        displayNonAir = attributes.getBoolean(R.styleable.VoxeetParticipantView_display_non_air, true);
+        displayNonAir = attributes.getBoolean(R.styleable.VoxeetUsersView_display_user_lefts, true);
 
-        ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetParticipantView_overlay_color);
-        if (color != null)
-            setOverlayColor(color.getColorForState(getDrawableState(), 0));
+        Users configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.Users;
+        ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetUsersView_speaking_user_color);
+        if(null != configuration.speaking_user_color)
+            setSelectedUserColor(configuration.speaking_user_color);
+        else if (color != null)
+            setSelectedUserColor(color.getColorForState(getDrawableState(), 0));
 
         setNamesEnabled(nameEnabled);
 

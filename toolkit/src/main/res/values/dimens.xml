@@ -17,6 +17,7 @@
     <dimen name="contact_profile_avatar_size">128dp</dimen>
     <dimen name="conference_view_avatar_size">64dp</dimen>
     <dimen name="meeting_list_avatar_double">48dp</dimen>
+    <dimen name="meeting_list_avatar_vu_double">52dp</dimen>
     <dimen name="meeting_list_username_width">64dp</dimen>
     <dimen name="meeting_list_avatar_third">16dp</dimen>
     <dimen name="dimen_3">3dp</dimen>

@@ -48,7 +48,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private IParticipantViewListener listener;
 
-    private int overlayColor;
+    private int selectedUserColor;
 
     private String mRequestUserIdChanged;
 
@@ -63,7 +63,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      */
     public ParticipantViewAdapter(Context context) {
         this();
-        this.overlayColor = context.getResources().getColor(R.color.blue);
+        this.selectedUserColor = context.getResources().getColor(R.color.blue);
 
         this.context = context;
 
@@ -137,8 +137,8 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param color the color
      */
-    public void setOverlayColor(int color) {
-        overlayColor = color;
+    public void setSelectedUserColor(int color) {
+        selectedUserColor = color;
     }
 
     @NonNull
@@ -180,7 +180,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
             holder.name.setTextColor(context.getResources().getColor(R.color.white));
 
             holder.overlay.setVisibility(View.VISIBLE);
-            holder.overlay.setBackgroundColor(overlayColor);
+            holder.overlay.setBackgroundColor(selectedUserColor);
         } else {
             holder.name.setTypeface(Typeface.DEFAULT);
             holder.name.setTextColor(context.getResources().getColor(R.color.grey999));
@@ -318,12 +318,12 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                 holder.avatar.setVisibility(View.VISIBLE);
                 break;
             case SCREEN_SHARE:
-                holder.videoView.attach(userId, getScreenShareMediaStream(userId), true);
+                holder.videoView.attach(userId, getScreenShareMediaStream(userId));
                 holder.videoView.setVisibility(View.VISIBLE);
                 holder.avatar.setVisibility(View.GONE);
                 break;
             case VIDEO:
-                holder.videoView.attach(userId, getCameraMediaStream(userId), true);
+                holder.videoView.attach(userId, getCameraMediaStream(userId));
                 holder.videoView.setVisibility(View.VISIBLE);
                 holder.avatar.setVisibility(View.GONE);
                 break;

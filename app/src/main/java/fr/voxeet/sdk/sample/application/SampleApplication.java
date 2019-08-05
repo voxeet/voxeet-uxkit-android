@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.voxeet.push.firebase.FirebaseController;
@@ -25,7 +26,7 @@ import eu.codlab.simplepromise.solve.PromiseSolver;
 import eu.codlab.simplepromise.solve.Solver;
 import fr.voxeet.sdk.sample.BuildConfig;
 
-public class SampleApplication extends VoxeetApplication {
+public class SampleApplication extends MultiDexApplication {
     private static final int ONE_MINUTE = 60 * 1000;
 
     private static final String TAG = SampleApplication.class.getSimpleName();
@@ -140,15 +141,13 @@ public class SampleApplication extends VoxeetApplication {
      * @return a promise in case of the OAuth use case, null otherwise
      */
     @NonNull
-    @Override
     public Promise<Boolean> uniqueInitializeSDK() {
         return new Promise<>(new PromiseSolver<Boolean>() {
             @Override
             public void onCall(@NonNull Solver<Boolean> solver) {
                 VoxeetSdk.initialize(SampleApplication.this,
                         BuildConfig.CONSUMER_KEY,
-                        BuildConfig.CONSUMER_SECRET,
-                        _current_user); //can be null - will be removed in a later version
+                        BuildConfig.CONSUMER_SECRET); //can be null - will be removed in a later version
 
                 onSdkInitialized();
                 solver.resolve(true);

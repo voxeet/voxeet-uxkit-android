@@ -94,7 +94,7 @@ public class ConferenceViewRendererControl {
                 selectedView.setMirror(false);
                 selectedView.unAttach();
                 selectedView.setVisibility(View.VISIBLE);
-                selectedView.attach(peerId, stream, true);
+                selectedView.attach(peerId, stream);
             } else {
                 selectedView.unAttach();
                 selectedView.setVisibility(View.GONE);
@@ -105,7 +105,7 @@ public class ConferenceViewRendererControl {
             selectedView.setMirror(false);
             selectedView.unAttach();
             selectedView.setVisibility(View.VISIBLE);
-            selectedView.attach(peerId, stream, true);
+            selectedView.attach(peerId, stream);
         }
     }
 
@@ -143,7 +143,7 @@ public class ConferenceViewRendererControl {
                 selectedView.setVideoFill();
                 selectedView.setMirror(provider.isDefaultFrontFacing());
                 selectedView.setVisibility(View.VISIBLE);
-                selectedView.attach(ownUserId, stream, true);
+                selectedView.attach(ownUserId, stream);
                 setClickForSelectedIfNecessary();
                 getParent().hideSpeakerView();
             } else {
@@ -155,7 +155,7 @@ public class ConferenceViewRendererControl {
                     getParent().showSpeakerView();
                 }
                 selfView.setMirror(provider.isDefaultFrontFacing());
-                selfView.attach(VoxeetPreferences.id(), stream, true);
+                selfView.attach(VoxeetPreferences.id(), stream);
                 selfView.setVisibility(View.VISIBLE);
             }
         }

@@ -25,7 +25,7 @@
 
     <declare-styleable name="VoxeetParticipantView">
         <attr name="overlay_color" format="color" />
-        <attr name="name_enabled" format="boolean" />
+        <attr name="display_name" format="boolean" />
         <attr name="display_self" format="boolean" />
     </declare-styleable>
 

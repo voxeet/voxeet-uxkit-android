@@ -17,9 +17,6 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
-/**
- * Created by ROMMM on 9/29/15.
- */
 public class VoxeetTimer extends VoxeetView {
 
     private Handler handler = new Handler();

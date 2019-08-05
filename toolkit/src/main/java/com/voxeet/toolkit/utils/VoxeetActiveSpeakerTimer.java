@@ -6,10 +6,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.utils.annotate;
 
-public class ActiveSpeakerTimer {
+@annotate
+public class VoxeetActiveSpeakerTimer {
 
     private ActiveSpeakerListener listener;
+    private String currentActiveSpeaker;
 
     private Handler handler;
     private Runnable refreshActiveSpeaker = new Runnable() {
@@ -18,23 +21,28 @@ public class ActiveSpeakerTimer {
             if (null != handler) {
                 try {
                     if (null != listener && null != VoxeetSdk.instance()) {
-                        listener.onActiveSpeaker(VoxeetSdk.conference().currentSpeaker());
+                        String fromSdk = VoxeetSdk.conference().currentSpeaker();
+
+                        if(null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk)) {
+                            currentActiveSpeaker = fromSdk;
+                            listener.onActiveSpeakerUpdated(currentActiveSpeaker);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 if (handler != null) {
-                    handler.postDelayed(this, 5000);
+                    handler.postDelayed(this, 1000);
                 }
             }
         }
     };
 
-    private ActiveSpeakerTimer() {
+    private VoxeetActiveSpeakerTimer() {
 
     }
 
-    public ActiveSpeakerTimer(@NonNull ActiveSpeakerListener listener) {
+    public VoxeetActiveSpeakerTimer(@NonNull ActiveSpeakerListener listener) {
         this();
 
         this.listener = listener;
@@ -52,7 +60,12 @@ public class ActiveSpeakerTimer {
         handler = null;
     }
 
+    @Nullable
+    public String getCurrentActiveSpeaker() {
+        return currentActiveSpeaker;
+    }
+
     public static interface ActiveSpeakerListener {
-        void onActiveSpeaker(@Nullable String activeSpeakerUserId);
+        void onActiveSpeakerUpdated(@Nullable String activeSpeakerUserId);
     }
 }

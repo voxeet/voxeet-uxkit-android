@@ -13,9 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by romainbenmansour on 11/08/16.
- */
 public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
     private final String TAG = VoxeetConferenceView.class.getSimpleName();
 

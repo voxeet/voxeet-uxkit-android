@@ -19,7 +19,7 @@
         <attr name="below_system_bar" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="VoxeetCurrentSpeakerView">
+    <declare-styleable name="VoxeetSpeakerView">
         <attr name="vu_meter_color" format="color" />
     </declare-styleable>
 
@@ -27,11 +27,12 @@
         <attr name="view_src" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="VoxeetParticipantView">
-        <attr name="overlay_color" format="color" />
-        <attr name="name_enabled" format="boolean" />
+    <declare-styleable name="VoxeetUsersView">
+        <attr name="speaking_user_color" format="color" />
+        <attr name="selected_user_color" format="color" />
+        <attr name="display_name" format="boolean" />
         <attr name="display_self" format="boolean" />
-        <attr name="display_non_air" format="boolean" />
+        <attr name="display_user_lefts" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="VoxeetTimer">
@@ -43,11 +44,11 @@
         <attr name="color_enabled" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="VoxeetConferenceBarView">
+    <declare-styleable name="VoxeetActionBarView">
         <attr name="record_button" format="boolean" />
         <attr name="mute_button" format="boolean" />
         <attr name="video_button" format="boolean" />
-        <attr name="audio_button" format="boolean" />
+        <attr name="speaker_button" format="boolean" />
         <attr name="mix3d_button" format="boolean" />
         <attr name="screenshare_button" format="boolean" />
         <attr name="leave_button" format="boolean" />
@@ -55,10 +56,6 @@
 
     <declare-styleable name="VoxeetVuMeter">
         <attr name="background_color" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="VoxeetLoadingView">
-        <attr name="loading_color" format="color" />
     </declare-styleable>
 
     <declare-styleable name="RoundedImageView">
