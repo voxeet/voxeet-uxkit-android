@@ -321,6 +321,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         if (!ToolkitUtils.hasParticipants() && null != stream && stream.videoTracks().size() > 0) {
             selectedView.setVisibility(View.VISIBLE);
             mConferenceViewRendererControl.attachStreamToSelf(stream);
+            if(!isExpanded) selfView.setVisibility(View.GONE);
         }
 
         conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
@@ -484,10 +485,11 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         if (null != currentUser) {
             if (currentUser.videoTracks().size() > 0) {
-                selfView.setVisibility(View.VISIBLE);
                 selfView.attach(VoxeetPreferences.id(), currentUser);
 
                 selfView.setMirror(VoxeetSdk.mediaDevice().getCameraInformationProvider().isDefaultFrontFacing());
+                if(isExpanded) selfView.setVisibility(View.VISIBLE);
+                else selfView.setVisibility(View.GONE);
             } else {
                 selfView.unAttach();
                 selfView.setVisibility(View.GONE);
@@ -578,6 +580,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         MediaStream stream = VoxeetSdk.conference().getMapOfStreams().get(VoxeetPreferences.id());
         if (null != stream && stream.videoTracks().size() > 0) {
             mConferenceViewRendererControl.attachStreamToSelf(stream);
+            if(!isExpanded) selfView.setVisibility(View.GONE);
         }
     }
 
@@ -634,6 +637,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         refreshUIVisibility();
         updateUi();
+        checkForLocalUserStreamVideo();
     }
 
     @Override
