@@ -60,6 +60,7 @@ import com.voxeet.toolkit.providers.containers.IVoxeetOverlayViewProvider;
 import com.voxeet.toolkit.providers.logics.IVoxeetSubViewProvider;
 import com.voxeet.toolkit.providers.rootview.AbstractRootViewProvider;
 import com.voxeet.toolkit.utils.LoadLastSavedOverlayStateEvent;
+import com.voxeet.toolkit.views.internal.VoxeetOverlayContainerFrameLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -82,7 +83,7 @@ import java.util.Map;
  * implementations must provide the view which will be used later
  */
 
-public abstract class AbstractConferenceToolkitController {
+public abstract class AbstractConferenceToolkitController implements VoxeetOverlayContainerFrameLayout.OnSizeChangedListener {
 
     private Context mContext;
     @NonNull
@@ -116,7 +117,7 @@ public abstract class AbstractConferenceToolkitController {
     @Nullable
     private AbstractVoxeetOverlayView mMainView;
 
-    private FrameLayout mMainViewParent;
+    private VoxeetOverlayContainerFrameLayout mMainViewParent;
 
     /**
      * Information about the mParams of the
@@ -165,8 +166,9 @@ public abstract class AbstractConferenceToolkitController {
         mMediaStreams = service.getMapOfStreams();
         mScreenShareMediaStreams = service.getMapOfScreenShareStreams();
 
-        mMainViewParent = new FrameLayout(activity);
+        mMainViewParent = new VoxeetOverlayContainerFrameLayout(activity);
         mMainViewParent.setLayoutParams(createMatchParams());
+        mMainViewParent.setListener(this);
 
         if (null == mSavedOverlayState) mSavedOverlayState = getDefaultOverlayState();
 
@@ -365,6 +367,7 @@ public abstract class AbstractConferenceToolkitController {
             mSavedOverlayState = null;
 
             mMainView = null;
+            if (null != mMainViewParent) mMainViewParent.setListener(null);
             mMainViewParent = null;
         }
 
@@ -394,6 +397,7 @@ public abstract class AbstractConferenceToolkitController {
                         //but wanted to clear it
                         if (view == mMainView) {
                             mMainView = null;
+                            if (null != mMainViewParent) mMainViewParent.setListener(null);
                             mMainViewParent = null;
                         }
                     }
@@ -1068,5 +1072,18 @@ public abstract class AbstractConferenceToolkitController {
             return VoxeetSdk.conference().getConferenceUsers();
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public void onSizedChangedListener(@NonNull VoxeetOverlayContainerFrameLayout view) {
+        if (null != mMainView) {
+            switch (mSavedOverlayState) {
+                case MINIMIZED:
+                    minimize();
+                case EXPANDED:
+                    expand();
+                default:
+            }
+        }
     }
 }
