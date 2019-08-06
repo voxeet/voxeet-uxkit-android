@@ -13,17 +13,20 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.FrameLayout;
 
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.configuration.Overlay;
+import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.providers.logics.IVoxeetSubViewProvider;
 import com.voxeet.toolkit.utils.CornerHelper;
 import com.voxeet.toolkit.utils.WindowHelper;
-import com.voxeet.toolkit.views.internal.rounded.RoundedFrameLayout;
 
 import java.util.ArrayList;
 
@@ -50,7 +53,8 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
     private AnimationHandler animationHandler;
 
-    private ViewGroup container;
+    private com.voxeet.sdk.views.RoundedFrameLayout container;
+    private FrameLayout background_container;
 
     private GestureDetector gestureDetector;
 
@@ -285,10 +289,17 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     }
 
     protected void toggleBackground() {
-        if (isExpanded())
-            container.setBackgroundResource(R.drawable.background_conference_view_maxed_out);
-        else
-            container.setBackgroundResource(R.drawable.background_conference_view);
+        int background = 0;
+        Overlay overlay = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.Overlay;
+        if (isExpanded()) {
+            background = null != overlay.background_maximized_color ? overlay.background_maximized_color : R.drawable.background_maximized_color;
+            if(null != container) container.setCornerRadius(0f);
+        } else {
+            background = null != overlay.background_minimized_color ? overlay.background_minimized_color : R.drawable.background_minimized_color;
+            float dimension = getContext().getResources().getDimension(R.dimen.voxeet_overlay_minized_corner);
+            if(null != container) container.setCornerRadius(dimension);
+        }
+        background_container.setBackgroundResource(background);
     }
 
 
@@ -316,12 +327,9 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     @Override
     protected void bindView(View view) {
         container = view.findViewById(R.id.overlay_main_container);
+        background_container = view.findViewById(R.id.overlay_background_container);
         sub_container = view.findViewById(R.id.container);
         action_button = view.findViewById(R.id.action_button);
-
-        if (container instanceof RoundedFrameLayout) {
-            ((RoundedFrameLayout) container).setCornerRadius(getResources().getDimension(R.dimen.voxeet_overlay_minized_corner));
-        }
 
         action_button.setOnClickListener(new OnClickListener() {
             @Override
@@ -329,6 +337,8 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
                 onActionButtonClicked();
             }
         });
+
+        toggleBackground();
 
     }
 

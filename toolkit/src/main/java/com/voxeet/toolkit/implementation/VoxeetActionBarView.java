@@ -114,27 +114,6 @@ public class VoxeetActionBarView extends VoxeetView {
         setUserPreferences();
     }
 
-    private VoxeetActionBarView addButton(int action, int drawable, OnClickListener listener) {
-        ImageView imageView = from(action);
-        imageView.setImageResource(drawable);
-
-        // setting layout params
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.CENTER;
-        params.setMargins(10, 10, 10, 10);
-
-        imageView.setLayoutParams(params);
-
-        imageView.setPadding(10, 10, 10, 10);
-
-        // listener
-        imageView.setOnClickListener(listener);
-
-        container.addView(imageView);
-
-        return this;
-    }
-
     private void updateAttrs(AttributeSet attrs) {
         TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetActionBarView);
 
@@ -481,21 +460,6 @@ public class VoxeetActionBarView extends VoxeetView {
      */
     public void onToggleSize(boolean isMaxedOut) {
         setVisibility(isMaxedOut ? VISIBLE : GONE);
-    }
-
-    public ImageView from(int action) {
-        switch (action) {
-            case HANG_UP:
-                return (hangup = new ImageView(getContext()));
-            case MUTE:
-                return (microphone = new ImageView(getContext()));
-            case SPEAKER:
-                return (speaker = new ImageView(getContext()));
-            case VIDEO:
-                return (camera = new ImageView(getContext()));
-            default:
-                return new ImageView(getContext());
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
