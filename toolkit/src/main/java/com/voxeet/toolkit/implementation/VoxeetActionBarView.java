@@ -373,26 +373,6 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
-    protected void turnCamera(boolean on) {
-        if (checkCameraPermission()) {
-
-            VoxeetSdk.conference()
-                    .startRecording()
-                    .then(new PromiseExec<Boolean, Object>() {
-                        @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-
-                        }
-                    })
-                    .error(new ErrorPromise() {
-                        @Override
-                        public void onError(Throwable error) {
-
-                        }
-                    });
-        }
-    }
-
     /**
      * Updating buttons visibility when changing one of the attributes programmatically.
      */
