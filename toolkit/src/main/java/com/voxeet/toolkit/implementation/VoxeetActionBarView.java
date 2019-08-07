@@ -3,8 +3,11 @@ package com.voxeet.toolkit.implementation;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +35,7 @@ import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.sdk.utils.annotate;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.configuration.ActionBar;
 import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
@@ -77,7 +81,7 @@ public class VoxeetActionBarView extends VoxeetView {
     private ImageView speaker;
     private ImageView camera;
     private ImageView hangup;
-    private View screenshare;
+    private ImageView screenshare;
 
     private ViewGroup microphone_wrapper;
     private ViewGroup speaker_wrapper;
@@ -320,6 +324,19 @@ public class VoxeetActionBarView extends VoxeetView {
             });
         }
 
+        ActionBar configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar;
+        StateListDrawable selector_camera = createOverridenSelector(configuration.camera_on, configuration.camera_off);
+        StateListDrawable selector_microphone = createOverridenSelector(configuration.mic_on, configuration.mic_off);
+        StateListDrawable selector_screenshare = createOverridenSelector(configuration.screenshare_on, configuration.screenshare_off);
+        StateListDrawable selector_speaker = createOverridenSelector(configuration.speaker_on, configuration.speaker_off);
+        StateListDrawable selector_hangup = createOverridenSelectorPressed(configuration.hangup, configuration.hangup_pressed);
+
+        if(null != selector_camera) camera.setImageDrawable(selector_camera);
+        if(null != selector_microphone) microphone.setImageDrawable(selector_microphone);
+        if(null != selector_screenshare) screenshare.setImageDrawable(selector_screenshare);
+        if(null != selector_speaker) speaker.setImageDrawable(selector_speaker);
+        if(null != selector_hangup) hangup.setImageDrawable(selector_hangup);
+
         if (!checkMicrophonePermission()) {
             microphone.setSelected(true);
             VoxeetSdk.conference().mute(true);
@@ -561,9 +578,45 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     private boolean isListener() {
-        ConferenceInformation information =  VoxeetSdk.conference()
+        ConferenceInformation information = VoxeetSdk.conference()
                 .getCurrentConferenceInformation();
         Log.d(TAG, "isListener: " + information);
         return null == information || ConferenceUserType.LISTENER.equals(information.getConferenceUserType());
+    }
+
+    private boolean isValidOverride(Integer button_on, Integer button_off) {
+        return null != button_off && null != button_on;
+    }
+
+    @Nullable
+    private StateListDrawable createOverridenSelectorPressed(Integer button_on, Integer button_off) {
+        if(!isValidOverride(button_on, button_off)) return null;
+
+        Resources resources = getContext().getResources();
+        Drawable drawable_on = resources.getDrawable(button_on);
+        Drawable drawable_off = resources.getDrawable(button_off);
+
+        StateListDrawable states = new StateListDrawable();
+
+        states.addState(new int[]{android.R.attr.stateNotNeeded}, drawable_off);
+        states.addState(new int[]{android.R.attr.state_pressed}, drawable_on);
+
+        return states;
+    }
+
+    @Nullable
+    private StateListDrawable createOverridenSelector(Integer button_on, Integer button_off) {
+        if(!isValidOverride(button_on, button_off)) return null;
+
+        Resources resources = getContext().getResources();
+        Drawable drawable_on = resources.getDrawable(button_on);
+        Drawable drawable_off = resources.getDrawable(button_off);
+
+        StateListDrawable states = new StateListDrawable();
+
+        states.addState(new int[]{android.R.attr.stateNotNeeded}, drawable_off);
+        states.addState(new int[]{android.R.attr.state_selected}, drawable_on);
+
+        return states;
     }
 }
