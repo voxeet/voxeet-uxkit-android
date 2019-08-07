@@ -11,8 +11,6 @@ import android.view.View;
 import com.voxeet.sdk.views.RoundedFrameLayout;
 import com.voxeet.toolkit.R;
 
-import java.util.ArrayList;
-
 public class VoxeetVuMeter extends RoundedFrameLayout {
     private final static int METER_UPDATE_TIMER = 20;
     private final String TAG = VoxeetVuMeter.class.getSimpleName();

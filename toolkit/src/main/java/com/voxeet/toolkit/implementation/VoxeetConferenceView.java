@@ -30,10 +30,10 @@ import com.voxeet.toolkit.configuration.ActionBar;
 import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
-import com.voxeet.toolkit.utils.VoxeetActiveSpeakerTimer;
 import com.voxeet.toolkit.utils.ConferenceViewRendererControl;
 import com.voxeet.toolkit.utils.IParticipantViewListener;
 import com.voxeet.toolkit.utils.ToolkitUtils;
+import com.voxeet.toolkit.utils.VoxeetActiveSpeakerTimer;
 import com.voxeet.toolkit.views.NotchAvoidView;
 
 import org.greenrobot.eventbus.EventBus;

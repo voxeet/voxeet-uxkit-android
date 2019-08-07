@@ -14,11 +14,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.audio.AudioRoute;
@@ -36,15 +34,12 @@ import com.voxeet.sdk.utils.Validate;
 import com.voxeet.sdk.utils.annotate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.configuration.ActionBar;
-import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import eu.codlab.simplepromise.solve.ErrorPromise;
@@ -56,16 +51,6 @@ public class VoxeetActionBarView extends VoxeetView {
 
     private final String TAG = VoxeetActionBarView.class.getSimpleName();
 
-    private final static int MUTE = 0x201;
-    private final static int HANG_UP = 0x202;
-    private final static int SPEAKER = 0x203;
-    private final static int VIDEO = 0x204;
-
-    private static final String[] MANDATORY_STRINGS = new String[]{
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.CAMERA
-    };
-
     /**
      * handling buttons visibility
      */
@@ -74,8 +59,6 @@ public class VoxeetActionBarView extends VoxeetView {
     private boolean displayCamera = true;
     private boolean displayLeave = true;
     private boolean displayScreenShare = true;
-
-    private LinearLayout container;
 
     private ImageView microphone;
     private ImageView speaker;
@@ -247,8 +230,6 @@ public class VoxeetActionBarView extends VoxeetView {
 
     @Override
     protected void bindView(View v) {
-        container = (LinearLayout) v.findViewById(R.id.container);
-
         view_3d = v.findViewById(R.id.view_3d);
         view_3d_wrapper = v.findViewById(R.id.view_3d_wrapper);
         if (null != view_3d) {
@@ -509,22 +490,6 @@ public class VoxeetActionBarView extends VoxeetView {
             return false;
         } else {
             return true;
-        }
-    }
-
-    private void requestMandatoryPermissions() {
-        List<String> permissions_to_request = new ArrayList<>();
-
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : MANDATORY_STRINGS) {
-                if (ContextCompat.checkSelfPermission(getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    permissions_to_request.add(permission);
-                }
-            }
-
-            Validate.requestMandatoryPermissions(VoxeetToolkit.getInstance().getCurrentActivity(),
-                    permissions_to_request.toArray(new String[permissions_to_request.size()]),
-                    PermissionRefusedEvent.RESULT_MANDATORY);
         }
     }
 
