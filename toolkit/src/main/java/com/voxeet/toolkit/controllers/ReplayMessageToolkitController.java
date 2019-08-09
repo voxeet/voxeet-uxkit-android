@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.abs.ConferenceService;
+import com.voxeet.sdk.core.services.ConferenceService;
 import com.voxeet.sdk.events.success.ConferenceEndedEvent;
 import com.voxeet.sdk.events.success.GetConferenceHistoryEvent;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;

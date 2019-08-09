@@ -16,11 +16,11 @@ import android.widget.TextView;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.abs.ConferenceService;
-import com.voxeet.sdk.core.abs.information.ConferenceInformation;
-import com.voxeet.sdk.core.abs.information.ConferenceState;
-import com.voxeet.sdk.core.abs.information.ConferenceUserType;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.core.services.ConferenceService;
+import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
+import com.voxeet.sdk.core.services.conference.information.ConferenceState;
+import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
 import com.voxeet.sdk.events.success.CameraSwitchSuccessEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.abs.ConferenceUser;

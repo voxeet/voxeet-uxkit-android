@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.abs.information.ConferenceInformation;
+import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.events.promises.NotInConferenceException;
 import com.voxeet.sdk.events.success.ConferenceRefreshedEvent;
 import com.voxeet.sdk.json.UserInfo;

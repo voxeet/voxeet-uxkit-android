@@ -105,7 +105,7 @@ public abstract class VoxeetApplication extends Application {
         //TODO append the current 'solver' in a list and call logUserWithChain if no solver existed
         UserInfo userInfos = VoxeetPreferences.getSavedUserInfo();
         if (null != userInfos)
-            return VoxeetSdk.getInstance().logUserWithChain(userInfos);
+            return VoxeetSdk.user().login(userInfos);
         return new Promise<>(new PromiseSolver<Boolean>() {
             @Override
             public void onCall(@NonNull Solver<Boolean> solver) {

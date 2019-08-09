@@ -82,12 +82,12 @@ public class IncomingBundleChecker {
                     .joinUsingConferenceId(mConferenceId, info);
             //only when error() is called
 
-            Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSdk.getInstance().isSocketOpen());
-            if (!VoxeetSdk.getInstance().isSocketOpen()) {
+            Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSdk.user().isSocketOpen());
+            if (!VoxeetSdk.user().isSocketOpen()) {
                 UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                 if (null != userInfo) {
-                    VoxeetSdk.getInstance().logUserWithChain(userInfo)
+                    VoxeetSdk.user().login(userInfo)
                             .then(new PromiseExec<Boolean, Boolean>() {
                                 @Override
                                 public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
