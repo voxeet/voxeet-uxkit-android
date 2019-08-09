@@ -5,6 +5,8 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -289,15 +291,27 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
     protected void toggleBackground() {
         int background = 0;
+        Integer color = null;
         Overlay overlay = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.Overlay;
+        Resources resources = getContext().getResources();
+
         if (isExpanded()) {
-            background = null != overlay.background_maximized_color ? overlay.background_maximized_color : R.drawable.background_maximized_color;
+            background = R.drawable.background_maximized_color;
+            color = overlay.background_minimized_color;
             if(null != container) container.setCornerRadius(0f);
         } else {
-            background = null != overlay.background_minimized_color ? overlay.background_minimized_color : R.drawable.background_minimized_color;
+            background = R.drawable.background_minimized_color;
+            color = overlay.background_minimized_color;
             float dimension = getContext().getResources().getDimension(R.dimen.voxeet_overlay_minized_corner);
             if(null != container) container.setCornerRadius(dimension);
         }
+
+        if(null != color) {
+            background_container.setBackgroundColor(color);
+        } else {
+            background_container.setBackgroundResource(background);
+        }
+
         background_container.setBackgroundResource(background);
     }
 
