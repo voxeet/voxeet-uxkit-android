@@ -1,14 +1,17 @@
 package com.voxeet.toolkit.activities.notification;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.Ringtone;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -49,6 +52,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     private final static String TAG = DefaultIncomingCallActivity.class.getSimpleName();
     private static final String DEFAULT_VOXEET_INCOMING_CALL_DURATION_KEY = "voxeet_incoming_call_duration";
     private static final int DEFAULT_VOXEET_INCOMING_CALL_DURATION_VALUE = 40 * 1000;
+    private static final int RECORD_AUDIO_RESULT = 0x10;
 
     protected TextView mUsername;
     protected TextView mStateTextView;
@@ -276,6 +280,14 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     }
 
     protected void onAccept() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORD_AUDIO_RESULT);
+        } else {
+            onAcceptWithPermission();
+        }
+    }
+
+    private void onAcceptWithPermission() {
         tryInitializedSDK().then(new PromiseExec<Boolean, DeclineConferenceResultEvent>() {
             @Override
             public void onCall(@Nullable Boolean result, @NonNull Solver<DeclineConferenceResultEvent> solver) {
@@ -290,6 +302,29 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
                 }
             }
         }).error(simpleError(true));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+
+        switch (requestCode) {
+            case RECORD_AUDIO_RESULT: {
+                for (int i = 0; i < permissions.length; i++) {
+                    String permission = permissions[i];
+                    int grantResult = grantResults[i];
+
+                    if (Manifest.permission.RECORD_AUDIO.equals(permission) && grantResult == PackageManager.PERMISSION_GRANTED) {
+                        onAcceptWithPermission();
+                    } else {
+                        //possible message to show? display?
+                    }
+                }
+                return;
+            }
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     /**
