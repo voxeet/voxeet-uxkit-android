@@ -1,7 +1,7 @@
 package com.voxeet.toolkit.implementation;
 
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.models.User;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public interface IVoxeetView {
      *
      * @param conferenceId the conference id
      */
-    void onConferenceUpdated(List<ConferenceUser> conferenceId);
+    void onConferenceUpdated(List<User> conferenceId);
 
     /**
      * On conference creation.
@@ -38,7 +38,7 @@ public interface IVoxeetView {
      *
      * @param conferenceUser the conference user
      */
-    void onConferenceUserJoined(ConferenceUser conferenceUser);
+    void onConferenceUserJoined(User conferenceUser);
 
     /**
      * On conference for user joined
@@ -55,14 +55,14 @@ public interface IVoxeetView {
      *
      * @param conferenceUser the conference user
      */
-    void onConferenceUserUpdated(ConferenceUser conferenceUser);
+    void onConferenceUserUpdated(User conferenceUser);
 
     /**
      * On conference user left.
      *
      * @param conferenceUser the conference user
      */
-    void onConferenceUserLeft(ConferenceUser conferenceUser);
+    void onConferenceUserLeft(User conferenceUser);
 
     /**
      * An user declined the call
@@ -89,7 +89,7 @@ public interface IVoxeetView {
     /**
      * @param conferenceUsers the new list of users
      */
-    void onConferenceUsersListUpdate(List<ConferenceUser> conferenceUsers);
+    void onConferenceUsersListUpdate(List<User> conferenceUsers);
 
     /**
      * @param mediaStreams the new list of media streams

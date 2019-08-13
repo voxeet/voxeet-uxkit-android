@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_users the conference id
      */
-    public void onConferenceUpdated(@NonNull List<ConferenceUser> conference_users) {
+    public void onConferenceUpdated(@NonNull List<User> conference_users) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUpdated(conference_users);
         }
@@ -128,7 +128,8 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_user the conference user
      */
-    public void onConferenceUserJoined(@NonNull ConferenceUser conference_user) {
+    @Override
+    public void onConferenceUserJoined(@NonNull User conference_user) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUserJoined(conference_user);
         }
@@ -139,7 +140,8 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_user the conference user
      */
-    public void onConferenceUserUpdated(@NonNull ConferenceUser conference_user) {
+    @Override
+    public void onConferenceUserUpdated(@NonNull User conference_user) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUserUpdated(conference_user);
         }
@@ -150,7 +152,8 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_user the conference user
      */
-    public void onConferenceUserLeft(@NonNull ConferenceUser conference_user) {
+    @Override
+    public void onConferenceUserLeft(@NonNull User conference_user) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUserLeft(conference_user);
         }
@@ -219,7 +222,7 @@ public abstract class VoxeetView extends FrameLayout
      * @param conference_users the new list of users
      */
     @Override
-    public void onConferenceUsersListUpdate(List<ConferenceUser> conference_users) {
+    public void onConferenceUsersListUpdate(List<User> conference_users) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUsersListUpdate(conference_users);
         }

@@ -17,8 +17,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.models.ConferenceUserStatus;
-import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.models.User;
+import com.voxeet.sdk.models.v1.ConferenceUserStatus;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
@@ -36,7 +36,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private boolean namesEnabled = true;
 
-    private List<ConferenceUser> users;
+    private List<User> users;
 
     private Context context;
 
@@ -79,7 +79,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param conferenceUser the conference user
      */
-    public void removeUser(ConferenceUser conferenceUser) {
+    public void removeUser(User conferenceUser) {
         if (users.contains(conferenceUser))
             users.remove(conferenceUser);
 
@@ -99,7 +99,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param conferenceUser the conference user
      */
-    public void addUser(ConferenceUser conferenceUser) {
+    public void addUser(User conferenceUser) {
         if (!users.contains(conferenceUser))
             users.add(conferenceUser);
 
@@ -108,10 +108,10 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     private void filter() {
-        List<ConferenceUser> temp_users = new ArrayList<>();
+        List<User> temp_users = new ArrayList<>();
 
-        for (ConferenceUser user : users) {
-            if (!ConferenceUserStatus.LEFT.equals(user.getConferenceStatus())) temp_users.add(user);
+        for (User user : users) {
+            if (!ConferenceUserStatus.LEFT.equals(user.getStatus())) temp_users.add(user);
         }
 
         users = temp_users;
@@ -119,12 +119,12 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private void sort() {
         if (null != users) {
-            Collections.sort(users, new Comparator<ConferenceUser>() {
+            Collections.sort(users, new Comparator<User>() {
                 @Override
-                public int compare(ConferenceUser left, ConferenceUser right) {
-                    if (null != left && ConferenceUserStatus.ON_AIR.equals(left.getConferenceStatus()))
+                public int compare(User left, User right) {
+                    if (null != left && ConferenceUserStatus.ON_AIR.equals(left.getStatus()))
                         return -1;
-                    if (null != right && ConferenceUserStatus.ON_AIR.equals(right.getConferenceStatus()))
+                    if (null != right && ConferenceUserStatus.ON_AIR.equals(right.getStatus()))
                         return 1;
                     return 0;
                 }
@@ -151,16 +151,14 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        final ConferenceUser user = getItem(position);
+        final User user = getItem(position);
 
-        Log.d(TAG, "onBindViewHolder: " + position + " " + user.getConferenceStatus());
+        Log.d(TAG, "onBindViewHolder: " + position + " " + user.getId());
 
-        boolean on_air = ConferenceUserStatus.ON_AIR.equals(user.getConferenceStatus());
+        boolean on_air = ConferenceUserStatus.ON_AIR.equals(user.getStatus());
 
         if (null != user.getUserInfo()) {
             holder.name.setText(user.getUserInfo().getName());
-        } else if (null != user.getProfile()) {
-            holder.name.setText(user.getProfile().getNickName());
         }
         holder.name.setVisibility(namesEnabled ? View.VISIBLE : View.GONE);
 
@@ -203,7 +201,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
             }
         });
 
-        if (null != mRequestUserIdChanged && mRequestUserIdChanged.equals(user.getUserId())) {
+        if (null != mRequestUserIdChanged && mRequestUserIdChanged.equals(user.getId())) {
             String userId = mRequestUserIdChanged;
             VideoView.MediaStreamType type = null;
             MediaStream stream = null;
@@ -232,7 +230,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
             //prevent any modification until next event
             mRequestUserIdChanged = null;
         } else {
-            String userId = user.getUserId();
+            String userId = user.getId();
             VideoView.MediaStreamType type = getCurrentType(holder.videoView, userId);
             //if (VideoView.MediaStreamType.NONE.equals(type)) {
             if (hasScreenShareMediaStream(userId)) {
@@ -255,18 +253,18 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                     return;
                 }
 
-                String userId = user.getUserId();
+                String userId = user.getId();
                 //toggle media screen call next stream
                 VideoView.MediaStreamType current_type = holder.videoView.getCurrentMediaStreamType();
 
-                VideoView.MediaStreamType next = getNext(user.getUserId(), current_type);
+                VideoView.MediaStreamType next = getNext(user.getId(), current_type);
 
                 if(!on_air) next = VideoView.MediaStreamType.NONE;
                 Log.d(TAG, "onClick: loading stream type " + next);
                 loadStreamOnto(userId, next, holder);
 
                 //now get the one for the main view
-                next = getNext(user.getUserId(), next);
+                next = getNext(user.getId(), next);
 
                 MediaStream stream = null;
 
@@ -280,10 +278,10 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                 }
                 Log.d(TAG, "onClick: sending stream type to listener " + next);
 
-                if (null != user.getUserId()) {
-                    Log.d(TAG, "onClick: selecting the user " + user.getUserId());
+                if (null != user.getId()) {
+                    Log.d(TAG, "onClick: selecting the user " + user.getId());
                     if (null == selectedUserId || !equalsToUser(selectedUserId, user)) {
-                        selectedUserId = user.getUserId();
+                        selectedUserId = user.getId();
 
                         if (listener != null)
                             listener.onParticipantSelected(user, stream);
@@ -302,8 +300,8 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         setAnimation(holder.itemView, position);
     }
 
-    private boolean equalsToUser(String selectedUserId, ConferenceUser user) {
-        boolean areEquals = null != selectedUserId && null != user && selectedUserId.equals(user.getUserId());
+    private boolean equalsToUser(String selectedUserId, User user) {
+        boolean areEquals = null != selectedUserId && null != user && selectedUserId.equals(user.getId());
         Log.d(TAG, "equalsToUser: are equals ? " + selectedUserId + " " + user + " := " + areEquals);
         return areEquals;
     }
@@ -420,7 +418,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         }
     }
 
-    private ConferenceUser getItem(int position) {
+    private User getItem(int position) {
         return users.get(position);
     }
 
@@ -430,7 +428,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      * @param conferenceUser a valid user to bind into picasso
      * @param imageView      the landing image view
      */
-    private void loadViaPicasso(@NonNull ConferenceUser conferenceUser, ImageView imageView) {
+    private void loadViaPicasso(@NonNull User conferenceUser, ImageView imageView) {
         try {
             String url = conferenceUser.getUserInfo().getAvatarUrl();
             Log.d(TAG, "loadViaPicasso: loading " + url + " for user " + conferenceUser.getUserInfo().getExternalId() + " instance := " + Picasso.get());

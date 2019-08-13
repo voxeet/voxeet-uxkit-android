@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.exceptions.ExceptionManager;
-import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.ConferenceUtils;
 import com.voxeet.sdk.utils.annotate;
 import com.voxeet.toolkit.R;
@@ -50,16 +50,16 @@ public class VoxeetSpeakerView extends VoxeetView {
     @NonNull
     private RoundedImageView currentSpeakerView;
 
-    private ConferenceUser currentSpeaker = null;
+    private User currentSpeaker = null;
 
     private boolean selected = false;
 
     private Runnable updateSpeakerRunnable = new Runnable() {
         @Override
         public void run() {
-            if (selected && currentSpeaker != null && currentSpeaker.getUserId() != null) {
+            if (selected && currentSpeaker != null && currentSpeaker.getId() != null) {
                 //if we had a user but he disappeared...
-                selected = findUserById(currentSpeaker.getUserId()) != null;
+                selected = findUserById(currentSpeaker.getId()) != null;
             } else {
                 //had a user but predicate did not pass
                 selected = false;
@@ -84,7 +84,7 @@ public class VoxeetSpeakerView extends VoxeetView {
         @Override
         public void run() {
             if (currentSpeaker != null && null != VoxeetSdk.conference()) {
-                double value = VoxeetSdk.conference().getPeerVuMeter(currentSpeaker.getUserId());
+                double value = VoxeetSdk.conference().getPeerVuMeter(currentSpeaker.getId());
                 Log.d(TAG, "run: currentSpeaker := " + currentSpeaker + " value:=" + value);
                 vuMeter.updateMeter(value);
             } else {
@@ -94,7 +94,7 @@ public class VoxeetSpeakerView extends VoxeetView {
             if (mAttached) handler.postDelayed(this, REFRESH_METER);
         }
     };
-    private List<ConferenceUser> mConferenceUsers;
+    private List<User> mConferenceUsers;
     private boolean mDisplaySpeakerName = false;
     private TextView speakerName;
     private boolean mAttached;
@@ -200,7 +200,7 @@ public class VoxeetSpeakerView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUsersListUpdate(List<ConferenceUser> conferenceUsers) {
+    public void onConferenceUsersListUpdate(List<User> conferenceUsers) {
         super.onConferenceUsersListUpdate(conferenceUsers);
 
         mConferenceUsers = conferenceUsers;
@@ -271,11 +271,11 @@ public class VoxeetSpeakerView extends VoxeetView {
      * @param userId the user id
      * @return the conference user
      */
-    public ConferenceUser findUserById(@Nullable final String userId) {
+    public User findUserById(@Nullable final String userId) {
         return ConferenceUtils.findUserById(userId, mConferenceUsers);
     }
 
-    private void loadViaPicasso(ConferenceUser conferenceUser, int avatarSize, ImageView imageView) {
+    private void loadViaPicasso(User conferenceUser, int avatarSize, ImageView imageView) {
         try {
             String avatarUrl = null;
             if (null != conferenceUser && null != conferenceUser.getUserInfo()) {
@@ -338,7 +338,7 @@ public class VoxeetSpeakerView extends VoxeetView {
 
     @Nullable
     public String getSelectedUserId() {
-        return selected && null != currentSpeaker ? currentSpeaker.getUserId() : null;
+        return selected && null != currentSpeaker ? currentSpeaker.getId() : null;
     }
 
     @Override

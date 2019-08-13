@@ -86,7 +86,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @OnClick(R.id.disconnect)
     public void onDisconnectClick() {
-        VoxeetSdk.getInstance().logout()
+        VoxeetSdk.user().logout()
                 .then(defaultConsume())
                 .error(createErrorDump());
     }

@@ -91,7 +91,7 @@ public class SampleApplication extends MultiDexApplication {
             logSelectedUser();
         } else {
             //we have an user
-            VoxeetSdk.getInstance()
+            VoxeetSdk.user()
                     .logout()
                     .then(new PromiseExec<Boolean, Object>() {
                         @Override
@@ -114,7 +114,7 @@ public class SampleApplication extends MultiDexApplication {
      * Call this method to log the current selected user
      */
     public void logSelectedUser() {
-        VoxeetSdk.getInstance().logUserWithChain(_current_user)
+        VoxeetSdk.user().login(_current_user)
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override
                     public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
@@ -160,9 +160,7 @@ public class SampleApplication extends MultiDexApplication {
 
         //it's possible to use the meta-data in the AndroidManifest to directly control the default incoming activity
         VoxeetPreferences.setDefaultActivity(DefaultIncomingCallActivity.class.getCanonicalName());
-
-        //register the Application and add at least one subscriber
-        VoxeetSdk.getInstance().register(this, this);
+        VoxeetSdk.getInstance().register( this);
 
         sdkInitialized = true;
     }

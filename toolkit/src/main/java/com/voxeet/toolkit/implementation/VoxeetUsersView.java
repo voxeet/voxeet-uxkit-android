@@ -13,7 +13,7 @@ import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
-import com.voxeet.sdk.models.abs.ConferenceUser;
+import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.annotate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.configuration.Users;
@@ -129,10 +129,10 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUserJoined(@NonNull ConferenceUser conferenceUser) {
+    public void onConferenceUserJoined(@NonNull User conferenceUser) {
         super.onConferenceUserJoined(conferenceUser);
 
-        boolean isMe = conferenceUser.getUserId().equalsIgnoreCase(VoxeetPreferences.id());
+        boolean isMe = conferenceUser.getId().equalsIgnoreCase(VoxeetPreferences.id());
         if (!isMe || isDisplaySelf()) {
             adapter.addUser(conferenceUser);
 
@@ -141,7 +141,7 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUserLeft(@NonNull ConferenceUser conferenceUser) {
+    public void onConferenceUserLeft(@NonNull User conferenceUser) {
         super.onConferenceUserLeft(conferenceUser);
 
         if(!isDisplayNonAir()) {
@@ -152,7 +152,7 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceUserUpdated(@NonNull final ConferenceUser conference_user) {
+    public void onConferenceUserUpdated(@NonNull final User conference_user) {
         super.onConferenceUserUpdated(conference_user);
 
         postOnUi(new Runnable() {

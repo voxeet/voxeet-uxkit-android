@@ -12,7 +12,7 @@ import com.voxeet.sdk.events.success.ConferenceRefreshedEvent;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.json.internal.MetadataHolder;
 import com.voxeet.sdk.json.internal.ParamsHolder;
-import com.voxeet.sdk.models.ConferenceResponse;
+import com.voxeet.sdk.models.v1.ConferenceResponse;
 import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
@@ -179,7 +179,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
     public Promise<List<ConferenceRefreshedEvent>> invite(@NonNull List<UserInfo> to_invite) {
         ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
         if (null != information) {
-            String conferenceId = information.getConference().getConferenceId();
+            String conferenceId = information.getConference().getId();
 
             return VoxeetSdk.conference().inviteUserInfos(conferenceId, to_invite);
         }

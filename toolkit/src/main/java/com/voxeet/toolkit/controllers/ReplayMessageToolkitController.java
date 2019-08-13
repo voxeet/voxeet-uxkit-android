@@ -11,7 +11,7 @@ import com.voxeet.sdk.core.services.ConferenceService;
 import com.voxeet.sdk.events.success.ConferenceEndedEvent;
 import com.voxeet.sdk.events.success.GetConferenceHistoryEvent;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
-import com.voxeet.sdk.models.HistoryConference;
+import com.voxeet.sdk.models.v1.HistoryConference;
 import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;

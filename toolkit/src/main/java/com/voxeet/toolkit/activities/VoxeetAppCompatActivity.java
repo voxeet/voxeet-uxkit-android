@@ -57,7 +57,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
         super.onResume();
 
         if (null != VoxeetSdk.instance()) {
-            VoxeetSdk.instance().register(this, this);
+            VoxeetSdk.instance().register( this);
         }
 
         if (!EventBus.getDefault().isRegistered(this)) {
