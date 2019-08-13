@@ -20,13 +20,19 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:1.4.7') {
+  compile ('com.voxeet.sdk:toolkit:2.0.49.3') {
     transitive = true
   }
 }
 ```
 
 The current logic-only (no UI) sdk is available as well: [public-sdk](https://github.com/voxeet/android-sdk)
+
+## Migrating from 1.X to 2.X
+
+ - Classes only moved
+ - services can be used using static from VoxeetSdk
+ - Conference and User reflects the first steps of the new improved and easier flow of integration
 
 ## Migrating from 0.X to 1.X
 
@@ -41,6 +47,12 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+v2.0.x :
+ - Classes only moved
+ - services can be used using static from VoxeetSdk
+ - Conference and User reflects the first steps of the new improved and easier flow of integration
+ - various fixes for videos, views, workflow and integration
+
 v1.4 :
   - improve headsets management (internal)
   - fix issues with non firebase projects
@@ -426,8 +438,8 @@ In the case of network failure of any remote user, the server will try to reconn
 ## Version
 
 
-public-sdk: 1.4.7
-toolkit: 1.4.7
+public-sdk: 2.0.49.3
+toolkit: 2.0.49.3
 
 ## Tech
 
