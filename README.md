@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.49.3') {
+  compile ('com.voxeet.sdk:toolkit:2.0.49.4') {
     transitive = true
   }
 }
@@ -438,8 +438,8 @@ In the case of network failure of any remote user, the server will try to reconn
 ## Version
 
 
-public-sdk: 2.0.49.3
-toolkit: 2.0.49.3
+public-sdk: 2.0.49.4
+toolkit: 2.0.49.4
 
 ## Tech
 

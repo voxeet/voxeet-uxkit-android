@@ -532,18 +532,16 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         if (null != currentSelectedUserId) {
             User user = VoxeetSdk.conference().getUser(currentSelectedUserId);
-            if (null != user) {
+            if (null != user &&  !user.getId().equals(VoxeetPreferences.id())) {
                 userIdFoundToAttach = user.getId();
                 foundToAttach = streams.get(userIdFoundToAttach);
             }
         }
 
-        Log.d(TAG, "loopUserForStreamInVideoViewIfUnattached: attach selected ? " + userIdFoundToAttach);
-
         if (null == foundToAttach) {
             for (User user : users) {
                 String userId = user.getId();
-                if (!userId.equals(VoxeetPreferences.id()) && !userId.equals(currentSelectedUserId) && null == foundToAttach) {
+                if (null != userId && !userId.equals(VoxeetPreferences.id()) && !userId.equals(currentSelectedUserId) && null == foundToAttach) {
                     userIdFoundToAttach = userId;
                     foundToAttach = streams.get(user.getId());
                 }
