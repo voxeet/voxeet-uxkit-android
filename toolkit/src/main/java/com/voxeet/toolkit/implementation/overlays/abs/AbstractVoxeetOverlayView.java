@@ -94,9 +94,10 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         mSubView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+                Log.d("VoxeetConferenceView ", "onGlobalLayout: " + overlayState);
                 if (!done[0]) {
                     done[0] = true;
-                    if (OverlayState.EXPANDED.equals(overlay)) {
+                    if (OverlayState.EXPANDED.equals(overlayState)) {
                         expand();
                     } else {
                         minimize();
@@ -108,7 +109,8 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         sub_container.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View view) {
-                if (OverlayState.EXPANDED.equals(overlay)) {
+                Log.d("VoxeetConferenceView", "onViewAttachedToWindow: " + overlayState);
+                if (OverlayState.EXPANDED.equals(overlayState)) {
                     expand();
                 } else {
                     minimize();
