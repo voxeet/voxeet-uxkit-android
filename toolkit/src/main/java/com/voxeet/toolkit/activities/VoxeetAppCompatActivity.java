@@ -16,6 +16,7 @@ import com.voxeet.sdk.events.success.ConferencePreJoinedEvent;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.toolkit.activities.notification.IncomingCallFactory;
+import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -76,6 +77,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
         if (null != VoxeetSdk.screenShare()) {
             VoxeetSdk.screenShare().consumeRightsToScreenShare();
         }
+
+        VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach();
     }
 
     @Override

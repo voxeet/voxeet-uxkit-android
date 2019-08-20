@@ -10,5 +10,6 @@ package com.voxeet.toolkit.controllers;
 
 public enum RemoveViewType {
     FROM_HUD,
-    FROM_EVENT
+    FROM_EVENT,
+    FROM_HUD_BUT_KEEP_TIMEOUT
 }
