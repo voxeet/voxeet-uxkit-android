@@ -306,7 +306,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         return areEquals;
     }
 
-    private void loadStreamOnto(String userId, @Nullable VideoView.MediaStreamType type, ViewHolder holder) {
+    private void loadStreamOnto(@Nullable String userId, @Nullable VideoView.MediaStreamType type, ViewHolder holder) {
         if (null == type) type = VideoView.MediaStreamType.NONE;
         holder.videoView.setAutoUnAttach(true);
         switch (type) {
@@ -545,7 +545,8 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     @Nullable
-    private MediaStream getScreenShareMediaStream(@NonNull String userId) {
+    private MediaStream getScreenShareMediaStream(@Nullable String userId) {
+        if(null == userId) return null;
         //if (null != mScreenShareMediaStreams && mScreenShareMediaStreams.containsKey(userId))
         //    return mScreenShareMediaStreams.get(userId);
         //return null;
@@ -554,14 +555,15 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     @Nullable
-    private MediaStream getCameraMediaStream(@NonNull String userId) {
+    private MediaStream getCameraMediaStream(@Nullable String userId) {
+        if(null == userId) return null;
         //if (hasCameraMediaStream(userId)) return mMediaStreamMap.get(userId);
         //return null;
         HashMap<String, MediaStream> streams = VoxeetSdk.conference().getMapOfStreams();
         return streams.containsKey(userId) ? streams.get(userId) : null;
     }
 
-    private boolean hasScreenShareMediaStream(@NonNull String userId) {
+    private boolean hasScreenShareMediaStream(@Nullable String userId) {
         //MediaStream stream = getScreenShareMediaStream(userId);
         //return null != stream;
 
