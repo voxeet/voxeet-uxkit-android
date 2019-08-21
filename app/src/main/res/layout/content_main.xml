@@ -93,5 +93,13 @@
         android:text="@string/join"
         android:textColor="@color/white" />
 
+    <Button
+        android:id="@+id/force_test_overlay_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Click here to test overlay's activity behaviour"
+        android:textColor="@color/white" />
+
     <requestFocus />
 </LinearLayout>

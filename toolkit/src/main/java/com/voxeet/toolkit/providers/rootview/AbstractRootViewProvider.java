@@ -7,8 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
+import com.voxeet.toolkit.views.internal.VoxeetOverlayContainerFrameLayout;
 
 /**
  * Abstract class which can manage the state of its parent activity
@@ -56,7 +58,16 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
     }
 
     @Nullable
-    public abstract ViewGroup getRootView();
+    public abstract FrameLayout getRootView();
+
+    public abstract void addRootView(VoxeetOverlayContainerFrameLayout.OnSizeChangedListener listener);
+
+    public abstract void onReleaseRootView();
+
+    public abstract void detachRootViewFromParent();
+
+    //TODO should this be managed here ?
+    public abstract boolean isSameActivity();
 
     /**
      * Sets the current activity. Useful to retrieve later for more permissions.

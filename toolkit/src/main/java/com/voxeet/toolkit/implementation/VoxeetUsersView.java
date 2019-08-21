@@ -12,7 +12,9 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.core.services.UserService;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.annotate;
 import com.voxeet.toolkit.R;
@@ -132,7 +134,11 @@ public class VoxeetUsersView extends VoxeetView {
     public void onConferenceUserJoined(@NonNull User conferenceUser) {
         super.onConferenceUserJoined(conferenceUser);
 
-        boolean isMe = conferenceUser.getId().equalsIgnoreCase(VoxeetPreferences.id());
+        UserService userService = VoxeetSdk.user();
+        String id = null != userService ? userService.getUserId() : "";
+        if(null == id) id = "";
+
+        boolean isMe = id.equalsIgnoreCase(conferenceUser.getId());
         if (!isMe || isDisplaySelf()) {
             adapter.addUser(conferenceUser);
 

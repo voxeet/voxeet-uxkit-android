@@ -62,6 +62,10 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     @Bind(R.id.recycler_users)
     protected RecyclerView users;
 
+    @Nullable
+    @Bind(R.id.force_test_overlay_switch)
+    View force_test_overlay_switch;
+
     private SampleApplication _application;
 
     @Override
@@ -77,6 +81,15 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         users.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         users.setAdapter(new UserAdapter(this, UsersHelper.USER_ITEMS));
+
+        if(null != force_test_overlay_switch) {
+            force_test_overlay_switch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ActivityToTestOverlay.start(MainActivity.this);
+                }
+            });
+        }
     }
 
     @OnClick(R.id.join_conf)

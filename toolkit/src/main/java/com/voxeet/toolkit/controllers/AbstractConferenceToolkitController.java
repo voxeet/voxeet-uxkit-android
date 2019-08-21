@@ -72,6 +72,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -119,7 +121,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @Nullable
     private AbstractVoxeetOverlayView mMainView;
 
-    private VoxeetOverlayContainerFrameLayout mMainViewParent;
+    //private VoxeetOverlayContainerFrameLayout mMainViewParent;
 
     /**
      * Information about the mParams of the
@@ -135,12 +137,14 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     private boolean mIsViewRetainedOnLeave;
     private AbstractRootViewProvider mRootViewProvider;
     private OverlayState mSavedOverlayState;
+    private CopyOnWriteArrayList<Runnable> removeRunnables;
 
     private AbstractConferenceToolkitController() {
 
     }
 
     protected AbstractConferenceToolkitController(Context context, EventBus eventbus) {
+        removeRunnables = new CopyOnWriteArrayList();
         mContext = context;
         mEventBus = eventbus;
 
@@ -168,10 +172,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         mMediaStreams = service.getMapOfStreams();
         mScreenShareMediaStreams = service.getMapOfScreenShareStreams();
 
-        mMainViewParent = new VoxeetOverlayContainerFrameLayout(activity);
-        mMainViewParent.setLayoutParams(createMatchParams());
-        mMainViewParent.setListener(this);
-
+        Log.d(TAG, "init saved ?" + mSavedOverlayState);
         if (null == mSavedOverlayState) mSavedOverlayState = getDefaultOverlayState();
 
         boolean is_new_conference = false; //TODO implement conference switch
@@ -270,7 +271,20 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             removeView(false, RemoveViewType.FROM_EVENT);
     }
 
+    private void flushRemoveRunnables() {
+        for (Runnable runnable : removeRunnables) {
+            mHandler.removeCallbacks(runnable);
+        }
+        removeRunnables.clear();
+    }
+
+    public void forceReattach() {
+
+    }
+
     private void displayView() {
+        flushRemoveRunnables();
+
         //display the view
         boolean in_conf = false;
         if (null != VoxeetSdk.instance()) {
@@ -308,30 +322,34 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
                         log("run: add view" + mMainView);
                         if (mMainView != null) {
+                            boolean added = false;
                             Activity activity = getRootViewProvider().getCurrentActivity();
                             ViewGroup root = getRootViewProvider().getRootView();
 
+                            if(!getRootViewProvider().isSameActivity()) {
+                                getRootViewProvider().detachRootViewFromParent();
+                            }
 
-                            ViewGroup viewHolder = (ViewGroup) mMainViewParent.getParent();
+                            ViewGroup viewHolder = (ViewGroup) mMainView.getParent();
                             if (null != viewHolder && null != root && root != viewHolder) {
-                                viewHolder.removeView(mMainViewParent);
-
+                                Log.d(TAG, "run: REMOVING MAIN VIEW FROM HOLDER" + root+" "+viewHolder);
+                                //viewHolder.removeView(mMainView);
                                 viewHolder = (ViewGroup) mMainView.getParent();
                                 if (viewHolder != null)
                                     viewHolder.removeView(mMainView);
                             }
 
                             if (null != root && null != activity && !activity.isFinishing()) {
-                                if (null == mMainViewParent.getParent()) {
-                                    root.addView(mMainViewParent, createMatchParams());
-                                }
+
+                                getRootViewProvider().addRootView(AbstractConferenceToolkitController.this);
 
                                 if (null == mMainView.getParent()) {
-                                    mMainViewParent.addView(mMainView, mParams);
+                                    added = true;
+                                    getRootViewProvider().getRootView().addView(mMainView, mParams);
                                 }
 
                                 mMainView.requestLayout();
-                                mMainViewParent.requestLayout();
+                                getRootViewProvider().getRootView().requestLayout();
                                 mMainView.onResume();
 
                                 try {
@@ -346,7 +364,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                                     ExceptionManager.sendException(e);
                                 }
 
-                                mEventBus.post(new LoadLastSavedOverlayStateEvent());
+                                if(added) mEventBus.post(new LoadLastSavedOverlayStateEvent());
                             }
                         }
                     } catch (Exception e) {
@@ -358,40 +376,68 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     public void removeView(final boolean should_release, final RemoveViewType from_type) {
+        removeView(should_release, from_type, false, -1);
+    }
+
+    public void removeView(final boolean should_release, final RemoveViewType from_type, boolean keepOverlayState) {
+        removeView(should_release, from_type, keepOverlayState, -1);
+    }
+
+    public void removeView(final boolean should_release, final RemoveViewType from_type, boolean keepOverlayState, int timeout /* < 0 now*/) {
         final AbstractVoxeetOverlayView view = mMainView;
-        final FrameLayout viewParent = mMainViewParent;
-        final boolean release = RemoveViewType.FROM_HUD.equals(from_type) || !isEnabled() || !isViewRetainedOnLeave();
+        final FrameLayout viewParent = getRootViewProvider().getRootView();
+        final boolean release = !isEnabled() || (!RemoveViewType.FROM_HUD_BUT_KEEP_TIMEOUT.equals(from_type) && !isViewRetainedOnLeave());
 
         final boolean statement_release = should_release && release;
 
-        //releasing the hold on the view
-        if (statement_release) {
-            mSavedOverlayState = null;
+        Log.d(TAG, "removeView: statement_release_1 " + statement_release);
 
-            mMainView = null;
-            if (null != mMainViewParent) mMainViewParent.setListener(null);
-            mMainViewParent = null;
-        }
+        Runnable removeHold = new Runnable() {
+            @Override
+            public void run() {
+
+                //releasing the hold on the view
+                if (statement_release) {
+                    Log.d(TAG, "run: killing the saved overlay state 1");
+                    if(!keepOverlayState) mSavedOverlayState = null;
+
+                    mMainView = null;
+
+                    getRootViewProvider().onReleaseRootView();
+                }
+            }
+        };
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 if (view != null && release) {
                     ViewGroup viewHolder = (ViewGroup) view.getParent();
-                    if (viewHolder != null)
-                        viewHolder.removeView(view);
+                    //if (viewHolder != null)
+                    //    viewHolder.removeView(view);
 
                     if (view == mMainView || statement_release) {
-                        viewHolder = (ViewGroup) viewParent.getParent();
-                        if (viewHolder != null)
-                            viewHolder.removeView(viewParent);
+                        if (viewParent.getParent() instanceof ViewGroup) {
+
+                            Log.d(TAG, "removeView: statement_release_2 true ");
+
+                            viewHolder = (ViewGroup) viewParent.getParent();
+                            if (viewHolder != null)
+                                viewHolder.removeView(viewParent);
+                        } else {
+
+                            Log.d(TAG, "removeView: statement_release_3 true ");
+
+                            getRootViewProvider().onReleaseRootView();
+                        }
                     }
 
                     view.onStop();
 
                     if (statement_release) {
                         //restore the saved state
-                        mSavedOverlayState = null;
+                        Log.d(TAG, "run: killing the saved overlay state");
+                        if(!keepOverlayState) mSavedOverlayState = null;
 
                         Log.d(TAG, "run: AbstractConferenceToolkitController should release view " + view.getClass().getSimpleName());
                         view.onDestroy();
@@ -399,18 +445,34 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                         //but wanted to clear it
                         if (view == mMainView) {
                             mMainView = null;
-                            if (null != mMainViewParent) mMainViewParent.setListener(null);
-                            mMainViewParent = null;
+
+                            getRootViewProvider().onReleaseRootView();
                         }
                     }
                 }
             }
         };
 
+
         //long after = should_release && mMainView != null ? mMainView.getCloseTimeoutInMilliseconds() : 0;
 
-        //mHandler.postDelayed(runnable, after);
-        mHandler.post(runnable);
+        //remove right now
+        if (0 > timeout) {
+            removeHold.run();
+            removeRunnables.add(runnable);
+            mHandler.post(runnable);
+        } else {
+            //after a delay
+            Runnable run = new Runnable() {
+                @Override
+                public void run() {
+                    removeHold.run();
+                    runnable.run();
+                }
+            };
+            removeRunnables.add(run);
+            mHandler.postDelayed(run, timeout);
+        }
     }
 
     /**
@@ -429,7 +491,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      */
     public void onActivityPaused(@NonNull Activity activity) {
         if (mMainView != null) {
-            removeView(false, RemoveViewType.FROM_HUD);
+            //removeView(false, RemoveViewType.FROM_HUD_BUT_KEEP_TIMEOUT, 300);
+            removeView(false, RemoveViewType.FROM_HUD, true);
         }
     }
 
@@ -447,6 +510,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     public void setDefaultOverlayState(@NonNull OverlayState overlay) {
         mDefaultOverlayState = overlay;
 
+        Log.d(TAG, "setDefaultOverlayState: overlay := " + overlay);
         //set the new state to the view
         if (mMainView != null) {
             if (OverlayState.EXPANDED.equals(overlay)) {
@@ -545,14 +609,6 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                 getContext().getResources().getDimensionPixelSize(R.dimen.dimen_140));
         mParams.gravity = Gravity.END | Gravity.TOP;
         mParams.topMargin = ScreenHelper.actionBar(getContext()) + ScreenHelper.getStatusBarHeight(getContext());
-    }
-
-
-    private FrameLayout.LayoutParams createMatchParams() {
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        return params;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1012,7 +1068,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     public void onEvent(@NonNull ConferenceUpdatedEvent event) {
         if (null != mMainView) {
             ConferenceInformation currentConference = VoxeetSdk.conference().getCurrentConferenceInformation();
-            if(null != currentConference) {
+            if (null != currentConference) {
                 mMainView.onConferenceUpdated(currentConference.getConference().getUsers());
             }
             //mMainView.onConferenceUpdated(event.getEvent().getParticipants());
@@ -1029,6 +1085,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull LoadLastSavedOverlayStateEvent event) {
+        Log.d(TAG, "onEvent: LoadLastSavedOverlayStateEvent");
         if (null != mMainView) {
             OverlayState state = mSavedOverlayState;
             if (null == state) state = getDefaultOverlayState();
@@ -1084,6 +1141,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Override
     public void onSizedChangedListener(@NonNull VoxeetOverlayContainerFrameLayout view) {
+        Log.d(TAG, "onSizedChangedListener: " + mSavedOverlayState);
         if (null != mMainView) {
             switch (mSavedOverlayState) {
                 case MINIMIZED:
