@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.49.4') {
+  compile ('com.voxeet.sdk:toolkit:2.0.49.8') {
     transitive = true
   }
 }
@@ -47,6 +47,9 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+v2.0.8 :
+ - fix notification propagation inside the sdk
+
 v2.0.x :
  - Classes only moved
  - services can be used using static from VoxeetSdk
@@ -284,12 +287,12 @@ To enable Voxeet notifications (getting a new call, conference ended and so on..
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
   <application>
-    <service android:name="voxeet.com.sdk.firebase.VoxeetFirebaseMessagingService">
+    <service android:name="com.voxeet.push.firebase.VoxeetFirebaseMessagingService">
       <intent-filter android:priority="999">
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
-    <service android:name="voxeet.com.sdk.firebase.VoxeetFirebaseInstanceIDService">
+    <service android:name="com.voxeet.push.firebase.VoxeetFirebaseInstanceIDService">
       <intent-filter android:priority="999">
         <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
       </intent-filter>
@@ -438,8 +441,8 @@ In the case of network failure of any remote user, the server will try to reconn
 ## Version
 
 
-public-sdk: 2.0.49.4
-toolkit: 2.0.49.4
+public-sdk: 2.0.49.8
+toolkit: 2.0.49.8
 
 ## Tech
 
