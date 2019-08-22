@@ -18,12 +18,11 @@ public class ToolkitUtils {
 
     public static boolean hasParticipants() {
         String ownUserId = VoxeetPreferences.id();
+        if (null == ownUserId) ownUserId = "";
         List<User> users = VoxeetSdk.conference().getConferenceUsers();
 
         for (User user : users) {
-            if (ConferenceUserStatus.ON_AIR.equals(user.getStatus())
-                    && null != user.getId()
-                    && !user.getId().equals(ownUserId))
+            if (ConferenceUserStatus.ON_AIR.equals(user.getStatus()) && !ownUserId.equals(user.getId()))
                 return true;
         }
         return false;

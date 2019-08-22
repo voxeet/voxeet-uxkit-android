@@ -196,17 +196,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         //check for the conference state
         checkStateValue();
 
-        //UPDATE participant adapter consequently
-        /*if (null != mPreviouslyAttachedPeerId) {
-            if (mPreviouslyScreenShare) {
-                onScreenShareMediaStreamUpdated(mPreviouslyAttachedPeerId,
-                        VoxeetSdk.conference().getMapOfScreenShareStreams());
-            } else {
-                onMediaStreamUpdated(mPreviouslyAttachedPeerId,
-                        VoxeetSdk.conference().getMapOfStreams());
-            }
-        }*/
-
         updateConferenceBarViewVisibility();
 
         refreshMediaStreams();
@@ -460,6 +449,12 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         String currentUserAttached = selectedView.getPeerId();
         MediaStream currentUser = streams.get(VoxeetPreferences.id());
+
+
+        if(ToolkitUtils.hasParticipants() && VoxeetPreferences.id().equalsIgnoreCase(currentUserAttached)) {
+            selectedView.unAttach();
+            selectedView.setMirror(false);
+        }
 
         if (null != currentUserAttached) {
             MediaStream stream = streams.get(currentUserAttached);
