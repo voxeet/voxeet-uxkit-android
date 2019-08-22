@@ -5,9 +5,12 @@ import android.app.Application;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
+import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.views.internal.VoxeetOverlayContainerFrameLayout;
 
@@ -51,7 +54,25 @@ public class DefaultRootViewProvider extends AbstractRootViewProvider {
         Activity activity = getCurrentActivity();
         attachedActivity = activity;
         ViewGroup group = (ViewGroup) activity.getWindow().getDecorView().getRootView();
-        group.addView(containerFrameLayout);
+
+        //if has a parent and not the root view -> remove then add
+        //if has a parent and is the root view -> nothing
+        //if !has a parent -> add
+
+        try {
+            if (null != containerFrameLayout.getParent() && group != containerFrameLayout.getParent()) {
+                ViewParent view = containerFrameLayout.getParent();
+                if (view instanceof ViewGroup) {
+                    ((ViewGroup) view).removeView(containerFrameLayout);
+                }
+                group.addView(containerFrameLayout);
+            } else if (null == containerFrameLayout.getParent()) {
+                group.addView(containerFrameLayout);
+            }
+        }catch (Exception e){
+            //log internally the exception - normally none should happen
+            ExceptionManager.sendException(e);
+        }
 
     }
 
