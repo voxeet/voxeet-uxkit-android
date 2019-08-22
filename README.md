@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.49.8') {
+  compile ('com.voxeet.sdk:toolkit:2.0.49.10') {
     transitive = true
   }
 }
@@ -47,6 +47,9 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+v2.0.10 :
+ - fix issue where our own video could be displayed in full screen when people joined the conference
+
 v2.0.8 :
  - fix notification propagation inside the sdk
 
@@ -441,8 +444,8 @@ In the case of network failure of any remote user, the server will try to reconn
 ## Version
 
 
-public-sdk: 2.0.49.8
-toolkit: 2.0.49.8
+public-sdk: 2.0.49.9
+toolkit: 2.0.49.10
 
 ## Tech
 
