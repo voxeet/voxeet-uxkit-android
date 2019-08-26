@@ -145,7 +145,7 @@ public class SampleApplication extends MultiDexApplication {
         return new Promise<>(new PromiseSolver<Boolean>() {
             @Override
             public void onCall(@NonNull Solver<Boolean> solver) {
-                VoxeetSdk.initialize(SampleApplication.this,
+                VoxeetSdk.initialize(
                         BuildConfig.CONSUMER_KEY,
                         BuildConfig.CONSUMER_SECRET); //can be null - will be removed in a later version
 
