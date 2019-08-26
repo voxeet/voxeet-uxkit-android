@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.audio.AudioRoute;
-import com.voxeet.sdk.audio.SoundManager;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.core.services.AudioService;
@@ -30,6 +29,7 @@ import com.voxeet.sdk.events.success.ConferencePreJoinedEvent;
 import com.voxeet.sdk.events.success.DeclineConferenceResultEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.toolkit.R;
