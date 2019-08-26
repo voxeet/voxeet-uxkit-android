@@ -13,7 +13,6 @@ import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.core.services.UserService;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.annotate;
