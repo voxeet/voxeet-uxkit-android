@@ -271,7 +271,7 @@ public class VoxeetSpeakerView extends VoxeetView {
      * @param userId the user id
      * @return the conference user
      */
-    public User findUserById(@Nullable final String userId) {
+    private User findUserById(@Nullable final String userId) {
         return ConferenceUtils.findUserById(userId, mConferenceUsers);
     }
 
@@ -307,12 +307,12 @@ public class VoxeetSpeakerView extends VoxeetView {
      * Goes to selected mode and focuses on the user selected instead of updating the speaker view
      * depending on the voice levels.
      *
-     * @param userId the user id
+     * @param user the user to lock onto
      */
-    public void lockScreen(String userId) {
+    public void lockScreen(@NonNull User user) {
         vuMeter.onParticipantSelected();
 
-        currentSpeaker = findUserById(userId);
+        currentSpeaker = findUserById(user.getId());
 
         selected = true;
 
