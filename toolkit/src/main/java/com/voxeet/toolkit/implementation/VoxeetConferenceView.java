@@ -646,7 +646,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             speakerView = view.findViewById(R.id.current_speaker_view);
 
             selectedView = view.findViewById(R.id.selected_video_view);
-            selectedView.setAutoUnAttach(true);
 
             selfView = view.findViewById(R.id.self_video_view);
 
