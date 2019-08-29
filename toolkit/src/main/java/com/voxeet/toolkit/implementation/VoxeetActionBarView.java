@@ -509,6 +509,7 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
+    @Deprecated
     public void setView3dListener(OnView3D listener) {
         view3d_listener = listener;
         invalidateView3D();
@@ -518,6 +519,7 @@ public class VoxeetActionBarView extends VoxeetView {
         view_3d_wrapper.setVisibility(view3d_listener != null ? View.VISIBLE : View.GONE);
     }
 
+    @Deprecated
     public interface OnView3D {
         void onView3D();
     }
