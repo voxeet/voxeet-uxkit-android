@@ -17,6 +17,9 @@ import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
 import com.voxeet.sdk.utils.annotate;
 
+/**
+ * Simple implementation to help integrate youtube into Apps
+ */
 @annotate
 public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouTubePlayer.OnInitializedListener {
 
@@ -25,11 +28,20 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
 
     private String lastKey;
 
+    /**
+     *
+     * @param youtubeKey the API key provided by the developer.console.google.com website
+     * @param context a valid context used to inflate the view when needed
+     */
     public YoutubeViewProvider(@NonNull String youtubeKey, @NonNull Context context) {
         super(context);
         init(youtubeKey);
     }
 
+    /**
+     * A video start has been requested with a specific key and information
+     * @param videoPresentationStarted valid information
+     */
     @Override
     public void start(@NonNull VideoPresentationStarted videoPresentationStarted) {
         lastKey = videoPresentationStarted.getKey();
@@ -38,24 +50,40 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
         youtubePlayer.play();
     }
 
+    /**
+     * A video has been stopped
+     * @param videoPresentationStopped a valid instance
+     */
     @Override
     public void stop(@NonNull VideoPresentationStopped videoPresentationStopped) {
         if (null == lastKey || !lastKey.equals(videoPresentationStopped.getKey())) return;
         youtubePlayer.pause();
     }
 
+    /**
+     * A video is playing/resuming
+     * @param videoPresentationPlay a valid instance
+     */
     @Override
     public void play(@NonNull VideoPresentationPlay videoPresentationPlay) {
         if (null == lastKey || !lastKey.equals(videoPresentationPlay.getKey())) return;
         youtubePlayer.play();
     }
 
+    /**
+     * A video has been paused
+     * @param videoPresentationPaused a valid instance
+     */
     @Override
     public void pause(@NonNull VideoPresentationPaused videoPresentationPaused) {
         if (null == lastKey || !lastKey.equals(videoPresentationPaused.getKey())) return;
         youtubePlayer.pause();
     }
 
+    /**
+     * A video's timer has been changed to a specific position
+     * @param videoPresentationSeek a valid instance
+     */
     @Override
     public void seek(@NonNull VideoPresentationSeek videoPresentationSeek) {
         if (null == lastKey || !lastKey.equals(videoPresentationSeek.getKey())) return;
@@ -70,13 +98,24 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
         youtubeView.initialize(youtubeKey, this);
     }
 
+    /**
+     * Callback when youtube has been properly initialized
+     * @param provider the specific provider for the session
+     * @param youTubePlayer the player to use
+     * @param b
+     */
     @Override
-    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+    public void onInitializationSuccess(@NonNull YouTubePlayer.Provider provider, @NonNull YouTubePlayer youTubePlayer, boolean b) {
         this.youtubePlayer = youTubePlayer;
     }
 
+    /**
+     * Played to initialize the provider and the player
+     * @param provider the specific provider
+     * @param youTubeInitializationResult the initialization result with the reason
+     */
     @Override
-    public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+    public void onInitializationFailure(@NonNull YouTubePlayer.Provider provider, @NonNull YouTubeInitializationResult youTubeInitializationResult) {
 
     }
 

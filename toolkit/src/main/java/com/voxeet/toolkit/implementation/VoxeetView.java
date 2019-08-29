@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Default implementation for voxeet views
+ *
+ * Those classes will evolve quickly in the future to reflect much more flexibility
+ */
 public abstract class VoxeetView extends FrameLayout
         implements IVoxeetView {
 
