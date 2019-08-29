@@ -2,6 +2,7 @@ package com.voxeet.toolkit.implementation;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -250,6 +251,9 @@ public class VoxeetActionBarView extends VoxeetView {
                 speaker.setSelected(!speaker.isSelected());
 
                 VoxeetSdk.audio().setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
+                Intent intent = new Intent();
+                intent.setAction("Speaker");
+                getContext().sendBroadcast(intent);
             }
         });
 
