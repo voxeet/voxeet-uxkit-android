@@ -8,11 +8,12 @@ import android.util.Log;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.events.promises.NotInConferenceException;
-import com.voxeet.sdk.events.success.ConferenceRefreshedEvent;
+import com.voxeet.sdk.events.restapi.ConferenceRefreshedEvent;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.json.internal.MetadataHolder;
 import com.voxeet.sdk.json.internal.ParamsHolder;
 import com.voxeet.sdk.models.v1.ConferenceResponse;
+import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
@@ -32,7 +33,7 @@ import eu.codlab.simplepromise.solve.Solver;
 /**
  * Created by kevinleperf on 15/01/2018.
  */
-
+@Annotate
 public class ConferenceToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
     private boolean mScreenShareEnabled = false;

@@ -9,10 +9,12 @@ import android.util.Log;
 
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.ScreenShareService;
+import com.voxeet.sdk.core.services.screenshare.RequestScreenSharePermissionEvent;
 import com.voxeet.sdk.events.error.ConferenceJoinedError;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
-import com.voxeet.sdk.events.success.ConferenceJoinedSuccessEvent;
-import com.voxeet.sdk.events.success.ConferencePreJoinedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
+import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
+import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.toolkit.activities.notification.IncomingCallFactory;
@@ -38,7 +40,7 @@ import eu.codlab.simplepromise.solve.Solver;
  * Few things to consider :
  * - singleTop / singleInstance
  */
-
+@Annotate
 public class VoxeetAppCompatActivity extends AppCompatActivity {
 
 
@@ -160,7 +162,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ScreenShareService.RequestScreenSharePermissionEvent event) {
+    public void onEvent(RequestScreenSharePermissionEvent event) {
         VoxeetSdk.screenShare()
                 .sendUserPermissionRequest(this);
     }

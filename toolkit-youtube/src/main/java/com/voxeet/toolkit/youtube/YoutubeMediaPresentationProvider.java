@@ -4,12 +4,12 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.voxeet.sdk.core.services.videopresentation.AbstractMediaPlayerProvider;
-import com.voxeet.sdk.utils.annotate;
+import com.voxeet.sdk.utils.Annotate;
 
 /**
  * Manage and create youtube videos
  */
-@annotate
+@Annotate
 public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvider<YoutubeViewProvider> {
 
     private String youtubeKey;

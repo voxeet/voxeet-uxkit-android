@@ -23,25 +23,23 @@ import com.voxeet.sdk.events.error.ConferenceCreatedError;
 import com.voxeet.sdk.events.error.ConferenceJoinedError;
 import com.voxeet.sdk.events.error.ConferenceLeftError;
 import com.voxeet.sdk.events.error.ReplayConferenceErrorEvent;
-import com.voxeet.sdk.events.success.ConferenceCreatingEvent;
-import com.voxeet.sdk.events.success.ConferenceCreationSuccess;
-import com.voxeet.sdk.events.success.ConferenceEndedEvent;
-import com.voxeet.sdk.events.success.ConferenceJoinedSuccessEvent;
-import com.voxeet.sdk.events.success.ConferenceLeftSuccessEvent;
-import com.voxeet.sdk.events.success.ConferencePreJoinedEvent;
-import com.voxeet.sdk.events.success.ConferenceRefreshedEvent;
-import com.voxeet.sdk.events.success.ConferenceUpdatedEvent;
-import com.voxeet.sdk.events.success.ConferenceUserCallDeclinedEvent;
-import com.voxeet.sdk.events.success.ConferenceUserJoinedEvent;
-import com.voxeet.sdk.events.success.ConferenceUserLeftEvent;
-import com.voxeet.sdk.events.success.ConferenceUserUpdatedEvent;
-import com.voxeet.sdk.events.success.IncomingCallEvent;
-import com.voxeet.sdk.events.success.InvitationReceived;
-import com.voxeet.sdk.events.success.ScreenStreamAddedEvent;
-import com.voxeet.sdk.events.success.ScreenStreamRemovedEvent;
-import com.voxeet.sdk.events.success.UserInvitedEvent;
+import com.voxeet.sdk.events.restapi.ConferenceRefreshedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceCreatingEvent;
+import com.voxeet.sdk.events.sdk.ConferenceCreationSuccess;
+import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
+import com.voxeet.sdk.events.sdk.ConferenceLeftSuccessEvent;
+import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceUserCallDeclinedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceUserJoinedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceUserLeftEvent;
+import com.voxeet.sdk.events.sdk.ConferenceUserUpdatedEvent;
+import com.voxeet.sdk.events.sdk.IncomingCallEvent;
+import com.voxeet.sdk.events.sdk.ScreenStreamAddedEvent;
+import com.voxeet.sdk.events.sdk.ScreenStreamRemovedEvent;
+import com.voxeet.sdk.events.success.ConferenceUpdated;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
+import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.InvitationReceivedEvent;
 import com.voxeet.sdk.json.RecordingStatusUpdateEvent;
 import com.voxeet.sdk.json.UserInfo;
@@ -675,9 +673,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(UserInvitedEvent event) {
-        UserInvited invited = event.getEvent();
-        List<UserProfile> profiles = invited.getParticipants();
+    public void onEvent(UserInvited invited) {
+        List<UserProfile> profiles = invited.participants;
 
         List<User> users = getConferenceUsers();
         for (UserProfile profile : profiles) {
@@ -698,8 +695,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final InvitationReceived invitation) {
-        InvitationReceivedEvent event = invitation.getEvent();
+    public void onEvent(final InvitationReceivedEvent event) {
         if (null != event && null != event.getInvitations()) {
             List<User> users = getConferenceUsers();
             for (Invitation invite : event.getInvitations()) {
@@ -771,7 +767,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceRefreshedEvent event) {
-        User user = event.getUser();
+        User user = event.user;
         /*if (user == null) {
             UserInfo profile = VoxeetToolkit.getInstance().getConferenceToolkit()
                     .getInvitedUserFromCache(event.getUserId());
@@ -1020,7 +1016,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceEndedEvent event) {
+    public void onEvent(ConferenceEnded event) {
         Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
         VoxeetSdk.audio().stop();
 
@@ -1054,7 +1050,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull RecordingStatusUpdateEvent event) {
         if (null != mMainView) {
-            mMainView.onRecordingStatusUpdated(RecordingStatus.RECORDING.name().equalsIgnoreCase(event.getRecordingStatus()));
+            mMainView.onRecordingStatusUpdated(RecordingStatus.RECORDING.name().equalsIgnoreCase(event.recordingStatus));
         }
     }
 
@@ -1064,7 +1060,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(@NonNull ConferenceUpdatedEvent event) {
+    public void onEvent(@NonNull ConferenceUpdated event) {
         if (null != mMainView) {
             ConferenceInformation currentConference = VoxeetSdk.conference().getCurrentConferenceInformation();
             if (null != currentConference) {

@@ -26,13 +26,13 @@ import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.core.services.ConferenceService;
 import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
-import com.voxeet.sdk.events.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
-import com.voxeet.sdk.events.success.StartScreenShareAnswerEvent;
-import com.voxeet.sdk.events.success.StopScreenShareAnswerEvent;
+import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
+import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
+import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Validate;
-import com.voxeet.sdk.utils.annotate;
+import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.configuration.ActionBar;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
@@ -47,7 +47,7 @@ import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
 
-@annotate
+@Annotate
 public class VoxeetActionBarView extends VoxeetView {
 
     private final String TAG = VoxeetActionBarView.class.getSimpleName();

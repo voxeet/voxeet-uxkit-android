@@ -2,46 +2,36 @@ package com.voxeet.toolkit.utils;
 
 import android.util.Log;
 
-import com.voxeet.sdk.events.ConferenceTimeoutUserJoinedEvent;
-import com.voxeet.sdk.events.success.BadgeUpdate;
-import com.voxeet.sdk.events.success.ConferenceDestroyedPushEvent;
-import com.voxeet.sdk.events.success.ConferenceEndedEvent;
-import com.voxeet.sdk.events.success.ConferenceUpdatedEvent;
-import com.voxeet.sdk.events.success.ConferenceUserAddedEvent;
-import com.voxeet.sdk.events.success.ConferenceUserCallDeclinedEvent;
-import com.voxeet.sdk.events.success.ConferenceUserSwitchEvent;
-import com.voxeet.sdk.events.success.ContactAddedEvent;
-import com.voxeet.sdk.events.success.FileConvertedEvent;
-import com.voxeet.sdk.events.success.InvitationReceived;
-import com.voxeet.sdk.events.success.MeetingActivityAdded;
-import com.voxeet.sdk.events.success.MeetingActivityDeleted;
-import com.voxeet.sdk.events.success.MeetingActivityUpdated;
-import com.voxeet.sdk.events.success.MeetingDeleted;
-import com.voxeet.sdk.events.success.MeetingEventAddedOrUpdated;
-import com.voxeet.sdk.events.success.MeetingReadTimeStampUpdated;
-import com.voxeet.sdk.events.success.OfferCreatedEvent;
-import com.voxeet.sdk.events.success.OwnConferenceStartedEvent;
-import com.voxeet.sdk.events.success.OwnConferenceUserSwitchEvent;
-import com.voxeet.sdk.events.success.OwnContactRemoved;
-import com.voxeet.sdk.events.success.OwnExternalInvitationSent;
-import com.voxeet.sdk.events.success.OwnProfileUpdatedEvent;
-import com.voxeet.sdk.events.success.OwnUserInvitedEvent;
-import com.voxeet.sdk.events.success.ParticipantUpdatedEvent;
-import com.voxeet.sdk.events.success.PeerConnectionStatusUpdatedEvent;
-import com.voxeet.sdk.events.success.ProfileUpdated;
-import com.voxeet.sdk.events.success.QualityUpdatedEvent;
-import com.voxeet.sdk.events.success.RecordingStatusUpdate;
-import com.voxeet.sdk.events.success.RenegociationUpdate;
-import com.voxeet.sdk.events.success.UserInvitedEvent;
-import com.voxeet.sdk.events.success.WhisperInviteAcceptedEvent;
-import com.voxeet.sdk.events.success.WhisperInviteDeclinedEvent;
-import com.voxeet.sdk.events.success.WhisperInviteReceivedEvent;
-import com.voxeet.sdk.events.success.WhisperLeftEvent;
+import com.voxeet.sdk.events.sdk.ConferenceTimeoutUserJoinedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceUserCallDeclinedEvent;
+import com.voxeet.sdk.events.success.ConferenceUpdated;
+import com.voxeet.sdk.events.websocket.RenegociationEndedEvent;
+import com.voxeet.sdk.json.BadgeUpdatedEvent;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
-import com.voxeet.sdk.json.FileAdded;
-import com.voxeet.sdk.json.FileDeleted;
+import com.voxeet.sdk.json.ConferenceEnded;
+import com.voxeet.sdk.json.ConferenceUserAdded;
+import com.voxeet.sdk.json.ConferenceUserSwitch;
+import com.voxeet.sdk.json.ContactAdded;
+import com.voxeet.sdk.json.FileAddedEvent;
+import com.voxeet.sdk.json.FileConverted;
+import com.voxeet.sdk.json.FileDeletedEvent;
+import com.voxeet.sdk.json.InvitationReceivedEvent;
 import com.voxeet.sdk.json.MeetingAddedOrUpdatedEvent;
+import com.voxeet.sdk.json.MeetingDeletedEvent;
 import com.voxeet.sdk.json.OfferCreated;
+import com.voxeet.sdk.json.OwnConferenceCreated;
+import com.voxeet.sdk.json.OwnConferenceUserSwitch;
+import com.voxeet.sdk.json.OwnContactRemovedEvent;
+import com.voxeet.sdk.json.OwnExternalInvitationSentEvent;
+import com.voxeet.sdk.json.OwnProfileUpdated;
+import com.voxeet.sdk.json.OwnUserInvited;
+import com.voxeet.sdk.json.ParticipantUpdated;
+import com.voxeet.sdk.json.PeerConnectionStatusUpdated;
+import com.voxeet.sdk.json.ProfileUpdatedEvent;
+import com.voxeet.sdk.json.QualityUpdated;
+import com.voxeet.sdk.json.RecordingStatusUpdateEvent;
+import com.voxeet.sdk.json.UserInvited;
+import com.voxeet.sdk.json.WhisperLeft;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -67,8 +57,7 @@ public class EventDebugger {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(OfferCreatedEvent event) {
-        OfferCreated offer = event.offer();
+    public void onEvent(OfferCreated offer) {
         //Log.d(TAG, "onEvent: OfferCreatedEvent " + offer.getUserId() + " " + offer.getExternalId() + " " + offer.getType() + " " + offer.getDescription().getType() + " " + offer.getCandidates().size());
 
         Log.d(TAG, "onEvent: time := " + System.currentTimeMillis());
@@ -78,43 +67,38 @@ public class EventDebugger {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceDestroyedPushEvent event) {
-        Log.d(TAG, "onEvent: ConferenceDestroyedPushEvent " + event + " internal call !");
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPush event) {
         Log.d(TAG, "onEvent: ConferenceDestroyedPushEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ProfileUpdated event) {
+    public void onEvent(ProfileUpdatedEvent event) {
         Log.d(TAG, "onEvent: ProfileUpdated " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ParticipantUpdatedEvent event) {
-        Log.d(TAG, "onEvent: ParticipantUpdatedEvent " + event + " " + event.getUserId() + " " + event.getStatus() + " " + event.getConfId());
+    public void onEvent(ParticipantUpdated event) {
+        Log.d(TAG, "onEvent: ParticipantUpdatedEvent " + event + " " + event.userId + " " + event.status + " " + event.conferenceId);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(OwnConferenceStartedEvent event) {
-        Log.d(TAG, "onEvent: OwnConferenceStartedEvent " + event);
+    public void onEvent(OwnConferenceCreated event) {
+        Log.d(TAG, "onEvent: OwnConferenceCreated " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(OwnProfileUpdatedEvent event) {
-        Log.d(TAG, "onEvent: OwnProfileUpdatedEvent " + event.getEvent().getType());
+    public void onEvent(OwnProfileUpdated event) {
+        Log.d(TAG, "onEvent: OwnProfileUpdatedEvent " + event.getType());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(OwnExternalInvitationSent event) {
-        Log.d(TAG, "onEvent: OwnExternalInvitationSent " + event);
+    public void onEvent(OwnExternalInvitationSentEvent event) {
+        Log.d(TAG, "onEvent: OwnExternalInvitationSentEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(OwnContactRemoved event) {
-        Log.d(TAG, "onEvent: OwnContactRemoved " + event);
+    public void onEvent(OwnContactRemovedEvent event) {
+        Log.d(TAG, "onEvent: OwnContactRemovedEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -123,138 +107,98 @@ public class EventDebugger {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MeetingDeleted event) {
-        Log.d(TAG, "onEvent: MeetingDeleted " + event);
+    public void onEvent(MeetingDeletedEvent event) {
+        Log.d(TAG, "onEvent: MeetingDeletedEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(BadgeUpdate event) {
-        Log.d(TAG, "onEvent: BadgeUpdate " + event);
+    public void onEvent(BadgeUpdatedEvent event) {
+        Log.d(TAG, "onEvent: BadgeUpdatedEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(RenegociationUpdate event) {
-        Log.d(TAG, "onEvent: RenegociationUpdate " + event);
+    public void onEvent(RenegociationEndedEvent event) {
+        Log.d(TAG, "onEvent: RenegociationEndedEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(RecordingStatusUpdate event) {
-        Log.d(TAG, "onEvent: RecordingStatusUpdate " + event);
+    public void onEvent(RecordingStatusUpdateEvent event) {
+        Log.d(TAG, "onEvent: RecordingStatusUpdateEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MeetingActivityDeleted event) {
-        Log.d(TAG, "onEvent: MeetingActivityDeleted " + event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MeetingActivityUpdated event) {
-        Log.d(TAG, "onEvent: MeetingActivityUpdated " + event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MeetingActivityAdded event) {
-        Log.d(TAG, "onEvent: MeetingActivityAdded " + event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MeetingReadTimeStampUpdated event) {
-        Log.d(TAG, "onEvent: MeetingReadTimeStampUpdated " + event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(InvitationReceived event) {
+    public void onEvent(InvitationReceivedEvent event) {
         Log.d(TAG, "onEvent: InvitationReceived " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(MeetingEventAddedOrUpdated event) {
-        Log.d(TAG, "onEvent: MeetingEventAddedOrUpdated " + event);
+    public void onEvent(FileDeletedEvent event) {
+        Log.d(TAG, "onEvent: FileDeletedEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(FileDeleted event) {
-        Log.d(TAG, "onEvent: FileDeleted " + event);
+    public void onEvent(FileAddedEvent event) {
+        Log.d(TAG, "onEvent: FileAddedEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(FileAdded event) {
-        Log.d(TAG, "onEvent: FileAdded " + event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(QualityUpdatedEvent event) {
+    public void onEvent(QualityUpdated event) {
         Log.d(TAG, "onEvent: QualityUpdatedEvent " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(WhisperInviteReceivedEvent event) {
-        Log.d(TAG, "onEvent: WhisperInviteReceivedEvent " + event);
+    public void onEvent(WhisperLeft event) {
+        Log.d(TAG, "onEvent: WhisperLeft " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(WhisperInviteAcceptedEvent event) {
-        Log.d(TAG, "onEvent: WhisperInviteAcceptedEvent " + event);
+    public void onEvent(OwnUserInvited event) {
+        Log.d(TAG, "onEvent: OwnUserInvited " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(WhisperInviteDeclinedEvent event) {
-        Log.d(TAG, "onEvent: WhisperInviteDeclinedEvent " + event);
+    public void onEvent(UserInvited event) {
+        Log.d(TAG, "onEvent: UserInvited " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(WhisperLeftEvent event) {
-        Log.d(TAG, "onEvent: WhisperLeftEvent " + event);
+    public void onEvent(ConferenceUserSwitch event) {
+        Log.d(TAG, "onEvent: ConferenceUserSwitch " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(OwnUserInvitedEvent event) {
-        Log.d(TAG, "onEvent: OwnUserInvitedEvent " + event);
+    public void onEvent(ConferenceUserAdded event) {
+        Log.d(TAG, "onEvent: ConferenceUserAddedEvent " + event.userId + " " + event.externalId + " " + event.status);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(UserInvitedEvent event) {
-        Log.d(TAG, "onEvent: UserInvitedEvent " + event);
+    public void onEvent(OwnConferenceUserSwitch event) {
+        Log.d(TAG, "onEvent: OwnConferenceUserSwitch " + event.getType());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceUserSwitchEvent event) {
-        Log.d(TAG, "onEvent: ConferenceUserSwitchEvent " + event);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceUserAddedEvent event) {
-        Log.d(TAG, "onEvent: ConferenceUserAddedEvent " + event.getEvent().getUserId() + " " + event.getEvent().getExternalId() + " " + event.getEvent().getStatus());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(OwnConferenceUserSwitchEvent event) {
-        Log.d(TAG, "onEvent: OwnConferenceUserSwitchEvent " + event.getEvent().getType());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceEndedEvent event) {
+    public void onEvent(ConferenceEnded event) {
         Log.d(TAG, "onEvent: ConferenceEnded " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceUpdatedEvent event) {
+    public void onEvent(ConferenceUpdated event) {
         Log.d(TAG, "onEvent: ConferenceUpdated " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(FileConvertedEvent event) {
-        Log.d(TAG, "onEvent: FileConvertedEvent " + event.getEvent().getType());
+    public void onEvent(FileConverted event) {
+        Log.d(TAG, "onEvent: FileConverted " + event.getType());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ContactAddedEvent event) {
-        Log.d(TAG, "onEvent: ContactAddedEvent " + event);
+    public void onEvent(ContactAdded event) {
+        Log.d(TAG, "onEvent: ContactAdded " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(PeerConnectionStatusUpdatedEvent event) {
-        Log.d(TAG, "onEvent: PeerConnectionStatusUpdatedEvent " + event);
+    public void onEvent(PeerConnectionStatusUpdated event) {
+        Log.d(TAG, "onEvent: PeerConnectionStatusUpdated " + event);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

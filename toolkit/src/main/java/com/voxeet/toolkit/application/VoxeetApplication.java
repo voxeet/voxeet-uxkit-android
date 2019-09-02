@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.utils.EventDebugger;
 
 import eu.codlab.simplepromise.Promise;
@@ -16,7 +17,7 @@ import eu.codlab.simplepromise.solve.Solver;
 /**
  * This class guide the users to implement the SDK following the standard features
  */
-
+@Annotate
 public abstract class VoxeetApplication extends Application {
 
 

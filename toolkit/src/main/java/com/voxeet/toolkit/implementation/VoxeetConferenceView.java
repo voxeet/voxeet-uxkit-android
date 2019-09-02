@@ -21,7 +21,7 @@ import com.voxeet.sdk.core.services.ConferenceService;
 import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.core.services.conference.information.ConferenceState;
 import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
-import com.voxeet.sdk.events.success.CameraSwitchSuccessEvent;
+import com.voxeet.sdk.events.sdk.CameraSwitchSuccessEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.views.VideoView;
@@ -846,7 +846,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(CameraSwitchSuccessEvent event) {
-        mConferenceViewRendererControl.updateMirror(event.isFront());
+        mConferenceViewRendererControl.updateMirror(event.isFront);
     }
 
     @Nullable

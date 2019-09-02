@@ -22,7 +22,7 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.ConferenceUtils;
-import com.voxeet.sdk.utils.annotate;
+import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.utils.WindowHelper;
 import com.voxeet.toolkit.views.internal.VoxeetVuMeter;
@@ -31,7 +31,7 @@ import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-@annotate
+@Annotate
 public class VoxeetSpeakerView extends VoxeetView {
     private final String TAG = VoxeetSpeakerView.class.getSimpleName();
 
