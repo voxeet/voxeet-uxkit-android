@@ -1,5 +1,8 @@
 package com.voxeet.toolkit.configuration;
 
+import com.voxeet.sdk.utils.Annotate;
+
+@Annotate
 public class ActionBar {
     public boolean displayMute = true;
     public boolean displaySpeaker = true;

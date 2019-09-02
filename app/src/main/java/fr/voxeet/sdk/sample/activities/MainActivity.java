@@ -15,9 +15,8 @@ import android.widget.EditText;
 
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
-import com.voxeet.sdk.events.success.ConferenceJoinedSuccessEvent;
-import com.voxeet.sdk.events.success.SocketConnectEvent;
-import com.voxeet.sdk.events.success.SocketStateChangeEvent;
+import com.voxeet.sdk.events.sdk.SocketConnectEvent;
+import com.voxeet.sdk.events.sdk.SocketStateChangeEvent;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.json.internal.MetadataHolder;
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;

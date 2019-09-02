@@ -6,9 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.utils.annotate;
+import com.voxeet.sdk.utils.Annotate;
 
-@annotate
+@Annotate
 public class VoxeetActiveSpeakerTimer {
 
     private ActiveSpeakerListener listener;

@@ -23,11 +23,11 @@ import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.core.services.AudioService;
-import com.voxeet.sdk.events.success.ConferenceDestroyedPushEvent;
-import com.voxeet.sdk.events.success.ConferenceEndedEvent;
-import com.voxeet.sdk.events.success.ConferencePreJoinedEvent;
-import com.voxeet.sdk.events.success.DeclineConferenceResultEvent;
+import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
+import com.voxeet.sdk.events.sdk.DeclineConferenceResultEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
+import com.voxeet.sdk.json.ConferenceDestroyedPush;
+import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.utils.AndroidManifest;
@@ -228,8 +228,8 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceDestroyedPushEvent event) {
-        if (mIncomingBundleChecker.isSameConference(event.getPush().getConferenceId())) {
+    public void onEvent(ConferenceDestroyedPush event) {
+        if (mIncomingBundleChecker.isSameConference(event.conferenceId)) {
             finish();
         }
     }
@@ -238,8 +238,8 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
      * Specific event used to manage the current "incoming" call feature
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceEndedEvent event) {
-        if (mIncomingBundleChecker.isSameConference(event.getEvent().getConferenceId())) {
+    public void onEvent(ConferenceEnded event) {
+        if (mIncomingBundleChecker.isSameConference(event.conferenceId)) {
             finish();
         }
     }

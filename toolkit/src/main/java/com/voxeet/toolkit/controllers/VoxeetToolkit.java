@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.providers.rootview.AbstractRootViewProvider;
 import com.voxeet.toolkit.providers.rootview.DefaultRootViewProvider;
@@ -19,6 +20,7 @@ import java.util.List;
 /**
  * Simple VoxeetToolkit implementation
  */
+@Annotate
 public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
     private final static String TAG = VoxeetToolkit.class.getSimpleName();

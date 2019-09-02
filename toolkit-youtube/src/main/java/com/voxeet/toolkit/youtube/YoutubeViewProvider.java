@@ -15,12 +15,12 @@ import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
-import com.voxeet.sdk.utils.annotate;
+import com.voxeet.sdk.utils.Annotate;
 
 /**
  * Simple implementation to help integrate youtube into Apps
  */
-@annotate
+@Annotate
 public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouTubePlayer.OnInitializedListener {
 
     private YouTubePlayerView youtubeView;
@@ -44,9 +44,9 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
      */
     @Override
     public void start(@NonNull VideoPresentationStarted videoPresentationStarted) {
-        lastKey = videoPresentationStarted.getKey();
+        lastKey = videoPresentationStarted.key;
 
-        youtubePlayer.loadVideo(getVideoId(videoPresentationStarted.getUrl()));
+        youtubePlayer.loadVideo(getVideoId(videoPresentationStarted.url));
         youtubePlayer.play();
     }
 
@@ -56,7 +56,7 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
      */
     @Override
     public void stop(@NonNull VideoPresentationStopped videoPresentationStopped) {
-        if (null == lastKey || !lastKey.equals(videoPresentationStopped.getKey())) return;
+        if (null == lastKey || !lastKey.equals(videoPresentationStopped.key)) return;
         youtubePlayer.pause();
     }
 
@@ -66,7 +66,7 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
      */
     @Override
     public void play(@NonNull VideoPresentationPlay videoPresentationPlay) {
-        if (null == lastKey || !lastKey.equals(videoPresentationPlay.getKey())) return;
+        if (null == lastKey || !lastKey.equals(videoPresentationPlay.key)) return;
         youtubePlayer.play();
     }
 
@@ -76,7 +76,7 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
      */
     @Override
     public void pause(@NonNull VideoPresentationPaused videoPresentationPaused) {
-        if (null == lastKey || !lastKey.equals(videoPresentationPaused.getKey())) return;
+        if (null == lastKey || !lastKey.equals(videoPresentationPaused.key)) return;
         youtubePlayer.pause();
     }
 
@@ -86,8 +86,8 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
      */
     @Override
     public void seek(@NonNull VideoPresentationSeek videoPresentationSeek) {
-        if (null == lastKey || !lastKey.equals(videoPresentationSeek.getKey())) return;
-        youtubePlayer.seekToMillis((int) videoPresentationSeek.getTimestamp());
+        if (null == lastKey || !lastKey.equals(videoPresentationSeek.key)) return;
+        youtubePlayer.seekToMillis((int) videoPresentationSeek.timestamp);
     }
 
     private void init(@NonNull String youtubeKey) {

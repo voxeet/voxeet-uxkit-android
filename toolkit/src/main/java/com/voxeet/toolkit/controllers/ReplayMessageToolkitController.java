@@ -8,9 +8,9 @@ import android.util.Log;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.ConferenceService;
-import com.voxeet.sdk.events.success.ConferenceEndedEvent;
-import com.voxeet.sdk.events.success.GetConferenceHistoryEvent;
+import com.voxeet.sdk.events.sdk.GetConferenceHistoryResult;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
+import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.models.v1.HistoryConference;
 import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
@@ -86,9 +86,9 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         ConferenceService service = VoxeetSdk.conference();
         VoxeetSdk.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
-        .then(new PromiseExec<GetConferenceHistoryEvent, Object>() {
+        .then(new PromiseExec<GetConferenceHistoryResult, Object>() {
             @Override
-            public void onCall(@Nullable GetConferenceHistoryEvent event, @NonNull Solver<Object> solver) {
+            public void onCall(@Nullable GetConferenceHistoryResult event, @NonNull Solver<Object> solver) {
                 //possibility to manage the conference history event right here
                 HistoryConference history_conference = findFirstMatch(event);
 
@@ -142,7 +142,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
     @Override
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceEndedEvent event) {
+    public void onEvent(ConferenceEnded event) {
         //to allow replay - prevent super call()
         if (getMainView() != null) getMainView().onConferenceDestroyed();
     }
@@ -174,7 +174,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      * @return a nullable object corresponding to the description
      */
     @Nullable
-    private HistoryConference findFirstMatch(@NonNull GetConferenceHistoryEvent event) {
+    private HistoryConference findFirstMatch(@NonNull GetConferenceHistoryResult event) {
         for (HistoryConference item : event.getItems()) {
             if (_last_conference.equalsIgnoreCase(item.getConferenceId())
                     && item.getConferenceRecordingDuration() > 0) {

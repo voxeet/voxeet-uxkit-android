@@ -15,7 +15,7 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.UserService;
 import com.voxeet.sdk.models.User;
-import com.voxeet.sdk.utils.annotate;
+import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.configuration.Users;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
@@ -25,7 +25,7 @@ import com.voxeet.toolkit.utils.ParticipantViewAdapter;
 import java.util.Iterator;
 import java.util.Map;
 
-@annotate
+@Annotate
 public class VoxeetUsersView extends VoxeetView {
 
     private RecyclerView recyclerView;
