@@ -719,7 +719,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         if (isInConference && null != service.getConferenceId()) {
             ConferenceInformation information = service.getCurrentConferenceInformation();
             if (information != null) {
-                mState = information.getState();
+                mState = information.getConferenceState();
             } else {
                 mState = ConferenceState.LEFT;
             }
