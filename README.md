@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.49.18') {
+  compile ('com.voxeet.sdk:toolkit:2.0.49.19') {
     transitive = true
   }
 }
@@ -47,6 +47,9 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.49.19 :
+ - most events (all from the SDK) have now a pure public access to reduce pressure on the references
 
 v2.0.49.18 :
  - simplification in the internal class architecture
@@ -450,8 +453,8 @@ In the case of network failure of any remote user, the server will try to reconn
 ## Version
 
 
-public-sdk: 2.0.49.18
-toolkit: 2.0.49.18
+public-sdk: 2.0.49.19
+toolkit: 2.0.49.19
 
 ## Tech
 
