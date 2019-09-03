@@ -1,6 +1,7 @@
 package com.voxeet.toolkit.utils;
 
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;

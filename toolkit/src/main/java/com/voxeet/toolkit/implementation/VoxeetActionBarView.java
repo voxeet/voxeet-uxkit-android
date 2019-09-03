@@ -10,14 +10,15 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.audio.AudioRoute;
@@ -252,8 +253,9 @@ public class VoxeetActionBarView extends VoxeetView {
 
                 VoxeetSdk.audio().setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
                 Intent intent = new Intent();
-                intent.setAction("Speaker");
-                getContext().sendBroadcast(intent);
+                intent.setAction("OnCallReceive");
+                intent.putExtra("isSpeaker", true);
+                androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
             }
         });
 
@@ -269,6 +271,10 @@ public class VoxeetActionBarView extends VoxeetView {
                             @Override
                             public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                                 //manage the result ?
+                                Intent intent = new Intent();
+                                intent.setAction("OnCallReceive");
+                                intent.putExtra("isLeave", true);
+                                androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
                             }
                         })
                         .error(new ErrorPromise() {
@@ -340,12 +346,20 @@ public class VoxeetActionBarView extends VoxeetView {
             microphone.setSelected(new_muted_state);
 
             VoxeetSdk.conference().mute(new_muted_state);
+            Intent intent = new Intent();
+            intent.setAction("OnCallReceive");
+            intent.putExtra("isMute", true);
+            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
         }
     }
 
     protected void toggleCamera() {
         if (checkCameraPermission()) {
             VoxeetSdk.conference().toggleVideo();
+            Intent intent = new Intent();
+            intent.setAction("OnCallReceive");
+            intent.putExtra("isVideo", true);
+            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
         }
     }
 

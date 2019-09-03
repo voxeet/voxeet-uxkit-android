@@ -1,7 +1,8 @@
 package com.voxeet.toolkit.providers.logics;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.voxeet.toolkit.implementation.VoxeetReplayMessageView;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;

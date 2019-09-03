@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.NonNull;
 
 public class WindowHelper {
 

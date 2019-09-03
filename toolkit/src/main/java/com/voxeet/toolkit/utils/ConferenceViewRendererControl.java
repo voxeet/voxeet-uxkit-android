@@ -2,10 +2,11 @@ package com.voxeet.toolkit.utils;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+
+import androidx.annotation.NonNull;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
@@ -128,7 +129,7 @@ public class ConferenceViewRendererControl {
         }
     }
 
-    public void attachStreamToSelf(@android.support.annotation.Nullable MediaStream stream) {
+    public void attachStreamToSelf(@Nullable MediaStream stream) {
         VideoView selectedView = getOtherVideoView();
         VideoView selfView = getSelfVideoView();
 
@@ -229,7 +230,7 @@ public class ConferenceViewRendererControl {
         VoxeetSdk.conference().switchCamera()
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override
-                    public void onCall(@android.support.annotation.Nullable Boolean result, @NonNull Solver<Object> solver) {
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                         CameraInformationProvider provider = VoxeetSdk.mediaDevice().getCameraInformationProvider();
                         updateMirror(provider.isDefaultFrontFacing());
                     }
