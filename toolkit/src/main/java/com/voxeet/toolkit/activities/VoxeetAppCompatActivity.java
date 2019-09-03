@@ -81,7 +81,9 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
             VoxeetSdk.screenShare().consumeRightsToScreenShare();
         }
 
-        VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach();
+        if (null != VoxeetToolkit.getInstance() && null != VoxeetToolkit.getInstance().getConferenceToolkit()) {
+            VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach();
+        }
     }
 
     @Override
