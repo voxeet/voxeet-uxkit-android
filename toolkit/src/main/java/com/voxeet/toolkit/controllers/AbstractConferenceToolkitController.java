@@ -656,7 +656,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
 
-        if (activity != null && validFilter(event.conferenceId)) {
+        if (activity != null && validFilter(event.getConferenceId())) {
             if (mMainView == null) init();
 
             setParams();
@@ -664,7 +664,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             displayView();
 
             if (mMainView != null) {
-                mMainView.onConferenceJoining(event.conferenceId);
+                mMainView.onConferenceJoining(event.getConferenceId());
             }
         }
     }
@@ -722,7 +722,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceJoinedSuccessEvent event) {
-        if (validFilter(event.conferenceId) || validFilter(event.conferenceAlias)) {
+        if (validFilter(event.getConferenceId()) || validFilter(event.getAliasId())) {
             VoxeetSdk.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
 
             displayView();
@@ -734,7 +734,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             }
 
             if (mMainView != null) {
-                mMainView.onConferenceJoined(event.conferenceId);
+                mMainView.onConferenceJoined(event.getConferenceId());
             }
         }
     }
@@ -757,8 +757,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
         if (mMainView == null) init();
 
-        if (validFilter(event.conferenceId) || validFilter(event.conferenceAlias)) {
-            mMainView.onConferenceCreation(event.conferenceId);
+        if (validFilter(event.getConfId()) || validFilter(event.getConfAlias())) {
+            mMainView.onConferenceCreation(event.getConfId());
         }
     }
 
@@ -796,8 +796,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceUserUpdatedEvent event) {
-        log("onEvent: ConferenceUserUpdatedEvent " + event.user);
-        User user = event.user;
+        log("onEvent: ConferenceUserUpdatedEvent " + event.getUser());
+        User user = event.getUser();
 
         List<User> users = getConferenceUsers();
         if (!users.contains(user)) {
@@ -811,7 +811,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         //mMediaStreams.put(user.getUserId(), event.getMediaStream());
 
         if (mMainView != null) {
-            if (!event.mediaStream.isScreenShare()) {
+            if (!event.getMediaStream().isScreenShare()) {
                 mMainView.onScreenShareMediaStreamUpdated(user.getId(), mScreenShareMediaStreams);
             } else {
                 mMainView.onMediaStreamUpdated(user.getId(), mMediaStreams);
@@ -831,7 +831,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         checkStopOutgoingCall();
 
         log("onEvent: ConferenceUserJoinedEvent " + event);
-        User user = event.user;
+        User user = event.getUser();
 
 
         List<User> users = getConferenceUsers();
@@ -855,14 +855,14 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ScreenStreamAddedEvent event) {
-        MediaStream mediaStream = event.mediaStream;
+        MediaStream mediaStream = event.getMediaStream();
         Log.d(TAG, "onEvent: event " + mediaStream.isScreenShare() + " "
                 + (mediaStream.videoTracks().size() > 0));
         //mScreenShareMediaStreams.put(event.getPeer(), event.getMediaStream());
 
 
         if (null != mMainView) {
-            mMainView.onScreenShareMediaStreamUpdated(event.userId,
+            mMainView.onScreenShareMediaStreamUpdated(event.getPeer(),
                     VoxeetSdk.conference().getMapOfScreenShareStreams());
         }
     }
@@ -874,7 +874,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         //}
 
         if (null != mMainView) {
-            mMainView.onScreenShareMediaStreamUpdated(event.userId,
+            mMainView.onScreenShareMediaStreamUpdated(event.getPeer(),
                     VoxeetSdk.conference().getMapOfScreenShareStreams());
         }
     }
@@ -887,7 +887,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserLeftEvent event) {
         if (null != mMainView) {
-            User user = event.user;
+            User user = event.getUser();
             List<User> users = getConferenceUsers();
 
             if (users.contains(user)) {
@@ -913,14 +913,14 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             List<User> users = getConferenceUsers();
             while (i < users.size()) {
                 user = users.get(i);
-                if (user.getId() != null && user.getId().equals(event.userId)) {
+                if (user.getId() != null && user.getId().equals(event.getUserId())) {
                     users.remove(i);
                     mMainView.onConferenceUsersListUpdate(users);
                 } else {
                     i++;
                 }
             }
-            mMainView.onConferenceUserDeclined(event.userId);
+            mMainView.onConferenceUserDeclined(event.getUserId());
         }
     }
 
