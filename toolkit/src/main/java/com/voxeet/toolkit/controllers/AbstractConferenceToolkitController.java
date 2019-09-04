@@ -887,7 +887,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final ConferenceUserLeftEvent event) {
         if (null != mMainView) {
-            User user = event.userId;
+            User user = event.user;
             List<User> users = getConferenceUsers();
 
             if (users.contains(user)) {
