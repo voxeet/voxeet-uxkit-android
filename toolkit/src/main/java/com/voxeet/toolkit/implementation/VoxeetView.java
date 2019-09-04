@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 /**
  * Default implementation for voxeet views
- *
+ * <p>
  * Those classes will evolve quickly in the future to reflect much more flexibility
  */
 public abstract class VoxeetView extends FrameLayout
@@ -106,11 +107,11 @@ public abstract class VoxeetView extends FrameLayout
     /**
      * On conference creation.
      *
-     * @param conference_id the conference id
+     * @param conference the conference
      */
-    public void onConferenceJoining(@NonNull String conference_id) {
+    public void onConferenceJoining(@NonNull Conference conference) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceJoining(conference_id);
+            child.onConferenceJoining(conference);
         }
     }
 
@@ -128,39 +129,47 @@ public abstract class VoxeetView extends FrameLayout
         }
     }
 
-    /**
-     * On conference user joined.
-     *
-     * @param conference_user the conference user
-     */
+
     @Override
-    public void onConferenceUserJoined(@NonNull User conference_user) {
+    public void onUserAddedEvent(@NonNull Conference conference, @NonNull User user) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceUserJoined(conference_user);
+            child.onUserAddedEvent(conference, user);
         }
     }
 
-    /**
-     * On conference user updated.
-     *
-     * @param conference_user the conference user
-     */
     @Override
-    public void onConferenceUserUpdated(@NonNull User conference_user) {
+    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceUserUpdated(conference_user);
+            child.onUserUpdatedEvent(conference, user);
         }
     }
 
-    /**
-     * On conference user left.
-     *
-     * @param conference_user the conference user
-     */
     @Override
-    public void onConferenceUserLeft(@NonNull User conference_user) {
+    public void onUserLeftEvent(@NonNull Conference conference, @NonNull User user) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceUserLeft(conference_user);
+            child.onUserLeftEvent(conference, user);
+        }
+    }
+
+
+    @Override
+    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        for (VoxeetView child : mListeners) {
+            child.onStreamAddedEvent(conference, user, mediaStream);
+        }
+    }
+
+    @Override
+    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        for (VoxeetView child : mListeners) {
+            child.onStreamUpdatedEvent(conference, user, mediaStream);
+        }
+    }
+
+    @Override
+    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        for (VoxeetView child : mListeners) {
+            child.onStreamRemovedEvent(conference, user, mediaStream);
         }
     }
 
@@ -188,65 +197,12 @@ public abstract class VoxeetView extends FrameLayout
     }
 
     /**
-     * On media stream updated.
-     *
-     * @param userId        the user id
-     * @param media_streams the list of media streams
-     */
-    public void onMediaStreamUpdated(@NonNull String userId,
-                                     @NonNull Map<String, MediaStream> media_streams) {
-        for (VoxeetView child : mListeners) {
-            child.onMediaStreamUpdated(userId, media_streams);
-        }
-    }
-
-    /**
-     * On Screen Share media stream updated
-     *
-     * @param userId                     the user id
-     * @param screen_share_media_streams the list of screen shares media streams
-     */
-    public void onScreenShareMediaStreamUpdated(@NonNull String userId,
-                                                @NonNull Map<String, MediaStream> screen_share_media_streams) {
-        for (VoxeetView child : mListeners) {
-            child.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
-        }
-    }
-
-    /**
-     * @param screenShareMediaStreams the new list of screen share media streams
-     */
-    @Override
-    public void onScreenShareMediaStreamUpdated(Map<String, MediaStream> screenShareMediaStreams) {
-        for (VoxeetView child : mListeners) {
-            child.onScreenShareMediaStreamUpdated(screenShareMediaStreams);
-        }
-    }
-
-    /**
      * @param conference_users the new list of users
      */
     @Override
     public void onConferenceUsersListUpdate(List<User> conference_users) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUsersListUpdate(conference_users);
-        }
-    }
-
-    @Override
-    public void onMediaStreamsListUpdated(Map<String, MediaStream> mediaStreams) {
-        for (VoxeetView child : mListeners) {
-            child.onMediaStreamsListUpdated(mediaStreams);
-        }
-    }
-
-    /**
-     * @param mediaStreams the new list of mMediaStreams
-     */
-    @Override
-    public void onMediaStreamsUpdated(Map<String, MediaStream> mediaStreams) {
-        for (VoxeetView child : mListeners) {
-            child.onMediaStreamsUpdated(mediaStreams);
         }
     }
 

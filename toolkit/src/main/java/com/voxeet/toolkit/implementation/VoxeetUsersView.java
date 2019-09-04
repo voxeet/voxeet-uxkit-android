@@ -14,6 +14,7 @@ import android.view.View;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.UserService;
+import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.R;
@@ -119,7 +120,7 @@ public class VoxeetUsersView extends VoxeetView {
 
         Users configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.Users;
         ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetUsersView_speaking_user_color);
-        if(null != configuration.speaking_user_color)
+        if (null != configuration.speaking_user_color)
             setSelectedUserColor(configuration.speaking_user_color);
         else if (color != null)
             setSelectedUserColor(color.getColorForState(getDrawableState(), 0));
@@ -129,37 +130,52 @@ public class VoxeetUsersView extends VoxeetView {
         attributes.recycle();
     }
 
+
     @Override
-    public void onConferenceUserJoined(@NonNull User conferenceUser) {
-        super.onConferenceUserJoined(conferenceUser);
+    public void onUserAddedEvent(@NonNull Conference conference, @NonNull User user) {
+        super.onUserAddedEvent(conference, user);
 
         UserService userService = VoxeetSdk.user();
         String id = null != userService ? userService.getUserId() : "";
-        if(null == id) id = "";
+        if (null == id) id = "";
 
-        boolean isMe = id.equalsIgnoreCase(conferenceUser.getId());
+        boolean isMe = id.equalsIgnoreCase(user.getId());
         if (!isMe || isDisplaySelf()) {
-            adapter.addUser(conferenceUser);
+            adapter.addUser(user);
 
             adapter.updateUsers();
         }
+
     }
 
     @Override
-    public void onConferenceUserLeft(@NonNull User conferenceUser) {
-        super.onConferenceUserLeft(conferenceUser);
+    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user) {
+        super.onUserUpdatedEvent(conference, user);
 
-        if(!isDisplayNonAir()) {
-            adapter.removeUser(conferenceUser);
+        postOnUi(new Runnable() {
+            @Override
+            public void run() {
+                if (adapter != null) {
+                    adapter.updateUsers();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onUserLeftEvent(@NonNull Conference conference, @NonNull User user) {
+        super.onUserLeftEvent(conference, user);
+
+        if (!isDisplayNonAir()) {
+            adapter.removeUser(user);
             recyclerView.setLayoutManager(horizontalLayout);
-            adapter.updateUsers();
         }
+        adapter.updateUsers();
     }
 
     @Override
-    public void onConferenceUserUpdated(@NonNull final User conference_user) {
-        super.onConferenceUserUpdated(conference_user);
-
+    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamAddedEvent(conference, user, mediaStream);
         postOnUi(new Runnable() {
             @Override
             public void run() {
@@ -171,14 +187,12 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     @Override
-    public void onMediaStreamUpdated(@NonNull final String userId, @NonNull final Map<String, MediaStream> mediaStreams) {
-        super.onMediaStreamUpdated(userId, mediaStreams);
-
+    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamUpdatedEvent(conference, user, mediaStream);
         postOnUi(new Runnable() {
             @Override
             public void run() {
                 if (adapter != null) {
-                    adapter.onMediaStreamUpdated(userId, mediaStreams);
                     adapter.updateUsers();
                 }
             }
@@ -186,37 +200,14 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     @Override
-    public void onScreenShareMediaStreamUpdated(@NonNull final String userId, @NonNull final Map<String, MediaStream> mediaStreams) {
-        super.onScreenShareMediaStreamUpdated(userId, mediaStreams);
-
+    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamRemovedEvent(conference, user, mediaStream);
         postOnUi(new Runnable() {
             @Override
             public void run() {
                 if (adapter != null) {
-                    adapter.onScreenShareMediaStreamUpdated(userId, mediaStreams);
                     adapter.updateUsers();
                 }
-            }
-        });
-    }
-
-    @Override
-    public void onScreenShareMediaStreamUpdated(final Map<String, MediaStream> screenShareMediaStreams) {
-        super.onScreenShareMediaStreamUpdated(screenShareMediaStreams);
-
-        postOnUi(new Runnable() {
-            @Override
-            public void run() {
-                String userId = null;
-                Iterator<String> keys = screenShareMediaStreams.keySet().iterator();
-                while (null == userId && keys.hasNext()) {
-                    userId = keys.next();
-                    if (null == screenShareMediaStreams.get(userId))
-                        userId = null; //reset if invalid stream
-                }
-
-                adapter.onMediaStreamUpdated(userId, screenShareMediaStreams);
-                adapter.updateUsers();
             }
         });
     }

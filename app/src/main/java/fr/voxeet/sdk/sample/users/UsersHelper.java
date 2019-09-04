@@ -3,9 +3,9 @@ package fr.voxeet.sdk.sample.users;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.voxeet.sdk.sample.R;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
 import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.sample.R;
 
 public class UsersHelper {
 

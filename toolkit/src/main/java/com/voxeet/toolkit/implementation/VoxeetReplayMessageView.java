@@ -1,27 +1,28 @@
 package com.voxeet.toolkit.implementation;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaStreamType;
+import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.models.Conference;
+import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
     private final String TAG = VoxeetConferenceView.class.getSimpleName();
 
-    //private ViewGroup layoutTimer;
-
     private VideoView selectedView;
-
-    private Map<String, MediaStream> mMediaStreams;
-    //private VoxeetTimer voxeetTimer;
 
     /**
      * Instantiates a new Voxeet conference view.
@@ -43,50 +44,65 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
     }
 
     @Override
-    public void onMediaStreamsUpdated(Map<String, MediaStream> mediaStreams) {
-        super.onMediaStreamsUpdated(mediaStreams);
-
-        updateStreams(mediaStreams);
-
+    public void onUserAddedEvent(@NonNull Conference conference, @NonNull User user) {
+        super.onUserAddedEvent(conference, user);
+        updateStreams();
     }
 
     @Override
-    public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
-        super.onMediaStreamUpdated(userId, mediaStreams);
-
-        updateStreams(mediaStreams);
+    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user) {
+        super.onUserUpdatedEvent(conference, user);
+        updateStreams();
     }
 
     @Override
-    public void onMediaStreamsListUpdated(Map<String, MediaStream> mediaStreams) {
-        super.onMediaStreamsListUpdated(mediaStreams);
-
-        updateStreams(mediaStreams);
+    public void onUserLeftEvent(@NonNull Conference conference, @NonNull User user) {
+        super.onUserLeftEvent(conference, user);
+        updateStreams();
     }
 
-    private void updateStreams(Map<String, MediaStream> mediaStreams) {
-        Set<String> set = mediaStreams.keySet();
-        boolean found = false;
-        for (String key : set) {
-            if (!found && mediaStreams.get(key) != null) {
-                selectedView.setVisibility(View.VISIBLE);
-                selectedView.attach(key, mediaStreams.get(key));
-                found = true;
-            }
+    @Override
+    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamAddedEvent(conference, user, mediaStream);
+        updateStreams();
+    }
+
+    @Override
+    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamUpdatedEvent(conference, user, mediaStream);
+        updateStreams();
+    }
+
+    @Override
+    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamRemovedEvent(conference, user, mediaStream);
+        updateStreams();
+    }
+
+    private void updateStreams() {
+
+        List<User> users = VoxeetSdk.conference().getConferenceUsers();
+
+        MediaStream stream = null;
+        User attach = null;
+        for (User user : users) {
+            stream = user.streamsHandler().getFirst(MediaStreamType.Camera);
+            attach = user;
+            if (null != stream) break;
         }
 
-        if (!found) {
-            selectedView.setVisibility(View.GONE);
-        } else {
+        if (null != stream) {
             selectedView.setVisibility(View.VISIBLE);
+            selectedView.attach(attach.getId(), stream);
+        } else {
+            selectedView.unAttach();
+            selectedView.setVisibility(View.GONE);
         }
 
-        mMediaStreams = mediaStreams;
     }
 
     @Override
     public void init() {
-        mMediaStreams = new HashMap<>();
     }
 
     @Override

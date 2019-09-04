@@ -77,9 +77,7 @@ public class IncomingBundleChecker {
 
             Log.d(TAG, "onAccept: mConferenceId := " + mConferenceId);
             //join the conference
-            Promise<Boolean> join = VoxeetToolkit.getInstance()
-                    .getConferenceToolkit()
-                    .joinUsingConferenceId(mConferenceId, info);
+            Promise<Boolean> join = VoxeetSdk.conference().join(mConferenceId);
             //only when error() is called
 
             Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSdk.user().isSocketOpen());

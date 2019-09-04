@@ -1,6 +1,9 @@
 package com.voxeet.toolkit.implementation;
 
+import android.support.annotation.NonNull;
+
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 
 import java.util.List;
@@ -34,13 +37,6 @@ public interface IVoxeetView {
     void onConferenceCreation(String conferenceId);
 
     /**
-     * On conference user joined.
-     *
-     * @param conferenceUser the conference user
-     */
-    void onConferenceUserJoined(User conferenceUser);
-
-    /**
      * On conference for user joined
      */
     void onConferenceFromNoOneToOneUser();
@@ -50,19 +46,18 @@ public interface IVoxeetView {
      */
     void onConferenceNoMoreUser();
 
-    /**
-     * On conference user updated.
-     *
-     * @param conferenceUser the conference user
-     */
-    void onConferenceUserUpdated(User conferenceUser);
+    void onUserAddedEvent(@NonNull Conference conference, @NonNull User user);
 
-    /**
-     * On conference user left.
-     *
-     * @param conferenceUser the conference user
-     */
-    void onConferenceUserLeft(User conferenceUser);
+    void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user);
+
+    void onUserLeftEvent(@NonNull Conference conference, @NonNull User user);
+
+
+    void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream);
+
+    void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream);
+
+    void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream);
 
     /**
      * An user declined the call
@@ -79,32 +74,9 @@ public interface IVoxeetView {
     void onRecordingStatusUpdated(boolean recording);
 
     /**
-     * On media stream updated.
-     *
-     * @param userId       the user id
-     * @param mediaStreams
-     */
-    void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams);
-
-    /**
      * @param conferenceUsers the new list of users
      */
     void onConferenceUsersListUpdate(List<User> conferenceUsers);
-
-    /**
-     * @param mediaStreams the new list of media streams
-     */
-    void onMediaStreamsListUpdated(Map<String, MediaStream> mediaStreams);
-
-    /**
-     * @param mediaStreams the new list of mediaStreams
-     */
-    void onMediaStreamsUpdated(Map<String, MediaStream> mediaStreams);
-
-    /**
-     * @param screenShareMediaStreams the new list of screen share media streams
-     */
-    void onScreenShareMediaStreamUpdated(Map<String, MediaStream> screenShareMediaStreams);
 
     /**
      * On conference leaving from this user.

@@ -8,9 +8,11 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.media.camera.CameraInformationProvider;
+import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.implementation.VoxeetConferenceView;
 
@@ -114,11 +116,11 @@ public class ConferenceViewRendererControl {
         VideoView selfVideoView = getSelfVideoView();
 
         String ownUserId = VoxeetPreferences.id();
+        User user = VoxeetSdk.conference().findUserById(ownUserId);
 
         selectedView.unAttach();
 
-        MediaStream stream = VoxeetSdk.conference()
-                .getMapOfStreams().get(ownUserId);
+        MediaStream stream = null != user ? user.streamsHandler().getFirst(MediaStreamType.Camera) : null;
 
         if (!ToolkitUtils.hasParticipants() && null != stream && stream.videoTracks().size() > 0) {
             attachStreamToSelf(stream);
@@ -226,7 +228,7 @@ public class ConferenceViewRendererControl {
             animatorSet.start();
         }
 
-        VoxeetSdk.conference().switchCamera()
+        VoxeetSdk.mediaDevice().switchCamera()
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override
                     public void onCall(@android.support.annotation.Nullable Boolean result, @NonNull Solver<Object> solver) {

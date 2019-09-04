@@ -9,10 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.sample.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import fr.voxeet.sdk.sample.R;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 

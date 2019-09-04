@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fr.voxeet.sdk.sample">
+    package="com.voxeet.sdk.sample">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -27,7 +27,7 @@
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".connection.VoxeetConnectionService"
+            android:name="fr.voxeet.sdk.sample.connection.VoxeetConnectionService"
             android:label="@string/connection_service"
             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">
             <intent-filter>
@@ -48,7 +48,7 @@
             android:value="fr.voxeet.sdk.sample.activities.MainActivity" />
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name="fr.voxeet.sdk.sample.activities.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar">
@@ -63,7 +63,7 @@
             <!-- exteDefaultIncomingCallActivityvity -->
         </activity>
 
-        <activity android:name=".activities.ActivityToTestOverlay" />
+        <activity android:name="fr.voxeet.sdk.sample.activities.ActivityToTestOverlay" />
 
         <!-- to manage push notification -->
         <service android:name="com.voxeet.push.firebase.VoxeetFirebaseMessagingService">

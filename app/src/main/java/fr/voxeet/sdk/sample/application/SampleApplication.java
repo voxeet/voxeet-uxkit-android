@@ -1,6 +1,5 @@
 package fr.voxeet.sdk.sample.application;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDex;
@@ -11,8 +10,11 @@ import com.voxeet.push.firebase.FirebaseController;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.sample.BuildConfig;
+import com.voxeet.sdk.sample.R;
 import com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity;
 import com.voxeet.toolkit.application.VoxeetApplication;
+import com.voxeet.toolkit.configuration.Overlay;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.utils.EventDebugger;
@@ -24,7 +26,6 @@ import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.PromiseSolver;
 import eu.codlab.simplepromise.solve.Solver;
-import fr.voxeet.sdk.sample.BuildConfig;
 
 public class SampleApplication extends MultiDexApplication {
     private static final int ONE_MINUTE = 60 * 1000;

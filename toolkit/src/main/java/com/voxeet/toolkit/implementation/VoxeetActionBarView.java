@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
@@ -29,6 +30,8 @@ import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
+import com.voxeet.sdk.models.Conference;
+import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.sdk.utils.Annotate;
@@ -40,6 +43,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.List;
 import java.util.Map;
 
 import eu.codlab.simplepromise.solve.ErrorPromise;
@@ -203,23 +207,32 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     @Override
-    public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
-        super.onMediaStreamUpdated(userId, mediaStreams);
-
-        if (camera != null && userId.equalsIgnoreCase(VoxeetPreferences.id()) && mediaStreams.get(userId) != null) {
-            camera.setSelected(mediaStreams.get(userId).videoTracks().size() > 0);
-        }
+    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamAddedEvent(conference, user, mediaStream);
     }
 
     @Override
-    public void onScreenShareMediaStreamUpdated(@NonNull String userId, @NonNull Map<String, MediaStream> screen_share_media_streams) {
-        super.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
+    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamUpdatedEvent(conference, user, mediaStream);
+    }
 
+    @Override
+    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+        super.onStreamRemovedEvent(conference, user, mediaStream);
+    }
 
-        MediaStream stream = screen_share_media_streams.get(userId);
+    public void invalidateOwnStreams() {
 
-        if (screenshare != null && userId.equalsIgnoreCase(VoxeetPreferences.id()) && null != stream) {
-            screenshare.setSelected(stream.isScreenShare());
+        User user = VoxeetSdk.conference().findUserById(VoxeetSdk.user().getUserId());
+
+        MediaStream cameraStream = user.streamsHandler().getFirst(MediaStreamType.Camera);
+        MediaStream screenStream = user.streamsHandler().getFirst(MediaStreamType.ScreenShare);
+        if (camera != null && null != cameraStream) {
+            camera.setSelected(cameraStream.videoTracks().size() > 0);
+        }
+
+        if (null != screenshare) {
+            screenshare.setSelected(null != screenStream && screenStream.videoTracks().size() > 0);
         }
     }
 
@@ -312,11 +325,11 @@ public class VoxeetActionBarView extends VoxeetView {
         StateListDrawable selector_speaker = createOverridenSelector(configuration.speaker_on, configuration.speaker_off);
         StateListDrawable selector_hangup = createOverridenSelectorPressed(configuration.hangup, configuration.hangup_pressed);
 
-        if(null != selector_camera) camera.setImageDrawable(selector_camera);
-        if(null != selector_microphone) microphone.setImageDrawable(selector_microphone);
-        if(null != selector_screenshare) screenshare.setImageDrawable(selector_screenshare);
-        if(null != selector_speaker) speaker.setImageDrawable(selector_speaker);
-        if(null != selector_hangup) hangup.setImageDrawable(selector_hangup);
+        if (null != selector_camera) camera.setImageDrawable(selector_camera);
+        if (null != selector_microphone) microphone.setImageDrawable(selector_microphone);
+        if (null != selector_screenshare) screenshare.setImageDrawable(selector_screenshare);
+        if (null != selector_speaker) speaker.setImageDrawable(selector_speaker);
+        if (null != selector_hangup) hangup.setImageDrawable(selector_hangup);
 
         if (!checkMicrophonePermission()) {
             microphone.setSelected(true);
@@ -399,8 +412,8 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     @Override
-    public void onConferenceJoining(@NonNull String conference_id) {
-        super.onConferenceJoining(conference_id);
+    public void onConferenceJoining(@NonNull Conference conference) {
+        super.onConferenceJoining(conference);
 
         updateVisibilities(View.GONE);
     }
@@ -478,7 +491,8 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
 
-    private boolean checkPermission(@NonNull String permission, @NonNull String error_message, int result_code) {
+    private boolean checkPermission(@NonNull String permission, @NonNull String error_message,
+                                    int result_code) {
         if (!Validate.hasPermissionInManifest(getContext(), permission)) {
             Log.d(TAG, error_message);
             return false;
@@ -536,8 +550,9 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     @Nullable
-    private StateListDrawable createOverridenSelectorPressed(Integer button_on, Integer button_off) {
-        if(!isValidOverride(button_on, button_off)) return null;
+    private StateListDrawable createOverridenSelectorPressed(Integer button_on, Integer
+            button_off) {
+        if (!isValidOverride(button_on, button_off)) return null;
 
         Resources resources = getContext().getResources();
         Drawable drawable_on = resources.getDrawable(button_on);
@@ -553,7 +568,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
     @Nullable
     private StateListDrawable createOverridenSelector(Integer button_on, Integer button_off) {
-        if(!isValidOverride(button_on, button_off)) return null;
+        if (!isValidOverride(button_on, button_off)) return null;
 
         Resources resources = getContext().getResources();
         Drawable drawable_on = resources.getDrawable(button_on);
