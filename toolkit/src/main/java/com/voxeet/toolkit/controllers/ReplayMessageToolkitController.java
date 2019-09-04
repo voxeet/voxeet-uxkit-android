@@ -175,7 +175,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      */
     @Nullable
     private HistoryConference findFirstMatch(@NonNull GetConferenceHistoryResult event) {
-        for (HistoryConference item : event.getItems()) {
+        for (HistoryConference item : event.items) {
             if (_last_conference.equalsIgnoreCase(item.getConferenceId())
                     && item.getConferenceRecordingDuration() > 0) {
                 return item;
