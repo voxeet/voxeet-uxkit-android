@@ -1,8 +1,7 @@
 package com.voxeet.toolkit.activities.notification;
 
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
+import android.support.annotation.Nullable;
 
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 

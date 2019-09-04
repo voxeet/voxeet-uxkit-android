@@ -2,6 +2,9 @@ package com.voxeet.toolkit.implementation;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -10,10 +13,6 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;

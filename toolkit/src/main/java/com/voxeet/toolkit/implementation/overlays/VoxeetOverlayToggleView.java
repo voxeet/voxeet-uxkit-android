@@ -1,8 +1,7 @@
 package com.voxeet.toolkit.implementation.overlays;
 
 import android.content.Context;
-
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
 
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetOverlayView;

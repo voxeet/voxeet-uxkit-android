@@ -1,8 +1,7 @@
 package com.voxeet.toolkit.application;
 
 import android.app.Application;
-
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
 
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;

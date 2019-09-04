@@ -2,13 +2,12 @@ package com.voxeet.toolkit.providers.rootview;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;

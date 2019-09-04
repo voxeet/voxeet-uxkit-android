@@ -1,8 +1,7 @@
 package com.voxeet.toolkit.utils;
 
 import android.graphics.Point;
-
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
 
 /**
  * Created by kevinleperf on 20/11/2017.

@@ -1,8 +1,7 @@
 package com.voxeet.toolkit.providers.logics;
 
 import android.content.Context;
-
-import androidx.annotation.NonNull;
+import android.support.annotation.NonNull;
 
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;

@@ -3,11 +3,10 @@ package com.voxeet.toolkit.providers.rootview;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.FrameLayout;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.views.internal.VoxeetOverlayContainerFrameLayout;
