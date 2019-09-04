@@ -256,7 +256,7 @@ public class VoxeetActionBarView extends VoxeetView {
                 Intent intent = new Intent();
                 intent.setAction("OnCallReceive");
                 intent.putExtra("isSpeaker", true);
-                androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+                getContext().sendBroadcast(intent);
             }
         });
 
@@ -275,7 +275,7 @@ public class VoxeetActionBarView extends VoxeetView {
                                 Intent intent = new Intent();
                                 intent.setAction("OnCallReceive");
                                 intent.putExtra("isLeave", true);
-                                androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+								getContext().sendBroadcast(intent);
                             }
                         })
                         .error(new ErrorPromise() {
@@ -350,7 +350,7 @@ public class VoxeetActionBarView extends VoxeetView {
             Intent intent = new Intent();
             intent.setAction("OnCallReceive");
             intent.putExtra("isMute", true);
-            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+            getContext().sendBroadcast(intent);
         }
     }
 
@@ -360,7 +360,7 @@ public class VoxeetActionBarView extends VoxeetView {
             Intent intent = new Intent();
             intent.setAction("OnCallReceive");
             intent.putExtra("isVideo", true);
-            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+            getContext().sendBroadcast(intent);
         }
     }
 

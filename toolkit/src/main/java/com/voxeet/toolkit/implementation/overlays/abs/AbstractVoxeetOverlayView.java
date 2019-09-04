@@ -263,7 +263,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
             Intent intent = new Intent();
             intent.setAction("OnCallReceive");
             intent.putExtra("isMinimized", true);
-            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+			getContext().sendBroadcast(intent);
         }
     }
 
