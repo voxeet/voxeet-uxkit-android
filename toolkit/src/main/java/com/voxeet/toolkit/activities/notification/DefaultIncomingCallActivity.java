@@ -251,7 +251,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferencePreJoinedEvent event) {
-        if (mIncomingBundleChecker.isSameConference(event.conferenceId))) {
+        if (mIncomingBundleChecker.isSameConference(event.conference.getId())) {
             finish();
         }
     }
