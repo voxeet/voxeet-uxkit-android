@@ -307,6 +307,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             notchView.setVisibility(View.VISIBLE);
             conferenceName.setVisibility(View.VISIBLE);
             voxeetTimerExpand.setVisibility(View.VISIBLE);
+            voxeetTimerExpand.start();
+            voxeetTimerExpand.setInConferenceColor(getResources().getColor(R.color.green));
         } else {
             if (null != selectedView) selectedView.setVisibility(View.GONE);
             speakerView.setVisibility(View.GONE);
@@ -471,15 +473,15 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         if (service.getConference() != null && service.getConference().getAlias() != null) {
             String aliasName = service.getConference().getAlias();
-            if (aliasName.contains(":")) {
+//            if (aliasName.contains(":")) {
                 Log.d("if name: ", aliasName);
                 String confName = aliasName.substring(0, aliasName.indexOf(":"));
                 Log.d("conf name: ", confName);
                 conferenceName.setText(confName);
-            } else {
+             /* } else {
                 Log.d("else name: ", aliasName);
                 conferenceName.setText(service.getConference().getAlias());
-            }
+            }*/
         }
         String currentUserAttached = selectedView.getPeerId();
         MediaStream currentUser = streams.get(VoxeetPreferences.id());
@@ -720,7 +722,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             addListener(speakerView);
             addListener(conferenceActionBarView);
             addListener(participantView);
-            addListener(voxeetTimer);
+//            addListener(voxeetTimer);
             addListener(voxeetTimerExpand);
 
             Log.d(TAG, "bindView: ");
