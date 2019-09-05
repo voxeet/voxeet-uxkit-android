@@ -86,6 +86,12 @@
                         android:textSize="@dimen/voxeet_conference_state_expanded"
                         android:textStyle="bold" />
 
+                    <com.voxeet.toolkit.implementation.VoxeetTimer
+                        android:id="@+id/voxeet_timer_expand"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
+
                     <LinearLayout
                         android:id="@+id/layout_call_details"
                         android:layout_width="match_parent"
