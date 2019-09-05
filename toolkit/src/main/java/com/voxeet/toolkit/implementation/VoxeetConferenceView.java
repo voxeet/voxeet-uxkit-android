@@ -334,7 +334,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                 selectedView.setVisibility(View.VISIBLE);
             else showSpeakerView();
             participantView.setVisibility(View.VISIBLE);
-            voxeetTimer.setVisibility(View.GONE);
+            voxeetTimer.setVisibility(View.VISIBLE);
             notchView.setVisibility(View.VISIBLE);
             conferenceName.setVisibility(View.VISIBLE);
         } else {
@@ -459,7 +459,16 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         List<User> users = service.getConferenceUsers();
 
         if (service.getConference().getAlias()!=null) {
-            conferenceName.setText(service.getConference().getAlias());
+            if(service.getConference().getAlias().contains(":")) {
+                String[] confName = service.getConference().getAlias().split(":");
+                        if(confName.length > 0) {
+                            conferenceName.setText(confName[0]);
+                        } else {
+                            conferenceName.setText(service.getConference().getAlias());
+                        }
+            } else {
+                conferenceName.setText(service.getConference().getAlias());
+            }
         }
         String currentUserAttached = selectedView.getPeerId();
         MediaStream currentUser = streams.get(VoxeetPreferences.id());
