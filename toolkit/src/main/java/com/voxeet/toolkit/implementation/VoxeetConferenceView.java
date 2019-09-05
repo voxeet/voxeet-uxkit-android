@@ -299,14 +299,14 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             if (null != selectedView) selectedView.setVisibility(View.GONE);
             speakerView.setVisibility(View.GONE);
             participantView.setVisibility(View.GONE);
-            voxeetTimer.setVisibility(View.GONE);
+            voxeetTimer.setVisibility(View.VISIBLE);
             notchView.setVisibility(View.VISIBLE);
             conferenceName.setVisibility(View.VISIBLE);
         } else {
             if (null != selectedView) selectedView.setVisibility(View.GONE);
             speakerView.setVisibility(View.GONE);
             participantView.setVisibility(View.GONE);
-            voxeetTimer.setVisibility(View.GONE);
+            voxeetTimer.setVisibility(View.VISIBLE);
             notchView.setVisibility(View.GONE);
             conferenceName.setVisibility(View.GONE);
         }
@@ -458,15 +458,18 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         Map<String, MediaStream> screenShareStreams = service.getMapOfScreenShareStreams();
         List<User> users = service.getConferenceUsers();
 
-        if (service.getConference().getAlias()!=null) {
-            if(service.getConference().getAlias().contains(":")) {
+        if (service.getConference() != null && service.getConference().getAlias() != null) {
+            if (service.getConference().getAlias().contains(":")) {
+                Log.e("if name: ", service.getConference().getAlias());
                 String[] confName = service.getConference().getAlias().split(":");
-                        if(confName.length > 0) {
-                            conferenceName.setText(confName[0]);
-                        } else {
-                            conferenceName.setText(service.getConference().getAlias());
-                        }
+                if (confName.length > 0) {
+                    Log.e("length name: ", confName[0]);
+                    conferenceName.setText(confName[0]);
+                } else {
+                    conferenceName.setText(service.getConference().getAlias());
+                }
             } else {
+                Log.e("else name: ", service.getConference().getAlias());
                 conferenceName.setText(service.getConference().getAlias());
             }
         }
@@ -615,7 +618,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     @Override
     public void onExpandedView() {
         isExpanded = true;
-        layoutTimer.setVisibility(View.GONE);
+        layoutTimer.setVisibility(View.VISIBLE);
 
         layoutParticipant.setVisibility(View.VISIBLE);
         participantView.notifyDatasetChanged();
