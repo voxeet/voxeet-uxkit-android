@@ -37,7 +37,6 @@ import com.voxeet.sdk.events.v2.StreamAddedEvent;
 import com.voxeet.sdk.events.v2.StreamRemovedEvent;
 import com.voxeet.sdk.events.v2.StreamUpdatedEvent;
 import com.voxeet.sdk.events.v2.UserAddedEvent;
-import com.voxeet.sdk.events.v2.UserLeftEvent;
 import com.voxeet.sdk.events.v2.UserUpdatedEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
@@ -739,18 +738,6 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     public void onEvent(StreamRemovedEvent event) {
         if (null != mMainView) {
             mMainView.onStreamRemovedEvent(event.conference, event.user, event.mediaStream);
-        }
-    }
-
-    /**
-     * On ConferenceUserLeftEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final UserLeftEvent event) {
-        if (null != mMainView) {
-            mMainView.onUserLeftEvent(event.conference, event.user);
         }
     }
 

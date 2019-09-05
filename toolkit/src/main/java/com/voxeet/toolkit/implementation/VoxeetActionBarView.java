@@ -22,7 +22,6 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.core.services.ConferenceService;
 import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
@@ -32,9 +31,9 @@ import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
+import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Validate;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.configuration.ActionBar;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
@@ -42,9 +41,6 @@ import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.List;
-import java.util.Map;
 
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;

@@ -7,7 +7,6 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.toolkit.utils.EventDebugger;
 
 import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.PromiseSolver;
@@ -19,24 +18,6 @@ import eu.codlab.simplepromise.solve.Solver;
  */
 @Annotate
 public abstract class VoxeetApplication extends Application {
-
-
-    private EventDebugger eventDebugger;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        eventDebugger = new EventDebugger();
-    }
-
-    public void enableLogs() {
-        eventDebugger.register();
-    }
-
-    public void disableLogs() {
-        eventDebugger.unregister();
-    }
 
     /**
      * Initialize the SDK. This promise is used by the DefaultiIncomingActivity for instance

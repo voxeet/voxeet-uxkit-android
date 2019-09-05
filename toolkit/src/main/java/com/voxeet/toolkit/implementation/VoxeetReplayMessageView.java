@@ -56,12 +56,6 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
     }
 
     @Override
-    public void onUserLeftEvent(@NonNull Conference conference, @NonNull User user) {
-        super.onUserLeftEvent(conference, user);
-        updateStreams();
-    }
-
-    @Override
     public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamAddedEvent(conference, user, mediaStream);
         updateStreams();

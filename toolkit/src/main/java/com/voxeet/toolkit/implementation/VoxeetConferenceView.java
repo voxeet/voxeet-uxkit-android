@@ -19,7 +19,6 @@ import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.core.services.ConferenceService;
-import com.voxeet.sdk.core.services.ScreenShareService;
 import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.core.services.conference.information.ConferenceState;
 import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
@@ -46,7 +45,6 @@ import org.webrtc.RendererCommon;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class VoxeetConferenceView extends AbstractVoxeetExpandableView implements IParticipantViewListener, VoxeetActiveSpeakerTimer.ActiveSpeakerListener {
     private final String TAG = VoxeetConferenceView.class.getSimpleName();
@@ -702,16 +700,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     @Override
     public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user) {
         super.onUserUpdatedEvent(conference, user);
-        checkForLocalUserStreamVideo();
-        updateSpeakerViewVisibility();
-        participantView.notifyDatasetChanged();
-
-        updateUi();
-    }
-
-    @Override
-    public void onUserLeftEvent(@NonNull Conference conference, @NonNull User user) {
-        super.onUserLeftEvent(conference, user);
         checkForLocalUserStreamVideo();
         updateSpeakerViewVisibility();
         participantView.notifyDatasetChanged();

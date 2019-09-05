@@ -50,9 +50,6 @@ public interface IVoxeetView {
 
     void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user);
 
-    void onUserLeftEvent(@NonNull Conference conference, @NonNull User user);
-
-
     void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream);
 
     void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream);

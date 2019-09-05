@@ -147,13 +147,6 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         if (getMainView() != null) getMainView().onConferenceDestroyed();
     }
 
-    @Override
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceDestroyedPush event) {
-        //to allow replay - prevent super call()
-        if (getMainView() != null) getMainView().onConferenceDestroyed();
-    }
-
     public boolean isShowing() {
         return null != getMainView();
     }

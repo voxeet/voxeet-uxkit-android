@@ -16,6 +16,7 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.UserService;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
+import com.voxeet.sdk.models.v1.ConferenceUserStatus;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.configuration.Users;
@@ -155,22 +156,18 @@ public class VoxeetUsersView extends VoxeetView {
         postOnUi(new Runnable() {
             @Override
             public void run() {
+
+                //TODO update the whole adapter from outside injection -> merging
+                if (!isDisplayNonAir() && ConferenceUserStatus.LEFT.equals(user.getStatus())) {
+                    adapter.removeUser(user);
+                    recyclerView.setLayoutManager(horizontalLayout);
+                }
+
                 if (adapter != null) {
                     adapter.updateUsers();
                 }
             }
         });
-    }
-
-    @Override
-    public void onUserLeftEvent(@NonNull Conference conference, @NonNull User user) {
-        super.onUserLeftEvent(conference, user);
-
-        if (!isDisplayNonAir()) {
-            adapter.removeUser(user);
-            recyclerView.setLayoutManager(horizontalLayout);
-        }
-        adapter.updateUsers();
     }
 
     @Override

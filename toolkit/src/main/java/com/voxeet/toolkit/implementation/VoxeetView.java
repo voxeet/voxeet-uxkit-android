@@ -144,13 +144,6 @@ public abstract class VoxeetView extends FrameLayout
         }
     }
 
-    @Override
-    public void onUserLeftEvent(@NonNull Conference conference, @NonNull User user) {
-        for (VoxeetView child : mListeners) {
-            child.onUserLeftEvent(conference, user);
-        }
-    }
-
 
     @Override
     public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
