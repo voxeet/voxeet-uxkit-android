@@ -307,8 +307,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             notchView.setVisibility(View.VISIBLE);
             conferenceName.setVisibility(View.VISIBLE);
             voxeetTimerExpand.setVisibility(View.VISIBLE);
-            voxeetTimerExpand.start();
-            voxeetTimerExpand.setInConferenceColor(getResources().getColor(R.color.green));
         } else {
             if (null != selectedView) selectedView.setVisibility(View.GONE);
             speakerView.setVisibility(View.GONE);
@@ -475,9 +473,9 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             String aliasName = service.getConference().getAlias();
 //            if (aliasName.contains(":")) {
                 Log.d("if name: ", aliasName);
-                String confName = aliasName.substring(0, aliasName.indexOf(":"));
-                Log.d("conf name: ", confName);
-                conferenceName.setText(confName);
+                String[] confName = aliasName.split(":");
+                Log.d("conf name: ", confName[0]);
+                conferenceName.setText(confName[0]);
              /* } else {
                 Log.d("else name: ", aliasName);
                 conferenceName.setText(service.getConference().getAlias());
@@ -722,7 +720,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             addListener(speakerView);
             addListener(conferenceActionBarView);
             addListener(participantView);
-//            addListener(voxeetTimer);
+            addListener(voxeetTimer);
             addListener(voxeetTimerExpand);
 
             Log.d(TAG, "bindView: ");
