@@ -163,7 +163,7 @@ public class VoxeetTimer extends VoxeetView {
     private void updateAttrs(AttributeSet attrs) {
         TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetTimer);
 
-        action = attributes.getInt(R.styleable.VoxeetTimer_timer_mode, CONFERENCE_MODE);
+        action = attributes.getInt(R.styleable.VoxeetTimer_timer_mode, DEFAULT_MODE);
         updateAction();
 
         ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetTimer_not_in_conference_color);
@@ -181,8 +181,6 @@ public class VoxeetTimer extends VoxeetView {
         enableColor(attributes.getBoolean(R.styleable.VoxeetTimer_color_enabled, true));
 
         attributes.recycle();
-
-        updateColors();
     }
 
     private int getColorForState(ColorStateList state_list, @ColorRes int color) {
@@ -190,18 +188,20 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     private void updateAction() {
-        if (action == DEFAULT_MODE)
+        if (action == DEFAULT_MODE) {
             start();
+            updateColors();
+        }
     }
 
     private void updateColors() {
-        if (VoxeetSdk.conference().isLive()) {
+//        if (VoxeetSdk.conference().isLive()) {
             recordingImage.setColorFilter(inConferenceColor);
             recordingImageAlpha.setColorFilter(inConferenceColor);
-        } else {
-            recordingImage.setColorFilter(notInConferenceColor);
-            recordingImageAlpha.setColorFilter(notInConferenceColor);
-        }
+//        } else {
+//            recordingImage.setColorFilter(notInConferenceColor);
+//            recordingImageAlpha.setColorFilter(notInConferenceColor);
+//        }
 
         timer.setTextColor(textColor);
 

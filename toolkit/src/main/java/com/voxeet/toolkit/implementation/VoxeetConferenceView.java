@@ -64,7 +64,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     private VoxeetActiveSpeakerTimer voxeetActiveSpeakerTimer;
     private VoxeetTimer voxeetTimer;
-    private VoxeetTimerExpanded voxeetTimerExpand;
+    private VoxeetTimer voxeetTimerExpand;
 
     private NotchAvoidView notchView;
 
@@ -286,7 +286,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         voxeetTimer.setVisibility(View.GONE);
         notchView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         conferenceName.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-        voxeetTimerExpand.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+        voxeetTimerExpand.setVisibility(View.GONE);
         Log.d(TAG, "onConferenceJoining: " + View.VISIBLE + " " + conferenceActionBarView.getVisibility());
 
         conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
