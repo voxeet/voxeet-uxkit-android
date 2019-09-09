@@ -2,7 +2,6 @@ package fr.voxeet.sdk.sample.application;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
@@ -13,11 +12,9 @@ import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.sample.BuildConfig;
 import com.voxeet.sdk.sample.R;
 import com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity;
-import com.voxeet.toolkit.application.VoxeetApplication;
 import com.voxeet.toolkit.configuration.Overlay;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
-import com.voxeet.toolkit.utils.EventDebugger;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -33,7 +30,6 @@ public class SampleApplication extends MultiDexApplication {
     private static final String TAG = SampleApplication.class.getSimpleName();
 
     private UserInfo _current_user;
-    private EventDebugger mEventDebugger;
     private boolean sdkInitialized;
 
     @Override
@@ -43,9 +39,6 @@ public class SampleApplication extends MultiDexApplication {
         Log.d(TAG, "onCreate: starting Voxeet Sample");
 
         sdkInitialized = false;
-
-        mEventDebugger = new EventDebugger();
-        mEventDebugger.register();
 
         VoxeetToolkit.initialize(this, EventBus.getDefault())
                 .enableOverlay(true);
@@ -157,11 +150,11 @@ public class SampleApplication extends MultiDexApplication {
     }
 
     private void onSdkInitialized() {
-        VoxeetSdk.getInstance().getConferenceService().setTimeOut(ONE_MINUTE);
+        VoxeetSdk.conference().setTimeOut(ONE_MINUTE);
 
         //it's possible to use the meta-data in the AndroidManifest to directly control the default incoming activity
         VoxeetPreferences.setDefaultActivity(DefaultIncomingCallActivity.class.getCanonicalName());
-        VoxeetSdk.getInstance().register( this);
+        VoxeetSdk.instance().register( this);
 
         sdkInitialized = true;
     }

@@ -20,7 +20,7 @@ import com.voxeet.sdk.core.services.UserService;
 import com.voxeet.sdk.events.sdk.SocketConnectEvent;
 import com.voxeet.sdk.events.sdk.SocketStateChangeEvent;
 import com.voxeet.sdk.json.UserInfo;
-import com.voxeet.sdk.models.v1.ConferenceResponse;
+import com.voxeet.sdk.models.v1.CreateConferenceResult;
 import com.voxeet.sdk.sample.R;
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
@@ -126,8 +126,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @Override
     public void onBackPressed() {
-        if (null != VoxeetSdk.getInstance() && VoxeetSdk.getInstance().getConferenceService().isLive()) {
-            VoxeetSdk.getInstance().getConferenceService().leave()
+        if (null != VoxeetSdk.conference() && VoxeetSdk.conference().isLive()) {
+            VoxeetSdk.conference().leave()
                     .then(defaultConsume())
                     .error(createErrorDump());
         } else {
@@ -155,12 +155,12 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 return;
             }
 
-            PromiseInOut<ConferenceResponse, Object> create = service.create(conferenceAlias)
-                    .then(new PromiseExec<ConferenceResponse, Object>() {
+            PromiseInOut<CreateConferenceResult, Object> create = service.create(conferenceAlias)
+                    .then(new PromiseExec<CreateConferenceResult, Object>() {
                         @Override
-                        public void onCall(@Nullable ConferenceResponse result, @NonNull Solver<Object> solver) {
+                        public void onCall(@Nullable CreateConferenceResult result, @NonNull Solver<Object> solver) {
                             try {
-                                String conferenceId = null != result ? result.getConfId() : null;
+                                String conferenceId = null != result ? result.conferenceId : null;
                                 if (null == conferenceId)
                                     throw new NullPointerException("ConferenceId null");
                                 solver.resolve(service.join(conferenceId));
@@ -170,8 +170,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                         }
                     });
 
-            if (VoxeetSdk.getInstance().getConferenceService().isLive()) {
-                VoxeetSdk.getInstance().getConferenceService()
+            if (VoxeetSdk.conference().isLive()) {
+                VoxeetSdk.conference()
                         .leave()
                         .then(create)
                         //.then(VoxeetSdk.conference().startVideo())
@@ -220,7 +220,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
         List<UserInfo> users = UsersHelper.getExternalIds(userService.getUserId());
 
-        conferenceService.inviteUserInfos(conferenceService.getConferenceId(), users)
+        conferenceService.invite(conferenceService.getConferenceId(), users)
                 .then(defaultConsume())
                 .error(createErrorDump());
     }
