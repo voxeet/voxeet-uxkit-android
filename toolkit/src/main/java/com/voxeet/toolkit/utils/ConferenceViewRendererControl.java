@@ -11,7 +11,7 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
-import com.voxeet.sdk.media.camera.CameraInformationProvider;
+import com.voxeet.sdk.media.camera.CameraContext;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.implementation.VoxeetConferenceView;
@@ -134,7 +134,7 @@ public class ConferenceViewRendererControl {
         VideoView selectedView = getOtherVideoView();
         VideoView selfView = getSelfVideoView();
 
-        CameraInformationProvider provider = VoxeetSdk.mediaDevice().getCameraInformationProvider();
+        CameraContext provider = VoxeetSdk.mediaDevice().getCameraContext();
 
         if (null != stream && stream.videoTracks().size() > 0) {
             String ownUserId = VoxeetPreferences.id();
@@ -232,7 +232,7 @@ public class ConferenceViewRendererControl {
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override
                     public void onCall(@android.support.annotation.Nullable Boolean result, @NonNull Solver<Object> solver) {
-                        CameraInformationProvider provider = VoxeetSdk.mediaDevice().getCameraInformationProvider();
+                        CameraContext provider = VoxeetSdk.mediaDevice().getCameraContext();
                         updateMirror(provider.isDefaultFrontFacing());
                     }
                 })

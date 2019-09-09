@@ -299,15 +299,15 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         if (isExpanded()) {
             background = R.drawable.background_maximized_color;
             color = overlay.background_minimized_color;
-            if(null != container) container.setCornerRadius(0f);
+            if (null != container) container.setCornerRadius(0f);
         } else {
             background = R.drawable.background_minimized_color;
             color = overlay.background_minimized_color;
             float dimension = getContext().getResources().getDimension(R.dimen.voxeet_overlay_minized_corner);
-            if(null != container) container.setCornerRadius(dimension);
+            if (null != container) container.setCornerRadius(dimension);
         }
 
-        if(null != color) {
+        if (null != color) {
             background_container.setBackgroundColor(color);
         } else {
             background_container.setBackgroundResource(background);

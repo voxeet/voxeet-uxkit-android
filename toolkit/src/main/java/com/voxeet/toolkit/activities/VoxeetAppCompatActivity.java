@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.ScreenShareService;
 import com.voxeet.sdk.core.services.screenshare.RequestScreenSharePermissionEvent;
 import com.voxeet.sdk.events.error.ConferenceJoinedError;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
@@ -60,7 +59,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
         super.onResume();
 
         if (null != VoxeetSdk.instance()) {
-            VoxeetSdk.instance().register( this);
+            VoxeetSdk.instance().register(this);
         }
 
         if (!EventBus.getDefault().isRegistered(this)) {

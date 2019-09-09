@@ -43,7 +43,7 @@ public class CornerHelper {
         int right = display.getWidth();
 
         mCornerMargin = (int) view.getContext().getResources().getDimension(R.dimen.voxeet_overlay_margin);
-        if(mCornerMargin < 0) mCornerMargin = 0;
+        if (mCornerMargin < 0) mCornerMargin = 0;
 
         Point topLeft = new Point(left, top);
         Point topRight = new Point(right, top);

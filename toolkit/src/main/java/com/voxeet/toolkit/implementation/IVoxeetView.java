@@ -7,7 +7,6 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 
 import java.util.List;
-import java.util.Map;
 
 
 /**

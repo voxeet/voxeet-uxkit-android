@@ -19,6 +19,7 @@ public class VoxeetVuMeter extends RoundedFrameLayout {
     private final View view;
 
     private int width;
+
     /**
      * Instantiates a new Voxeet vu meter.
      *
@@ -77,7 +78,7 @@ public class VoxeetVuMeter extends RoundedFrameLayout {
      * @param vuMeter the vu meter
      */
     public void updateMeter(double vuMeter) {
-        Log.d(TAG, "updateMeter: vuMeter:="+vuMeter);
+        Log.d(TAG, "updateMeter: vuMeter:=" + vuMeter);
         view.setBackgroundColor(vuMeter > 0.02 ? yellowOrange : white);
     }
 

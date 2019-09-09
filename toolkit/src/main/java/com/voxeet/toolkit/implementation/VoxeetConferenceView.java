@@ -479,7 +479,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             if (localUserMediaStream.videoTracks().size() > 0) {
                 selfView.attach(localUserId, localUserMediaStream);
 
-                selfView.setMirror(VoxeetSdk.mediaDevice().getCameraInformationProvider().isDefaultFrontFacing());
+                selfView.setMirror(VoxeetSdk.mediaDevice().getCameraContext().isDefaultFrontFacing());
                 if (isExpanded) selfView.setVisibility(View.VISIBLE);
                 else selfView.setVisibility(View.GONE);
             } else {

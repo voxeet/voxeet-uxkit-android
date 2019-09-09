@@ -9,7 +9,6 @@ import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.ConferenceService;
 import com.voxeet.sdk.events.sdk.GetConferenceHistoryResult;
-import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.models.v1.HistoryConference;
 import com.voxeet.toolkit.configuration.Configuration;
@@ -40,7 +39,6 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
     private String _last_conference;
     private long _wait_for_history_offset;
     private long _last_conference_duration;
-
 
 
     public ReplayMessageToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
@@ -86,30 +84,30 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         ConferenceService service = VoxeetSdk.conference();
         VoxeetSdk.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
-        .then(new PromiseExec<GetConferenceHistoryResult, Object>() {
-            @Override
-            public void onCall(@Nullable GetConferenceHistoryResult event, @NonNull Solver<Object> solver) {
-                //possibility to manage the conference history event right here
-                HistoryConference history_conference = findFirstMatch(event);
+                .then(new PromiseExec<GetConferenceHistoryResult, Object>() {
+                    @Override
+                    public void onCall(@Nullable GetConferenceHistoryResult event, @NonNull Solver<Object> solver) {
+                        //possibility to manage the conference history event right here
+                        HistoryConference history_conference = findFirstMatch(event);
 
-                if (history_conference != null) {
-                    _last_conference_duration = history_conference.getConferenceRecordingDuration();
-                } else {
-                    //must be because it is not the current conference which returned something !
-                }
+                        if (history_conference != null) {
+                            _last_conference_duration = history_conference.getConferenceRecordingDuration();
+                        } else {
+                            //must be because it is not the current conference which returned something !
+                        }
 
-                _wait_for_history = false;
-            }
-        })
-        .error(new ErrorPromise() {
-            @Override
-            public void onError(@NonNull Throwable throwable) {
-                Log.d(TAG, "onHistoryError: " + throwable.getMessage());
-                throwable.printStackTrace();
+                        _wait_for_history = false;
+                    }
+                })
+                .error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable throwable) {
+                        Log.d(TAG, "onHistoryError: " + throwable.getMessage());
+                        throwable.printStackTrace();
 
-                _wait_for_history = false;
-            }
-        });
+                        _wait_for_history = false;
+                    }
+                });
 
         //TODO here, do a Promise.all with the two different method !
         //and resolve a returned promise with the relevant information
@@ -118,7 +116,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
     /**
      * Will leave the current replay if any action is called on this method
-     *
+     * <p>
      * to be used internally
      */
     @Override

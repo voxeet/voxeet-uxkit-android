@@ -21,8 +21,8 @@ import com.squareup.picasso.Picasso;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.User;
-import com.voxeet.sdk.utils.ConferenceUtils;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.ConferenceUtils;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.utils.WindowHelper;
 import com.voxeet.toolkit.views.internal.VoxeetVuMeter;
@@ -196,7 +196,7 @@ public class VoxeetSpeakerView extends VoxeetView {
         super.onConfigurationChanged(newConfig);
 
         orientation = newConfig.orientation;
-        if(orientation <= 0) orientation = 0;
+        if (orientation <= 0) orientation = 0;
     }
 
     @Override

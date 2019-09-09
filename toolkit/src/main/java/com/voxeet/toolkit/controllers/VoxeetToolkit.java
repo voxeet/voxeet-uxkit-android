@@ -41,7 +41,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
      */
     public static synchronized VoxeetToolkit initialize(Application application, EventBus eventBus) {
 
-        if(null == sInstance) {
+        if (null == sInstance) {
             Log.d(TAG, "initialize: toolkit initializing");
             sInstance = new VoxeetToolkit();
 
@@ -63,7 +63,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
     /**
      * Constructor of the VoxeetToolkit
-     *
+     * <p>
      * public until the switch from implementation is made to the new package
      */
     public VoxeetToolkit() {

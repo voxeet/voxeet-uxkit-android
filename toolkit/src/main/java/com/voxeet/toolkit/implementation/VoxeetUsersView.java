@@ -24,9 +24,6 @@ import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.utils.IParticipantViewListener;
 import com.voxeet.toolkit.utils.ParticipantViewAdapter;
 
-import java.util.Iterator;
-import java.util.Map;
-
 @Annotate
 public class VoxeetUsersView extends VoxeetView {
 

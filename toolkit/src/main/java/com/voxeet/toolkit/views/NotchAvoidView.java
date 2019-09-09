@@ -74,6 +74,7 @@ public class NotchAvoidView extends View {
 
     /**
      * Internal init of the view
+     *
      * @param attrs possible attributes given to it
      */
     private void init(@Nullable AttributeSet attrs) {
@@ -108,6 +109,7 @@ public class NotchAvoidView extends View {
 
     /**
      * Check for the current translucent or forced below sytembar
+     *
      * @return true if translucent or forced
      */
     protected boolean isTranslucentStatusBar() {

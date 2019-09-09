@@ -11,8 +11,6 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
@@ -24,7 +22,6 @@ import com.voxeet.sdk.events.error.ConferenceCreatedError;
 import com.voxeet.sdk.events.error.ConferenceJoinedError;
 import com.voxeet.sdk.events.error.ConferenceLeftError;
 import com.voxeet.sdk.events.error.ReplayConferenceErrorEvent;
-import com.voxeet.sdk.events.restapi.ConferenceRefreshedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceCreatingEvent;
 import com.voxeet.sdk.events.sdk.ConferenceCreationSuccess;
 import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
@@ -43,12 +40,9 @@ import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.InvitationReceivedEvent;
 import com.voxeet.sdk.json.RecordingStatusUpdateEvent;
-import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.json.UserInvited;
 import com.voxeet.sdk.models.User;
-import com.voxeet.sdk.models.v1.ConferenceUser;
 import com.voxeet.sdk.models.v1.ConferenceUserStatus;
-import com.voxeet.sdk.models.v1.Invitation;
 import com.voxeet.sdk.models.v1.RecordingStatus;
 import com.voxeet.sdk.models.v1.UserProfile;
 import com.voxeet.sdk.utils.AudioType;
@@ -68,9 +62,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -691,14 +683,6 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
         if (validFilter(event.conferenceId) || validFilter(event.conferenceAlias)) {
             mMainView.onConferenceCreation(event.conferenceId);
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceRefreshedEvent event) {
-        List<User> users = getConferenceUsers();
-        if (mMainView != null) {
-            mMainView.onConferenceUsersListUpdate(users);
         }
     }
 

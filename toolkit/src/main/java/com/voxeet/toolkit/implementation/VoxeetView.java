@@ -13,7 +13,6 @@ import com.voxeet.sdk.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Default implementation for voxeet views

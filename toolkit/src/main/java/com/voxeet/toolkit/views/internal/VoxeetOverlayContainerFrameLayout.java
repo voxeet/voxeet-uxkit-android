@@ -20,7 +20,8 @@ public class VoxeetOverlayContainerFrameLayout extends FrameLayout {
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if(null != listener) listener.onSizedChangedListener(VoxeetOverlayContainerFrameLayout.this);
+            if (null != listener)
+                listener.onSizedChangedListener(VoxeetOverlayContainerFrameLayout.this);
         }
     };
 
@@ -45,7 +46,7 @@ public class VoxeetOverlayContainerFrameLayout extends FrameLayout {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        if(w != oldw || h != oldh) {
+        if (w != oldw || h != oldh) {
             handler.post(runnable);
         }
     }

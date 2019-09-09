@@ -14,10 +14,7 @@ import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
     private final String TAG = VoxeetConferenceView.class.getSimpleName();

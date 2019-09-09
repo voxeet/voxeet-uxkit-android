@@ -13,7 +13,6 @@ import com.voxeet.sdk.factories.VoxeetIntentFactory;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
-import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
 import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;

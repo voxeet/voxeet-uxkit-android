@@ -68,7 +68,7 @@ public class DefaultRootViewProvider extends AbstractRootViewProvider {
             } else if (null == containerFrameLayout.getParent()) {
                 group.addView(containerFrameLayout);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             //log internally the exception - normally none should happen
             ExceptionManager.sendException(e);
         }
