@@ -10,7 +10,7 @@ import com.voxeet.sdk.utils.Annotate;
  * Manage and create youtube videos
  */
 @Annotate
-public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvider<YoutubeViewProvider> {
+public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvider<YoutubeMediaPresentationView> {
 
     private String youtubeKey;
 
@@ -45,7 +45,7 @@ public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvide
      */
     @NonNull
     @Override
-    public YoutubeViewProvider createMediaPlayerView(@NonNull Context context) {
-        return new YoutubeViewProvider(youtubeKey, context);
+    public YoutubeMediaPresentationView createMediaPlayerView(@NonNull Context context) {
+        return new YoutubeMediaPresentationView(youtubeKey, context);
     }
 }

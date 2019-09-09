@@ -21,7 +21,7 @@ import com.voxeet.sdk.utils.Annotate;
  * Simple implementation to help integrate youtube into Apps
  */
 @Annotate
-public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouTubePlayer.OnInitializedListener {
+public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implements YouTubePlayer.OnInitializedListener {
 
     private YouTubePlayerView youtubeView;
     private YouTubePlayer youtubePlayer;
@@ -29,11 +29,12 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
     private String lastKey;
 
     /**
+     * Available constructor to create an Youtube View to hold incoming requests
      *
      * @param youtubeKey the API key provided by the developer.console.google.com website
      * @param context a valid context used to inflate the view when needed
      */
-    public YoutubeViewProvider(@NonNull String youtubeKey, @NonNull Context context) {
+    public YoutubeMediaPresentationView(@NonNull String youtubeKey, @NonNull Context context) {
         super(context);
         init(youtubeKey);
     }
@@ -90,14 +91,6 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
         youtubePlayer.seekToMillis((int) videoPresentationSeek.timestamp);
     }
 
-    private void init(@NonNull String youtubeKey) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.voxeet_youtube, this, false);
-        addView(view);
-        youtubeView = findViewById(R.id.voxeet_youtube);
-
-        youtubeView.initialize(youtubeKey, this);
-    }
-
     /**
      * Callback when youtube has been properly initialized
      * @param provider the specific provider for the session
@@ -117,6 +110,14 @@ public class YoutubeViewProvider extends AbstractMediaPlayerView implements YouT
     @Override
     public void onInitializationFailure(@NonNull YouTubePlayer.Provider provider, @NonNull YouTubeInitializationResult youTubeInitializationResult) {
 
+    }
+
+    private void init(@NonNull String youtubeKey) {
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.voxeet_youtube, this, false);
+        addView(view);
+        youtubeView = findViewById(R.id.voxeet_youtube);
+
+        youtubeView.initialize(youtubeKey, this);
     }
 
     @Nullable
