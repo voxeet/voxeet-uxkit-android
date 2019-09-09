@@ -475,7 +475,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                 Log.d("if name: ", aliasName);
                 String[] confName = aliasName.split(":");
                 Log.d("conf name: ", confName[0]);
-                conferenceName.setText(confName[0]);
+                String spConfName = confName[0].replace("*"," ");
+                conferenceName.setText(spConfName);
              /* } else {
                 Log.d("else name: ", aliasName);
                 conferenceName.setText(service.getConference().getAlias());
