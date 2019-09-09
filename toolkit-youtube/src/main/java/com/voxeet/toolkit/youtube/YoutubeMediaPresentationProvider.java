@@ -14,17 +14,11 @@ public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvide
 
     private String youtubeKey;
 
-    private YoutubeMediaPresentationProvider() {
-
-    }
-
     /**
      * Constructor with the developer's app key
      * @param youtubeKey a valid key obtained from google's developer website
      */
     public YoutubeMediaPresentationProvider(@NonNull String youtubeKey) {
-        this();
-
         this.youtubeKey = youtubeKey;
     }
 
