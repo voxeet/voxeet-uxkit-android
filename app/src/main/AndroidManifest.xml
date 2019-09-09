@@ -47,6 +47,8 @@
             android:name="voxeet_incoming_accepted_class"
             android:value="fr.voxeet.sdk.sample.activities.MainActivity" />
 
+        <meta-data android:name="voxeet_use_ringtone" android:value="true" />
+
         <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
