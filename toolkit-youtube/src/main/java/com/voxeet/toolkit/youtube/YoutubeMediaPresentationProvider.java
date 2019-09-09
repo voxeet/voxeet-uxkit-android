@@ -2,6 +2,7 @@ package com.voxeet.toolkit.youtube;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.voxeet.sdk.core.services.videopresentation.AbstractMediaPlayerProvider;
 import com.voxeet.sdk.utils.Annotate;
@@ -12,14 +13,25 @@ import com.voxeet.sdk.utils.Annotate;
 @Annotate
 public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvider<YoutubeMediaPresentationView> {
 
-    private String youtubeKey;
+    @Nullable
+    private static String youtubeKey;
 
     /**
      * Constructor with the developer's app key
+     */
+    public YoutubeMediaPresentationProvider() {
+    }
+
+    /**
+     * Set the Youtube API Key for the current session
+     *
+     * This method must be call upon initialization or as soon as it is known by the app (before any conference,
+     * if any video must be played during a call, a crash will be triggered)
+     *
      * @param youtubeKey a valid key obtained from google's developer website
      */
-    public YoutubeMediaPresentationProvider(@NonNull String youtubeKey) {
-        this.youtubeKey = youtubeKey;
+    public static void setApiKey(@NonNull String youtubeKey) {
+        YoutubeMediaPresentationProvider.youtubeKey = youtubeKey;
     }
 
     /**
@@ -40,6 +52,7 @@ public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvide
     @NonNull
     @Override
     public YoutubeMediaPresentationView createMediaPlayerView(@NonNull Context context) {
+        if(null == youtubeKey) throw new NullPointerException("oopsi invalid youtube key");
         return new YoutubeMediaPresentationView(youtubeKey, context);
     }
 }
