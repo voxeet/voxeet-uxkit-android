@@ -471,7 +471,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         if (service.getConference() != null && service.getConference().getAlias() != null) {
             String aliasName = service.getConference().getAlias();
-//            if (aliasName.contains(":")) {
+            if (aliasName.contains(":")) {
                 Log.d("if name: ", aliasName);
                 String[] confName = aliasName.split(":");
                 Log.d("conf name: ", confName[0]);
@@ -480,7 +480,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
              /* } else {
                 Log.d("else name: ", aliasName);
                 conferenceName.setText(service.getConference().getAlias());
-            }*/
+                */
+            }
         }
         String currentUserAttached = selectedView.getPeerId();
         MediaStream currentUser = streams.get(VoxeetPreferences.id());
