@@ -1,3 +1,4 @@
 include ':app'
 include ':toolkit'
 include ':toolkit-youtube'
+include ':toolkit-exoplayer-support'

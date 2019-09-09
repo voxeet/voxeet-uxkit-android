@@ -1,0 +1,101 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'com.jaredsburrows.license'
+
+licenseReport {
+    generateHtmlReport = false
+    generateJsonReport = true
+
+    // These options are ignored for Java projects
+    copyHtmlReportToAssets = false
+    copyJsonReportToAssets = true
+}
+
+repositories {
+    google()
+    mavenLocal()
+    jcenter()
+}
+
+System.out.println("creating youtube for ${rootProject.ext.voxeetSdkToolkitVersion}")
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName rootProject.ext.voxeetSdkToolkitVersion
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            shrinkResources false
+            minifyEnabled false
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+            options.addStringOption('encoding', 'UTF-8')
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
+version = rootProject.ext.voxeetSdkToolkitVersion
+
+bintray {
+    user = project.properties["VOXEET_DEVELOPER_ID"]
+    key = project.properties["BINTRAY_API_KEY"]
+    configurations = ['archives'] //When uploading configuration files
+    pkg {
+        userOrg = project.properties["VOXEET_MAIN_DEVELOPER_ID"]
+        repo = "maven" // project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
+        name = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
+        publicDownloadNumbers = true
+        publish = true
+    }
+}
+
+configurations {
+    javadocDeps
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
+    compile project(":toolkit")
+
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.7.3'
+}
+
+apply from: "../tasks.gradle"
