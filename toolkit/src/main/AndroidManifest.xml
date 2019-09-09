@@ -4,6 +4,7 @@
     <application
         android:label="@string/app_name"
         android:supportsRtl="true">
+        <meta-data android:name="voxeet_use_ringtone" android:value="true" />
 
     </application>
 
