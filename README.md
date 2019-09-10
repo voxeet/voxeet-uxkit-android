@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.49.19') {
+  compile ('com.voxeet.sdk:toolkit:2.0.68') {
     transitive = true
   }
 }
@@ -47,6 +47,12 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.68 :
+ - fix current speaker implementation and use updated internal SDK
+
+v2.0.49.20 to v2.0.68 :
+ - updating codebase and documentation, few fixes
 
 v2.0.49.19 :
  - most events (all from the SDK) have now a pure public access to reduce pressure on the references
@@ -453,8 +459,8 @@ In the case of network failure of any remote user, the server will try to reconn
 ## Version
 
 
-public-sdk: 2.0.49.19
-toolkit: 2.0.49.19
+public-sdk: 2.0.68
+toolkit: 2.0.68
 
 ## Tech
 
