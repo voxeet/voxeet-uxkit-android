@@ -32,7 +32,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
      * Available constructor to create an Youtube View to hold incoming requests
      *
      * @param youtubeKey the API key provided by the developer.console.google.com website
-     * @param context a valid context used to inflate the view when needed
+     * @param context    a valid context used to inflate the view when needed
      */
     public YoutubeMediaPresentationView(@NonNull String youtubeKey, @NonNull Context context) {
         super(context);
@@ -41,6 +41,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
 
     /**
      * A video start has been requested with a specific key and information
+     *
      * @param videoPresentationStarted valid information
      */
     @Override
@@ -53,6 +54,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
 
     /**
      * A video has been stopped
+     *
      * @param videoPresentationStopped a valid instance
      */
     @Override
@@ -63,6 +65,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
 
     /**
      * A video is playing/resuming
+     *
      * @param videoPresentationPlay a valid instance
      */
     @Override
@@ -73,6 +76,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
 
     /**
      * A video has been paused
+     *
      * @param videoPresentationPaused a valid instance
      */
     @Override
@@ -83,6 +87,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
 
     /**
      * A video's timer has been changed to a specific position
+     *
      * @param videoPresentationSeek a valid instance
      */
     @Override
@@ -93,7 +98,8 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
 
     /**
      * Callback when youtube has been properly initialized
-     * @param provider the specific provider for the session
+     *
+     * @param provider      the specific provider for the session
      * @param youTubePlayer the player to use
      * @param b
      */
@@ -104,7 +110,8 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
 
     /**
      * Played to initialize the provider and the player
-     * @param provider the specific provider
+     *
+     * @param provider                    the specific provider
      * @param youTubeInitializationResult the initialization result with the reason
      */
     @Override
@@ -113,20 +120,24 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
     }
 
     private void init(@NonNull String youtubeKey) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.voxeet_youtube, this, false);
-        addView(view);
-        youtubeView = findViewById(R.id.voxeet_youtube);
+        try {
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.voxeet_youtube, this, false);
+            addView(view);
+            youtubeView = findViewById(R.id.voxeet_youtube);
 
-        youtubeView.initialize(youtubeKey, this);
+            youtubeView.initialize(youtubeKey, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Nullable
     private String getVideoId(@Nullable String url) {
         if (null == url) return "";
 
-        if(url.startsWith("https://youtu.be/")) {
+        if (url.startsWith("https://youtu.be/")) {
             String[] split = url.split("youtu.be/");
-            if(split.length > 1) {
+            if (split.length > 1) {
                 return split[1];
             }
         }

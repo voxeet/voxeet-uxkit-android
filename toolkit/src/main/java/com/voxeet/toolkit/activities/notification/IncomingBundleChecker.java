@@ -12,6 +12,7 @@ import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.factories.VoxeetIntentFactory;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.utils.AndroidManifest;
+import com.voxeet.toolkit.activities.IVoxeetActivity;
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 
 import eu.codlab.simplepromise.Promise;
@@ -200,13 +201,13 @@ public class IncomingBundleChecker {
      */
     @NonNull
     final public Intent createActivityAccepted(@NonNull Activity caller) {
-        Class<? extends VoxeetAppCompatActivity> klass = IncomingCallFactory.getAcceptedIncomingActivityKlass();
+        Class<? extends IVoxeetActivity> klass = IncomingCallFactory.getAcceptedIncomingActivityKlass();
         if (null == klass) {
             Log.d(TAG, "createActivityAccepted: no klass defined ! we'll now try to load from the AndroidManifest");
             String klass_fully_qualified = AndroidManifest.readMetadata(caller, "voxeet_incoming_accepted_class", null);
             if (null != klass_fully_qualified) {
                 try {
-                    klass = (Class<? extends VoxeetAppCompatActivity>) Class.forName(klass_fully_qualified);
+                    klass = (Class<? extends IVoxeetActivity>) Class.forName(klass_fully_qualified);
                 } catch (ClassNotFoundException e) {
                     Log.d(TAG, "createActivityAccepted: ERROR !! IS THE KLASS VALID AND INHERITING VoxeetAppCompatActivity");
                     e.printStackTrace();

@@ -3,6 +3,7 @@ package com.voxeet.toolkit.activities.notification;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.voxeet.toolkit.activities.IVoxeetActivity;
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 
 /**
@@ -12,7 +13,7 @@ import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 public class IncomingCallFactory {
 
     @Nullable
-    private static Class<? extends VoxeetAppCompatActivity> sAcceptedIncomingActivityKlass;
+    private static Class<? extends IVoxeetActivity> sAcceptedIncomingActivityKlass;
 
     @Nullable
     private static Bundle sAcceptedIncomingActivityExtras;
@@ -22,7 +23,7 @@ public class IncomingCallFactory {
      *
      * @param klass a nullable klass (null = reset)
      */
-    public static void setTempAcceptedIncomingActivity(@Nullable Class<? extends VoxeetAppCompatActivity> klass) {
+    public static void setTempAcceptedIncomingActivity(@Nullable Class<? extends IVoxeetActivity> klass) {
         sAcceptedIncomingActivityKlass = klass;
     }
 
@@ -36,7 +37,7 @@ public class IncomingCallFactory {
      * @return a valid instance of Class<VoxeetAppCompatActivity>
      */
     @Nullable
-    public static Class<? extends VoxeetAppCompatActivity> getAcceptedIncomingActivityKlass() {
+    public static Class<? extends IVoxeetActivity> getAcceptedIncomingActivityKlass() {
         return sAcceptedIncomingActivityKlass;
     }
 

@@ -1,12 +1,12 @@
-package com.voxeet.toolkit.activities;
+package com.voxeet.toolkit.youtube.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.screenshare.RequestScreenSharePermissionEvent;
 import com.voxeet.sdk.events.error.ConferenceJoinedError;
@@ -15,6 +15,7 @@ import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
 import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Validate;
+import com.voxeet.toolkit.activities.IVoxeetActivity;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.toolkit.activities.notification.IncomingCallFactory;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
@@ -28,7 +29,8 @@ import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
 
 /**
- * VoxeetAppCompatActivity manages the call state
+ * VoxeetYoutubeAppCompatActivity manages the call state
+ * This class is to be used in the context of any requirement to be able to play Youtube URL
  * <p>
  * In the current merged state, this class is not used
  * <p>
@@ -40,10 +42,10 @@ import eu.codlab.simplepromise.solve.Solver;
  * - singleTop / singleInstance
  */
 @Annotate
-public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxeetActivity {
+public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implements IVoxeetActivity {
 
 
-    private static final String TAG = VoxeetAppCompatActivity.class.getSimpleName();
+    private static final String TAG = VoxeetYoutubeAppCompatActivity.class.getSimpleName();
     private IncomingBundleChecker mIncomingBundleChecker;
 
     @Override

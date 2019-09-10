@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.68') {
+  compile ('com.voxeet.sdk:toolkit:2.0.68.2') {
     transitive = true
   }
 }
@@ -47,6 +47,9 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.68.2 :
+ - Add VoxeetYoutubeAppCompatActivity for the Youtube library support
 
 v2.0.68.1 :
  - fix mp4 playback management
@@ -463,7 +466,7 @@ In the case of network failure of any remote user, the server will try to reconn
 
 
 public-sdk: 2.0.68
-toolkit: 2.0.68.1
+toolkit: 2.0.68.2
 
 ## Tech
 
