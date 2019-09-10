@@ -48,6 +48,9 @@ A complete documentation about the Promise implementation is available on this [
 
 ### What's New ?
 
+v2.0.68.1 :
+ - fix mp4 playback management
+
 v2.0.68 :
  - fix current speaker implementation and use updated internal SDK
 
@@ -460,7 +463,7 @@ In the case of network failure of any remote user, the server will try to reconn
 
 
 public-sdk: 2.0.68
-toolkit: 2.0.68
+toolkit: 2.0.68.1
 
 ## Tech
 
