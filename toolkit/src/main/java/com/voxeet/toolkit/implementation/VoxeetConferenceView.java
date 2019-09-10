@@ -554,10 +554,13 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     private void checkForLocalUserStreamVideo() {
-        MediaStream stream = VoxeetSdk.conference().findUserById(VoxeetPreferences.id()).streamsHandler().getFirst(MediaStreamType.Camera);
-        if (null != stream && stream.videoTracks().size() > 0) {
-            mConferenceViewRendererControl.attachStreamToSelf(stream);
-            if (!isExpanded) selfView.setVisibility(View.GONE);
+        User user = VoxeetSdk.conference().findUserById(VoxeetSdk.user().getUserId());
+        if (null != user) {
+            MediaStream stream = user.streamsHandler().getFirst(MediaStreamType.Camera);
+            if (null != stream && stream.videoTracks().size() > 0) {
+                mConferenceViewRendererControl.attachStreamToSelf(stream);
+                if (!isExpanded) selfView.setVisibility(View.GONE);
+            }
         }
     }
 
