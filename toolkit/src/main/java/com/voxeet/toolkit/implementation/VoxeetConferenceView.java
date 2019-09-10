@@ -77,7 +77,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     private ScaleGestureDetector mScaleOnPinchDetector;
 
     private ConferenceViewRendererControl mConferenceViewRendererControl;
-    private String currentActiveSpeaker;
 
     /**
      * Instantiates a new Voxeet conference view.
@@ -92,7 +91,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @SuppressLint("ClickableViewAccessibility")
     private void internalInit() {
-        voxeetActiveSpeakerTimer = new VoxeetActiveSpeakerTimer(this);
         mPreviouslyScreenShare = false;
 
         mScaleOnPinchDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -166,6 +164,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+        voxeetActiveSpeakerTimer = new VoxeetActiveSpeakerTimer(this);
         voxeetActiveSpeakerTimer.start();
         updateUi();
 
@@ -177,6 +176,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     @Override
     protected void onDetachedFromWindow() {
         voxeetActiveSpeakerTimer.stop();
+        voxeetActiveSpeakerTimer = null;
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
@@ -692,7 +692,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         super.onUserAddedEvent(conference, user);
         checkForLocalUserStreamVideo();
         updateSpeakerViewVisibility();
-        participantView.notifyDatasetChanged();
+        participantView.onUserAddedEvent(conference, user);
 
         updateUi();
     }
@@ -702,7 +702,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         super.onUserUpdatedEvent(conference, user);
         checkForLocalUserStreamVideo();
         updateSpeakerViewVisibility();
-        participantView.notifyDatasetChanged();
+        participantView.onUserUpdatedEvent(conference, user);
 
         updateUi();
     }
@@ -712,7 +712,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         super.onStreamAddedEvent(conference, user, mediaStream);
         checkForLocalUserStreamVideo();
         updateSpeakerViewVisibility();
-        participantView.notifyDatasetChanged();
+        participantView.onStreamAddedEvent(conference, user, mediaStream);
 
         updateUi();
     }
@@ -722,7 +722,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         super.onStreamUpdatedEvent(conference, user, mediaStream);
         checkForLocalUserStreamVideo();
         updateSpeakerViewVisibility();
-        participantView.notifyDatasetChanged();
+        participantView.onStreamUpdatedEvent(conference, user, mediaStream);
 
         updateUi();
     }
@@ -732,7 +732,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         super.onStreamRemovedEvent(conference, user, mediaStream);
         checkForLocalUserStreamVideo();
         updateSpeakerViewVisibility();
-        participantView.notifyDatasetChanged();
+        participantView.onStreamRemovedEvent(conference, user, mediaStream);
 
         updateUi();
     }
@@ -893,14 +893,13 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     private String getCurrentActiveSpeaker() {
         //get the selected user OR the "refreshed"/"cached" active speaker
         String activeSpeaker = speakerView.getSelectedUserId();
-        if (null == activeSpeaker) activeSpeaker = currentActiveSpeaker;
+        if (null == activeSpeaker)
+            activeSpeaker = voxeetActiveSpeakerTimer.getCurrentActiveSpeaker();
         return activeSpeaker;
     }
 
     @Override
     public void onActiveSpeakerUpdated(@Nullable String activeSpeakerUserId) {
-        currentActiveSpeaker = activeSpeakerUserId;
-
         updateUi();
     }
 }

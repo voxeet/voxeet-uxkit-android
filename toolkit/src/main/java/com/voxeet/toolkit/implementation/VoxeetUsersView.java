@@ -13,17 +13,23 @@ import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.UserService;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.models.v1.ConferenceUserStatus;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.configuration.Users;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.utils.IParticipantViewListener;
 import com.voxeet.toolkit.utils.ParticipantViewAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Simple View to manage how Users are displayed "on top" of the screen (or wherever the default list should be positionned)
+ */
 @Annotate
 public class VoxeetUsersView extends VoxeetView {
 
@@ -43,6 +49,7 @@ public class VoxeetUsersView extends VoxeetView {
      *
      * @param context the context
      */
+    @NoDocumentation
     public VoxeetUsersView(Context context) {
         super(context);
 
@@ -55,6 +62,7 @@ public class VoxeetUsersView extends VoxeetView {
      * @param context the context
      * @param attrs   the attrs
      */
+    @NoDocumentation
     public VoxeetUsersView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -73,6 +81,7 @@ public class VoxeetUsersView extends VoxeetView {
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
+    @NoDocumentation
     public VoxeetUsersView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
@@ -99,10 +108,12 @@ public class VoxeetUsersView extends VoxeetView {
         adapter.notifyDataSetChanged();
     }
 
+    @NoDocumentation
     public boolean isDisplaySelf() {
         return displaySelf;
     }
 
+    @NoDocumentation
     public boolean isDisplayNonAir() {
         return displayNonAir;
     }
@@ -128,24 +139,26 @@ public class VoxeetUsersView extends VoxeetView {
         attributes.recycle();
     }
 
-
+    /**
+     * Mehtod to call when a User Added Event has been fired externally
+     *
+     * @param conference the conference
+     * @param user       the user
+     */
     @Override
     public void onUserAddedEvent(@NonNull Conference conference, @NonNull User user) {
         super.onUserAddedEvent(conference, user);
 
-        UserService userService = VoxeetSdk.user();
-        String id = null != userService ? userService.getUserId() : "";
-        if (null == id) id = "";
-
-        boolean isMe = id.equalsIgnoreCase(user.getId());
-        if (!isMe || isDisplaySelf()) {
-            adapter.addUser(user);
-
-            adapter.updateUsers();
-        }
-
+        adapter.setUsers(filter(conference.getUsers()));
+        adapter.updateUsers();
     }
 
+    /**
+     * Mehtod to call when a User Updated Event has been fired externally
+     *
+     * @param conference the conference
+     * @param user       the user
+     */
     @Override
     public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user) {
         super.onUserUpdatedEvent(conference, user);
@@ -153,20 +166,32 @@ public class VoxeetUsersView extends VoxeetView {
         postOnUi(new Runnable() {
             @Override
             public void run() {
-
-                //TODO update the whole adapter from outside injection -> merging
-                if (!isDisplayNonAir() && ConferenceUserStatus.LEFT.equals(user.getStatus())) {
-                    adapter.removeUser(user);
-                    recyclerView.setLayoutManager(horizontalLayout);
-                }
-
-                if (adapter != null) {
-                    adapter.updateUsers();
-                }
+                adapter.setUsers(filter(conference.getUsers()));
+                adapter.updateUsers();
+                recyclerView.setLayoutManager(horizontalLayout);
             }
         });
     }
 
+    private List<User> filter(List<User> users) {
+        List<User> filter = new ArrayList<>();
+        for (User user : users) {
+            boolean had = isDisplaySelf() || !VoxeetSdk.user().isLocalUser(user);
+            if (had) had = ConferenceUserStatus.ON_AIR.equals(user) || isDisplayNonAir();
+
+            if (had) filter.add(user);
+
+        }
+        return filter;
+    }
+
+    /**
+     * Method to call when a Stream has been added to a specified user
+     *
+     * @param conference  the conference
+     * @param user        the user
+     * @param mediaStream the corresponding stream that fired the event
+     */
     @Override
     public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamAddedEvent(conference, user, mediaStream);
@@ -180,6 +205,13 @@ public class VoxeetUsersView extends VoxeetView {
         });
     }
 
+    /**
+     * Method to call when a Stream has been updated from a specified user
+     *
+     * @param conference  the conference
+     * @param user        the user
+     * @param mediaStream the corresponding stream that fired the event
+     */
     @Override
     public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamUpdatedEvent(conference, user, mediaStream);
@@ -193,6 +225,13 @@ public class VoxeetUsersView extends VoxeetView {
         });
     }
 
+    /**
+     * Method to call when a Stream has been removed from a specified user
+     *
+     * @param conference  the conference
+     * @param user        the user
+     * @param mediaStream the corresponding stream that fired the event
+     */
     @Override
     public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamRemovedEvent(conference, user, mediaStream);
@@ -206,6 +245,9 @@ public class VoxeetUsersView extends VoxeetView {
         });
     }
 
+    /**
+     * Method to call when a conference has been destroyed
+     */
     @Override
     public void onConferenceDestroyed() {
         super.onConferenceDestroyed();
@@ -214,6 +256,9 @@ public class VoxeetUsersView extends VoxeetView {
         adapter.updateUsers();
     }
 
+    /**
+     * Method call when a conference has been left
+     */
     @Override
     public void onConferenceLeft() {
         super.onConferenceLeft();
@@ -222,6 +267,7 @@ public class VoxeetUsersView extends VoxeetView {
         adapter.updateUsers();
     }
 
+    @NoDocumentation
     @Override
     public void init() {
         if (adapter == null)
@@ -235,11 +281,13 @@ public class VoxeetUsersView extends VoxeetView {
         setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.conference_view_avatar_size));
     }
 
+    @NoDocumentation
     @Override
     protected int layout() {
         return R.layout.voxeet_participant_view;
     }
 
+    @NoDocumentation
     @Override
     protected void bindView(View view) {
         recyclerView = view.findViewById(R.id.participant_recycler_view);
@@ -259,6 +307,7 @@ public class VoxeetUsersView extends VoxeetView {
         mHandler.post(runnable);
     }
 
+    @NoDocumentation
     public void notifyDatasetChanged() {
         if (null != adapter) {
             adapter.updateUsers();

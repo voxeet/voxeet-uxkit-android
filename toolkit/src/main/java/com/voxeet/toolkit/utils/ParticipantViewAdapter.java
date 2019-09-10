@@ -73,19 +73,6 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.meeting_list_avatar_double);
     }
 
-    /**
-     * Removes the conference user if being part of the conference.
-     *
-     * @param conferenceUser the conference user
-     */
-    public void removeUser(User conferenceUser) {
-        if (users.contains(conferenceUser))
-            users.remove(conferenceUser);
-
-        filter();
-        sort();
-    }
-
     public void updateUsers() {
         filter();
         sort();
@@ -94,13 +81,21 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     /**
-     * Adds the conference user if not already added.
+     * Set the corresponding users
      *
-     * @param conferenceUser the conference user
+     * @param users the list of user to populate the adapter
      */
-    public void addUser(User conferenceUser) {
-        if (!users.contains(conferenceUser))
-            users.add(conferenceUser);
+    public void setUsers(List<User> users) {
+        for (User user : users) {
+            if (!this.users.contains(user))
+                this.users.add(user);
+        }
+
+        List<User> to_remove = new ArrayList<>();
+        for (User user : this.users) {
+            if (!users.contains(user)) to_remove.add(user);
+        }
+        this.users.removeAll(to_remove);
 
         filter();
         sort();

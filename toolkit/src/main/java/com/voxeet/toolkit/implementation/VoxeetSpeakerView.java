@@ -85,7 +85,6 @@ public class VoxeetSpeakerView extends VoxeetView {
         public void run() {
             if (currentSpeaker != null && null != VoxeetSdk.conference()) {
                 double value = VoxeetSdk.conference().getPeerVuMeter(currentSpeaker.getId());
-                Log.d(TAG, "run: currentSpeaker := " + currentSpeaker + " value:=" + value);
                 vuMeter.updateMeter(value);
             } else {
                 Log.d(TAG, "run: no currentSpeaker");

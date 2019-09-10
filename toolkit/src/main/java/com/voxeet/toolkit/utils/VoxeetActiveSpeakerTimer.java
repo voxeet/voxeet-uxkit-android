@@ -4,13 +4,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.utils.Annotate;
 
 /**
  * Simple Timer made to schedule interactions accross the Speakers in a conference
- *
+ * <p>
  * This class can be started, stopped and get the current active speaker
  */
 @Annotate
@@ -60,7 +61,7 @@ public class VoxeetActiveSpeakerTimer {
 
     /**
      * Start the timer if it was not previously started
-     *
+     * <p>
      * Any attempt to call the start method when it's already started will have no effect
      */
     public void start() {
@@ -75,7 +76,7 @@ public class VoxeetActiveSpeakerTimer {
      * Any call when the timer has already been stopped will have no effects
      */
     public void stop() {
-        if(null != handler) {
+        if (null != handler) {
             handler.removeCallbacks(refreshActiveSpeaker);
             handler = null;
         }
@@ -83,8 +84,9 @@ public class VoxeetActiveSpeakerTimer {
 
     /**
      * Get the current active speaker
-     *
+     * <p>
      * The result will be null if start has not been used or no users are in the conference
+     *
      * @return the current active speaker
      */
     @Nullable
@@ -94,7 +96,7 @@ public class VoxeetActiveSpeakerTimer {
 
     /**
      * Listener of the active speaker of a conference
-     *
+     * <p>
      * Any call this method will be catch for errors and printed in the error logs
      */
     public static interface ActiveSpeakerListener {

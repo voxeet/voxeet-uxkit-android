@@ -11,10 +11,6 @@ import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.VoxeetView;
 
-/**
- * Created by kevinleperf on 15/01/2018.
- */
-
 public class CornerHelper {
 
     private static final Handler mHandler = new Handler(Looper.getMainLooper());
