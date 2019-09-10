@@ -24,6 +24,11 @@ import com.voxeet.sdk.core.services.conference.information.ConferenceState;
 import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
 import com.voxeet.sdk.events.sdk.CameraSwitchSuccessEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
+import com.voxeet.sdk.json.VideoPresentationPaused;
+import com.voxeet.sdk.json.VideoPresentationPlay;
+import com.voxeet.sdk.json.VideoPresentationSeek;
+import com.voxeet.sdk.json.VideoPresentationStarted;
+import com.voxeet.sdk.json.VideoPresentationStopped;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.views.VideoView;
@@ -48,6 +53,9 @@ import java.util.List;
 
 public class VoxeetConferenceView extends AbstractVoxeetExpandableView implements IParticipantViewListener, VoxeetActiveSpeakerTimer.ActiveSpeakerListener {
     private final String TAG = VoxeetConferenceView.class.getSimpleName();
+
+    @Nullable
+    private VoxeetVideoStreamView videoStream;
 
     private VoxeetUsersView participantView;
 
@@ -628,6 +636,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     @Override
     protected void bindView(View view) {
         try {
+            videoStream = view.findViewById(R.id.videoStream);
             conferenceState = view.findViewById(R.id.conference_state);
             layoutParticipant = view.findViewById(R.id.layout_participant);
 
@@ -747,6 +756,38 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         updateSpeakerViewVisibility();
         updateUi();
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(VideoPresentationStarted event) {
+        if (null != videoStream) {
+            videoStream.onEvent(event);
+            videoStream.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(VideoPresentationPlay event) {
+        if (null != videoStream) videoStream.onEvent(event);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(VideoPresentationPaused event) {
+        if (null != videoStream) videoStream.onEvent(event);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(VideoPresentationStopped event) {
+        if (null != videoStream) {
+            videoStream.onEvent(event);
+            videoStream.setVisibility(View.GONE);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(VideoPresentationSeek event) {
+        if (null != videoStream) videoStream.onEvent(event);
     }
 
     private void checkStateValue() {
