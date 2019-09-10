@@ -40,7 +40,7 @@ public class MP4MediaPresentationView extends AbstractMediaPlayerView {
     /**
      * Available constructor to create an MP4 View to hold incoming requests
      *
-     * @param context    a valid context used to inflate the view when needed
+     * @param context a valid context used to inflate the view when needed
      */
     public MP4MediaPresentationView(@NonNull Context context) {
         super(context);
@@ -65,10 +65,14 @@ public class MP4MediaPresentationView extends AbstractMediaPlayerView {
 
             playerView.setPlayer(exoPlayer);
             playerView.hideController();
-            exoPlayer.setPlayWhenReady(false);
+            playerView.setUseController(false);
+            exoPlayer.setPlayWhenReady(true);
         }
 
         if (null == mediaSource) mediaSource = createMediaSource(videoPresentationStarted.url);
+
+        exoPlayer.prepare(mediaSource, false, false);
+        exoPlayer.seekTo(videoPresentationStarted.timestamp);
     }
 
     /**
@@ -93,6 +97,7 @@ public class MP4MediaPresentationView extends AbstractMediaPlayerView {
         if (null == lastKey || !lastKey.equals(videoPresentationPlay.key)) return;
         exoPlayer.setPlayWhenReady(true);
         exoPlayer.prepare(mediaSource, false, false);
+        exoPlayer.seekTo(videoPresentationPlay.timestamp);
     }
 
     /**

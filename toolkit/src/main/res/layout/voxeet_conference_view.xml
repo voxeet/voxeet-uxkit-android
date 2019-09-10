@@ -138,5 +138,10 @@
             app:record_button="false" />
     </LinearLayout>
 
+    <com.voxeet.toolkit.implementation.VoxeetVideoStreamView
+        android:id="@+id/videoStream"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </FrameLayout>
