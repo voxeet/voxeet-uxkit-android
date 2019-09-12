@@ -99,6 +99,9 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @SuppressLint("ClickableViewAccessibility")
     private void internalInit() {
+        if (null == voxeetActiveSpeakerTimer)
+            voxeetActiveSpeakerTimer = new VoxeetActiveSpeakerTimer(this);
+
         mPreviouslyScreenShare = false;
 
         mScaleOnPinchDetector = new ScaleGestureDetector(getContext(), new ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -171,8 +174,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
-        voxeetActiveSpeakerTimer = new VoxeetActiveSpeakerTimer(this);
+        if (null == voxeetActiveSpeakerTimer)
+            voxeetActiveSpeakerTimer = new VoxeetActiveSpeakerTimer(this);
         voxeetActiveSpeakerTimer.start();
         updateUi();
 
@@ -937,7 +940,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     private String getCurrentActiveSpeaker() {
         //get the selected user OR the "refreshed"/"cached" active speaker
         String activeSpeaker = speakerView.getSelectedUserId();
-        if (null == activeSpeaker)
+        if (null == activeSpeaker && null != voxeetActiveSpeakerTimer)
             activeSpeaker = voxeetActiveSpeakerTimer.getCurrentActiveSpeaker();
         return activeSpeaker;
     }
