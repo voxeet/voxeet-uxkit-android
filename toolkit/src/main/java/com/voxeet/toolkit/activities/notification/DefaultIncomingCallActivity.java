@@ -151,7 +151,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
         super.onResume();
         isResumed = true;
 
-        boolean useRingtone = true;
+        boolean useRingtone = false;
                 //"true".equals(AndroidManifest.readMetadata(this, "voxeet_use_ringtone", "false"));
         SoundManager soundManager = AudioService.getSoundManager();
 
