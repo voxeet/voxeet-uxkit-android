@@ -48,6 +48,9 @@ A complete documentation about the Promise implementation is available on this [
 
 ### What's New ?
 
+v2.0.69.4 :
+ - fix uploaded inconsistency with local dev/bintray
+
 v2.0.69.3 :
  - destroyed and ended event filtered with local live conference
 
