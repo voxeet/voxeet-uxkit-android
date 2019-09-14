@@ -60,6 +60,8 @@ android {
 
 dependencies {
     api project(':toolkit')
+    api project(':toolkit-youtube')
+    api project(':toolkit-exoplayer-support')
 
     testImplementation 'junit:junit:4.12'
 
@@ -73,6 +75,8 @@ dependencies {
     //this converter is here to convert "string" only result
     //if a regular json is sent, please use Jackson
     api 'com.squareup.retrofit2:converter-scalars:2.3.0'
+
+    implementation "com.voxeet.sdk:push_manifest:${rootProject.ext.voxeetSdkVersion}"
 }
 
 //uncomment for firebase tests

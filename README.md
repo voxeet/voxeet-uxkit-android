@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.69.3') {
+  compile ('com.voxeet.sdk:toolkit:2.0.69.5') {
     transitive = true
   }
 }
@@ -47,6 +47,9 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.69.5 :
+ - bumped version to reflect the (non default) auto push feature for the AndroidManifest.xml
 
 v2.0.69.4 :
  - fix uploaded inconsistency with local dev/bintray

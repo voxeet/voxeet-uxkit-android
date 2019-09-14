@@ -65,18 +65,6 @@
 
         <activity android:name="fr.voxeet.sdk.sample.activities.ActivityToTestOverlay" />
 
-        <!-- to manage push notification -->
-        <service android:name="com.voxeet.push.firebase.VoxeetFirebaseMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service android:name="com.voxeet.push.firebase.VoxeetFirebaseInstanceIDService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-
     </application>
 
 </manifest>
