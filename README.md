@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.69.2') {
+  compile ('com.voxeet.sdk:toolkit:2.0.69.3') {
     transitive = true
   }
 }
@@ -47,6 +47,9 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.69.3 :
+ - destroyed and ended event filtered with local live conference
 
 v2.0.69.2 :
  - fix issue with NPE fired trying to get active speakers
@@ -307,64 +310,9 @@ The value of each of those *<meta-data />* needs to be the fully qualified name 
 ```
 
 
-### FCM
-
-Please notice the following steps are required only if you plan on using fcm.
-To enable Voxeet notifications (getting a new call, conference ended and so on...) on your applications:
-  1. Send us the application fcm token
-  2. Add the google.json file to your project
-  2. Add this to your Android Manifest:
-
-```xml
-
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-  <application>
-    <service android:name="com.voxeet.push.firebase.VoxeetFirebaseMessagingService">
-      <intent-filter android:priority="999">
-        <action android:name="com.google.firebase.MESSAGING_EVENT" />
-      </intent-filter>
-    </service>
-    <service android:name="com.voxeet.push.firebase.VoxeetFirebaseInstanceIDService">
-      <intent-filter android:priority="999">
-        <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-      </intent-filter>
-    </service>
-  </application>
-</manifest>
-```
-
-### Logger
-
-A logger has been added to the SDK allowing users to track events more easily. 3 different levels for 3 different types of informations:
-
-  1. DEBUG for every event dispatched through the eventbus.
-  2. INFO to display methods results when calling a SDK method.
-  3. ERROR when an error occurs.
-
-Please also note that WebRTC has its own logger for WebRTC related events.
-
 ## Online documentation
 
 You can check our documentation directly on our [developer portal](https://developer.voxeet.com/reference/android/reference-Android/)
-
-## Conference event flow
-
-1. ConferenceCreatedEvent (if you're the one creating the conference, joining it is automatic)
-
-2. ConferenceJoinedSuccessEvent or ConferenceJoinedErrorEvent after joining it
-
-3.  a. ConferenceUserJoinedEvent when someone joins the conf
-
-    b. ConferenceUserUpdatedEvent when someone starts/stop streaming
-
-    c. ConferenceUserLeftEvent when someone left
-
-4. ConferenceLeftSuccessEvent or ConferenceLeftErrorEvent after leaving the conference
-
-5. ConferenceEndedEvent if a conference has ended such a replay ending
-
-6. ConferenceDestroyedEvent when the conference is destroyed
 
 ## Best practice regarding conferences
 
@@ -375,29 +323,6 @@ You can check for the current status directly using :
 ```
 VoxeetSdk.conference().isLive()
 ```
-
-## Conference stats
-
-It is possible to retrieve the conference information using 2 solutions.
-
-### Pull the conference information from the local WebRTC instance
-
-The documentation concerning the Local Stats are available in the [Stats.md](Stats.md) file
-
-- usage
-- result
-- behaviour 
-
-### Get (pull) the conference information from the server
-
-This method will make a network call to get the information. The method `getConferenceStatus` available in the `ConferenceService`.
-The obtained promise resolves a `GetConferenceStatusEvent`
-
-### Subscribe to conference information
-
-This method will post regularly the information about the conference. It is mandatory to use this method when the implementation needs the Audio/Video statistics of the conference. This method is available via the `subscribe` in the `ConferenceService`.
-
-Any registered objects will then receive at regular intervals the following event `ConferenceStatsEvent`. This event gives access to a `ConferenceStats` object which has various accessors.
 
 #### Event
 
@@ -444,38 +369,11 @@ public class Stats {
  - `recvOct`: count of bytes received from this user
  - `audioLevel`: the average 'current' user audio level (if audio)
 
-## Network management
-
-### Local management
-
-The Voxeet SDK is made to automatically manage network reconnection and network errors. Any attempt from the SDK to reconnect will follow this lifecycle :
-
-- "CLOSED" (initial state)
-- CONNECTING
-- CONNECTED (if ok)
-- CLOSING
-- CLOSED
-
-Those states are available through the `SocketStateChangeEvent`
-Note that any connectivity success will also trigger the `SocketConnectEvent`
-
-It is possible to check for the current connectivity via the SDK directly :
-```
-VoxeetSdk.getInstance().isSocketOpen()
-```
-
-### Remote management
-
-If any remote users leave a conference "safely", the corresponding event will be fired (see the Conference lifecycle).
-
-In the case of network failure of any remote user, the server will try to reconnect this userwith a `40s` timeout delay. After that moment, a `ConferenceUserLeftEvent` is fired.
-
-
 ## Version
 
 
-public-sdk: 2.0.69.1
-toolkit: 2.0.69.2
+public-sdk: 2.0.69.3
+toolkit: 2.0.69.3
 
 ## Tech
 
