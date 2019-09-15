@@ -269,8 +269,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     @Override
-    public void onConferenceCreation(@NonNull String conferenceId) {
-        super.onConferenceCreation(conferenceId);
+    public void onConferenceCreation(@NonNull Conference conference) {
+        super.onConferenceCreation(conference);
 
         //expanded and minimized
         updateTextState(R.string.voxeet_call);
@@ -281,7 +281,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         voxeetTimer.setVisibility(View.GONE);
         notchView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
         conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceCreation(conferenceId);
+        conferenceActionBarView.onConferenceCreation(conference);
         Log.d(TAG, "onConferenceCreation: " + View.VISIBLE + " " + conferenceActionBarView.getVisibility());
     }
 
@@ -304,8 +304,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     @Override
-    public void onConferenceJoined(@NonNull String conference_id) {
-        super.onConferenceJoined(conference_id);
+    public void onConferenceJoined(@NonNull Conference conference) {
+        super.onConferenceJoined(conference);
 
         updateTextState(R.string.voxeet_call);
         conferenceState.setVisibility(View.VISIBLE);
@@ -334,7 +334,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         }
 
         conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceJoined(conference_id);
+        conferenceActionBarView.onConferenceJoined(conference);
     }
 
     @Override
@@ -838,7 +838,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             conferenceId = "";
             state = ConferenceState.LEFT;
         }
-        ConferenceInformation conferenceInformation = VoxeetSdk.conference().getCurrentConferenceInformation();
+        ConferenceInformation conferenceInformation = service.getCurrentConferenceInformation();
 
         boolean enableInConfiguration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
         conferenceActionBarView.setDisplayScreenShare(enableInConfiguration && VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled());
@@ -850,14 +850,14 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                 break;
             case CREATED:
             case JOINING:
-                try {
+                if (null != conferenceInformation) {
                     onConferenceJoining(conferenceInformation.getConference());
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
                 break;
             case JOINED:
-                onConferenceJoined(conferenceId);
+                if (null != conferenceInformation) {
+                    onConferenceJoined(conferenceInformation.getConference());
+                }
                 break;
             case FIRST_PARTICIPANT:
                 onConferenceFromNoOneToOneUser();

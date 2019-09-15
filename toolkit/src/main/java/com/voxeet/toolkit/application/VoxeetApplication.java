@@ -7,6 +7,7 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.NoDocumentation;
 
 import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.PromiseSolver;
@@ -18,6 +19,11 @@ import eu.codlab.simplepromise.solve.Solver;
  */
 @Annotate
 public abstract class VoxeetApplication extends Application {
+
+    @NoDocumentation
+    public VoxeetApplication() {
+        super();
+    }
 
     /**
      * Initialize the SDK. This promise is used by the DefaultiIncomingActivity for instance
@@ -67,6 +73,11 @@ public abstract class VoxeetApplication extends Application {
         });
     }
 
+    /**
+     * Check if the SDK knows a default user. Useful to auto connect users
+     *
+     * @return the existence of an user that has been logged in but not logged out in the past
+     */
     public boolean hasDefaultUser() {
         UserInfo savedUserInfo = VoxeetPreferences.getSavedUserInfo();
         return null != savedUserInfo;

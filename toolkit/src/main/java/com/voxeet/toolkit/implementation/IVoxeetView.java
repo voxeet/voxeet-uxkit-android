@@ -17,23 +17,23 @@ public interface IVoxeetView {
     /**
      * On conference joined.
      *
-     * @param conferenceId the conference id
+     * @param conference the conference id
      */
-    void onConferenceJoined(String conferenceId);
+    void onConferenceJoined(@NonNull Conference conference);
 
     /**
      * On conference updated.
      *
      * @param conferenceId the conference id
      */
-    void onConferenceUpdated(List<User> conferenceId);
+    void onConferenceUpdated(@NonNull List<User> conferenceId);
 
     /**
      * On conference creation.
      *
-     * @param conferenceId the conference id
+     * @param conference the conference id
      */
-    void onConferenceCreation(String conferenceId);
+    void onConferenceCreation(@NonNull Conference conference);
 
     /**
      * On conference for user joined
@@ -60,7 +60,7 @@ public interface IVoxeetView {
      *
      * @param userId the declined-user id
      */
-    void onConferenceUserDeclined(String userId);
+    void onConferenceUserDeclined(@NonNull String userId);
 
     /**
      * On recording status updated.

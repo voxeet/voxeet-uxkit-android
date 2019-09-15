@@ -33,6 +33,7 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.AudioType;
+import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.configuration.ActionBar;
@@ -46,6 +47,9 @@ import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
 
+/**
+ * Class used to display the various action buttons in the conference
+ */
 @Annotate
 public class VoxeetActionBarView extends VoxeetView {
 
@@ -81,6 +85,7 @@ public class VoxeetActionBarView extends VoxeetView {
      *
      * @param context the context
      */
+    @NoDocumentation
     public VoxeetActionBarView(Context context) {
         super(context);
 
@@ -93,6 +98,7 @@ public class VoxeetActionBarView extends VoxeetView {
      * @param context the context
      * @param attrs   the attrs
      */
+    @NoDocumentation
     public VoxeetActionBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -113,29 +119,69 @@ public class VoxeetActionBarView extends VoxeetView {
         attributes.recycle();
     }
 
-    public void setDisplayMute(boolean displayMute) {
+    /**
+     * Change how the mute button must be shown
+     *
+     * @param displayMute the new mute display state
+     * @return the current instance
+     */
+    @NonNull
+    public VoxeetActionBarView setDisplayMute(boolean displayMute) {
         this.displayMute = displayMute;
         setUserPreferences();
+        return this;
     }
 
-    public void setDisplayCamera(boolean displayCamera) {
+    /**
+     * Change how the camera button must be shown
+     *
+     * @param displayCamera the new mute display state
+     * @return the current instance
+     */
+    @NonNull
+    public VoxeetActionBarView setDisplayCamera(boolean displayCamera) {
         this.displayCamera = displayCamera;
         setUserPreferences();
+        return this;
     }
 
-    public void setDisplaySpeaker(boolean displaySpeaker) {
+    /**
+     * Change how the speaker button must be shown
+     *
+     * @param displaySpeaker the new mute display state
+     * @return the current instance
+     */
+    @NonNull
+    public VoxeetActionBarView setDisplaySpeaker(boolean displaySpeaker) {
         this.displaySpeaker = displaySpeaker;
         setUserPreferences();
+        return this;
     }
 
-    public void setDisplayScreenShare(boolean displayScreenShare) {
+    /**
+     * Change how the screenshare button must be shown
+     *
+     * @param displayScreenShare the new mute display state
+     * @return the current instance
+     */
+    @NonNull
+    public VoxeetActionBarView setDisplayScreenShare(boolean displayScreenShare) {
         this.displayScreenShare = displayScreenShare;
         setUserPreferences();
+        return this;
     }
 
-    public void setDisplayLeave(boolean displayLeave) {
+    /**
+     * Change how the leave/hang up button must be shown
+     *
+     * @param displayLeave the new mute display state
+     * @return the current instance
+     */
+    @NonNull
+    public VoxeetActionBarView setDisplayLeave(boolean displayLeave) {
         this.displayLeave = displayLeave;
         setUserPreferences();
+        return this;
     }
 
     /**
@@ -145,6 +191,7 @@ public class VoxeetActionBarView extends VoxeetView {
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
+    @NoDocumentation
     public VoxeetActionBarView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
@@ -153,6 +200,7 @@ public class VoxeetActionBarView extends VoxeetView {
         setUserPreferences();
     }
 
+    @NoDocumentation
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -178,6 +226,9 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
+    /**
+     * Must be called on any "resume" information (or parent's attached to window, etc...)
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -193,6 +244,9 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
+    /**
+     * Must be called on detached window for instance
+     */
     @Override
     public void onStop() {
         if (EventBus.getDefault().isRegistered(this)) {
@@ -202,23 +256,45 @@ public class VoxeetActionBarView extends VoxeetView {
         super.onStop();
     }
 
+    /**
+     * Method call when a stream is added to any user in the conference
+     * @param conference the given conference
+     * @param user the user involved in the event
+     * @param mediaStream the newly added stream
+     */
     @Override
     public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamAddedEvent(conference, user, mediaStream);
     }
 
+    /**
+     * Method call when a stream is updated for any user in the conference
+     * @param conference the given conference
+     * @param user the user involved in the event
+     * @param mediaStream the stream which has been updated
+     */
     @Override
     public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamUpdatedEvent(conference, user, mediaStream);
     }
 
+    /**
+     * Method call when a stream is remove from any user in the conference
+     * @param conference the given conference
+     * @param user the user involved in the event
+     * @param mediaStream the removed stream
+     */
     @Override
     public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamRemovedEvent(conference, user, mediaStream);
     }
 
+    /**
+     * Method call to refresh the internal state for :
+     * - the own camera button
+     * - the screenshare button
+     */
     public void invalidateOwnStreams() {
-
         User user = VoxeetSdk.conference().findUserById(VoxeetSdk.user().getUserId());
 
         MediaStream cameraStream = user.streamsHandler().getFirst(MediaStreamType.Camera);
@@ -232,11 +308,13 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
+    @NoDocumentation
     @Override
     public void init() {
         setWillNotDraw(false);
     }
 
+    @NoDocumentation
     @Override
     protected void bindView(View v) {
         view_3d = v.findViewById(R.id.view_3d);
@@ -337,6 +415,9 @@ public class VoxeetActionBarView extends VoxeetView {
         if (null != view3d_listener) view3d_listener.onView3D();
     }
 
+    /**
+     * Toggle the mute button
+     */
     protected void toggleMute() {
         boolean new_muted_state = !VoxeetSdk.conference().isMuted();
 
@@ -348,12 +429,18 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
+    /**
+     * Activate or deactivate the local camera
+     */
     protected void toggleCamera() {
         if (checkCameraPermission()) {
             VoxeetSdk.conference().toggleVideo();
         }
     }
 
+    /**
+     * Activate or deactivate the local screenshare
+     */
     protected void toggleScreenShare() {
         if (canScreenShare()) {
             Point size = VoxeetSdk.screenShare().getScreenSize(getContext());
@@ -386,13 +473,20 @@ public class VoxeetActionBarView extends VoxeetView {
             screenshare_wrapper.setVisibility(displayScreenShare && !listener && screenShareEnabled ? VISIBLE : GONE);
     }
 
+    /**
+     * Call this method when a conference has been successfully joined to update the visibilities
+     * @param conference the conference involved
+     */
     @Override
-    public void onConferenceJoined(@NonNull String conference_id) {
-        super.onConferenceJoined(conference_id);
+    public void onConferenceJoined(@NonNull Conference conference) {
+        super.onConferenceJoined(conference);
 
         updateVisibilities(View.VISIBLE);
     }
 
+    /**
+     * Call this method when a conference is being created to update the visibilities
+     */
     @Override
     public void onConferenceCreating() {
         super.onConferenceCreating();
@@ -400,13 +494,23 @@ public class VoxeetActionBarView extends VoxeetView {
         updateVisibilities(View.GONE);
     }
 
+    /**
+     * Call this method when a conference being created to update the visilibity
+     *
+     * @param conference the conference involved
+     */
     @Override
-    public void onConferenceCreation(@NonNull String conferenceId) {
-        super.onConferenceCreation(conferenceId);
+    public void onConferenceCreation(@NonNull Conference conference) {
+        super.onConferenceCreation(conference);
 
         updateVisibilities(View.GONE);
     }
 
+    /**
+     * Call this method on a conference joining to update the various visibilities
+     *
+     * @param conference the conference
+     */
     @Override
     public void onConferenceJoining(@NonNull Conference conference) {
         super.onConferenceJoining(conference);
@@ -435,13 +539,14 @@ public class VoxeetActionBarView extends VoxeetView {
             screenshare_wrapper.setVisibility(displayScreenShare && screenShareEnabled ? visibility : GONE);
     }
 
+    @NoDocumentation
     @Override
     protected int layout() {
         return R.layout.voxeet_conference_bar_view;
     }
 
     /**
-     * On toggle size.
+     * Method to call when the mode of display has been changed
      *
      * @param isMaxedOut the view is maxed out or not
      */
@@ -519,18 +624,33 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
+    /**
+     * Set the 3D Button's click listener
+     * @param listener the listener instance
+     * @return the current instance
+     */
     @Deprecated
-    public void setView3dListener(OnView3D listener) {
+    @NonNull
+    public VoxeetActionBarView setView3dListener(@Nullable OnView3D listener) {
         view3d_listener = listener;
         invalidateView3D();
+        return this;
     }
 
     private void invalidateView3D() {
         view_3d_wrapper.setVisibility(view3d_listener != null ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * Interface called when user has clicked on the 3d button. The listener should then display a view to manipulate the users
+     */
+    @Annotate
     @Deprecated
     public interface OnView3D {
+
+        /**
+         * Method called when the button is pressed. Warning : make sure not the fire any exceptions inside.
+         */
         void onView3D();
     }
 

@@ -8,12 +8,14 @@ import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.models.Conference;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
@@ -209,8 +211,8 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     @Override
-    public void onConferenceJoined(String conference_id) {
-        super.onConferenceJoined(conference_id);
+    public void onConferenceJoined(@NonNull Conference conference) {
+        super.onConferenceJoined(conference);
         if (action == CONFERENCE_MODE) {
             startTime = SystemClock.uptimeMillis();
 

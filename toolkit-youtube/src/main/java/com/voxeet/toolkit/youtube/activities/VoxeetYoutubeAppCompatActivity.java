@@ -14,6 +14,7 @@ import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
 import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.toolkit.activities.IVoxeetActivity;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
@@ -48,6 +49,12 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
     private static final String TAG = VoxeetYoutubeAppCompatActivity.class.getSimpleName();
     private IncomingBundleChecker mIncomingBundleChecker;
 
+    @NoDocumentation
+    public VoxeetYoutubeAppCompatActivity() {
+        super();
+    }
+
+    @NoDocumentation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +63,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
         mIncomingBundleChecker = new IncomingBundleChecker(getIntent(), null);
     }
 
+    @NoDocumentation
     @Override
     protected void onResume() {
         super.onResume();
@@ -84,6 +92,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
         VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach();
     }
 
+    @NoDocumentation
     @Override
     protected void onPause() {
         if (null != VoxeetSdk.localStats()) {
@@ -98,6 +107,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
         super.onPause();
     }
 
+    @NoDocumentation
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -120,6 +130,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
         }
     }
 
+    @NoDocumentation
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
@@ -149,6 +160,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
         }
     }
 
+    @NoDocumentation
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean managed = false;
@@ -189,14 +201,17 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
         onConferenceJoinedError();
     }
 
+    @NoDocumentation
     protected void onConferencePreJoinedEvent() {
 
     }
 
+    @NoDocumentation
     protected void onConferenceJoinedSuccessEvent() {
 
     }
 
+    @NoDocumentation
     protected void onConferenceJoinedError() {
 
     }

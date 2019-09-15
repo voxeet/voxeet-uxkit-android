@@ -14,6 +14,7 @@ import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
 import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.toolkit.activities.notification.IncomingCallFactory;
@@ -46,6 +47,12 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
     private static final String TAG = VoxeetAppCompatActivity.class.getSimpleName();
     private IncomingBundleChecker mIncomingBundleChecker;
 
+    @NoDocumentation
+    public VoxeetAppCompatActivity() {
+        super();
+    }
+
+    @NoDocumentation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +61,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         mIncomingBundleChecker = new IncomingBundleChecker(getIntent(), null);
     }
 
+    @NoDocumentation
     @Override
     protected void onResume() {
         super.onResume();
@@ -82,6 +90,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach();
     }
 
+    @NoDocumentation
     @Override
     protected void onPause() {
         if (null != VoxeetSdk.localStats()) {
@@ -96,6 +105,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         super.onPause();
     }
 
+    @NoDocumentation
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -118,6 +128,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         }
     }
 
+    @NoDocumentation
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
@@ -147,6 +158,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         }
     }
 
+    @NoDocumentation
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean managed = false;
@@ -187,14 +199,23 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         onConferenceJoinedError();
     }
 
+    /**
+     * Override this method to be called when a conference is pre joining
+     */
     protected void onConferencePreJoinedEvent() {
 
     }
 
+    /**
+     * Override this method to be called when a conference has been successfully joined
+     */
     protected void onConferenceJoinedSuccessEvent() {
 
     }
 
+    /**
+     * Override this method to be called when a conference joining failed due to an error (network etc...)
+     */
     protected void onConferenceJoinedError() {
 
     }

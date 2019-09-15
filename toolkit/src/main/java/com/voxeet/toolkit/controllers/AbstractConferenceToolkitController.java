@@ -46,6 +46,7 @@ import com.voxeet.sdk.models.v1.ConferenceUserStatus;
 import com.voxeet.sdk.models.v1.RecordingStatus;
 import com.voxeet.sdk.models.v1.UserProfile;
 import com.voxeet.sdk.utils.AudioType;
+import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.VoxeetConferenceView;
@@ -117,6 +118,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     }
 
+    @NoDocumentation
     protected AbstractConferenceToolkitController(Context context, EventBus eventbus) {
         removeRunnables = new CopyOnWriteArrayList();
         mContext = context;
@@ -137,6 +139,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * <p>
      * ensures the main view is valid
      */
+    @NoDocumentation
     protected void init() {
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
 
@@ -646,7 +649,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceJoinedSuccessEvent event) {
-        if (validFilter(event.conferenceId) || validFilter(event.conferenceAlias)) {
+        if (validFilter(event.conference.getAlias()) || validFilter(event.conference.getId())) {
             VoxeetSdk.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
 
             displayView();
@@ -658,7 +661,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             }
 
             if (mMainView != null) {
-                mMainView.onConferenceJoined(event.conferenceId);
+                mMainView.onConferenceJoined(event.conference);
             }
         }
     }
@@ -681,8 +684,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
         if (mMainView == null) init();
 
-        if (validFilter(event.conferenceId) || validFilter(event.conferenceAlias)) {
-            mMainView.onConferenceCreation(event.conferenceId);
+        if (validFilter(event.conference.getId()) || validFilter(event.conference.getAlias())) {
+            mMainView.onConferenceCreation(event.conference);
         }
     }
 

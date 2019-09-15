@@ -66,11 +66,11 @@ public abstract class VoxeetView extends FrameLayout
     /**
      * On conference joined.
      *
-     * @param conference_id the conference id
+     * @param conference the conference involved
      */
-    public void onConferenceJoined(@NonNull String conference_id) {
+    public void onConferenceJoined(@NonNull Conference conference) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceJoined(conference_id);
+            child.onConferenceJoined(conference);
         }
     }
 
@@ -96,10 +96,11 @@ public abstract class VoxeetView extends FrameLayout
 
     /**
      * On conference creation.
+     * @param conference the conference involved
      */
-    public void onConferenceCreation(@NonNull String conferenceId) {
+    public void onConferenceCreation(@NonNull Conference conference) {
         for (VoxeetView child : mListeners) {
-            child.onConferenceCreation(conferenceId);
+            child.onConferenceCreation(conference);
         }
     }
 

@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.providers.rootview.AbstractRootViewProvider;
 import com.voxeet.toolkit.providers.rootview.DefaultRootViewProvider;
@@ -54,7 +55,18 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         return sInstance;
     }
 
+    @NoDocumentation
+    @Deprecated
     public static VoxeetToolkit getInstance() {
+        return sInstance;
+    }
+
+    /**
+     * Get the instance of the UXKit to use
+     *
+     * @return the instance of the UXKit
+     */
+    public static VoxeetToolkit instance() {
         return sInstance;
     }
 
@@ -66,6 +78,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
      * <p>
      * public until the switch from implementation is made to the new package
      */
+    @NoDocumentation
     public VoxeetToolkit() {
     }
 
@@ -77,14 +90,27 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
      *
      * @param provider
      */
+    @NoDocumentation
     public void setProvider(@NonNull AbstractRootViewProvider provider) {
         mProvider = provider;
     }
 
+    /**
+     * Call this method to get the instance of the Replay manager
+     *
+     * @return the instance
+     */
+    @NonNull
     public ReplayMessageToolkitController getReplayMessageToolkit() {
         return getAbstractToolkit(ReplayMessageToolkitController.class);
     }
 
+    /**
+     * Call this method to get the default instance of the Conference manager
+     *
+     * @return the instance
+     */
+    @NonNull
     public ConferenceToolkitController getConferenceToolkit() {
         return getAbstractToolkit(ConferenceToolkitController.class);
     }
@@ -107,28 +133,34 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
+    @NoDocumentation
     @NonNull
     public AbstractRootViewProvider getDefaultRootViewProvider() {
         return mProvider;
     }
 
     /**
+     * Check the UXKit state. Disabling it won't trigger the overlays
+     *
      * @return wether overlay is enabled or not
      */
     public boolean isEnabled() {
         return mIsOverEnabled;
     }
 
+    @NoDocumentation
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
 
     }
 
+    @NoDocumentation
     @Override
     public void onActivityStarted(Activity activity) {
 
     }
 
+    @NoDocumentation
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
         for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
@@ -136,6 +168,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
+    @NoDocumentation
     @Override
     public void onActivityPaused(@NonNull Activity activity) {
         for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
@@ -143,16 +176,19 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
+    @NoDocumentation
     @Override
     public void onActivityStopped(Activity activity) {
 
     }
 
+    @NoDocumentation
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
 
     }
 
+    @NoDocumentation
     @Override
     public void onActivityDestroyed(Activity activity) {
 
@@ -219,6 +255,13 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         return null;
     }
 
+    /**
+     * Register a new ConferenceToolkit controller. Use this to replace the default instances
+     * <p>
+     * Don't forget to call the _enable_ method to switch the state
+     *
+     * @param controller the new controller
+     */
     public void registerConferenceToolkitController(@NonNull AbstractConferenceToolkitController controller) {
         if (mConferenceToolkitControllers.indexOf(controller) < 0) {
             mConferenceToolkitControllers.add(controller);
@@ -248,10 +291,12 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
+    @NoDocumentation
     public void setCurrentActivity(@NonNull Activity activity) {
         mProvider.setCurrentActivity(activity);
     }
 
+    @NoDocumentation
     public Activity getCurrentActivity() {
         return mProvider.getCurrentActivity();
     }

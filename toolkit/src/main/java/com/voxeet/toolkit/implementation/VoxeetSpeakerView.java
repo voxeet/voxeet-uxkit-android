@@ -22,15 +22,15 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.ConferenceUtils;
+import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.utils.WindowHelper;
 import com.voxeet.toolkit.views.internal.VoxeetVuMeter;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * View made to display a given user
+ */
 @Annotate
 public class VoxeetSpeakerView extends VoxeetView {
     private final String TAG = VoxeetSpeakerView.class.getSimpleName();
@@ -93,7 +93,7 @@ public class VoxeetSpeakerView extends VoxeetView {
             if (mAttached) handler.postDelayed(this, REFRESH_METER);
         }
     };
-    private List<User> mConferenceUsers;
+
     private boolean mDisplaySpeakerName = false;
     private TextView speakerName;
     private boolean mAttached;
@@ -104,6 +104,7 @@ public class VoxeetSpeakerView extends VoxeetView {
      *
      * @param context the context
      */
+    @NoDocumentation
     public VoxeetSpeakerView(Context context) {
         super(context);
     }
@@ -114,6 +115,7 @@ public class VoxeetSpeakerView extends VoxeetView {
      * @param context the context
      * @param attrs   the attrs
      */
+    @NoDocumentation
     public VoxeetSpeakerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -127,12 +129,14 @@ public class VoxeetSpeakerView extends VoxeetView {
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
+    @NoDocumentation
     public VoxeetSpeakerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         updateAttrs(attrs);
     }
 
+    @NoDocumentation
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -141,6 +145,7 @@ public class VoxeetSpeakerView extends VoxeetView {
         onResume();
     }
 
+    @NoDocumentation
     @Override
     protected void onDetachedFromWindow() {
         mAttached = false;
@@ -160,6 +165,9 @@ public class VoxeetSpeakerView extends VoxeetView {
             vuMeter.setMeterColor(color.getColorForState(getDrawableState(), 0));
     }
 
+    /**
+     * call this method when a conference has been destroyed
+     */
     @Override
     public void onConferenceDestroyed() {
         super.onConferenceDestroyed();
@@ -167,6 +175,9 @@ public class VoxeetSpeakerView extends VoxeetView {
         afterLeaving();
     }
 
+    /**
+     * Call this method when a conference has been left
+     */
     @Override
     public void onConferenceLeft() {
         super.onConferenceLeft();
@@ -183,13 +194,15 @@ public class VoxeetSpeakerView extends VoxeetView {
         handler.removeCallbacks(updateVuMeterRunnable);
     }
 
+    /**
+     * Call this method to init this instance of the view
+     */
     @Override
     public void init() {
-
         setShowSpeakerName(false);
-        mConferenceUsers = new ArrayList<>();
     }
 
+    @NoDocumentation
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -198,13 +211,7 @@ public class VoxeetSpeakerView extends VoxeetView {
         if (orientation <= 0) orientation = 0;
     }
 
-    @Override
-    public void onConferenceUsersListUpdate(List<User> conferenceUsers) {
-        super.onConferenceUsersListUpdate(conferenceUsers);
-
-        mConferenceUsers = conferenceUsers;
-    }
-
+    @NoDocumentation
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -225,11 +232,13 @@ public class VoxeetSpeakerView extends VoxeetView {
         currentSpeakerView.setLayoutParams(params);
     }
 
+    @NoDocumentation
     @Override
     protected int layout() {
         return R.layout.voxeet_current_speaker_view;
     }
 
+    @NoDocumentation
     @Override
     protected void bindView(View v) {
         currentSpeakerView = (RoundedImageView) v.findViewById(R.id.speaker_image);
@@ -244,19 +253,11 @@ public class VoxeetSpeakerView extends VoxeetView {
      *
      * @param display
      */
+    @NoDocumentation
     protected void setShowSpeakerName(boolean display) {
         mDisplaySpeakerName = display;
 
         invalidateSpeakerName();
-    }
-
-    /**
-     * Return wether the user name will be visible instead of the vu meter
-     *
-     * @return true or false
-     */
-    protected boolean isShowSpeakerName() {
-        return mDisplaySpeakerName;
     }
 
     private void invalidateSpeakerName() {
@@ -271,7 +272,7 @@ public class VoxeetSpeakerView extends VoxeetView {
      * @return the conference user
      */
     private User findUserById(@Nullable final String userId) {
-        return ConferenceUtils.findUserById(userId, mConferenceUsers);
+        return VoxeetSdk.conference().findUserById(userId);
     }
 
     private void loadViaPicasso(User conferenceUser, int avatarSize, ImageView imageView) {
@@ -335,11 +336,19 @@ public class VoxeetSpeakerView extends VoxeetView {
         selected = false;
     }
 
+    /**
+     * Get the selected user for this instance of the view
+     *
+     * @return the UserId
+     */
     @Nullable
     public String getSelectedUserId() {
         return selected && null != currentSpeaker ? currentSpeaker.getId() : null;
     }
 
+    /**
+     * Call this method to restore the various callbacks
+     */
     @Override
     public void onResume() {
         handler.removeCallbacks(updateSpeakerRunnable);
@@ -352,6 +361,9 @@ public class VoxeetSpeakerView extends VoxeetView {
         handler.post(updateVuMeterRunnable);
     }
 
+    /**
+     * Call this method to pause the various callbacks
+     */
     public void onPause() {
         handler.removeCallbacks(null);
         handler.removeCallbacksAndMessages(null);
