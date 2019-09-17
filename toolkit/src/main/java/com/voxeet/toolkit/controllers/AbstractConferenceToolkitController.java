@@ -994,6 +994,13 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPush event) {
         Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
+        //avoid leaving when received event for another conference
+        //should not impact current flows since local events are already make the ui leave when the current user interacts in hi.er own conf
+        if (!optConferenceId().equals(event.conferenceId)) {
+            Log.d(TAG, "onEvent: ConferenceDestroyedPush received for another conf. current:=" + optConferenceId() + " other:=" + event.conferenceId);
+            return;
+        }
+
         if (null != VoxeetSdk.instance()) {
             VoxeetSdk.audio().stop();
         }
@@ -1014,6 +1021,13 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceEnded event) {
         Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
+        //avoid leaving when received event for another conference
+        //should not impact current flows since local events are already make the ui leave when the current user interacts in hi.er own conf
+        if (!optConferenceId().equals(event.conferenceId)) {
+            Log.d(TAG, "onEvent: ConferenceDestroyedPush received for another conf. current:=" + optConferenceId() + " other:=" + event.conferenceId);
+            return;
+        }
+
         VoxeetSdk.audio().stop();
 
         reset();
@@ -1142,5 +1156,11 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                 default:
             }
         }
+    }
+
+    @NonNull
+    private String optConferenceId() {
+        String conferenceId = VoxeetSdk.conference().getConferenceId();
+        return null != conferenceId ? conferenceId : "";
     }
 }
