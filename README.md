@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.69.5') {
+  compile ('com.voxeet.sdk:toolkit:2.0.69.8') {
     transitive = true
   }
 }
@@ -47,6 +47,16 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.69.8 :
+ - use fix with recording status updated event looping
+
+v2.0.69.7 :
+ - SoundManager documentation update
+
+v2.0.69.6 :
+ - ConferenceCreationSuccess sent on local creation
+ - ConferenceCreationSuccess and ConferenceJoinedSuccessEvent are now holding a reference to the Conference
 
 v2.0.69.5 :
  - bumped version to reflect the (non default) auto push feature for the AndroidManifest.xml
@@ -378,8 +388,8 @@ public class Stats {
 ## Version
 
 
-public-sdk: 2.0.69.3
-toolkit: 2.0.69.3
+public-sdk: 2.0.69.8
+toolkit: 2.0.69.8
 
 ## Tech
 
