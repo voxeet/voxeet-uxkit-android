@@ -78,6 +78,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
     private View view_3d;
     private OnView3D view3d_listener;
+    private Context currentContext;
 
     /**
      * Instantiates a new Voxeet conference bar view.
@@ -86,6 +87,7 @@ public class VoxeetActionBarView extends VoxeetView {
      */
     public VoxeetActionBarView(Context context) {
         super(context);
+        currentContext = context;
 
         setUserPreferences();
     }
@@ -256,7 +258,7 @@ public class VoxeetActionBarView extends VoxeetView {
                 Intent intent = new Intent();
                 intent.setAction("OnCallReceive");
                 intent.putExtra("isSpeaker", true);
-                getContext().sendBroadcast(intent);
+                currentContext.sendBroadcast(intent);
             }
         });
 
@@ -275,7 +277,7 @@ public class VoxeetActionBarView extends VoxeetView {
                                 Intent intent = new Intent();
                                 intent.setAction("OnCallReceive");
                                 intent.putExtra("isLeave", true);
-								getContext().sendBroadcast(intent);
+                                currentContext.sendBroadcast(intent);
                             }
                         })
                         .error(new ErrorPromise() {
@@ -350,7 +352,7 @@ public class VoxeetActionBarView extends VoxeetView {
             Intent intent = new Intent();
             intent.setAction("OnCallReceive");
             intent.putExtra("isMute", true);
-            getContext().sendBroadcast(intent);
+            currentContext.sendBroadcast(intent);
         }
     }
 
@@ -360,7 +362,7 @@ public class VoxeetActionBarView extends VoxeetView {
             Intent intent = new Intent();
             intent.setAction("OnCallReceive");
             intent.putExtra("isVideo", true);
-            getContext().sendBroadcast(intent);
+            currentContext.sendBroadcast(intent);
         }
     }
 
