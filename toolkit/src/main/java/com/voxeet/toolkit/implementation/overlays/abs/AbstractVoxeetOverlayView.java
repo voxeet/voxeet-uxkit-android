@@ -25,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.activities.VoxeetEventCallBack;
 import com.voxeet.toolkit.configuration.Overlay;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
@@ -41,6 +42,8 @@ import java.util.ArrayList;
 public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandableView {
 
     private ArrayList<AnimatorSet> mCurrentAnimations;
+
+    VoxeetEventCallBack voxeetEventCallBack;
 
     private final String TAG = AbstractVoxeetOverlayView.class.getSimpleName();
 
@@ -78,9 +81,12 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
      */
     public AbstractVoxeetOverlayView(@NonNull IExpandableViewProviderListener listener,
                                      @NonNull IVoxeetSubViewProvider provider,
+                                     @NonNull VoxeetEventCallBack mVoxeetEventCallBack,
                                      @NonNull Context context,
                                      @NonNull final OverlayState overlay) {
         super(context);
+
+        voxeetEventCallBack = mVoxeetEventCallBack;
 
         mCurrentAnimations = new ArrayList<>();
 
@@ -260,10 +266,8 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
             onPreMinizedView();
             minizeView();
-            Intent intent = new Intent();
-            intent.setAction("OnCallReceive");
-            intent.putExtra("isMinimized", true);
-			getContext().sendBroadcast(intent);
+
+            voxeetEventCallBack.onConferenceMinimized();
         }
     }
 

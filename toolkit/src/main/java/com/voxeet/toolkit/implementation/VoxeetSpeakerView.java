@@ -207,6 +207,30 @@ public class VoxeetSpeakerView extends VoxeetView {
     }
 
     @Override
+    public void onConferenceMute(Boolean isMuted) {
+    }
+
+    @Override
+    public void onConferenceVideo(Boolean isVideoEnabled) {
+
+    }
+
+    @Override
+    public void onConferenceCallEnded() {
+
+    }
+
+    @Override
+    public void onConferenceMinimized() {
+
+    }
+
+    @Override
+    public void onConferenceSpeakerOn(Boolean isSpeakerOn) {
+
+    }
+
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 

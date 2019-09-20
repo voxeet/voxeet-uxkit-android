@@ -457,6 +457,30 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     @Override
+    public void onConferenceMute(Boolean isMuted) {
+    }
+
+    @Override
+    public void onConferenceVideo(Boolean isVideoEnabled) {
+
+    }
+
+    @Override
+    public void onConferenceCallEnded() {
+
+    }
+
+    @Override
+    public void onConferenceMinimized() {
+
+    }
+
+    @Override
+    public void onConferenceSpeakerOn(Boolean isSpeakerOn) {
+
+    }
+
+    @Override
     public void onScreenShareMediaStreamUpdated(@NonNull String userId, @NonNull Map<String, MediaStream> screen_share_media_streams) {
         super.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
 

@@ -51,6 +51,30 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
     }
 
     @Override
+    public void onConferenceMute(Boolean isMuted) {
+    }
+
+    @Override
+    public void onConferenceVideo(Boolean isVideoEnabled) {
+
+    }
+
+    @Override
+    public void onConferenceCallEnded() {
+
+    }
+
+    @Override
+    public void onConferenceMinimized() {
+
+    }
+
+    @Override
+    public void onConferenceSpeakerOn(Boolean isSpeakerOn) {
+
+    }
+
+    @Override
     public void onMediaStreamUpdated(String userId, Map<String, MediaStream> mediaStreams) {
         super.onMediaStreamUpdated(userId, mediaStreams);
 

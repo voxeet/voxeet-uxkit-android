@@ -53,6 +53,7 @@ import com.voxeet.sdk.models.v1.UserProfile;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.activities.VoxeetEventCallBack;
 import com.voxeet.toolkit.implementation.VoxeetConferenceView;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetOverlayView;
@@ -118,6 +119,10 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @Nullable
     private AbstractVoxeetOverlayView mMainView;
 
+
+    @Nullable
+    private VoxeetEventCallBack mVoxeetEventCallBack;
+
     //private VoxeetOverlayContainerFrameLayout mMainViewParent;
 
     /**
@@ -176,7 +181,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
         OverlayState state = mSavedOverlayState;
         mMainView = mVoxeetOverlayViewProvider.createView(activity,
-                mVoxeetSubViewProvider,
+                mVoxeetSubViewProvider,mVoxeetEventCallBack,
                 state);
 
         List<User> list = VoxeetSdk.conference().getLastInvitationUsers();
@@ -275,8 +280,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         removeRunnables.clear();
     }
 
-    public void forceReattach() {
-
+    public void forceReattach(VoxeetEventCallBack voxeetEventCallBack) {
+        mVoxeetEventCallBack = voxeetEventCallBack;
     }
 
     private void displayView() {

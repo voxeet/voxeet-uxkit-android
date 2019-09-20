@@ -36,6 +36,7 @@ import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.R;
+import com.voxeet.toolkit.activities.VoxeetEventCallBack;
 import com.voxeet.toolkit.configuration.ActionBar;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
@@ -76,6 +77,8 @@ public class VoxeetActionBarView extends VoxeetView {
     private ViewGroup screenshare_wrapper;
     private ViewGroup view_3d_wrapper;
 
+    private VoxeetEventCallBack voxeetEventCallBack;
+
     private View view_3d;
     private OnView3D view3d_listener;
 
@@ -87,6 +90,7 @@ public class VoxeetActionBarView extends VoxeetView {
     public VoxeetActionBarView(Context context) {
         super(context);
 
+        voxeetEventCallBack = (VoxeetEventCallBack) context;
         setUserPreferences();
     }
 
@@ -98,6 +102,8 @@ public class VoxeetActionBarView extends VoxeetView {
      */
     public VoxeetActionBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        voxeetEventCallBack = (VoxeetEventCallBack) context;
 
         updateAttrs(attrs);
 
@@ -151,6 +157,7 @@ public class VoxeetActionBarView extends VoxeetView {
     public VoxeetActionBarView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        voxeetEventCallBack = (VoxeetEventCallBack) context;
         updateAttrs(attrs);
 
         setUserPreferences();
@@ -215,6 +222,31 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     @Override
+    public void onConferenceMute(Boolean isMuted) {
+        voxeetEventCallBack.onConferenceMute(isMuted);
+    }
+
+    @Override
+    public void onConferenceVideo(Boolean isVideoEnabled) {
+        voxeetEventCallBack.onConferenceVideo(isVideoEnabled);
+    }
+
+    @Override
+    public void onConferenceCallEnded() {
+        voxeetEventCallBack.onConferenceCallEnded();
+    }
+
+    @Override
+    public void onConferenceMinimized() {
+        voxeetEventCallBack.onConferenceMinimized();
+    }
+
+    @Override
+    public void onConferenceSpeakerOn(Boolean isSpeakerOn) {
+        voxeetEventCallBack.onConferenceSpeakerOn(isSpeakerOn);
+    }
+
+    @Override
     public void onScreenShareMediaStreamUpdated(@NonNull String userId, @NonNull Map<String, MediaStream> screen_share_media_streams) {
         super.onScreenShareMediaStreamUpdated(userId, screen_share_media_streams);
 
@@ -253,10 +285,7 @@ public class VoxeetActionBarView extends VoxeetView {
                 speaker.setSelected(!speaker.isSelected());
 
                 VoxeetSdk.audio().setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
-                Intent intent = new Intent();
-                intent.setAction("OnCallReceive");
-                intent.putExtra("isSpeaker", true);
-                getContext().sendBroadcast(intent);
+                onConferenceSpeakerOn(speaker.isSelected());
             }
         });
 
@@ -272,10 +301,7 @@ public class VoxeetActionBarView extends VoxeetView {
                             @Override
                             public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                                 //manage the result ?
-                                Intent intent = new Intent();
-                                intent.setAction("OnCallReceive");
-                                intent.putExtra("isLeave", true);
-								getContext().sendBroadcast(intent);
+                                onConferenceCallEnded();
                             }
                         })
                         .error(new ErrorPromise() {
@@ -347,20 +373,19 @@ public class VoxeetActionBarView extends VoxeetView {
             microphone.setSelected(new_muted_state);
 
             VoxeetSdk.conference().mute(new_muted_state);
-            Intent intent = new Intent();
-            intent.setAction("OnCallReceive");
-            intent.putExtra("isMute", true);
-            getContext().sendBroadcast(intent);
+            onConferenceMute(new_muted_state);
         }
     }
 
     protected void toggleCamera() {
         if (checkCameraPermission()) {
+            boolean new_video_state = VoxeetSdk.conference().isVideoOn();
             VoxeetSdk.conference().toggleVideo();
-            Intent intent = new Intent();
-            intent.setAction("OnCallReceive");
-            intent.putExtra("isVideo", true);
-            getContext().sendBroadcast(intent);
+            if (new_video_state){
+                onConferenceVideo(false);
+            }else{
+                onConferenceVideo(true);
+            }
         }
     }
 

@@ -186,6 +186,30 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     @Override
+    public void onConferenceMute(Boolean isMuted) {
+    }
+
+    @Override
+    public void onConferenceVideo(Boolean isVideoEnabled) {
+
+    }
+
+    @Override
+    public void onConferenceCallEnded() {
+
+    }
+
+    @Override
+    public void onConferenceMinimized() {
+
+    }
+
+    @Override
+    public void onConferenceSpeakerOn(Boolean isSpeakerOn) {
+
+    }
+
+    @Override
     public void onScreenShareMediaStreamUpdated(@NonNull final String userId, @NonNull final Map<String, MediaStream> mediaStreams) {
         super.onScreenShareMediaStreamUpdated(userId, mediaStreams);
 

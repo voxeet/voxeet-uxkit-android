@@ -41,7 +41,7 @@ import eu.codlab.simplepromise.solve.Solver;
  * - singleTop / singleInstance
  */
 @Annotate
-public class VoxeetAppCompatActivity extends AppCompatActivity {
+public class VoxeetAppCompatActivity extends AppCompatActivity implements VoxeetEventCallBack {
 
 
     private static final String TAG = VoxeetAppCompatActivity.class.getSimpleName();
@@ -81,7 +81,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
         }
 
         if (null != VoxeetToolkit.getInstance() && null != VoxeetToolkit.getInstance().getConferenceToolkit()) {
-            VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach();
+            VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach(this);
         }
     }
 
@@ -202,6 +202,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
 
     }
 
+
     /**
      * Get the current voxeet bundle checker
      * <p>
@@ -227,5 +228,29 @@ public class VoxeetAppCompatActivity extends AppCompatActivity {
      */
     protected boolean canBeRegisteredToReceiveCalls() {
         return true;
+    }
+
+    @Override
+    public void onConferenceMute(Boolean isMuted) {
+    }
+
+    @Override
+    public void onConferenceVideo(Boolean isVideoEnabled) {
+
+    }
+
+    @Override
+    public void onConferenceCallEnded() {
+
+    }
+
+    @Override
+    public void onConferenceMinimized() {
+
+    }
+
+    @Override
+    public void onConferenceSpeakerOn(Boolean isSpeakerOn) {
+
     }
 }

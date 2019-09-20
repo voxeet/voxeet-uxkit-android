@@ -3,6 +3,7 @@ package com.voxeet.toolkit.providers.containers;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.voxeet.toolkit.activities.VoxeetEventCallBack;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.VoxeetOverlayBackView;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetOverlayView;
@@ -31,7 +32,8 @@ public class DefaultReplayMessageProvider implements IVoxeetOverlayViewProvider 
     @Override
     public AbstractVoxeetOverlayView createView(@NonNull Context context,
                                                 @NonNull IVoxeetSubViewProvider provider,
+                                                @NonNull VoxeetEventCallBack mVoxeetEventCallBack,
                                                 @NonNull OverlayState overlayState) {
-        return new VoxeetOverlayBackView(mListener, provider, context, overlayState);
+        return new VoxeetOverlayBackView(mListener, provider,mVoxeetEventCallBack, context, overlayState);
     }
 }
