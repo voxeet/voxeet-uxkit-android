@@ -481,10 +481,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         }
 
         String currentActiveSpeaker = getCurrentActiveSpeaker();
-        loopUserForStreamInVideoViewIfUnattached(currentActiveSpeaker, users);
-
-
-        Log.d("VideoView", "refreshMediaStreams: " + currentActiveSpeaker + " " + selectedView.getPeerId());
+        loopUserForStreamInVideoViewIfUnattached(currentActiveSpeaker, users, MediaStreamType.ScreenShare);
+        loopUserForStreamInVideoViewIfUnattached(currentActiveSpeaker, users, MediaStreamType.Camera);
 
         if (null != localUserMediaStream) {
             if (localUserMediaStream.videoTracks().size() > 0) {
@@ -525,16 +523,17 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     private void loopUserForStreamInVideoViewIfUnattached(@Nullable String currentSelectedUserId,
-                                                          List<User> users) {
+                                                          List<User> users,
+                                                          MediaStreamType mediaStreamType) {
 
         MediaStream foundToAttach = null;
         String userIdFoundToAttach = null;
 
         if (null != currentSelectedUserId) {
             User user = VoxeetSdk.conference().findUserById(currentSelectedUserId);
-            if (null != user && !user.getId().equals(VoxeetSdk.user().getUserId())) {
+            if (null != user) {
                 userIdFoundToAttach = user.getId();
-                foundToAttach = user.streamsHandler().getFirst(MediaStreamType.Camera);
+                foundToAttach = user.streamsHandler().getFirst(mediaStreamType);
             }
         }
 
@@ -543,25 +542,17 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                 String userId = user.getId();
                 if (null != userId && !userId.equals(VoxeetPreferences.id()) && !userId.equals(currentSelectedUserId) && null == foundToAttach) {
                     userIdFoundToAttach = userId;
-                    foundToAttach = user.streamsHandler().getFirst(MediaStreamType.ScreenShare);
+                    foundToAttach = user.streamsHandler().getFirst(mediaStreamType);
                     if (null != foundToAttach && foundToAttach.videoTracks().size() <= 0)
                         foundToAttach = null;
                 }
             }
         }
 
-        if (null != foundToAttach) {
-            Log.d(TAG, "loopUserForStreamInVideoViewIfUnattached: " + foundToAttach.peerId() + " " + foundToAttach.label());
-        }
-
-        if (null != foundToAttach && foundToAttach.videoTracks().size() > 0) {
+        if ((!selectedView.isAttached() || MediaStreamType.ScreenShare.equals(mediaStreamType)) && null != foundToAttach && foundToAttach.videoTracks().size() > 0) {
             selectedView.setVisibility(View.VISIBLE);
             selectedView.attach(userIdFoundToAttach, foundToAttach);
-        } else {
-            selectedView.setVisibility(View.GONE);
-            selectedView.unAttach();
         }
-        Log.d(TAG, " " + selectedView);
     }
 
     private void checkForLocalUserStreamVideo() {
