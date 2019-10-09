@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.voxeet.sdk.views.RoundedFrameLayout;
@@ -78,7 +77,6 @@ public class VoxeetVuMeter extends RoundedFrameLayout {
      * @param vuMeter the vu meter
      */
     public void updateMeter(double vuMeter) {
-        Log.d(TAG, "updateMeter: vuMeter:=" + vuMeter);
         view.setBackgroundColor(vuMeter > 0.02 ? yellowOrange : white);
     }
 
