@@ -250,7 +250,11 @@ public class ConferenceViewRendererControl {
 
         if (null != ownUserId) {
             if (null != selectedView && ownUserId.equals(selectedView.getPeerId())) {
-                selectedView.setMirror(isFrontCamera);
+                //only mirror the view in case of camera stream
+                MediaStreamType type = selectedView.current();
+                if (MediaStreamType.Camera.equals(type)) {
+                    selectedView.setMirror(isFrontCamera);
+                }
             } else if (null != selfView && ownUserId.equals(selfView.getPeerId())) {
                 selfView.setMirror(isFrontCamera);
             }

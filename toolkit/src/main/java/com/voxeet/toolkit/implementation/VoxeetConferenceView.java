@@ -504,6 +504,9 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             selectedView.unAttach();
             selectedView.setVisibility(View.GONE);
         } else {
+            //participants are here so we don't have our own video on top
+            //force unmirrored view with participants
+            selectedView.setMirror(false);
             speakerView.onPause();
             speakerView.setVisibility(View.GONE);
         }
