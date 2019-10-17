@@ -8,11 +8,11 @@ import android.util.Log;
 import com.voxeet.push.firebase.FirebaseController;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.factories.VoxeetIntentFactory;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.sample.BuildConfig;
-import com.voxeet.sdk.sample.R;
 import com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity;
-import com.voxeet.toolkit.configuration.Overlay;
+import com.voxeet.toolkit.controllers.ConferenceToolkitController;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 
@@ -48,6 +48,8 @@ public class SampleApplication extends MultiDexApplication {
         //change the overlay used by default
         VoxeetToolkit.getInstance().getConferenceToolkit().setScreenShareEnabled(true)
                 .setDefaultOverlayState(OverlayState.EXPANDED);
+
+        VoxeetToolkit.instance().enable(ConferenceToolkitController.class);
 
         //the default case of this SDK is to have the SDK with consumerKey and consumerSecret embedded
         uniqueInitializeSDK().then(new PromiseExec<Boolean, Object>() {
@@ -85,8 +87,8 @@ public class SampleApplication extends MultiDexApplication {
             logSelectedUser();
         } else {
             //we have an user
-            VoxeetSdk.user()
-                    .logout()
+            VoxeetSdk.session()
+                    .close()
                     .then(new PromiseExec<Boolean, Object>() {
                         @Override
                         public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
@@ -108,7 +110,7 @@ public class SampleApplication extends MultiDexApplication {
      * Call this method to log the current selected user
      */
     public void logSelectedUser() {
-        VoxeetSdk.user().login(_current_user)
+        VoxeetSdk.session().open(_current_user)
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override
                     public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
@@ -154,7 +156,7 @@ public class SampleApplication extends MultiDexApplication {
 
         //it's possible to use the meta-data in the AndroidManifest to directly control the default incoming activity
         VoxeetPreferences.setDefaultActivity(DefaultIncomingCallActivity.class.getCanonicalName());
-        VoxeetSdk.instance().register( this);
+        VoxeetSdk.instance().register(this);
 
         sdkInitialized = true;
     }

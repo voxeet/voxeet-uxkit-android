@@ -16,7 +16,8 @@ import android.widget.Toast;
 
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.ConferenceService;
-import com.voxeet.sdk.core.services.UserService;
+import com.voxeet.sdk.core.services.SessionService;
+import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
 import com.voxeet.sdk.events.sdk.SocketConnectEvent;
 import com.voxeet.sdk.events.sdk.SocketStateChangeEvent;
 import com.voxeet.sdk.json.UserInfo;
@@ -97,8 +98,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @OnClick(R.id.disconnect)
     public void onDisconnectClick() {
-        UserService userService = VoxeetSdk.user();
-        if (null != userService) userService.logout()
+        SessionService userService = VoxeetSdk.session();
+        if (null != userService) userService.close()
                 .then(defaultConsume())
                 .error(createErrorDump());
     }
@@ -197,11 +198,9 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(SocketStateChangeEvent event) {
-        Log.d("MainActivity", "SocketStateChangeEvent " + event.message());
-
-        switch (event.message()) {
-            case "CLOSING":
-            case "CLOSED":
+        switch (event.state) {
+            case CLOSING:
+            case CLOSED:
                 joinConf.setEnabled(false);
                 disconnect.setVisibility(View.GONE);
                 UserAdapter adapter = (UserAdapter) users.getAdapter();
@@ -210,8 +209,17 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     }
 
     @Override
-    protected void onConferenceJoinedSuccessEvent() {
-        UserService userService = VoxeetSdk.user();
+    protected void onConferenceState(@NonNull ConferenceStateEvent event) {
+        super.onConferenceState(event);
+
+        switch(event.state) {
+            case JOINED:
+                onConferenceJoinedSuccessEvent();
+        }
+    }
+
+    private void onConferenceJoinedSuccessEvent() {
+        SessionService userService = VoxeetSdk.session();
         ConferenceService conferenceService = VoxeetSdk.conference();
 
         if (null == userService || null == conferenceService) {
