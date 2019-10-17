@@ -8,19 +8,14 @@ import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.videopresentation.AbstractMediaPlayerProvider;
-import com.voxeet.sdk.core.services.videopresentation.AbstractMediaPlayerView;
-import com.voxeet.sdk.core.services.videopresentation.MediaPlayerProviderComponentHolder;
 import com.voxeet.sdk.json.VideoPresentationPaused;
 import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import com.voxeet.toolkit.presentation.controller.MediaPlayerProviderController;
+import com.voxeet.toolkit.presentation.provider.AbstractMediaPlayerProvider;
+import com.voxeet.toolkit.presentation.view.AbstractMediaPlayerView;
 
 public class VoxeetVideoStreamView extends FrameLayout {
 
@@ -74,7 +69,7 @@ public class VoxeetVideoStreamView extends FrameLayout {
 
     @Nullable
     private AbstractMediaPlayerView createMediaPlayerViewForUrl(@NonNull String url) {
-        AbstractMediaPlayerProvider provider = MediaPlayerProviderComponentHolder.getCompatibleMediaPlayerProvider(url);
+        AbstractMediaPlayerProvider provider = MediaPlayerProviderController.getCompatibleMediaPlayerProvider(url);
 
         if(null == provider) return null;
         return provider.createMediaPlayerView(getContext());

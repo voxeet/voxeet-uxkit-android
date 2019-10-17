@@ -22,6 +22,7 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.services.AudioService;
 import com.voxeet.sdk.core.services.ConferenceService;
 import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
@@ -258,35 +259,41 @@ public class VoxeetActionBarView extends VoxeetView {
 
     /**
      * Method call when a stream is added to any user in the conference
-     * @param conference the given conference
-     * @param user the user involved in the event
+     *
+     * @param conference  the given conference
+     * @param user        the user involved in the event
      * @param mediaStream the newly added stream
      */
     @Override
     public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamAddedEvent(conference, user, mediaStream);
+        invalidateOwnStreams();
     }
 
     /**
      * Method call when a stream is updated for any user in the conference
-     * @param conference the given conference
-     * @param user the user involved in the event
+     *
+     * @param conference  the given conference
+     * @param user        the user involved in the event
      * @param mediaStream the stream which has been updated
      */
     @Override
     public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamUpdatedEvent(conference, user, mediaStream);
+        invalidateOwnStreams();
     }
 
     /**
      * Method call when a stream is remove from any user in the conference
-     * @param conference the given conference
-     * @param user the user involved in the event
+     *
+     * @param conference  the given conference
+     * @param user        the user involved in the event
      * @param mediaStream the removed stream
      */
     @Override
     public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
         super.onStreamRemovedEvent(conference, user, mediaStream);
+        invalidateOwnStreams();
     }
 
     /**
@@ -295,16 +302,21 @@ public class VoxeetActionBarView extends VoxeetView {
      * - the screenshare button
      */
     public void invalidateOwnStreams() {
-        User user = VoxeetSdk.conference().findUserById(VoxeetSdk.user().getUserId());
+        User user = VoxeetSdk.conference().findUserById(VoxeetSdk.session().getUserId());
 
-        MediaStream cameraStream = user.streamsHandler().getFirst(MediaStreamType.Camera);
-        MediaStream screenStream = user.streamsHandler().getFirst(MediaStreamType.ScreenShare);
-        if (camera != null && null != cameraStream) {
-            camera.setSelected(cameraStream.videoTracks().size() > 0);
-        }
+        if (null != user) {
+            MediaStream cameraStream = user.streamsHandler().getFirst(MediaStreamType.Camera);
+            MediaStream screenStream = user.streamsHandler().getFirst(MediaStreamType.ScreenShare);
+            if (camera != null && null != cameraStream) {
+                camera.setSelected(cameraStream.videoTracks().size() > 0);
+            }
 
-        if (null != screenshare) {
-            screenshare.setSelected(null != screenStream && screenStream.videoTracks().size() > 0);
+            if (null != screenshare) {
+                screenshare.setSelected(null != screenStream && screenStream.videoTracks().size() > 0);
+            }
+        } else {
+            //the user is not yet in the conference or won't be
+            updateVisibilities(View.GONE);
         }
     }
 
@@ -475,6 +487,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
     /**
      * Call this method when a conference has been successfully joined to update the visibilities
+     *
      * @param conference the conference involved
      */
     @Override
@@ -482,6 +495,7 @@ public class VoxeetActionBarView extends VoxeetView {
         super.onConferenceJoined(conference);
 
         updateVisibilities(View.VISIBLE);
+        invalidateOwnStreams();
     }
 
     /**
@@ -492,6 +506,7 @@ public class VoxeetActionBarView extends VoxeetView {
         super.onConferenceCreating();
 
         updateVisibilities(View.GONE);
+        invalidateOwnStreams();
     }
 
     /**
@@ -504,6 +519,7 @@ public class VoxeetActionBarView extends VoxeetView {
         super.onConferenceCreation(conference);
 
         updateVisibilities(View.GONE);
+        invalidateOwnStreams();
     }
 
     /**
@@ -516,10 +532,14 @@ public class VoxeetActionBarView extends VoxeetView {
         super.onConferenceJoining(conference);
 
         updateVisibilities(View.GONE);
+        invalidateOwnStreams();
     }
+
 
     private void updateVisibilities(int visibility) {
         boolean listener = isListener();
+
+        updateSpeakerButton();
 
         if (microphone != null)
             microphone_wrapper.setVisibility(displayMute && !listener ? visibility : GONE);
@@ -610,8 +630,11 @@ public class VoxeetActionBarView extends VoxeetView {
 
     private void updateSpeakerButton() {
         if (null != VoxeetSdk.instance()) {
-            boolean headset = VoxeetSdk.audio().isWiredHeadsetOn();
-            headset |= VoxeetSdk.audio().isBluetoothHeadsetConnected();
+            AudioService service = VoxeetSdk.audio();
+
+            boolean headset = service.isWiredHeadsetOn();
+            headset |= service.isBluetoothHeadsetConnected();
+            Log.d("SpeakerButton", "updateSpeakerButton: has wired head set on =" + service.isWiredHeadsetOn() + " bluetooth = " + service.isBluetoothHeadsetConnected());
             if (headset) {
                 speaker.setAlpha(0.5f);
                 speaker.setEnabled(false);
@@ -626,6 +649,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
     /**
      * Set the 3D Button's click listener
+     *
      * @param listener the listener instance
      * @return the current instance
      */
@@ -655,9 +679,7 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     private boolean isListener() {
-        ConferenceInformation information = VoxeetSdk.conference()
-                .getCurrentConferenceInformation();
-        Log.d(TAG, "isListener: " + information);
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
         return null == information || ConferenceUserType.LISTENER.equals(information.getConferenceUserType());
     }
 

@@ -35,7 +35,7 @@ import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 public class VoxeetSpeakerView extends VoxeetView {
     private final String TAG = VoxeetSpeakerView.class.getSimpleName();
 
-    private final int REFRESH_SPEAKER = 500;
+    private final int REFRESH_SPEAKER = 1000;
 
     private final int REFRESH_METER = 100;
 
@@ -86,8 +86,6 @@ public class VoxeetSpeakerView extends VoxeetView {
             if (currentSpeaker != null && null != VoxeetSdk.conference()) {
                 double value = VoxeetSdk.conference().getPeerVuMeter(currentSpeaker.getId());
                 vuMeter.updateMeter(value);
-            } else {
-                Log.d(TAG, "run: no currentSpeaker");
             }
 
             if (mAttached) handler.postDelayed(this, REFRESH_METER);
@@ -199,7 +197,7 @@ public class VoxeetSpeakerView extends VoxeetView {
      */
     @Override
     public void init() {
-        setShowSpeakerName(false);
+        setShowSpeakerName(true);
     }
 
     @NoDocumentation
@@ -288,7 +286,7 @@ public class VoxeetSpeakerView extends VoxeetView {
                         .noFade()
                         .resize(avatarSize, avatarSize)
                         .placeholder(R.drawable.default_avatar)
-                        .error(R.color.transparent)
+                        .error(R.drawable.default_avatar)
                         .into(imageView);
             } else {
                 Picasso.get()

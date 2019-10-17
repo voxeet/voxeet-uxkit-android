@@ -176,8 +176,9 @@ public class VoxeetUsersView extends VoxeetView {
     private List<User> filter(List<User> users) {
         List<User> filter = new ArrayList<>();
         for (User user : users) {
-            boolean had = isDisplaySelf() || !VoxeetSdk.user().isLocalUser(user);
-            if (had) had = ConferenceUserStatus.ON_AIR.equals(user) || isDisplayNonAir();
+            boolean had = isDisplaySelf() || !VoxeetSdk.session().isLocalUser(user);
+            if (had) had = ConferenceUserStatus.ON_AIR.equals(user.getStatus()) || isDisplayNonAir();
+            if(!had) had = user.streams().size() > 0 && ConferenceUserStatus.CONNECTING.equals(user.getStatus());
 
             if (had) filter.add(user);
 
