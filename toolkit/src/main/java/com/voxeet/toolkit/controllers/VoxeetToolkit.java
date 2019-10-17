@@ -204,7 +204,26 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
     }
 
     /**
-     * Activate a controller, disable all others
+     * Activate the first controller with the same class, disable all others
+     *
+     * @return true if the controller was found and activated or already activated
+     */
+    public <T extends AbstractConferenceToolkitController> boolean enable(@NonNull Class<T> controllerKlass) {
+        AbstractConferenceToolkitController firstController = null;
+
+        for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
+            if (null != controller && controller.getClass().equals(controllerKlass)) {
+                firstController = controller;
+                break;
+            }
+        }
+
+        if (null != firstController) return enable(firstController);
+        return false;
+    }
+
+    /**
+     * Activate a controller, disable all others - only if no controller has been found
      *
      * @param controller a non null controller to try to activate
      * @return true if the controller was found and activated or already activated
