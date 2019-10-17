@@ -9,13 +9,13 @@ import android.view.View;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.voxeet.sdk.core.services.videopresentation.AbstractMediaPlayerView;
 import com.voxeet.sdk.json.VideoPresentationPaused;
 import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.toolkit.presentation.view.AbstractMediaPlayerView;
 
 /**
  * Simple implementation to help integrate youtube into Apps

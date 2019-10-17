@@ -9,10 +9,8 @@ import android.util.Log;
 
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.screenshare.RequestScreenSharePermissionEvent;
-import com.voxeet.sdk.events.error.ConferenceJoinedError;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
-import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
-import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
@@ -181,42 +179,14 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Specific event used to manage the current "incoming" call feature
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferencePreJoinedEvent event) {
-        mIncomingBundleChecker.flushIntent();
-        onConferencePreJoinedEvent();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferenceJoinedSuccessEvent event) {
+    public final void onEvent(ConferenceStateEvent event) {
         mIncomingBundleChecker.flushIntent();
-        onConferenceJoinedSuccessEvent();
+        onConferenceState(event);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferenceJoinedError event) {
-        mIncomingBundleChecker.flushIntent();
-        onConferenceJoinedError();
-    }
-
-    /**
-     * Override this method to be called when a conference is pre joining
-     */
-    protected void onConferencePreJoinedEvent() {
-
-    }
-
-    /**
-     * Override this method to be called when a conference has been successfully joined
-     */
-    protected void onConferenceJoinedSuccessEvent() {
-
-    }
-
-    /**
-     * Override this method to be called when a conference joining failed due to an error (network etc...)
-     */
-    protected void onConferenceJoinedError() {
+    protected void onConferenceState(@NonNull ConferenceStateEvent event) {
 
     }
 

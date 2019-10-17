@@ -3,15 +3,15 @@ package com.voxeet.toolkit.mp4.manifests;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.voxeet.sdk.core.services.videopresentation.MediaPlayerProviderComponentHolder;
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
 import com.voxeet.toolkit.mp4.MP4MediaPresentationProvider;
+import com.voxeet.toolkit.presentation.controller.MediaPlayerProviderController;
 
 public final class MP4MediaPresentationProviderManifestComponent extends AbstractManifestComponentProvider {
 
     @Override
     protected void init(@NonNull Context context) {
-        MediaPlayerProviderComponentHolder.register(new MP4MediaPresentationProvider());
+        MediaPlayerProviderController.register(new MP4MediaPresentationProvider());
     }
 
     @Override

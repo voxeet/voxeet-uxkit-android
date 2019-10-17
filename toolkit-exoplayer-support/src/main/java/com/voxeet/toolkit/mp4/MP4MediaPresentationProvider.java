@@ -3,9 +3,8 @@ package com.voxeet.toolkit.mp4;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.voxeet.sdk.core.services.videopresentation.AbstractMediaPlayerProvider;
 import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
+import com.voxeet.toolkit.presentation.provider.AbstractMediaPlayerProvider;
 
 /**
  * Manage and create standard and classic mp4 view manager

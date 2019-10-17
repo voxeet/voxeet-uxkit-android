@@ -13,7 +13,6 @@ import com.voxeet.sdk.factories.VoxeetIntentFactory;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.toolkit.activities.IVoxeetActivity;
-import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 
 import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;
@@ -80,12 +79,12 @@ public class IncomingBundleChecker {
             Promise<Boolean> join = VoxeetSdk.conference().join(mConferenceId);
             //only when error() is called
 
-            Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSdk.user().isSocketOpen());
-            if (!VoxeetSdk.user().isSocketOpen()) {
+            Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSdk.session().isSocketOpen());
+            if (!VoxeetSdk.session().isSocketOpen()) {
                 UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                 if (null != userInfo) {
-                    VoxeetSdk.user().login(userInfo)
+                    VoxeetSdk.session().open(userInfo)
                             .then(new PromiseExec<Boolean, Boolean>() {
                                 @Override
                                 public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
@@ -125,7 +124,7 @@ public class IncomingBundleChecker {
                         })
                         .error(new ErrorPromise() {
                             @Override
-                            public void onError(Throwable error) {
+                            public void onError(@NonNull Throwable error) {
                                 error.printStackTrace();
                             }
                         });

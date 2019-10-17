@@ -9,10 +9,8 @@ import android.util.Log;
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.screenshare.RequestScreenSharePermissionEvent;
-import com.voxeet.sdk.events.error.ConferenceJoinedError;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
-import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
-import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
@@ -183,36 +181,15 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Specific event used to manage the current "incoming" call feature
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferencePreJoinedEvent event) {
-        mIncomingBundleChecker.flushIntent();
-        onConferencePreJoinedEvent();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferenceJoinedSuccessEvent event) {
+    public final void onEvent(ConferenceStateEvent event) {
         mIncomingBundleChecker.flushIntent();
-        onConferenceJoinedSuccessEvent();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferenceJoinedError event) {
-        mIncomingBundleChecker.flushIntent();
-        onConferenceJoinedError();
+        onConferenceState(event);
     }
 
     @NoDocumentation
-    protected void onConferencePreJoinedEvent() {
-
-    }
-
-    @NoDocumentation
-    protected void onConferenceJoinedSuccessEvent() {
-
-    }
-
-    @NoDocumentation
-    protected void onConferenceJoinedError() {
+    protected void onConferenceState(@NonNull ConferenceStateEvent event) {
 
     }
 

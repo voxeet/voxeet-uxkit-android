@@ -18,15 +18,8 @@ import com.voxeet.sdk.core.services.AudioService;
 import com.voxeet.sdk.core.services.ConferenceService;
 import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
-import com.voxeet.sdk.events.error.ConferenceCreatedError;
-import com.voxeet.sdk.events.error.ConferenceJoinedError;
-import com.voxeet.sdk.events.error.ConferenceLeftError;
 import com.voxeet.sdk.events.error.ReplayConferenceErrorEvent;
-import com.voxeet.sdk.events.sdk.ConferenceCreatingEvent;
-import com.voxeet.sdk.events.sdk.ConferenceCreationSuccess;
-import com.voxeet.sdk.events.sdk.ConferenceJoinedSuccessEvent;
-import com.voxeet.sdk.events.sdk.ConferenceLeftSuccessEvent;
-import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
 import com.voxeet.sdk.events.sdk.ConferenceUserCallDeclinedEvent;
 import com.voxeet.sdk.events.sdk.IncomingCallEvent;
 import com.voxeet.sdk.events.success.ConferenceUpdated;
@@ -79,6 +72,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 public abstract class AbstractConferenceToolkitController implements VoxeetOverlayContainerFrameLayout.OnSizeChangedListener {
+    //TODO put this static variable into each controller with an abstract method to make sure of no collision with various impl
+    private static OverlayState SAVED_OVERLAY_STATE = null;
 
     private Context mContext;
     @NonNull
@@ -111,8 +106,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     private String TAG = VoxeetConferenceView.class.getSimpleName();
     private boolean mIsViewRetainedOnLeave;
     private AbstractRootViewProvider mRootViewProvider;
-    private OverlayState mSavedOverlayState;
     private CopyOnWriteArrayList<Runnable> removeRunnables;
+    private boolean showOnCreations = true; //it will make the overlay to be displayed on creating/created
 
     private AbstractConferenceToolkitController() {
 
@@ -145,12 +140,14 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
         ConferenceService service = VoxeetSdk.conference();
 
-        Log.d(TAG, "init saved ?" + mSavedOverlayState);
-        if (null == mSavedOverlayState) mSavedOverlayState = getDefaultOverlayState();
+        Log.d(TAG, "init saved ?" + SAVED_OVERLAY_STATE);
+        if (null == SAVED_OVERLAY_STATE) {
+            SAVED_OVERLAY_STATE = getDefaultOverlayState();
+        }
 
         boolean is_new_conference = false; //TODO implement conference switch
 
-        OverlayState state = mSavedOverlayState;
+        OverlayState state = SAVED_OVERLAY_STATE;
         mMainView = mVoxeetOverlayViewProvider.createView(activity,
                 mVoxeetSubViewProvider,
                 state);
@@ -244,24 +241,28 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     }
 
+    private boolean isInConference() {
+        ConferenceService service = VoxeetSdk.conference();
+        if (null != service) return service.isInConference() || service.isLive();
+
+        return false;
+    }
+
     private void displayView() {
         flushRemoveRunnables();
 
         //display the view
-        boolean in_conf = false;
-        if (null != VoxeetSdk.instance()) {
-            in_conf = VoxeetSdk.conference().isInConference()
-                    || VoxeetSdk.conference().isLive();
-        }
 
-
-        Log.d(TAG, "displayView: " + mMainView + " " + in_conf + " " + isOverlayEnabled());
+        Log.d("Defa", "displayView: " + mMainView + " <<<< " + isInConference() + " " + isOverlayEnabled());
 
         boolean should_send_user_join = false;
-        if (mMainView == null && in_conf) {
+        if (mMainView == null && isInConference()) {
             init();
             should_send_user_join = true;
         }
+
+        Log.d("Defa", "displayView: " + mMainView + " >>>> " + isInConference() + " " + isOverlayEnabled());
+
         /*if (!isOverlayEnabled() || !in_conf) {
             try {
                 throw new Exception("trying to load view when not in proper state");
@@ -270,7 +271,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             }
         }*/
 
-        if (isOverlayEnabled() && in_conf) {
+        if (isOverlayEnabled() && isInConference()) {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -349,7 +350,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                 //releasing the hold on the view
                 if (statement_release) {
                     Log.d(TAG, "run: killing the saved overlay state 1");
-                    if (!keepOverlayState) mSavedOverlayState = null;
+                    if (!keepOverlayState) SAVED_OVERLAY_STATE = null;
 
                     mMainView = null;
 
@@ -386,8 +387,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
                     if (statement_release) {
                         //restore the saved state
-                        Log.d(TAG, "run: killing the saved overlay state");
-                        if (!keepOverlayState) mSavedOverlayState = null;
+                        Log.d("DefaultRootViewProvider", "run: killing the saved overlay state " + keepOverlayState);
+                        if (!keepOverlayState) SAVED_OVERLAY_STATE = null;
 
                         Log.d(TAG, "run: AbstractConferenceToolkitController should release view " + view.getClass().getSimpleName());
                         view.onDestroy();
@@ -429,6 +430,9 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * @param activity
      */
     public void onActivityResumed(Activity activity) {
+        if (isEnabled() && isInConference() && null == mMainView) init();
+
+        Log.d("DefaultRootViewProvider", "onActivityResumed in controller: " + mMainView);
         if (mMainView != null) {
             displayView();
         }
@@ -481,13 +485,15 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     private void minimize() {
+        Log.d("DefaultRootViewProvider", "minimize");
         if (null != mMainView) mMainView.minimize();
-        mSavedOverlayState = OverlayState.MINIMIZED;
+        SAVED_OVERLAY_STATE = OverlayState.MINIMIZED;
     }
 
     private void expand() {
+        Log.d("DefaultRootViewProvider", "expand");
         if (null != mMainView) mMainView.expand();
-        mSavedOverlayState = OverlayState.EXPANDED;
+        SAVED_OVERLAY_STATE = OverlayState.EXPANDED;
     }
 
     /**
@@ -565,13 +571,42 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * Event Management - see EventBus field
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    /**
-     * Display the conference view when the user is creating a conference
-     *
-     * @param event the event
-     */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(@NonNull ConferenceCreatingEvent event) {
+    public void onEvent(@NonNull ConferenceStateEvent event) {
+        Log.d("DefaultRootViewProvider", "onEvent: state " + event.state + " " + mMainView);
+        switch (event.state) {
+            case CREATING:
+                onConferenceCreatingEvent(event);
+                break;
+            case CREATED:
+                onConferenceCreatedEvent(event);
+                break;
+            case CREATED_ERROR:
+                onConferenceCreatedError(event);
+                break;
+            case JOINING:
+                onConferenceJoiningEvent(event);
+                break;
+            case JOINED:
+                onConferenceJoinedEvent(event);
+                break;
+            case JOINED_ERROR:
+                onConferenceJoinedError(event);
+                break;
+            case LEAVING:
+                break;
+            case LEFT:
+                onConferenceLeftEvent(event);
+                break;
+            case LEFT_ERROR:
+                onConferenceLeftError(event);
+            case DEFAULT:
+            default:
+
+        }
+    }
+
+    private void onConferenceCreatingEvent(ConferenceStateEvent event) {
         //TODO check for call ?
         //VoxeetSdk.audio().playSoundType(AudioType.RING);
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
@@ -579,7 +614,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         log("onEvent: " + event.getClass().getSimpleName()
                 + " " + activity);
         if (activity != null) {
-            if (mMainView == null) init();
+            if (isEnabled() && isInConference() && null == mMainView) init();
 
             setParams();
 
@@ -591,13 +626,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
     }
 
-    /**
-     * Display the conference view when the user is creating/joining a conference.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(@NonNull ConferencePreJoinedEvent event) {
+    private void onConferenceJoiningEvent(ConferenceStateEvent event) {
         ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
 
         if (null != information && ConferenceUserType.NORMAL.equals(information.getConferenceUserType())) {
@@ -608,9 +637,10 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
 
         Activity activity = VoxeetToolkit.getInstance().getCurrentActivity();
+        Log.d("DefaultRootViewProvider", "onConferenceJoiningEvent: " + validFilter(event.conference.getId()));
 
         if (activity != null && validFilter(event.conference.getId())) {
-            if (mMainView == null) init();
+            if (null == mMainView) init();
 
             setParams();
 
@@ -642,13 +672,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
     }
 
-    /**
-     * On ConferenceJoinedSuccessEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(@NonNull ConferenceJoinedSuccessEvent event) {
+    private void onConferenceJoinedEvent(ConferenceStateEvent event) {
         if (validFilter(event.conference.getAlias()) || validFilter(event.conference.getId())) {
             VoxeetSdk.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
 
@@ -666,13 +690,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
     }
 
-    /**
-     * On ConferenceCreationSuccess event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(@NonNull ConferenceCreationSuccess event) {
+    private void onConferenceCreatedEvent(ConferenceStateEvent event) {
         ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
 
         if (null != information && ConferenceUserType.NORMAL.equals(information.getConferenceUserType())) {
@@ -682,7 +700,10 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             Log.d(TAG, "onEvent: your current conference type is not compatible with ringing");
         }
 
-        if (mMainView == null) init();
+        if (showOnCreations)
+            displayView();
+
+        if (validFilter(event.conference.getId()) && mMainView == null) init();
 
         if (validFilter(event.conference.getId()) || validFilter(event.conference.getAlias())) {
             mMainView.onConferenceCreation(event.conference);
@@ -753,13 +774,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
     }
 
-    /**
-     * On ConferenceLeftSuccessEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceLeftSuccessEvent event) {
+    private void onConferenceLeftEvent(ConferenceStateEvent event) {
         Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
         VoxeetSdk.audio().stop();
 
@@ -771,13 +786,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
     }
 
-    /**
-     * On ConferenceLeftSuccessEvent event.
-     *
-     * @param event the event
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceLeftError event) {
+    private void onConferenceLeftError(ConferenceStateEvent event) {
         Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
         VoxeetSdk.audio().stop();
 
@@ -789,8 +798,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceCreatedError event) {
+    private void onConferenceCreatedError(ConferenceStateEvent event) {
         Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
         VoxeetSdk.audio().stop();
 
@@ -802,8 +810,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceJoinedError event) {
+    private void onConferenceJoinedError(ConferenceStateEvent event) {
         Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
         VoxeetSdk.audio().stop();
 
@@ -915,15 +922,15 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     public void onEvent(@NonNull IncomingCallEvent event) {
         if (null != mMainView) {
             mMainView.minimize();
-            mSavedOverlayState = OverlayState.MINIMIZED;
+            SAVED_OVERLAY_STATE = OverlayState.MINIMIZED;
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull LoadLastSavedOverlayStateEvent event) {
-        Log.d(TAG, "onEvent: LoadLastSavedOverlayStateEvent");
+        Log.d("DefaultRootViewProvider", "onEvent: LoadLastSavedOverlayStateEvent " + SAVED_OVERLAY_STATE);
         if (null != mMainView) {
-            OverlayState state = mSavedOverlayState;
+            OverlayState state = SAVED_OVERLAY_STATE;
             if (null == state) state = getDefaultOverlayState();
 
             if (OverlayState.EXPANDED.equals(state)) {
@@ -962,7 +969,6 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
 
         if (found) {
-            Log.d("SoundPool", " checkOutgoingCall");
             VoxeetSdk.audio().stop();
         }
     }
@@ -977,9 +983,9 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Override
     public void onSizedChangedListener(@NonNull VoxeetOverlayContainerFrameLayout view) {
-        Log.d(TAG, "onSizedChangedListener: " + mSavedOverlayState);
+        Log.d(TAG, "onSizedChangedListener: " + SAVED_OVERLAY_STATE);
         if (null != mMainView) {
-            switch (mSavedOverlayState) {
+            switch (SAVED_OVERLAY_STATE) {
                 case MINIMIZED:
                     minimize();
                 case EXPANDED:
@@ -991,7 +997,9 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @NonNull
     private String optConferenceId() {
-        String conferenceId = VoxeetSdk.conference().getConferenceId();
+        ConferenceService service = VoxeetSdk.conference();
+        if (null == service) return "";
+        String conferenceId = service.getConferenceId();
         return null != conferenceId ? conferenceId : "";
     }
 }

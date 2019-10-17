@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.voxeet.toolkit.activities.IVoxeetActivity;
-import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 
 /**
  * Factory use to store and make the integration of the VoxeetActivities easier

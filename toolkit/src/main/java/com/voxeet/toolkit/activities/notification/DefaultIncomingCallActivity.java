@@ -23,7 +23,8 @@ import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.core.services.AudioService;
-import com.voxeet.sdk.events.sdk.ConferencePreJoinedEvent;
+import com.voxeet.sdk.core.services.conference.information.ConferenceState;
+import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
 import com.voxeet.sdk.events.sdk.DeclineConferenceResultEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
@@ -125,12 +126,12 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
             public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
                 Log.d(TAG, "onCall: initialized ? " + result);
 
-                if (!VoxeetSdk.user().isSocketOpen()) {
+                if (!VoxeetSdk.session().isSocketOpen()) {
                     Log.d(TAG, "onCall: try to log user");
                     UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                     if (null != userInfo) {
-                        solver.resolve(VoxeetSdk.user().login(userInfo));
+                        solver.resolve(VoxeetSdk.session().open(userInfo));
                     } else {
                         solver.resolve(false);
                     }
@@ -188,6 +189,8 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
                     mUsername.setText(mIncomingBundleChecker.getUserName());
                     Picasso.get()
                             .load(mIncomingBundleChecker.getAvatarUrl())
+                            .placeholder(R.drawable.default_avatar)
+                            .error(R.drawable.default_avatar)
                             .into(mAvatar);
                 } else {
                     finish();
@@ -250,8 +253,8 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferencePreJoinedEvent event) {
-        if (mIncomingBundleChecker.isSameConference(event.conference.getId())) {
+    public void onEvent(ConferenceStateEvent event) {
+        if (ConferenceState.JOINING.equals(event.state) && mIncomingBundleChecker.isSameConference(event.conference.getId())) {
             finish();
         }
     }
