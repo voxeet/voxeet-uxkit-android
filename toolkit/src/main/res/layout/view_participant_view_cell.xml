@@ -55,7 +55,7 @@
         android:ellipsize="end"
         android:gravity="center"
         android:singleLine="true"
-        android:textColor="@color/grey999"
+        android:textColor="@color/participant_view_cell_textColor_inactive"
         tools:text="name" />
 
 </LinearLayout>

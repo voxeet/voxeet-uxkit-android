@@ -147,7 +147,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final User user = getItem(position);
 
-        boolean on_air = ConferenceUserStatus.ON_AIR.equals(user.getStatus());
+        boolean on_air = user.isLocallyActive();
 
         if (null != user.getUserInfo()) {
             holder.name.setText(user.getUserInfo().getName());
@@ -302,7 +302,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                         .noFade()
                         .resize(avatarSize, avatarSize)
                         .placeholder(R.drawable.default_avatar)
-                        .error(R.color.red)
+                        .error(R.drawable.default_avatar)
                         .into(imageView);
             } else {
                 Picasso.get()

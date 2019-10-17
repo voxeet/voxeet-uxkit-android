@@ -3,7 +3,6 @@ package com.voxeet.toolkit.utils;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
@@ -249,7 +248,6 @@ public class ConferenceViewRendererControl {
         VideoView selectedView = getOtherVideoView();
         VideoView selfView = getSelfVideoView();
 
-        Log.d(TAG, "updateMirror: isFrontCamera : " + isFrontCamera);
         if (null != ownUserId) {
             if (null != selectedView && ownUserId.equals(selectedView.getPeerId())) {
                 selectedView.setMirror(isFrontCamera);

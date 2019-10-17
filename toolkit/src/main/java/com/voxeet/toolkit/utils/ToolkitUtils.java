@@ -24,6 +24,8 @@ public class ToolkitUtils {
         for (User user : users) {
             if (ConferenceUserStatus.ON_AIR.equals(user.getStatus()) && !ownUserId.equals(user.getId()))
                 return true;
+            if (ConferenceUserStatus.CONNECTING.equals(user.getStatus()) && !ownUserId.equals(user.getId()) && user.streams().size() > 0)
+                return true;
         }
         return false;
     }

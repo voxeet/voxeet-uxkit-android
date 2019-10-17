@@ -61,6 +61,8 @@
     <color name="greyf1">#f1f1f1</color>
     <color name="greyd1">#d1d1d1</color>
     <color name="light_brown">#eae6dd</color>
+    <color name="participant_view_cell_textColor_active">#e0e0e0</color>
+    <color name="participant_view_cell_textColor_inactive">#99e0e0e0</color>
 
     <color name="edit_box_bg">#f8f8f8</color>
 
