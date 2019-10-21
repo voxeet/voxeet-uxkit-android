@@ -306,12 +306,16 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 //        R.drawable.default_avatar
         try {
             String url = conferenceUser.getUserInfo().getAvatarUrl();
-            String avatarName = null;
+            String avatarName = "";
             if (null != conferenceUser && null != conferenceUser.getUserInfo()) {
                 avatarName = conferenceUser.getUserInfo().getName();
             }
             ColorGenerator generator = ColorGenerator.MATERIAL;
-            avatarName = avatarName.substring(0,2);
+            if (avatarName.length() >= 2) {
+                avatarName = avatarName.substring(0, 2);
+            } else if (avatarName.length() >= 1) {
+                avatarName = avatarName.substring(0, 1);
+            }
             int color2 = generator.getColor(avatarName);
             TextDrawable drawable = TextDrawable.builder()
                     .beginConfig()
@@ -328,7 +332,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                         .noFade()
                         .resize(avatarSize, avatarSize)
                         .placeholder(drawable)
-                        .error(R.color.red)
+                        .error(drawable)
                         .into(imageView);
             } else {
 //                Picasso.get()
