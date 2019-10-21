@@ -95,6 +95,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
     compile 'com.squareup.picasso:picasso:2.71828'
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile("com.voxeet.sdk:public-sdk:${rootProject.ext.voxeetSdkVersion}") {
         transitive = true
     }

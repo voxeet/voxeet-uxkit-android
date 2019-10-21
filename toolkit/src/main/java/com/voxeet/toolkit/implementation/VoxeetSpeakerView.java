@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -17,6 +18,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.squareup.picasso.Picasso;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.exceptions.ExceptionManager;
@@ -305,21 +308,37 @@ public class VoxeetSpeakerView extends VoxeetView {
             if (null != conferenceUser && null != conferenceUser.getUserInfo()) {
                 avatarUrl = conferenceUser.getUserInfo().getAvatarUrl();
             }
-
+            String avatarName = null;
+            if (null != conferenceUser && null != conferenceUser.getUserInfo()) {
+                avatarName = conferenceUser.getUserInfo().getName();
+            }
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            avatarName = avatarName.substring(0,2);
+            int color2 = generator.getColor(avatarName);
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .width(imageView.getWidth())  // width in px
+                    .height(imageView.getHeight()) // height in px
+                    .toUpperCase()
+                    .bold()
+                    .endConfig()
+                    .buildRect(avatarName, color2);
             if (!TextUtils.isEmpty(avatarUrl)) {
+//                imageView.setImageDrawable(drawable);
                 Picasso.get()
                         .load(conferenceUser.getUserInfo().getAvatarUrl())
                         .noFade()
                         .resize(avatarSize, avatarSize)
-                        .placeholder(R.drawable.default_avatar)
+                        .placeholder(drawable)
                         .error(R.color.transparent)
                         .into(imageView);
             } else {
-                Picasso.get()
-                        .load(R.drawable.default_avatar)
-                        .noFade()
-                        .resize(avatarSize, avatarSize)
-                        .into(imageView);
+//                Picasso.get()
+//                        .load(R.drawable.default_avatar)
+//                        .noFade()
+//                        .resize(avatarSize, avatarSize)
+//                        .into(imageView);
+                imageView.setImageDrawable(drawable);
             }
         } catch (Exception e) {
             ExceptionManager.sendException(e);

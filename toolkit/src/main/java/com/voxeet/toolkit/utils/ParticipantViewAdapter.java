@@ -1,6 +1,7 @@
 package com.voxeet.toolkit.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,8 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.squareup.picasso.Picasso;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
@@ -300,20 +303,38 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      * @param imageView      the landing image view
      */
     private void loadViaPicasso(@NonNull User conferenceUser, ImageView imageView) {
+//        R.drawable.default_avatar
         try {
             String url = conferenceUser.getUserInfo().getAvatarUrl();
+            String avatarName = null;
+            if (null != conferenceUser && null != conferenceUser.getUserInfo()) {
+                avatarName = conferenceUser.getUserInfo().getName();
+            }
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            avatarName = avatarName.substring(0,2);
+            int color2 = generator.getColor(avatarName);
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .width(imageView.getWidth())  // width in px
+                    .height(imageView.getHeight()) // height in px
+                    .toUpperCase()
+                    .bold()
+                    .endConfig()
+                    .buildRect(avatarName, color2);
             if (!TextUtils.isEmpty(url)) {
+//                imageView.setImageDrawable(drawable);
                 Picasso.get()
                         .load(url)
                         .noFade()
                         .resize(avatarSize, avatarSize)
-                        .placeholder(R.drawable.default_avatar)
+                        .placeholder(drawable)
                         .error(R.color.red)
                         .into(imageView);
             } else {
-                Picasso.get()
-                        .load(R.drawable.default_avatar)
-                        .into(imageView);
+//                Picasso.get()
+//                        .load(R.drawable.default_avatar)
+//                        .into(imageView);
+                imageView.setImageDrawable(drawable);
             }
         } catch (Exception e) {
             Log.e(TAG, "error " + e.getMessage());
