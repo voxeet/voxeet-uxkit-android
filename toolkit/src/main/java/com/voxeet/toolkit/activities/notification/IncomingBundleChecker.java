@@ -153,7 +153,7 @@ public class IncomingBundleChecker {
         return null != mIntent && mIntent.hasExtra(VoxeetIntentFactory.INVITER_NAME)
                 && mIntent.hasExtra(VoxeetIntentFactory.INVITER_EXTERNAL_ID)
                 && mIntent.hasExtra(VoxeetIntentFactory.INVITER_ID)
-                && mIntent.hasExtra(VoxeetIntentFactory.INVITER_URL)
+                //&& mIntent.hasExtra(VoxeetIntentFactory.INVITER_URL)
                 && mIntent.hasExtra(VoxeetIntentFactory.CONF_ID);
     }
 
