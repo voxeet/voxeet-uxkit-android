@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.core.services.SessionService;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.models.v1.ConferenceUserStatus;
@@ -174,14 +175,23 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     private List<User> filter(List<User> users) {
+        SessionService sessionService = VoxeetSdk.session();
         List<User> filter = new ArrayList<>();
+        int added = 0;
         for (User user : users) {
-            boolean had = isDisplaySelf() || !VoxeetSdk.session().isLocalUser(user);
-            if (had) had = ConferenceUserStatus.ON_AIR.equals(user.getStatus()) || isDisplayNonAir();
-            if(!had) had = user.streams().size() > 0 && ConferenceUserStatus.CONNECTING.equals(user.getStatus());
+            boolean had = isDisplaySelf() || (null != sessionService && !sessionService.isLocalUser(user));
+            if (had) had = isDisplayNonAir(); //if display every users
+            if(!had) {
+                had = user.isLocallyActive();
+                added++;
+            }
 
             if (had) filter.add(user);
+        }
 
+        if(added == 1) {
+            //TODO add configuration for this mode
+            filter = new ArrayList<>();
         }
         return filter;
     }
