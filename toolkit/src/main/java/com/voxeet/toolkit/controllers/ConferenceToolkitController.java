@@ -23,6 +23,7 @@ import com.voxeet.toolkit.providers.logics.DefaultConferenceSubViewProvider;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
+import java.util.Objects;
 
 import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;
@@ -61,7 +62,7 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         Log.d("IncomingBundleChecker", "join: conferenceId := " + conferenceId);
         internalJoin(from_invitation);
 
-        return VoxeetSdk.conference().join(conferenceId);
+        return Objects.requireNonNull(VoxeetSdk.conference()).join(conferenceId);
     }
 
     /**

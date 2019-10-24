@@ -146,17 +146,21 @@ public class IncomingBundleChecker {
                             if (result != null) {
                                 List<ConferenceUser> users = result.getConferenceUsers();
                                 if (users.size() > 0) {
-                                    join.then(new PromiseExec<Boolean, Object>() {
-                                        @Override
-                                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                                            Log.d(TAG, "onCall: Conference Join");
-                                        }
-                                    }).error(new ErrorPromise() {
-                                        @Override
-                                        public void onError(@NonNull Throwable error) {
-                                            error.printStackTrace();
-                                        }
-                                    });
+                                    if(VoxeetToolkit.getInstance() != null &&
+                                            VoxeetToolkit.getInstance().getConferenceToolkit()!=null &&
+                                            VoxeetSdk.conference() != null) {
+                                        join.then(new PromiseExec<Boolean, Object>() {
+                                            @Override
+                                            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                                                Log.d(TAG, "onCall: Conference Join");
+                                            }
+                                        }).error(new ErrorPromise() {
+                                            @Override
+                                            public void onError(@NonNull Throwable error) {
+                                                error.printStackTrace();
+                                            }
+                                        });
+                                    }
                                 } else {
                                     VoxeetSdk.conference()
                                             .leave()
