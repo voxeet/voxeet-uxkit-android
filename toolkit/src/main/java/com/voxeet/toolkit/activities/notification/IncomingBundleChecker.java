@@ -7,9 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.voxeet.push.center.management.Constants;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
-import com.voxeet.sdk.factories.VoxeetIntentFactory;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.toolkit.activities.IVoxeetActivity;
@@ -55,11 +55,11 @@ public class IncomingBundleChecker {
         mFillerListener = filler_listener;
         mIntent = intent;
 
-        mUserName = mIntent.getStringExtra(VoxeetIntentFactory.INVITER_NAME);
-        mExternalUserId = mIntent.getStringExtra(VoxeetIntentFactory.INVITER_EXTERNAL_ID);
-        mUserId = mIntent.getStringExtra(VoxeetIntentFactory.INVITER_ID);
-        mAvatarUrl = mIntent.getStringExtra(VoxeetIntentFactory.INVITER_URL);
-        mConferenceId = mIntent.getStringExtra(VoxeetIntentFactory.CONF_ID);
+        mUserName = mIntent.getStringExtra(Constants.INVITER_NAME);
+        mExternalUserId = mIntent.getStringExtra(Constants.INVITER_EXTERNAL_ID);
+        mUserId = mIntent.getStringExtra(Constants.INVITER_ID);
+        mAvatarUrl = mIntent.getStringExtra(Constants.INVITER_URL);
+        mConferenceId = mIntent.getStringExtra(Constants.CONF_ID);
     }
 
     /**
@@ -150,11 +150,11 @@ public class IncomingBundleChecker {
      * @return true if the intent has notification keys
      */
     final public boolean isBundleValid() {
-        return null != mIntent && mIntent.hasExtra(VoxeetIntentFactory.INVITER_NAME)
-                && mIntent.hasExtra(VoxeetIntentFactory.INVITER_EXTERNAL_ID)
-                && mIntent.hasExtra(VoxeetIntentFactory.INVITER_ID)
-                //&& mIntent.hasExtra(VoxeetIntentFactory.INVITER_URL)
-                && mIntent.hasExtra(VoxeetIntentFactory.CONF_ID);
+        return null != mIntent && mIntent.hasExtra(Constants.INVITER_NAME)
+                && mIntent.hasExtra(Constants.INVITER_EXTERNAL_ID)
+                && mIntent.hasExtra(Constants.INVITER_ID)
+                //&& mIntent.hasExtra(Constants.INVITER_URL)
+                && mIntent.hasExtra(Constants.CONF_ID);
     }
 
     @Nullable
@@ -227,11 +227,11 @@ public class IncomingBundleChecker {
 
         intent.putExtra(BUNDLE_EXTRA_BUNDLE, createExtraBundle());
 
-        intent.putExtra(VoxeetIntentFactory.CONF_ID, getConferenceId())
-                .putExtra(VoxeetIntentFactory.INVITER_NAME, getUserName())
-                .putExtra(VoxeetIntentFactory.INVITER_ID, getExternalUserId())
-                .putExtra(VoxeetIntentFactory.INVITER_EXTERNAL_ID, getExternalUserId())
-                .putExtra(VoxeetIntentFactory.INVITER_URL, getAvatarUrl());
+        intent.putExtra(Constants.CONF_ID, getConferenceId())
+                .putExtra(Constants.INVITER_NAME, getUserName())
+                .putExtra(Constants.INVITER_ID, getExternalUserId())
+                .putExtra(Constants.INVITER_EXTERNAL_ID, getExternalUserId())
+                .putExtra(Constants.INVITER_URL, getAvatarUrl());
 
         //deprecated
         intent.putExtra("join", true);
@@ -249,11 +249,11 @@ public class IncomingBundleChecker {
      * in onResume/onPause lifecycle
      */
     public void flushIntent() {
-        mIntent.removeExtra(VoxeetIntentFactory.INVITER_ID);
-        mIntent.removeExtra(VoxeetIntentFactory.INVITER_EXTERNAL_ID);
-        mIntent.removeExtra(VoxeetIntentFactory.CONF_ID);
-        mIntent.removeExtra(VoxeetIntentFactory.INVITER_URL);
-        mIntent.removeExtra(VoxeetIntentFactory.INVITER_NAME);
+        mIntent.removeExtra(Constants.INVITER_ID);
+        mIntent.removeExtra(Constants.INVITER_EXTERNAL_ID);
+        mIntent.removeExtra(Constants.CONF_ID);
+        mIntent.removeExtra(Constants.INVITER_URL);
+        mIntent.removeExtra(Constants.INVITER_NAME);
     }
 
     @NonNull
