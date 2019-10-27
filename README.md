@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.69.8') {
+  compile ('com.voxeet.sdk:toolkit:2.0.71.4') {
     transitive = true
   }
 }
@@ -47,6 +47,12 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.71.4 :
+ - NotificationCenterFactory is providing support for the new 2 ways to receive notificatins : FullScreen or Overhead notification
+ - add filter capability and setters for the expected mode
+ - fix few possible issues
+ - BREAKING CHANGE : removed VoxeetPreference set/getDefaultActivity in favor of AndroidManifest metadata and NotificationCenterFactory
 
 v2.0.69.8 :
  - use fix with recording status updated event looping
@@ -388,8 +394,8 @@ public class Stats {
 ## Version
 
 
-public-sdk: 2.0.69.8
-toolkit: 2.0.69.8
+public-sdk: 2.0.71.4
+toolkit: 2.0.71.4
 
 ## Tech
 
