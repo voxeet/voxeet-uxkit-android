@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voxeet_incoming_notification_from_user">Invitation from %1$s</string>
+    <string name="voxeet_incoming_notification_accept">Do you accept the invitation ?</string>
+    <string name="voxeet_incoming_notification_button_accept">Accept</string>
+    <string name="voxeet_incoming_notification_button_dismiss">Dismiss</string>
+</resources>

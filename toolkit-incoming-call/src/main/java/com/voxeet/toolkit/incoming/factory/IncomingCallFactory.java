@@ -1,9 +1,7 @@
-package com.voxeet.toolkit.activities.notification;
+package com.voxeet.toolkit.incoming.factory;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
-import com.voxeet.toolkit.activities.IVoxeetActivity;
 
 /**
  * Factory use to store and make the integration of the VoxeetActivities easier

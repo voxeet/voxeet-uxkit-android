@@ -17,11 +17,9 @@ licenseReport {
 repositories {
     google()
     mavenLocal()
-    maven { url "https://dl.bintray.com/voxeet/maven" }
     jcenter()
 }
 
-System.out.println("creating for ${rootProject.ext.voxeetSdkToolkitVersion}")
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -30,7 +28,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName rootProject.ext.voxeetSdkToolkitVersion
+        versionName rootProject.ext.voxeetIncomingCall
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -67,7 +65,7 @@ android {
 }
 
 group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-version = rootProject.ext.voxeetSdkToolkitVersion
+version = rootProject.ext.voxeetIncomingCall
 
 bintray {
     user = project.properties["VOXEET_DEVELOPER_ID"]
@@ -92,13 +90,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
-    compile 'com.squareup.picasso:picasso:2.71828'
     compile("com.voxeet.sdk:public-sdk:${rootProject.ext.voxeetSdkVersion}") {
         transitive = true
     }
-    compile project(":toolkit-incoming-call")
 }
 
 apply from: "../tasks.gradle"

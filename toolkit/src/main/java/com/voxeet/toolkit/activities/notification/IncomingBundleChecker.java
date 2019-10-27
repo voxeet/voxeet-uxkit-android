@@ -12,7 +12,8 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.preferences.VoxeetPreferences;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.utils.AndroidManifest;
-import com.voxeet.toolkit.activities.IVoxeetActivity;
+import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
+import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
 
 import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;

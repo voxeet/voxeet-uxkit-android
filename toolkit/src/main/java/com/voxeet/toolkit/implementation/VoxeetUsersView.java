@@ -16,7 +16,6 @@ import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.core.services.SessionService;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
-import com.voxeet.sdk.models.v1.ConferenceUserStatus;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.toolkit.R;
