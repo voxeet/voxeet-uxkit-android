@@ -187,11 +187,15 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
                     }
 
                     mUsername.setText(mIncomingBundleChecker.getUserName());
-                    Picasso.get()
-                            .load(mIncomingBundleChecker.getAvatarUrl())
-                            .placeholder(R.drawable.default_avatar)
-                            .error(R.drawable.default_avatar)
-                            .into(mAvatar);
+                    try {
+                        Picasso.get()
+                                .load(mIncomingBundleChecker.getAvatarUrl())
+                                .placeholder(R.drawable.default_avatar)
+                                .error(R.drawable.default_avatar)
+                                .into(mAvatar);
+                    } catch (Exception e) {
+
+                    }
                 } else {
                     finish();
                 }
