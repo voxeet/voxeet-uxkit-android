@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.71.4') {
+  compile ('com.voxeet.sdk:toolkit:2.0.72') {
     transitive = true
   }
 }
@@ -47,6 +47,12 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.72 :
+ - make firebase completely optionnal (no more dependency poisoning with the play services)
+ - firebase dependencies update to remove core
+ - few bug fixes
+ - classes removal and path changed (reimport)
 
 v2.0.71.4 :
  - NotificationCenterFactory is providing support for the new 2 ways to receive notificatins : FullScreen or Overhead notification
@@ -220,27 +226,7 @@ And use them in the app using BuildConfig.CONSUMER_KEY and BuildConfig.CONSUMER_
 
 ### Permissions
 
-Add the following permissions to your Android Manifest file:
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <uses-permission android:name="android.permission.WAKE_LOCK" />
-  <uses-permission android:name="android.permission.BLUETOOTH" />
-  <uses-permission android:name="android.permission.RECORD_AUDIO" />
-  <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
-  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.CAMERA" />
-
-  // Used to change audio routes
-  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-</manifest>
-```
+The various permissions required are now embedded into the SDK, no need to modify your permission list.
 
 In order to target Android API level 21 or later, you will need to ensure that your application requests runtime permissions for microphone and camera access. To do this, perform the following step:
 
@@ -284,8 +270,7 @@ This method will then be internally used by the various components of the SDK.
             public void onCall(@NonNull Solver<Boolean> solver) {
                 VoxeetSdk.initialize(SampleApplication.this,
                         BuildConfig.CONSUMER_KEY,
-                        BuildConfig.CONSUMER_SECRET,
-                        _current_user);
+                        BuildConfig.CONSUMER_SECRET);
 
                 solver.resolve(true);
             }
@@ -315,7 +300,6 @@ The value of each of those *<meta-data />* needs to be the fully qualified name 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
         <!-- if a push notification is received from a killed-state app, the accept/declined calls will arrive there -->
-        <!-- Note : any override in the code will replace this metadata -->
         <meta-data
             android:name="voxeet_incoming_class"
             android:value="com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity" />
@@ -394,8 +378,8 @@ public class Stats {
 ## Version
 
 
-public-sdk: 2.0.71.4
-toolkit: 2.0.71.4
+public-sdk: 2.0.72
+toolkit: 2.0.72
 
 ## Tech
 

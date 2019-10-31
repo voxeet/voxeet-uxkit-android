@@ -9,7 +9,6 @@ import com.voxeet.push.center.NotificationCenterFactory;
 import com.voxeet.push.center.management.EnforcedNotificationMode;
 import com.voxeet.push.center.management.NotificationMode;
 import com.voxeet.push.center.management.VersionFilter;
-import com.voxeet.push.firebase.FirebaseController;
 import com.voxeet.push_manifest.BuildConfig;
 import com.voxeet.sdk.core.VoxeetSdk;
 import com.voxeet.sdk.json.UserInfo;
@@ -39,8 +38,6 @@ public class SampleApplication extends MultiDexApplication {
 
         VoxeetToolkit.initialize(this, EventBus.getDefault())
                 .enableOverlay(true);
-
-        FirebaseController.getInstance().enable(true);
 
         //change the overlay used by default
         VoxeetToolkit.instance().getConferenceToolkit().setScreenShareEnabled(true)
@@ -74,7 +71,7 @@ public class SampleApplication extends MultiDexApplication {
     public boolean selectUser(UserInfo user_info) {
         //first case, the user was disconnected
         _current_user = user_info;
-        if (_current_user == null || !sdkInitialized) {
+        if (_current_user == null) {
             logSelectedUser();
         } else {
             //we have an user
