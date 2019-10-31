@@ -14,7 +14,6 @@ import android.util.Log;
 
 import com.voxeet.push.center.invitation.IIncomingInvitationListener;
 import com.voxeet.push.center.invitation.InvitationBundle;
-import com.voxeet.push.firebase.FirebaseController;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
@@ -23,6 +22,11 @@ import com.voxeet.toolkit.incoming.manifest.DismissNotificationBroadcastReceiver
 import java.security.SecureRandom;
 
 public class IncomingNotification implements IIncomingInvitationListener {
+    //extracted from the sdk
+    //TODO set in the push module not the push_manifest one
+    private static final String SDK_CHANNEL_ID = "voxeet_sdk_channel_id";
+    private static final String DEFAULT_ID = "VideoConference";
+
     public final static int INCOMING_NOTIFICATION_REQUEST_CODE = 928;
     private static final String TAG = IncomingNotification.class.getSimpleName();
     public final static String EXTRA_NOTIFICATION_ID = "EXTRA_NOTIFICATION_ID";
@@ -126,5 +130,10 @@ public class IncomingNotification implements IIncomingInvitationListener {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (-1 != notificationId) notificationManager.cancel(notificationId);
         notificationId = 0;
+    }
+
+
+    public static String getChannelId(@NonNull Context context) {
+        return AndroidManifest.readMetadata(context, SDK_CHANNEL_ID, DEFAULT_ID);
     }
 }
