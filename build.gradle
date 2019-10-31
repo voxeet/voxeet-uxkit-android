@@ -19,6 +19,7 @@ ext {
     compileSdkVersion = 28
     targetSdkVersion = 27
     supportLibVersion = "28.0.0"
+    firebaseSdkVersion = "0.0.1"
     pushSdkVersion = "2.0.72"
     voxeetSdkVersion = "2.0.72"
     voxeetSdkToolkitVersion = "2.0.72"

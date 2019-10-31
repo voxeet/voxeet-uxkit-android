@@ -1,0 +1,23 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.voxeet.toolkit.firebase">
+
+    <permission
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
+
+    <application android:supportsRtl="true">
+        <service android:name="com.voxeet.toolkit.firebase.implementation.VoxeetFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <provider
+            android:name="com.voxeet.toolkit.firebase.manifests.FirebasePushEnablerManifestComponent"
+            android:authorities="${applicationId}.manifests.FirebasePushEnablerManifestComponent"
+            android:enabled="true"
+            android:exported="false" />
+    </application>
+
+</manifest>
