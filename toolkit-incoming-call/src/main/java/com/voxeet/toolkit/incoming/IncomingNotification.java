@@ -38,15 +38,24 @@ public class IncomingNotification implements IIncomingInvitationListener {
         random = new SecureRandom();
     }
 
+    public String getIncomingAcceptedClass(@NonNull Context context) {
+        return AndroidManifest.readMetadata(context, "voxeet_incoming_accepted_class", null);
+    }
+
     @Override
     public void onInvitation(@NonNull Context context, @NonNull InvitationBundle invitationBundle) {
         notificationId = random.nextInt(Integer.MAX_VALUE / 2);
+        if(null != invitationBundle.conferenceId) {
+            notificationId = invitationBundle.conferenceId.hashCode();
+        }
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = FirebaseController.getChannelId(context);
+        String channelId = getChannelId(context);
 
         Intent accept = createIntent(context, invitationBundle);
         Intent dismiss = createDismissIntent(context, invitationBundle);
+
+        if(null != accept) accept.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
         dismiss.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
 
         if (null == accept) {
@@ -54,7 +63,7 @@ public class IncomingNotification implements IIncomingInvitationListener {
             return;
         }
 
-        PendingIntent pendingIntentAccepted = PendingIntent.getActivity(context, INCOMING_NOTIFICATION_REQUEST_CODE, accept, 0);
+        PendingIntent pendingIntentAccepted = PendingIntent.getActivity(context, INCOMING_NOTIFICATION_REQUEST_CODE, accept, PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent pendingIntentDismissed = PendingIntent.getBroadcast(context, INCOMING_NOTIFICATION_REQUEST_CODE, dismiss, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String inviterName = !TextUtils.isEmpty(invitationBundle.inviterName) ? invitationBundle.inviterName : "";
@@ -81,7 +90,7 @@ public class IncomingNotification implements IIncomingInvitationListener {
 
         Class<? extends IVoxeetActivity> klass = IncomingCallFactory.getAcceptedIncomingActivityKlass();
         if (null == klass) {
-            String klass_fully_qualified = AndroidManifest.readMetadata(context, "voxeet_incoming_accepted_class", null);
+            String klass_fully_qualified = getIncomingAcceptedClass(context);
             if (null != klass_fully_qualified) {
                 try {
                     klass = (Class<? extends IVoxeetActivity>) Class.forName(klass_fully_qualified);
