@@ -302,7 +302,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         if (isExpanded) {
             if (null != selectedView) selectedView.setVisibility(View.GONE);
             speakerView.setVisibility(View.GONE);
-            participantView.setVisibility(View.GONE);
+            participantView.setVisibility(View.VISIBLE);
             voxeetTimer.setVisibility(View.GONE);
             notchView.setVisibility(View.VISIBLE);
             conferenceName.setVisibility(View.VISIBLE);
