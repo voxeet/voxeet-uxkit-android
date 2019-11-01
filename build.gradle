@@ -24,6 +24,7 @@ ext {
     voxeetSdkVersion = "2.0.72.1"
     voxeetSdkToolkitVersion = "2.0.72.1"
     voxeetIncomingCall = "0.0.4"
+    systemServiceVersion = "0.0.1"
 }
 
 allprojects {

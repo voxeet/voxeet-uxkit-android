@@ -1,7 +1,11 @@
 package com.voxeet.toolkit.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +22,9 @@ import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
+import com.voxeet.toolkit.service.AbstractSDKService;
+import com.voxeet.toolkit.service.SDKBinder;
+import com.voxeet.toolkit.service.SystemServiceFactory;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,13 +49,25 @@ import eu.codlab.simplepromise.solve.Solver;
 @Annotate
 public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxeetActivity {
 
-
     private static final String TAG = VoxeetAppCompatActivity.class.getSimpleName();
     private IncomingBundleChecker mIncomingBundleChecker;
+
+    @Nullable
+    private AbstractSDKService sdkService;
 
     @NoDocumentation
     public VoxeetAppCompatActivity() {
         super();
+    }
+
+
+    @Nullable
+    public AbstractSDKService getSdkService() {
+        return sdkService;
+    }
+
+    public void onSdkServiceAvailable() {
+        //nothing, override to change
     }
 
     @NoDocumentation
@@ -58,12 +77,16 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
 
         //create a check incoming call
         mIncomingBundleChecker = new IncomingBundleChecker(getIntent(), null);
+
+        startService();
     }
 
     @NoDocumentation
     @Override
     protected void onResume() {
         super.onResume();
+
+        startService();
 
         if (null != VoxeetSdk.instance()) {
             VoxeetSdk.instance().register(this);
@@ -217,4 +240,35 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
     protected boolean canBeRegisteredToReceiveCalls() {
         return true;
     }
+
+    private void startService() {
+        try {
+            if (SystemServiceFactory.hasSDKServiceClass()) {
+                Intent intent = new Intent(this, SystemServiceFactory.getSDKServiceClass());
+                startService(intent);
+                bindService(intent, sdkConnection, Context.BIND_AUTO_CREATE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ServiceConnection sdkConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            if (binder instanceof SDKBinder) {
+                try {
+                    sdkService = ((SDKBinder) binder).getService();
+                    if (null != sdkService) {
+                        onSdkServiceAvailable();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            sdkService = null;
+        }
+    };
 }
