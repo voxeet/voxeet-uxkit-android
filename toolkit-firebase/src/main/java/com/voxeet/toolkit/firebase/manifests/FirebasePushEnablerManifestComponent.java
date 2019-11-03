@@ -5,9 +5,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
-import com.voxeet.toolkit.firebase.implementation.FirebaseProvider;
 import com.voxeet.sdk.core.services.notification.NotificationTokenHolderFactory;
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
+import com.voxeet.toolkit.firebase.implementation.FirebaseProvider;
 
 public final class FirebasePushEnablerManifestComponent extends AbstractManifestComponentProvider {
 

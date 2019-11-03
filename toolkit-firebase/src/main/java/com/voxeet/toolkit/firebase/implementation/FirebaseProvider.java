@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.voxeet.push.utils.Annotate;
+import com.voxeet.push.utils.NotificationHelper;
 import com.voxeet.sdk.core.services.notification.INotificationTokenProvider;
 
 /**
@@ -102,69 +103,22 @@ public class FirebaseProvider implements INotificationTokenProvider {
         }
     }
 
+    @Deprecated
     public static String getChannelId(@NonNull Context context) {
-        return readMetadata(context, SDK_CHANNEL_ID, DEFAULT_ID);
+        return NotificationHelper.getChannelId(context);
     }
 
+    @Deprecated
     public static boolean createNotificationChannel(@NonNull Context context) {
-        return createNotificationChannel(context,
-                readMetadata(context, SDK_CHANNEL_ID, DEFAULT_ID),
-                readMetadata(context, SDK_CHANNEL_NAME, DEFAULT_NAME),
-                readMetadata(context, SDK_CHANNEL_DESCRIPTION, DEFAULT_DESCRIPTION),
-                readMetadataInt(context, SDK_CHANNEL_COLOR, DEFAULT_COLOR));
+        return NotificationHelper.createNotificationChannel(context);
     }
 
+    @Deprecated
     public static boolean createNotificationChannel(@NonNull Context context,
                                                     @NonNull String id,
                                                     @NonNull CharSequence name,
                                                     @NonNull String description,
                                                     int argb) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return true;
-        } else {
-            if (ChannelSet) return false;
-            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-
-            NotificationChannel channel = new NotificationChannel(id, name, importance);
-            channel.setDescription(description);
-            channel.enableLights(true);
-            channel.setLightColor(argb);
-
-            channel.enableVibration(true);
-            channel.setVibrationPattern(new long[]{100, 200});
-            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-
-            if (null != mNotificationManager) {
-                mNotificationManager.createNotificationChannel(channel);
-                ChannelSet = true;
-            }
-            return true;
-        }
-    }
-
-    private static int readMetadataInt(@NonNull Context context, @NonNull String key, int argb) {
-        try {
-            String metaData = readMetadata(context, key, null);
-            if (!TextUtils.isEmpty(metaData)) return Integer.parseInt(metaData);
-        } catch (Exception e) {
-
-        }
-        return argb;
-    }
-
-    private static String readMetadata(@NonNull Context context, @NonNull String key, @NonNull String def) {
-        ApplicationInfo appInfo = null;
-        try {
-            appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(),
-                    PackageManager.GET_META_DATA);
-            Bundle bundle = appInfo.metaData;
-            String value = bundle.getString(key);
-            if (!TextUtils.isEmpty(value)) return value;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return def;
+        return NotificationHelper.createNotificationChannel(context, id, name, description, argb);
     }
 }

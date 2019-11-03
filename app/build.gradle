@@ -75,8 +75,6 @@ dependencies {
     //this converter is here to convert "string" only result
     //if a regular json is sent, please use Jackson
     api 'com.squareup.retrofit2:converter-scalars:2.3.0'
-
-    implementation "com.voxeet.sdk:push_manifest:${rootProject.ext.pushSdkVersion}"
 }
 
 //uncomment for firebase tests

@@ -1,0 +1,10 @@
+<resources>
+    <string name="voxeet_foreground_conference_state_creating">"Creation de la conférence"</string>
+    <string name="voxeet_foreground_conference_state_created">"Conférence créée"</string>
+    <string name="voxeet_foreground_conference_state_joining">"Accès à la conférence…"</string>
+    <string name="voxeet_foreground_conference_state_joined">"Conférence rejointe"</string>
+    <string name="voxeet_foreground_conference_state_left">"Conférence quittée"</string>
+    <string name="voxeet_foreground_conference_state_join_error">"Impossible de rejoindre"</string>
+    <string name="voxeet_foreground_conference_state_ended">"Conférence terminée"</string>
+    <string name="voxeet_foreground_content_title">Change me</string>
+</resources>

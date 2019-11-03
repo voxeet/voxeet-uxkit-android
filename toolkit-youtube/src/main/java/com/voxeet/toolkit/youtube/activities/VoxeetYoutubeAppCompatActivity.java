@@ -14,10 +14,10 @@ import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
-import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
-import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
+import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
+import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

@@ -86,6 +86,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
     protected void onResume() {
         super.onResume();
 
+        SystemServiceFactory.setLastAppCompatActivity(this.getClass());
         startService();
 
         if (null != VoxeetSdk.instance()) {

@@ -1,13 +1,20 @@
 package com.voxeet.toolkit.service;
 
-import com.voxeet.sdk.utils.Annotate;
+import android.support.annotation.Nullable;
 
-import javax.annotation.Nullable;
+import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 
 @Annotate
 public class SystemServiceFactory {
 
     private static Class<? extends AbstractSDKService> sdk_service_klass;
+
+    @Nullable
+    private static Class<? extends VoxeetAppCompatActivity> klass;
+
+    @Nullable
+    private static Class<? extends VoxeetAppCompatActivity> forcedKlass;
 
     private SystemServiceFactory() {
 

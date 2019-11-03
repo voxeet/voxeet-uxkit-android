@@ -9,5 +9,5 @@ import com.voxeet.sdk.utils.Annotate;
 public abstract class SDKBinder<CLASS extends AbstractSDKService> extends Binder {
 
     @NonNull
-    abstract CLASS getService();
+    public abstract CLASS getService();
 }
