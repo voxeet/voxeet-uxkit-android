@@ -32,12 +32,12 @@ import javax.annotation.Nullable;
 public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Service {
 
     private static final String TAG = AbstractSDKService.class.getSimpleName();
-    private EventBus eventBus;
+    protected EventBus eventBus;
     private Handler handler;
 
     @StringRes
     private int lastForeground;
-    private ConferenceState currentConferenceState;
+    protected ConferenceState currentConferenceState;
 
     @NonNull
     private ConferenceService conferenceService;
@@ -86,7 +86,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     }
 
     @NonNull
-    private ConferenceState getConferenceStateFromSDK() {
+    protected ConferenceState getConferenceStateFromSDK() {
         if (null != VoxeetSdk.instance()) {
             ConferenceInformation info = conferenceService.getCurrentConferenceInformation();
             if (null != info) {
@@ -172,7 +172,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     @StringRes
     protected abstract int getConferenceStateEnd();
 
-    private void setForegroundState(@StringRes int string) {
+    protected void setForegroundState(@StringRes int string) {
         Class<? extends Activity> activity = getActivityClass();
         if (null != activity) {
             if (lastForeground == string) return;
@@ -206,7 +206,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
 
     protected abstract Class<? extends Activity> getActivityClass();
 
-    private void stopForeground() {
+    protected void stopForeground() {
         lastForeground = -1;
 
         if (eventBus.isRegistered(this)) {
@@ -220,7 +220,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
         //stopSelf();
     }
 
-    private void checkEventBus() {
+    protected void checkEventBus() {
         eventBus = VoxeetSdk.instance().getEventBus();
         if (!eventBus.isRegistered(this)) {
             eventBus.register(this);

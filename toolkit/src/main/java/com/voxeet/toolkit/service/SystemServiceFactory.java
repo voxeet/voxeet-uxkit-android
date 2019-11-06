@@ -32,4 +32,18 @@ public class SystemServiceFactory {
     public static Class<? extends AbstractSDKService> getSDKServiceClass() {
         return sdk_service_klass;
     }
+
+    @Nullable
+    public static Class<? extends VoxeetAppCompatActivity> getAppCompatActivity() {
+        if (null != forcedKlass) return forcedKlass;
+        return klass;
+    }
+
+    public static void setForcedAppCompatActivity(@Nullable Class<? extends VoxeetAppCompatActivity> forcedKlass) {
+        SystemServiceFactory.forcedKlass = forcedKlass;
+    }
+
+    public static void setLastAppCompatActivity(@Nullable Class<? extends VoxeetAppCompatActivity> klass) {
+        SystemServiceFactory.klass = klass;
+    }
 }
