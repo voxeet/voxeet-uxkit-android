@@ -122,12 +122,13 @@ public class IncomingBundleChecker {
                             @Override
                             public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                                 Log.d(TAG, "onCall: previous conference left, joining the new conference");
-                                solver.resolve(join.then(new PromiseExec<Boolean, Object>() {
-                                    @Override
-                                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                                        Log.d(TAG, "onCall: resolved 1");
-                                    }
-                                }));
+
+//                                solver.resolve(join.then(new PromiseExec<Boolean, Object>() {
+//                                    @Override
+//                                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+//                                        Log.d(TAG, "onCall: resolved 1");
+//                                    }
+//                                }));
                             }
                         })
                         .error(new ErrorPromise() {
