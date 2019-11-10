@@ -9,7 +9,7 @@ import com.voxeet.push.center.NotificationCenterFactory;
 import com.voxeet.push.center.management.EnforcedNotificationMode;
 import com.voxeet.push.center.management.NotificationMode;
 import com.voxeet.push.center.management.VersionFilter;
-import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.sample.BuildConfig;
 import com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity;
@@ -118,8 +118,6 @@ public class SampleApplication extends MultiDexApplication {
     }
 
     private void onSdkInitialized() {
-        VoxeetSdk.conference().setTimeOut(ONE_MINUTE);
-
         //it's possible to use the meta-data in the AndroidManifest to directly control the default incoming activity
         NotificationCenterFactory.instance.register(NotificationMode.FULLSCREEN_INCOMING_CALL, new IncomingFullScreen(DefaultIncomingCallActivity.class));
         NotificationCenterFactory.instance.register(NotificationMode.OVERHEAD_INCOMING_CALL, new IncomingNotification());

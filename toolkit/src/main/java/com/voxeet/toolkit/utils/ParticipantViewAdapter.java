@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
-import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.models.v1.ConferenceUserStatus;
 import com.voxeet.sdk.views.VideoView;

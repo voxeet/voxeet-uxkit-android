@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.utils.Annotate;

@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
-import com.voxeet.sdk.core.VoxeetSdk;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.views.VideoView;
@@ -72,7 +72,7 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
 
     private void updateStreams() {
 
-        List<User> users = VoxeetSdk.conference().getConferenceUsers();
+        List<User> users = VoxeetSdk.conference().getUsers();
 
         MediaStream stream = null;
         User attach = null;

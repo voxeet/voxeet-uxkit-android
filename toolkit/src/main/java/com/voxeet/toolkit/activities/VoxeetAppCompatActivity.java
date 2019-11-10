@@ -11,10 +11,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.screenshare.RequestScreenSharePermissionEvent;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
+import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
@@ -110,7 +110,10 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
             VoxeetSdk.screenShare().consumeRightsToScreenShare();
         }
 
-        VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach();
+        if(null != VoxeetToolkit.instance()) {
+            //to prevent uninitialized toolkit but ... it's highly recommended for future releases to always init
+            VoxeetToolkit.instance().getConferenceToolkit().forceReattach();
+        }
     }
 
     @NoDocumentation

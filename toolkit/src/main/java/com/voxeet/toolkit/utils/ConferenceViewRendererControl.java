@@ -8,8 +8,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.media.camera.CameraContext;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.views.VideoView;
@@ -81,7 +80,7 @@ public class ConferenceViewRendererControl {
                                        @NonNull MediaStream stream) {
         VideoView selectedView = getOtherVideoView();
 
-        String ownUserId = VoxeetPreferences.id();
+        String ownUserId = VoxeetSdk.session().getUserId();
         if (null == ownUserId) ownUserId = "";
 
         if (ownUserId.equals(peerId)) {
@@ -114,7 +113,7 @@ public class ConferenceViewRendererControl {
         VideoView selectedView = getOtherVideoView();
         VideoView selfVideoView = getSelfVideoView();
 
-        String ownUserId = VoxeetPreferences.id();
+        String ownUserId = VoxeetSdk.session().getUserId();
         User user = VoxeetSdk.conference().findUserById(ownUserId);
 
         selectedView.unAttach();
@@ -136,7 +135,7 @@ public class ConferenceViewRendererControl {
         CameraContext provider = VoxeetSdk.mediaDevice().getCameraContext();
 
         if (null != stream && stream.videoTracks().size() > 0) {
-            String ownUserId = VoxeetPreferences.id();
+            String ownUserId = VoxeetSdk.session().getUserId();
             if (!ToolkitUtils.hasParticipants()) {
                 selfView.unAttach();
                 selfView.setVisibility(View.GONE);
@@ -156,7 +155,7 @@ public class ConferenceViewRendererControl {
                     getParent().showSpeakerView();
                 }
                 selfView.setMirror(provider.isDefaultFrontFacing());
-                selfView.attach(VoxeetPreferences.id(), stream);
+                selfView.attach(VoxeetSdk.session().getUserId(), stream);
                 selfView.setVisibility(View.VISIBLE);
             }
         }
@@ -164,7 +163,7 @@ public class ConferenceViewRendererControl {
 
     private void setClickForSelectedIfNecessary() {
         VideoView selectedView = getOtherVideoView();
-        String ownUserId = VoxeetPreferences.id();
+        String ownUserId = VoxeetSdk.session().getUserId();
         if (null == ownUserId) ownUserId = "";
 
         if (clickEnabled && ownUserId.equals(selectedView.getPeerId())) {
@@ -184,7 +183,7 @@ public class ConferenceViewRendererControl {
             selfView.setVisibility(View.GONE);
         }
 
-        String ownUserId = VoxeetPreferences.id();
+        String ownUserId = VoxeetSdk.session().getUserId();
         if (selectedView.isAttached() && ownUserId.equals(selectedView.getPeerId())) {
             selectedView.setOnClickListener(null);
             selectedView.setClickable(false);
@@ -195,7 +194,7 @@ public class ConferenceViewRendererControl {
     }
 
     public void switchCamera() {
-        String ownUserId = VoxeetPreferences.id();
+        String ownUserId = VoxeetSdk.session().getUserId();
         if (null == ownUserId) ownUserId = "";
 
         VideoView self = selfVideoView.get();
@@ -244,7 +243,7 @@ public class ConferenceViewRendererControl {
     }
 
     public void updateMirror(boolean isFrontCamera) {
-        String ownUserId = VoxeetPreferences.id();
+        String ownUserId = VoxeetSdk.session().getUserId();
         VideoView selectedView = getOtherVideoView();
         VideoView selfView = getSelfVideoView();
 

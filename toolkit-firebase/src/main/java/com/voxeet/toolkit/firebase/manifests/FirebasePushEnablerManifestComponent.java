@@ -5,8 +5,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
-import com.voxeet.sdk.core.services.notification.NotificationTokenHolderFactory;
+import com.voxeet.push.utils.NotificationHelper;
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
+import com.voxeet.sdk.services.notification.NotificationTokenHolderFactory;
 import com.voxeet.toolkit.firebase.implementation.FirebaseProvider;
 
 public final class FirebasePushEnablerManifestComponent extends AbstractManifestComponentProvider {
@@ -16,7 +17,7 @@ public final class FirebasePushEnablerManifestComponent extends AbstractManifest
         Log.d(getClass().getSimpleName(), "init: enabling Firebase");
         FirebaseProvider provider = new FirebaseProvider();
 
-        FirebaseProvider.createNotificationChannel(context);
+        NotificationHelper.createNotificationChannel(context);
         NotificationTokenHolderFactory.provider = provider;
         provider.enable(true).log(true);
         try {

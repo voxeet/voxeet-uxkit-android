@@ -20,17 +20,18 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.audio.AudioRoute;
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.preferences.VoxeetPreferences;
-import com.voxeet.sdk.core.services.AudioService;
-import com.voxeet.sdk.core.services.conference.information.ConferenceState;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
-import com.voxeet.sdk.events.sdk.DeclineConferenceResultEvent;
+import com.voxeet.sdk.events.v2.UserUpdatedEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.media.audio.SoundManager;
+import com.voxeet.sdk.models.v1.ConferenceUserStatus;
+import com.voxeet.sdk.preferences.VoxeetPreferences;
+import com.voxeet.sdk.services.AudioService;
+import com.voxeet.sdk.services.conference.information.ConferenceState;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.toolkit.R;
@@ -252,8 +253,10 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(DeclineConferenceResultEvent event) {
-        finish();
+    public void onEvent(UserUpdatedEvent event) {
+        if(ConferenceUserStatus.DECLINE.equals(event.user.getStatus())) {
+            finish();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -269,18 +272,18 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     }
 
     protected void onDecline() {
-        tryInitializedSDK().then(new PromiseExec<Boolean, DeclineConferenceResultEvent>() {
+        tryInitializedSDK().then(new PromiseExec<Boolean, Boolean>() {
             @Override
-            public void onCall(@Nullable Boolean result, @NonNull Solver<DeclineConferenceResultEvent> solver) {
+            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
                 if (getConferenceId() != null && null != VoxeetSdk.conference()) {
                     solver.resolve(VoxeetSdk.conference().decline(getConferenceId()));
                 } else {
-                    solver.resolve((DeclineConferenceResultEvent) null);
+                    solver.resolve(false);
                 }
             }
-        }).then(new PromiseExec<DeclineConferenceResultEvent, Object>() {
+        }).then(new PromiseExec<Boolean, Object>() {
             @Override
-            public void onCall(@Nullable DeclineConferenceResultEvent result, @NonNull Solver<Object> solver) {
+            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                 finish();
             }
         }).error(simpleError(true));
@@ -295,9 +298,9 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     }
 
     private void onAcceptWithPermission() {
-        tryInitializedSDK().then(new PromiseExec<Boolean, DeclineConferenceResultEvent>() {
+        tryInitializedSDK().then(new PromiseExec<Boolean, Boolean>() {
             @Override
-            public void onCall(@Nullable Boolean result, @NonNull Solver<DeclineConferenceResultEvent> solver) {
+            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
                 if (mIncomingBundleChecker.isBundleValid()) {
                     Intent intent = mIncomingBundleChecker.createActivityAccepted(DefaultIncomingCallActivity.this);
                     //start the accepted call

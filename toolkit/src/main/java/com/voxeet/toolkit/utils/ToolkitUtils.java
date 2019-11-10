@@ -3,8 +3,7 @@ package com.voxeet.toolkit.utils;
 import android.support.annotation.Nullable;
 
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.models.v1.ConferenceUserStatus;
 
@@ -17,9 +16,9 @@ public class ToolkitUtils {
     }
 
     public static boolean hasParticipants() {
-        String ownUserId = VoxeetPreferences.id();
+        String ownUserId = VoxeetSdk.session().getUserId();
         if (null == ownUserId) ownUserId = "";
-        List<User> users = VoxeetSdk.conference().getConferenceUsers();
+        List<User> users = VoxeetSdk.conference().getUsers();
 
         for (User user : users) {
             if (ConferenceUserStatus.ON_AIR.equals(user.getStatus()) && !ownUserId.equals(user.getId()))

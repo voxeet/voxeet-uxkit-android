@@ -13,13 +13,13 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.voxeet.push.utils.NotificationHelper;
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.ConferenceService;
-import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
-import com.voxeet.sdk.core.services.conference.information.ConferenceState;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
+import com.voxeet.sdk.services.ConferenceService;
+import com.voxeet.sdk.services.conference.information.ConferenceInformation;
+import com.voxeet.sdk.services.conference.information.ConferenceState;
 import com.voxeet.sdk.utils.Annotate;
 
 import org.greenrobot.eventbus.EventBus;

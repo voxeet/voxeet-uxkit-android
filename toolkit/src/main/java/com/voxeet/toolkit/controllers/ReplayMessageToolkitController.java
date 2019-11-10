@@ -6,11 +6,11 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.voxeet.audio.AudioRoute;
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.ConferenceService;
-import com.voxeet.sdk.events.sdk.GetConferenceHistoryResult;
+import com.voxeet.sdk.VoxeetSdk;
+import com.voxeet.sdk.events.sdk.ConferenceHistoryResult;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.models.v1.HistoryConference;
+import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.toolkit.configuration.Configuration;
 import com.voxeet.toolkit.implementation.overlays.OverlayState;
 import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
@@ -84,9 +84,9 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         ConferenceService service = VoxeetSdk.conference();
         VoxeetSdk.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
-                .then(new PromiseExec<GetConferenceHistoryResult, Object>() {
+                .then(new PromiseExec<ConferenceHistoryResult, Object>() {
                     @Override
-                    public void onCall(@Nullable GetConferenceHistoryResult event, @NonNull Solver<Object> solver) {
+                    public void onCall(@Nullable ConferenceHistoryResult event, @NonNull Solver<Object> solver) {
                         //possibility to manage the conference history event right here
                         HistoryConference history_conference = findFirstMatch(event);
 
@@ -165,7 +165,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      * @return a nullable object corresponding to the description
      */
     @Nullable
-    private HistoryConference findFirstMatch(@NonNull GetConferenceHistoryResult event) {
+    private HistoryConference findFirstMatch(@NonNull ConferenceHistoryResult event) {
         for (HistoryConference item : event.items) {
             if (_last_conference.equalsIgnoreCase(item.getConferenceId())
                     && item.getConferenceRecordingDuration() > 0) {

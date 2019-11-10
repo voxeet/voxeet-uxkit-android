@@ -3,9 +3,9 @@ package com.voxeet.toolkit.application;
 import android.app.Application;
 import android.support.annotation.NonNull;
 
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
 

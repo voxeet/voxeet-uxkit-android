@@ -14,15 +14,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.ConferenceService;
-import com.voxeet.sdk.core.services.SessionService;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
-import com.voxeet.sdk.events.sdk.SocketConnectEvent;
 import com.voxeet.sdk.events.sdk.SocketStateChangeEvent;
 import com.voxeet.sdk.json.UserInfo;
 import com.voxeet.sdk.models.v1.CreateConferenceResult;
 import com.voxeet.sdk.sample.R;
+import com.voxeet.sdk.services.ConferenceService;
+import com.voxeet.sdk.services.SessionService;
 import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
 
@@ -187,24 +186,21 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(final SocketConnectEvent event) {
-        Log.d("MainActivity", "SocketConnectEvent" + event.message());
-        joinConf.setEnabled(true);
-        disconnect.setVisibility(View.VISIBLE);
-
-        UserAdapter adapter = (UserAdapter) users.getAdapter();
-        if (null != adapter) adapter.setSelected(_application.getCurrentUser());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(SocketStateChangeEvent event) {
+        UserAdapter adapter = (UserAdapter) users.getAdapter();
         switch (event.state) {
+            case CONNECTED:
+                joinConf.setEnabled(true);
+                disconnect.setVisibility(View.VISIBLE);
+
+                if (null != adapter) adapter.setSelected(_application.getCurrentUser());
+                break;
             case CLOSING:
             case CLOSED:
                 joinConf.setEnabled(false);
                 disconnect.setVisibility(View.GONE);
-                UserAdapter adapter = (UserAdapter) users.getAdapter();
                 if (null != adapter) adapter.reset();
+            default:
         }
     }
 
@@ -212,7 +208,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     protected void onConferenceState(@NonNull ConferenceStateEvent event) {
         super.onConferenceState(event);
 
-        switch(event.state) {
+        switch (event.state) {
             case JOINED:
                 onConferenceJoinedSuccessEvent();
         }

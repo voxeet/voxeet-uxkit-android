@@ -21,17 +21,19 @@ import android.widget.ImageView;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.audio.AudioRoute;
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.services.AudioService;
-import com.voxeet.sdk.core.services.ConferenceService;
-import com.voxeet.sdk.core.services.conference.information.ConferenceInformation;
-import com.voxeet.sdk.core.services.conference.information.ConferenceUserType;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
+import com.voxeet.sdk.events.v2.VideoStateEvent;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.User;
+import com.voxeet.sdk.services.AudioService;
+import com.voxeet.sdk.services.ConferenceService;
+import com.voxeet.sdk.services.conference.information.ConferenceInformation;
+import com.voxeet.sdk.services.conference.information.ConferenceUserType;
+import com.voxeet.sdk.services.media.VideoState;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.NoDocumentation;
@@ -44,6 +46,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import eu.codlab.simplepromise.Promise;
 import eu.codlab.simplepromise.solve.ErrorPromise;
 import eu.codlab.simplepromise.solve.PromiseExec;
 import eu.codlab.simplepromise.solve.Solver;
@@ -210,7 +213,7 @@ public class VoxeetActionBarView extends VoxeetView {
             ConferenceService service = VoxeetSdk.conference();
             ConferenceInformation information = service.getCurrentConferenceInformation();
 
-            if (null != information && information.isOwnVideoStarted() && !service.isVideoOn()) {
+            if (null != information && information.isOwnVideoStarted() && !VideoState.STARTED.equals(information.getVideoState())) {
                 service.startVideo().then(new PromiseExec<Boolean, Object>() {
                     @Override
                     public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
@@ -224,6 +227,8 @@ public class VoxeetActionBarView extends VoxeetView {
                     }
                 });
             }
+
+            updateCameraState();
         }
     }
 
@@ -239,10 +244,13 @@ public class VoxeetActionBarView extends VoxeetView {
         }
 
         updateSpeakerButton();
+        ConferenceService service = VoxeetSdk.conference();
+        ConferenceInformation information = service.getCurrentConferenceInformation();
 
-        if (null != screenshare) {
-            screenshare.setSelected(VoxeetSdk.conference().isScreenShareOn());
+        if (null != screenshare && null != information) {
+            screenshare.setSelected(information.isScreenShareOn());
         }
+        updateCameraState();
     }
 
     /**
@@ -421,6 +429,8 @@ public class VoxeetActionBarView extends VoxeetView {
             microphone.setSelected(true);
             VoxeetSdk.conference().mute(true);
         }
+
+        updateCameraState();
     }
 
     private void on3DView() {
@@ -445,8 +455,63 @@ public class VoxeetActionBarView extends VoxeetView {
      * Activate or deactivate the local camera
      */
     protected void toggleCamera() {
-        if (checkCameraPermission()) {
-            VoxeetSdk.conference().toggleVideo();
+        ConferenceService conferenceService = VoxeetSdk.conference();
+        if (checkCameraPermission() && null != conferenceService) {
+            Promise<Boolean> video = null;
+
+            ConferenceInformation information = conferenceService.getCurrentConferenceInformation();
+            if (null != information) {
+                switch (information.getVideoState()) {
+                    case STARTED:
+                        video = conferenceService.stopVideo();
+                        break;
+                    case STOPPED:
+                        video = conferenceService.startVideo();
+                        break;
+                    default:
+                }
+            }
+
+            if (null != video) {
+                camera.setEnabled(false);
+                video.then(new PromiseExec<Boolean, Object>() {
+                    @Override
+                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                        camera.setEnabled(true);
+                        updateCameraState();
+                    }
+                }).error(new ErrorPromise() {
+                    @Override
+                    public void onError(@NonNull Throwable error) {
+                        camera.setEnabled(true);
+                        updateCameraState();
+                    }
+                });
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(VideoStateEvent event) {
+        updateCameraState(event.videoState);
+    }
+
+    private void updateCameraState() {
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
+        if (null != information) updateCameraState(information.getVideoState());
+    }
+
+    private void updateCameraState(@NonNull VideoState videoState) {
+        if(null == camera) return;
+
+        switch (videoState) {
+            case STARTED:
+            case STOPPED:
+                camera.setEnabled(true);
+                break;
+            case STOPPING:
+            case STARTING:
+                camera.setEnabled(false);
         }
     }
 

@@ -8,9 +8,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.voxeet.push.center.management.Constants;
-import com.voxeet.sdk.core.VoxeetSdk;
-import com.voxeet.sdk.core.preferences.VoxeetPreferences;
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
