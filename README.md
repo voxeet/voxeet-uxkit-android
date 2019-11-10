@@ -28,6 +28,17 @@ dependencies {
 
 The current logic-only (no UI) sdk is available as well: [public-sdk](https://github.com/voxeet/android-sdk)
 
+## Future Migration upcoming changes
+
+ - User accross the SDK will be replaced to Participant
+ - ConferenceService's creation/join methods will be updated with new method signature
+
+## Migrating from 2.0.X (<.73) to 2.0.73+
+
+ - reimport every Voxeet's classes (com.voxeet.sdk.core.X changed to com.voxeet.sdk.X)
+ - ConferenceService's call promises no longer return XYZEvent but only XYZ classes
+ - getConferenceUsers() are now getUsers()
+
 ## Migrating from 1.X to 2.X
 
  - Classes only moved
@@ -47,6 +58,12 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+
+v2.0.73 :
+ - moved classes to proper packages
+ - fixed various issues with videos and other states
+ - added a new VideoStateEvent corresponding to status event for the startVideo/stopVideo
+ - decline related event is now fired through UserUpdatedEvent with the according declining status
 
 v2.0.72 :
  - make firebase completely optionnal (no more dependency poisoning with the play services)
