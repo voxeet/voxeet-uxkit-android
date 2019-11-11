@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.72') {
+  compile ('com.voxeet.sdk:toolkit:2.0.73') {
     transitive = true
   }
 }
@@ -395,8 +395,8 @@ public class Stats {
 ## Version
 
 
-public-sdk: 2.0.72
-toolkit: 2.0.72
+public-sdk: 2.0.73
+toolkit: 2.0.73
 
 ## Tech
 
