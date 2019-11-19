@@ -211,7 +211,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
         if (null != VoxeetSdk.conference()) {
             ConferenceService service = VoxeetSdk.conference();
-            ConferenceInformation information = service.getCurrentConferenceInformation();
+            ConferenceInformation information = service.getCurrentConference();
 
             if (null != information && information.isOwnVideoStarted() && !VideoState.STARTED.equals(information.getVideoState())) {
                 service.startVideo().then(new PromiseExec<Boolean, Object>() {
@@ -245,7 +245,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
         updateSpeakerButton();
         ConferenceService service = VoxeetSdk.conference();
-        ConferenceInformation information = service.getCurrentConferenceInformation();
+        ConferenceInformation information = service.getCurrentConference();
 
         if (null != screenshare && null != information) {
             screenshare.setSelected(information.isScreenShareOn());
@@ -459,7 +459,7 @@ public class VoxeetActionBarView extends VoxeetView {
         if (checkCameraPermission() && null != conferenceService) {
             Promise<Boolean> video = null;
 
-            ConferenceInformation information = conferenceService.getCurrentConferenceInformation();
+            ConferenceInformation information = conferenceService.getCurrentConference();
             if (null != information) {
                 switch (information.getVideoState()) {
                     case STARTED:
@@ -497,7 +497,7 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     private void updateCameraState() {
-        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConference();
         if (null != information) updateCameraState(information.getVideoState());
     }
 
@@ -744,7 +744,7 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     private boolean isListener() {
-        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConference();
         return null == information || ConferenceUserType.LISTENER.equals(information.getConferenceUserType());
     }
 

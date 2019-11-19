@@ -84,7 +84,7 @@ public class VoxeetSpeakerView extends VoxeetView {
         @Override
         public void run() {
             if (currentSpeaker != null && null != VoxeetSdk.conference()) {
-                double value = VoxeetSdk.conference().getPeerVuMeter(currentSpeaker.getId());
+                double value = VoxeetSdk.conference().getLevel(currentSpeaker);
                 vuMeter.updateMeter(value);
             }
 

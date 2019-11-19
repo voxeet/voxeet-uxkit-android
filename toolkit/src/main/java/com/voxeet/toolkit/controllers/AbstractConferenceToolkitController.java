@@ -26,7 +26,7 @@ import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.InvitationReceivedEvent;
-import com.voxeet.sdk.json.RecordingStatusUpdateEvent;
+import com.voxeet.sdk.json.RecordingStatusUpdatedEvent;
 import com.voxeet.sdk.json.UserInvited;
 import com.voxeet.sdk.models.User;
 import com.voxeet.sdk.models.v1.ConferenceUserStatus;
@@ -625,7 +625,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     private void onConferenceJoiningEvent(ConferenceStateEvent event) {
-        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConference();
 
         if (null != information && ConferenceUserType.NORMAL.equals(information.getConferenceUserType())) {
             VoxeetSdk.audio().playSoundType(AudioType.RING);
@@ -689,7 +689,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     private void onConferenceCreatedEvent(ConferenceStateEvent event) {
-        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConference();
 
         if (null != information && ConferenceUserType.NORMAL.equals(information.getConferenceUserType())) {
             VoxeetSdk.audio().playSoundType(AudioType.RING);
@@ -869,7 +869,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * @param event the event
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(@NonNull RecordingStatusUpdateEvent event) {
+    public void onEvent(@NonNull RecordingStatusUpdatedEvent event) {
         if (null != mMainView) {
             mMainView.onRecordingStatusUpdated(RecordingStatus.RECORDING.name().equalsIgnoreCase(event.recordingStatus));
         }
@@ -883,7 +883,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceUpdated event) {
         if (null != mMainView) {
-            ConferenceInformation currentConference = VoxeetSdk.conference().getCurrentConferenceInformation();
+            ConferenceInformation currentConference = VoxeetSdk.conference().getCurrentConference();
             if (null != currentConference) {
                 mMainView.onConferenceUpdated(currentConference.getConference().getUsers());
             }

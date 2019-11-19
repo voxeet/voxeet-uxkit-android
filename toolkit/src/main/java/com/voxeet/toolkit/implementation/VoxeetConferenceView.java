@@ -202,7 +202,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     private void updateUi() {
-        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConference();
 
         if (null != information) {
             //check for the conference state
@@ -512,7 +512,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         conferenceActionBarView.invalidateOwnStreams();
 
-        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConference();
 
         boolean enableInConfiguration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
         if (enableInConfiguration && null != information && !information.isListener()) {
@@ -797,7 +797,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         mState = ConferenceState.DEFAULT;
         boolean isInConference = service.isInConference();
         if (isInConference && null != service.getConferenceId()) {
-            ConferenceInformation information = service.getCurrentConferenceInformation();
+            ConferenceInformation information = service.getCurrentConference();
             if (information != null) {
                 mState = information.getConferenceState();
             } else {
@@ -825,7 +825,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         String conferenceId = null;
         ConferenceService service = VoxeetSdk.conference();
         if (service.isInConference() && null != service.getConferenceId()) {
-            ConferenceInformation information = service.getCurrentConferenceInformation();
+            ConferenceInformation information = service.getCurrentConference();
             if (information != null) {
                 conferenceId = information.getConference().getId();
             }
@@ -836,7 +836,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             conferenceId = "";
             state = ConferenceState.LEFT;
         }
-        ConferenceInformation conferenceInformation = service.getCurrentConferenceInformation();
+        ConferenceInformation conferenceInformation = service.getCurrentConference();
 
         boolean enableInConfiguration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
         conferenceActionBarView.setDisplayScreenShare(enableInConfiguration && VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled());
@@ -921,7 +921,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     private void updateConferenceBarViewVisibility() {
-        ConferenceInformation information = VoxeetSdk.conference().getCurrentConferenceInformation();
+        ConferenceInformation information = VoxeetSdk.conference().getCurrentConference();
 
         boolean hide = null == information || ConferenceUserType.LISTENER.equals(information.getConferenceUserType());
 

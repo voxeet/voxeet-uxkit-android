@@ -88,7 +88,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     @NonNull
     protected ConferenceState getConferenceStateFromSDK() {
         if (null != VoxeetSdk.instance()) {
-            ConferenceInformation info = conferenceService.getCurrentConferenceInformation();
+            ConferenceInformation info = conferenceService.getCurrentConference();
             if (null != info) {
                 return info.getConferenceState();
             }
