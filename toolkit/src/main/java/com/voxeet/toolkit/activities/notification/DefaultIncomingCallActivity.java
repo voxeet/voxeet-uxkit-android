@@ -81,8 +81,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
         //add few Flags to start the activity before its setContentView
         //note that if your device is using a keyguard (code or password)
         //when the call will be accepted, you still need to unlock it
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
