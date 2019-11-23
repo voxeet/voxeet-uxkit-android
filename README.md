@@ -20,7 +20,7 @@ To install the SDK directly into your Android project using the Grade build syst
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:toolkit:2.0.73') {
+  compile ('com.voxeet.sdk:toolkit:2.0.73.9') {
     transitive = true
   }
 }
@@ -32,6 +32,12 @@ The current logic-only (no UI) sdk is available as well: [public-sdk](https://gi
 
  - User accross the SDK will be replaced to Participant
  - ConferenceService's creation/join methods will be updated with new method signature
+
+## Migrating from 2.0.73.9- to 2.0.39.9
+
+ - join/listen/broadcast methods are now Promise<Conference> instead of Promise<Boolean>
+ - create methods are now Promise<CreateConferenceResult>
+ - join/listen/broadcast/create methods can reject with a ServerErrorException which gets various Voxeet's related server side response information
 
 ## Migrating from 2.0.X (<.73) to 2.0.73+
 
@@ -58,6 +64,9 @@ SDK.method.call()
 A complete documentation about the Promise implementation is available on this [Github](https://github.com/codlab/android_promise)
 
 ### What's New ?
+v2.0.73.9 :
+ - the various create and join methods are now resolving a new signature. Apps must be changed accordingly
+ - prevent dismiss keyguard on incoming call
 
 v2.0.73 :
  - moved classes to proper packages

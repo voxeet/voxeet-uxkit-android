@@ -9,6 +9,7 @@ import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceHistoryResult;
 import com.voxeet.sdk.json.ConferenceEnded;
+import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.v1.HistoryConference;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.toolkit.configuration.Configuration;
@@ -72,8 +73,8 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      * @param conferenceId the conference id to replay
      * @param offset       the offset in seconds from the start
      */
-    public final Promise<Boolean> replay(@NonNull String conferenceId, long offset) {
-        VoxeetToolkit.getInstance().enable(this);
+    public final Promise<Conference> replay(@NonNull String conferenceId, long offset) {
+        VoxeetToolkit.instance().enable(this);
 
         _wait_for_history = true;
         _last_conference = conferenceId;

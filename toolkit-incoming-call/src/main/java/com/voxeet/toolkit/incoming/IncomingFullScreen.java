@@ -67,8 +67,6 @@ public class IncomingFullScreen implements IIncomingInvitationListener {
         intent.addFlags(Intent.FLAG_FROM_BACKGROUND);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-
-        //TODO check usefullness
         intent.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON

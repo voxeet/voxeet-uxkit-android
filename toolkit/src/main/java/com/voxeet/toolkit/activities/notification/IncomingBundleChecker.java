@@ -10,6 +10,7 @@ import android.util.Log;
 import com.voxeet.push.center.management.Constants;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
@@ -77,7 +78,7 @@ public class IncomingBundleChecker {
 
             Log.d(TAG, "onAccept: mConferenceId := " + mConferenceId);
             //join the conference
-            Promise<Boolean> join = VoxeetSdk.conference().join(mConferenceId);
+            Promise<Conference> join = VoxeetSdk.conference().join(mConferenceId);
             //only when error() is called
 
             Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSdk.session().isSocketOpen());
@@ -86,16 +87,16 @@ public class IncomingBundleChecker {
 
                 if (null != userInfo) {
                     VoxeetSdk.session().open(userInfo)
-                            .then(new PromiseExec<Boolean, Boolean>() {
+                            .then(new PromiseExec<Boolean, Conference>() {
                                 @Override
-                                public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
+                                public void onCall(@Nullable Boolean result, @NonNull Solver<Conference> solver) {
                                     Log.d(TAG, "onCall: log user info := " + result);
                                     solver.resolve(join);
                                 }
                             })
-                            .then(new PromiseExec<Boolean, Object>() {
+                            .then(new PromiseExec<Conference, Object>() {
                                 @Override
-                                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                                public void onCall(@Nullable Conference result, @NonNull Solver<Object> solver) {
                                     Log.d(TAG, "onCall: join conference := " + result);
                                 }
                             })
@@ -115,9 +116,9 @@ public class IncomingBundleChecker {
                             @Override
                             public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
                                 Log.d(TAG, "onCall: previous conference left, joining the new conference");
-                                solver.resolve(join.then(new PromiseExec<Boolean, Object>() {
+                                solver.resolve(join.then(new PromiseExec<Conference, Object>() {
                                     @Override
-                                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                                    public void onCall(@Nullable Conference result, @NonNull Solver<Object> solver) {
                                         Log.d(TAG, "onCall: resolved 1");
                                     }
                                 }));
