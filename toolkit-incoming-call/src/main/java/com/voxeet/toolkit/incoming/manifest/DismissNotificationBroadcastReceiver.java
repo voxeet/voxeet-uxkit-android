@@ -9,17 +9,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.voxeet.promise.Promise;
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.PromiseExec;
+import com.voxeet.promise.solve.PromiseSolver;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.push.center.NotificationCenterFactory;
 import com.voxeet.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
-
-import eu.codlab.simplepromise.Promise;
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.PromiseSolver;
-import eu.codlab.simplepromise.solve.Solver;
 
 public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = DismissNotificationBroadcastReceiver.class.getSimpleName();

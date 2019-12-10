@@ -7,9 +7,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.PromiseExec;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
-import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
+import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
@@ -22,10 +25,6 @@ import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.Solver;
 
 /**
  * VoxeetYoutubeAppCompatActivity manages the call state
@@ -183,13 +182,13 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferenceStateEvent event) {
+    public final void onEvent(ConferenceStatusUpdatedEvent event) {
         mIncomingBundleChecker.flushIntent();
         onConferenceState(event);
     }
 
     @NoDocumentation
-    protected void onConferenceState(@NonNull ConferenceStateEvent event) {
+    protected void onConferenceState(@NonNull ConferenceStatusUpdatedEvent event) {
 
     }
 

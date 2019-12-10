@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.models.Conference;
-import com.voxeet.sdk.models.User;
+import com.voxeet.sdk.models.Participant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +79,7 @@ public abstract class VoxeetView extends FrameLayout
      *
      * @param conference_users the conference id
      */
-    public void onConferenceUpdated(@NonNull List<User> conference_users) {
+    public void onConferenceUpdated(@NonNull List<Participant> conference_users) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUpdated(conference_users);
         }
@@ -131,14 +131,14 @@ public abstract class VoxeetView extends FrameLayout
 
 
     @Override
-    public void onUserAddedEvent(@NonNull Conference conference, @NonNull User user) {
+    public void onUserAddedEvent(@NonNull Conference conference, @NonNull Participant user) {
         for (VoxeetView child : mListeners) {
             child.onUserAddedEvent(conference, user);
         }
     }
 
     @Override
-    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user) {
+    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull Participant user) {
         for (VoxeetView child : mListeners) {
             child.onUserUpdatedEvent(conference, user);
         }
@@ -146,21 +146,21 @@ public abstract class VoxeetView extends FrameLayout
 
 
     @Override
-    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         for (VoxeetView child : mListeners) {
             child.onStreamAddedEvent(conference, user, mediaStream);
         }
     }
 
     @Override
-    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         for (VoxeetView child : mListeners) {
             child.onStreamUpdatedEvent(conference, user, mediaStream);
         }
     }
 
     @Override
-    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         for (VoxeetView child : mListeners) {
             child.onStreamRemovedEvent(conference, user, mediaStream);
         }
@@ -193,7 +193,7 @@ public abstract class VoxeetView extends FrameLayout
      * @param conference_users the new list of users
      */
     @Override
-    public void onConferenceUsersListUpdate(List<User> conference_users) {
+    public void onConferenceUsersListUpdate(List<Participant> conference_users) {
         for (VoxeetView child : mListeners) {
             child.onConferenceUsersListUpdate(conference_users);
         }

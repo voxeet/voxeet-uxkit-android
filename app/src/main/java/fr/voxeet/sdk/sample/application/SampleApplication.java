@@ -5,12 +5,15 @@ import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.PromiseExec;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.push.center.NotificationCenterFactory;
 import com.voxeet.push.center.management.EnforcedNotificationMode;
 import com.voxeet.push.center.management.NotificationMode;
 import com.voxeet.push.center.management.VersionFilter;
 import com.voxeet.sdk.VoxeetSdk;
-import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.sample.BuildConfig;
 import com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity;
 import com.voxeet.toolkit.controllers.ConferenceToolkitController;
@@ -21,16 +24,12 @@ import com.voxeet.toolkit.incoming.IncomingNotification;
 
 import org.greenrobot.eventbus.EventBus;
 
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.Solver;
-
 public class SampleApplication extends MultiDexApplication {
     private static final int ONE_MINUTE = 60 * 1000;
 
     private static final String TAG = SampleApplication.class.getSimpleName();
 
-    private UserInfo _current_user;
+    private ParticipantInfo _current_user;
 
     @Override
     public void onCreate() {
@@ -68,7 +67,7 @@ public class SampleApplication extends MultiDexApplication {
      * @param user_info The user info selected in our UI
      * @return true if it was the first log
      */
-    public boolean selectUser(UserInfo user_info) {
+    public boolean selectUser(ParticipantInfo user_info) {
         //first case, the user was disconnected
         _current_user = user_info;
         if (_current_user == null) {
@@ -113,7 +112,7 @@ public class SampleApplication extends MultiDexApplication {
                 });
     }
 
-    public UserInfo getCurrentUser() {
+    public ParticipantInfo getCurrentUser() {
         return _current_user;
     }
 

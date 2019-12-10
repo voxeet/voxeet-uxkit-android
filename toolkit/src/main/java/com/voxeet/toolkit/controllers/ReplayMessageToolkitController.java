@@ -6,6 +6,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.voxeet.audio.AudioRoute;
+import com.voxeet.promise.Promise;
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.PromiseExec;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceHistoryResult;
 import com.voxeet.sdk.json.ConferenceEnded;
@@ -21,11 +25,6 @@ import com.voxeet.toolkit.providers.logics.DefaultReplayMessageSubViewProvider;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import eu.codlab.simplepromise.Promise;
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.Solver;
 
 /**
  * Created by kevinleperf on 15/01/2018.

@@ -14,7 +14,7 @@ import android.view.View;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.models.Conference;
-import com.voxeet.sdk.models.User;
+import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.services.SessionService;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
@@ -146,10 +146,10 @@ public class VoxeetUsersView extends VoxeetView {
      * @param user       the user
      */
     @Override
-    public void onUserAddedEvent(@NonNull Conference conference, @NonNull User user) {
+    public void onUserAddedEvent(@NonNull Conference conference, @NonNull Participant user) {
         super.onUserAddedEvent(conference, user);
 
-        adapter.setUsers(filter(conference.getUsers()));
+        adapter.setUsers(filter(conference.getParticipants()));
         adapter.updateUsers();
     }
 
@@ -160,25 +160,25 @@ public class VoxeetUsersView extends VoxeetView {
      * @param user       the user
      */
     @Override
-    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user) {
+    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull Participant user) {
         super.onUserUpdatedEvent(conference, user);
 
         postOnUi(new Runnable() {
             @Override
             public void run() {
-                adapter.setUsers(filter(conference.getUsers()));
+                adapter.setUsers(filter(conference.getParticipants()));
                 adapter.updateUsers();
                 recyclerView.setLayoutManager(horizontalLayout);
             }
         });
     }
 
-    private List<User> filter(List<User> users) {
+    private List<Participant> filter(List<Participant> users) {
         SessionService sessionService = VoxeetSdk.session();
-        List<User> filter = new ArrayList<>();
+        List<Participant> filter = new ArrayList<>();
         int added = 0;
-        for (User user : users) {
-            boolean had = isDisplaySelf() || (null != sessionService && !sessionService.isLocalUser(user));
+        for (Participant user : users) {
+            boolean had = isDisplaySelf() || (null != sessionService && !sessionService.isLocalParticipant(user));
             if (had) had = isDisplayNonAir(); //if display every users
             if(!had) {
                 had = user.isLocallyActive();
@@ -203,7 +203,7 @@ public class VoxeetUsersView extends VoxeetView {
      * @param mediaStream the corresponding stream that fired the event
      */
     @Override
-    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamAddedEvent(conference, user, mediaStream);
         postOnUi(new Runnable() {
             @Override
@@ -223,7 +223,7 @@ public class VoxeetUsersView extends VoxeetView {
      * @param mediaStream the corresponding stream that fired the event
      */
     @Override
-    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamUpdatedEvent(conference, user, mediaStream);
         postOnUi(new Runnable() {
             @Override
@@ -243,7 +243,7 @@ public class VoxeetUsersView extends VoxeetView {
      * @param mediaStream the corresponding stream that fired the event
      */
     @Override
-    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamRemovedEvent(conference, user, mediaStream);
         postOnUi(new Runnable() {
             @Override

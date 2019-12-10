@@ -14,10 +14,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.voxeet.promise.PromiseInOut;
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.PromiseExec;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.VoxeetSdk;
-import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
+import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.SocketStateChangeEvent;
-import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.models.v1.CreateConferenceResult;
 import com.voxeet.sdk.sample.R;
 import com.voxeet.sdk.services.ConferenceService;
@@ -34,10 +38,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import eu.codlab.simplepromise.PromiseInOut;
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.Solver;
 import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.main_screen.UserAdapter;
 import fr.voxeet.sdk.sample.main_screen.UserItem;
@@ -205,7 +205,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     }
 
     @Override
-    protected void onConferenceState(@NonNull ConferenceStateEvent event) {
+    protected void onConferenceState(@NonNull ConferenceStatusUpdatedEvent event) {
         super.onConferenceState(event);
 
         switch (event.state) {
@@ -222,7 +222,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
             return;
         }
 
-        List<UserInfo> users = UsersHelper.getExternalIds(userService.getUserId());
+        List<ParticipantInfo> users = UsersHelper.getExternalIds(userService.getParticipantId());
 
         conferenceService.invite(conferenceService.getConferenceId(), users)
                 .then(defaultConsume())

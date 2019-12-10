@@ -20,18 +20,23 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.audio.AudioRoute;
+import com.voxeet.promise.Promise;
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.PromiseExec;
+import com.voxeet.promise.solve.PromiseSolver;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.VoxeetSdk;
-import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
-import com.voxeet.sdk.events.v2.UserUpdatedEvent;
+import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
+import com.voxeet.sdk.events.v2.ParticipantUpdatedEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
-import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.media.audio.SoundManager;
-import com.voxeet.sdk.models.v1.ConferenceUserStatus;
+import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.services.AudioService;
-import com.voxeet.sdk.services.conference.information.ConferenceState;
+import com.voxeet.sdk.services.conference.information.ConferenceStatus;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.toolkit.R;
@@ -42,12 +47,6 @@ import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import eu.codlab.simplepromise.Promise;
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.PromiseSolver;
-import eu.codlab.simplepromise.solve.Solver;
 
 public class DefaultIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
 
@@ -128,7 +127,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
 
                 if (!VoxeetSdk.session().isSocketOpen()) {
                     Log.d(TAG, "onCall: try to log user");
-                    UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
+                    ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                     if (null != userInfo) {
                         solver.resolve(VoxeetSdk.session().open(userInfo));
@@ -252,15 +251,15 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(UserUpdatedEvent event) {
-        if(ConferenceUserStatus.DECLINE.equals(event.user.getStatus())) {
+    public void onEvent(ParticipantUpdatedEvent event) {
+        if(ConferenceParticipantStatus.DECLINE.equals(event.participant.getStatus())) {
             finish();
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(ConferenceStateEvent event) {
-        if (ConferenceState.JOINING.equals(event.state) && mIncomingBundleChecker.isSameConference(event.conference.getId())) {
+    public void onEvent(ConferenceStatusUpdatedEvent event) {
+        if (ConferenceStatus.JOINING.equals(event.state) && mIncomingBundleChecker.isSameConference(event.conference.getId())) {
             finish();
         }
     }

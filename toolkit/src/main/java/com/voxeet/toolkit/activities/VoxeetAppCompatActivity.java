@@ -11,9 +11,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.PromiseExec;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
-import com.voxeet.sdk.events.sdk.ConferenceStateEvent;
+import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
@@ -29,10 +32,6 @@ import com.voxeet.toolkit.service.SystemServiceFactory;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.Solver;
 
 /**
  * VoxeetAppCompatActivity manages the call state
@@ -209,12 +208,12 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferenceStateEvent event) {
+    public final void onEvent(ConferenceStatusUpdatedEvent event) {
         mIncomingBundleChecker.flushIntent();
         onConferenceState(event);
     }
 
-    protected void onConferenceState(@NonNull ConferenceStateEvent event) {
+    protected void onConferenceState(@NonNull ConferenceStatusUpdatedEvent event) {
 
     }
 

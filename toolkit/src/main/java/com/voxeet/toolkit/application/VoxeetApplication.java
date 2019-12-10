@@ -3,16 +3,14 @@ package com.voxeet.toolkit.application;
 import android.app.Application;
 import android.support.annotation.NonNull;
 
+import com.voxeet.promise.Promise;
+import com.voxeet.promise.solve.PromiseSolver;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.VoxeetSdk;
-import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
-
-import eu.codlab.simplepromise.Promise;
-import eu.codlab.simplepromise.solve.PromiseSolver;
-import eu.codlab.simplepromise.solve.Solver;
-
 
 /**
  * This class guide the users to implement the SDK following the standard features
@@ -79,7 +77,7 @@ public abstract class VoxeetApplication extends Application {
      * @return the existence of an user that has been logged in but not logged out in the past
      */
     public boolean hasDefaultUser() {
-        UserInfo savedUserInfo = VoxeetPreferences.getSavedUserInfo();
+        ParticipantInfo savedUserInfo = VoxeetPreferences.getSavedUserInfo();
         return null != savedUserInfo;
     }
 
@@ -96,7 +94,7 @@ public abstract class VoxeetApplication extends Application {
     public Promise<Boolean> logSavedUser() {
         //TODO as said right above, for now, the implementation does not check for multiple calls
         //TODO append the current 'solver' in a list and call logUserWithChain if no solver existed
-        UserInfo userInfos = VoxeetPreferences.getSavedUserInfo();
+        ParticipantInfo userInfos = VoxeetPreferences.getSavedUserInfo();
         if (null != userInfos)
             return VoxeetSdk.session().open(userInfos);
         return new Promise<>(new PromiseSolver<Boolean>() {

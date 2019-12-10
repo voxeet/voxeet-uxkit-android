@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.sample.R;
 
 import butterknife.Bind;
@@ -18,7 +18,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     private UserClickListener _listener;
 
-    public void setSelected(UserInfo currentUser) {
+    public void setSelected(ParticipantInfo currentUser) {
         for (UserItem user_item : _user_items) {
             user_item.setSelected(user_item.getUserInfo().equals(currentUser));
         }

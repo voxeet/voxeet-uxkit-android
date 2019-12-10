@@ -4,8 +4,8 @@ import android.support.annotation.Nullable;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.VoxeetSdk;
-import com.voxeet.sdk.models.User;
-import com.voxeet.sdk.models.v1.ConferenceUserStatus;
+import com.voxeet.sdk.models.Participant;
+import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 
 import java.util.List;
 
@@ -16,14 +16,14 @@ public class ToolkitUtils {
     }
 
     public static boolean hasParticipants() {
-        String ownUserId = VoxeetSdk.session().getUserId();
+        String ownUserId = VoxeetSdk.session().getParticipantId();
         if (null == ownUserId) ownUserId = "";
-        List<User> users = VoxeetSdk.conference().getUsers();
+        List<Participant> users = VoxeetSdk.conference().getParticipants();
 
-        for (User user : users) {
-            if (ConferenceUserStatus.ON_AIR.equals(user.getStatus()) && !ownUserId.equals(user.getId()))
+        for (Participant user : users) {
+            if (ConferenceParticipantStatus.ON_AIR.equals(user.getStatus()) && !ownUserId.equals(user.getId()))
                 return true;
-            if (ConferenceUserStatus.CONNECTING.equals(user.getStatus()) && !ownUserId.equals(user.getId()) && user.streams().size() > 0)
+            if (ConferenceParticipantStatus.CONNECTING.equals(user.getStatus()) && !ownUserId.equals(user.getId()) && user.streams().size() > 0)
                 return true;
         }
         return false;

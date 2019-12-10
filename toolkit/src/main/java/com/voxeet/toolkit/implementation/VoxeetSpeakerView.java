@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.exceptions.ExceptionManager;
-import com.voxeet.sdk.models.User;
+import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.toolkit.R;
@@ -50,7 +50,7 @@ public class VoxeetSpeakerView extends VoxeetView {
     @NonNull
     private RoundedImageView currentSpeakerView;
 
-    private User currentSpeaker = null;
+    private Participant currentSpeaker = null;
 
     private boolean selected = false;
 
@@ -67,8 +67,8 @@ public class VoxeetSpeakerView extends VoxeetView {
 
             if (!selected && null != VoxeetSdk.conference()) {
                 currentSpeaker = findUserById(VoxeetSdk.conference().currentSpeaker());
-                if (currentSpeaker != null && currentSpeaker.getUserInfo() != null) {
-                    speakerName.setText(currentSpeaker.getUserInfo().getName());
+                if (currentSpeaker != null && currentSpeaker.getInfo() != null) {
+                    speakerName.setText(currentSpeaker.getInfo().getName());
                     invalidateSpeakerName();
                 }
             }
@@ -269,20 +269,20 @@ public class VoxeetSpeakerView extends VoxeetView {
      * @param userId the user id
      * @return the conference user
      */
-    private User findUserById(@Nullable final String userId) {
-        return VoxeetSdk.conference().findUserById(userId);
+    private Participant findUserById(@Nullable final String userId) {
+        return VoxeetSdk.conference().findParticipantById(userId);
     }
 
-    private void loadViaPicasso(User conferenceUser, int avatarSize, ImageView imageView) {
+    private void loadViaPicasso(Participant conferenceUser, int avatarSize, ImageView imageView) {
         try {
             String avatarUrl = null;
-            if (null != conferenceUser && null != conferenceUser.getUserInfo()) {
-                avatarUrl = conferenceUser.getUserInfo().getAvatarUrl();
+            if (null != conferenceUser && null != conferenceUser.getInfo()) {
+                avatarUrl = conferenceUser.getInfo().getAvatarUrl();
             }
 
             if (!TextUtils.isEmpty(avatarUrl)) {
                 Picasso.get()
-                        .load(conferenceUser.getUserInfo().getAvatarUrl())
+                        .load(conferenceUser.getInfo().getAvatarUrl())
                         .noFade()
                         .resize(avatarSize, avatarSize)
                         .placeholder(R.drawable.default_avatar)
@@ -307,7 +307,7 @@ public class VoxeetSpeakerView extends VoxeetView {
      *
      * @param user the user to lock onto
      */
-    public void lockScreen(@NonNull User user) {
+    public void lockScreen(@NonNull Participant user) {
         vuMeter.onParticipantSelected();
 
         currentSpeaker = findUserById(user.getId());
@@ -315,8 +315,8 @@ public class VoxeetSpeakerView extends VoxeetView {
         selected = true;
 
         String userName = null;
-        if (null != currentSpeaker && null != currentSpeaker.getUserInfo()) {
-            userName = currentSpeaker.getUserInfo().getName();
+        if (null != currentSpeaker && null != currentSpeaker.getInfo()) {
+            userName = currentSpeaker.getInfo().getName();
         }
         if (userName != null) {
             speakerName.setText(userName);

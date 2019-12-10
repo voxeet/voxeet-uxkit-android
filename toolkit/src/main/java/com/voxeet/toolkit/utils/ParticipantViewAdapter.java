@@ -18,8 +18,8 @@ import com.squareup.picasso.Picasso;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.sdk.VoxeetSdk;
-import com.voxeet.sdk.models.User;
-import com.voxeet.sdk.models.v1.ConferenceUserStatus;
+import com.voxeet.sdk.models.Participant;
+import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
@@ -35,7 +35,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private boolean namesEnabled = true;
 
-    private List<User> users;
+    private List<Participant> users;
 
     private Context context;
 
@@ -85,14 +85,14 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      *
      * @param users the list of user to populate the adapter
      */
-    public void setUsers(List<User> users) {
-        for (User user : users) {
+    public void setUsers(List<Participant> users) {
+        for (Participant user : users) {
             if (!this.users.contains(user))
                 this.users.add(user);
         }
 
-        List<User> to_remove = new ArrayList<>();
-        for (User user : this.users) {
+        List<Participant> to_remove = new ArrayList<>();
+        for (Participant user : this.users) {
             if (!users.contains(user)) to_remove.add(user);
         }
         this.users.removeAll(to_remove);
@@ -102,10 +102,10 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     private void filter() {
-        List<User> temp_users = new ArrayList<>();
+        List<Participant> temp_users = new ArrayList<>();
 
-        for (User user : users) {
-            if (!ConferenceUserStatus.LEFT.equals(user.getStatus())) temp_users.add(user);
+        for (Participant user : users) {
+            if (!ConferenceParticipantStatus.LEFT.equals(user.getStatus())) temp_users.add(user);
         }
 
         users = temp_users;
@@ -113,12 +113,12 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private void sort() {
         if (null != users) {
-            Collections.sort(users, new Comparator<User>() {
+            Collections.sort(users, new Comparator<Participant>() {
                 @Override
-                public int compare(User left, User right) {
-                    if (null != left && ConferenceUserStatus.ON_AIR.equals(left.getStatus()))
+                public int compare(Participant left, Participant right) {
+                    if (null != left && ConferenceParticipantStatus.ON_AIR.equals(left.getStatus()))
                         return -1;
-                    if (null != right && ConferenceUserStatus.ON_AIR.equals(right.getStatus()))
+                    if (null != right && ConferenceParticipantStatus.ON_AIR.equals(right.getStatus()))
                         return 1;
                     return 0;
                 }
@@ -145,12 +145,12 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
-        final User user = getItem(position);
+        final Participant user = getItem(position);
 
         boolean on_air = user.isLocallyActive();
 
-        if (null != user.getUserInfo()) {
-            holder.name.setText(user.getUserInfo().getName());
+        if (null != user.getInfo()) {
+            holder.name.setText(user.getInfo().getName());
         }
         holder.name.setVisibility(namesEnabled ? View.VISIBLE : View.GONE);
 
@@ -246,7 +246,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         setAnimation(holder.itemView, position);
     }
 
-    private boolean equalsToUser(String selectedUserId, User user) {
+    private boolean equalsToUser(String selectedUserId, Participant user) {
         return null != selectedUserId && null != user && selectedUserId.equals(user.getId());
     }
 
@@ -283,7 +283,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         }
     }
 
-    private User getItem(int position) {
+    private Participant getItem(int position) {
         return users.get(position);
     }
 
@@ -293,9 +293,9 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      * @param conferenceUser a valid user to bind into picasso
      * @param imageView      the landing image view
      */
-    private void loadViaPicasso(@NonNull User conferenceUser, ImageView imageView) {
+    private void loadViaPicasso(@NonNull Participant conferenceUser, ImageView imageView) {
         try {
-            String url = conferenceUser.getUserInfo().getAvatarUrl();
+            String url = conferenceUser.getInfo().getAvatarUrl();
             if (!TextUtils.isEmpty(url)) {
                 Picasso.get()
                         .load(url)
@@ -331,7 +331,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     /**
      * @param user
      */
-    public void onMediaStreamUpdated(@Nullable User user) {
+    public void onMediaStreamUpdated(@Nullable Participant user) {
         //removed unecessary change of current selected it
         /*
         MediaStream stream = user.streamsHandler().getFirst(MediaStreamType.Camera);
@@ -395,7 +395,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Nullable
     private MediaStream getMediaStream(@Nullable String userId) {
-        User user = VoxeetSdk.conference().findUserById(userId);
+        Participant user = VoxeetSdk.conference().findParticipantById(userId);
         return null != user ? user.streamsHandler().getFirst(MediaStreamType.Camera) : null;
     }
 }

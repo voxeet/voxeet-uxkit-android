@@ -9,7 +9,7 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.models.Conference;
-import com.voxeet.sdk.models.User;
+import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
@@ -41,42 +41,42 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView {
     }
 
     @Override
-    public void onUserAddedEvent(@NonNull Conference conference, @NonNull User user) {
+    public void onUserAddedEvent(@NonNull Conference conference, @NonNull Participant user) {
         super.onUserAddedEvent(conference, user);
         updateStreams();
     }
 
     @Override
-    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull User user) {
+    public void onUserUpdatedEvent(@NonNull Conference conference, @NonNull Participant user) {
         super.onUserUpdatedEvent(conference, user);
         updateStreams();
     }
 
     @Override
-    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamAddedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamAddedEvent(conference, user, mediaStream);
         updateStreams();
     }
 
     @Override
-    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamUpdatedEvent(conference, user, mediaStream);
         updateStreams();
     }
 
     @Override
-    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull User user, @NonNull MediaStream mediaStream) {
+    public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamRemovedEvent(conference, user, mediaStream);
         updateStreams();
     }
 
     private void updateStreams() {
 
-        List<User> users = VoxeetSdk.conference().getUsers();
+        List<Participant> users = VoxeetSdk.conference().getParticipants();
 
         MediaStream stream = null;
-        User attach = null;
-        for (User user : users) {
+        Participant attach = null;
+        for (Participant user : users) {
             stream = user.streamsHandler().getFirst(MediaStreamType.Camera);
             attach = user;
             if (null != stream) break;

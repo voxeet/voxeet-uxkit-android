@@ -7,19 +7,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.voxeet.promise.Promise;
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.PromiseExec;
+import com.voxeet.promise.solve.Solver;
 import com.voxeet.push.center.management.Constants;
 import com.voxeet.sdk.VoxeetSdk;
-import com.voxeet.sdk.json.UserInfo;
+import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
-
-import eu.codlab.simplepromise.Promise;
-import eu.codlab.simplepromise.solve.ErrorPromise;
-import eu.codlab.simplepromise.solve.PromiseExec;
-import eu.codlab.simplepromise.solve.Solver;
 
 public class IncomingBundleChecker {
 
@@ -72,7 +71,7 @@ public class IncomingBundleChecker {
      */
     public void onAccept() {
         if (mConferenceId != null) {
-            UserInfo info = new UserInfo(getUserName(),
+            ParticipantInfo info = new ParticipantInfo(getUserName(),
                     getExternalUserId(),
                     getAvatarUrl());
 
@@ -83,7 +82,7 @@ public class IncomingBundleChecker {
 
             Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSdk.session().isSocketOpen());
             if (!VoxeetSdk.session().isSocketOpen()) {
-                UserInfo userInfo = VoxeetPreferences.getSavedUserInfo();
+                ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                 if (null != userInfo) {
                     VoxeetSdk.session().open(userInfo)
