@@ -102,6 +102,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     private void filter() {
+        /*
         List<Participant> temp_users = new ArrayList<>();
 
         for (Participant user : users) {
@@ -109,20 +110,37 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         }
 
         users = temp_users;
+        */
+    }
+
+    private boolean is(Participant p, ConferenceParticipantStatus s) {
+        return null != p && s.equals(p.getStatus());
     }
 
     private void sort() {
         if (null != users) {
-            Collections.sort(users, new Comparator<Participant>() {
-                @Override
-                public int compare(Participant left, Participant right) {
-                    if (null != left && ConferenceParticipantStatus.ON_AIR.equals(left.getStatus()))
-                        return -1;
-                    if (null != right && ConferenceParticipantStatus.ON_AIR.equals(right.getStatus()))
-                        return 1;
-                    return 0;
+            ArrayList<Participant> tmp = new ArrayList<>();
+            ArrayList<Participant> air = new ArrayList<>();
+            ArrayList<Participant> inv = new ArrayList<>();
+            ArrayList<Participant> left = new ArrayList<>();
+            ArrayList<Participant> other = new ArrayList<>();
+
+            for (Participant participant : users) {
+                if (participant.isLocallyActive()) {
+                    air.add(participant);
+                } else if (is(participant, ConferenceParticipantStatus.RESERVED)) {
+                    inv.add(participant);
+                } else if (is(participant, ConferenceParticipantStatus.LEFT)) {
+                    left.add(participant);
+                } else {
+                    other.add(participant);
                 }
-            });
+            }
+            tmp.addAll(air);
+            tmp.addAll(inv);
+            tmp.addAll(left);
+            tmp.addAll(other);
+            users = tmp;
         }
     }
 
