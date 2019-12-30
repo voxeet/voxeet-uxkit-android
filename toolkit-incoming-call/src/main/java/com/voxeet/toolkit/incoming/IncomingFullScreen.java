@@ -9,10 +9,10 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.WindowManager;
 
-import com.voxeet.push.center.invitation.IIncomingInvitationListener;
-import com.voxeet.push.center.invitation.InvitationBundle;
-import com.voxeet.push.center.management.Constants;
 import com.voxeet.sdk.factories.VoxeetIntentFactory;
+import com.voxeet.sdk.push.center.invitation.IIncomingInvitationListener;
+import com.voxeet.sdk.push.center.invitation.InvitationBundle;
+import com.voxeet.sdk.push.center.management.Constants;
 import com.voxeet.sdk.utils.AndroidManifest;
 
 public class IncomingFullScreen implements IIncomingInvitationListener {

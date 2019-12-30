@@ -4,10 +4,10 @@ import android.support.annotation.NonNull;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.voxeet.push.center.NotificationCenterFactory;
-import com.voxeet.push.utils.Annotate;
+import com.voxeet.sdk.push.center.NotificationCenterFactory;
 import com.voxeet.sdk.services.notification.INotificationTokenProvider;
 import com.voxeet.sdk.services.notification.NotificationTokenHolderFactory;
+import com.voxeet.sdk.utils.Annotate;
 
 @Annotate
 public class VoxeetFirebaseMessagingService extends FirebaseMessagingService {

@@ -8,9 +8,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.voxeet.push.utils.Annotate;
-import com.voxeet.push.utils.NotificationHelper;
+import com.voxeet.sdk.push.utils.NotificationHelper;
 import com.voxeet.sdk.services.notification.INotificationTokenProvider;
+import com.voxeet.sdk.utils.Annotate;
 
 /**
  * Simple Firebase wrapper

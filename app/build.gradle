@@ -62,6 +62,7 @@ dependencies {
     api project(':toolkit')
     api project(':toolkit-youtube')
     api project(':toolkit-exoplayer-support')
+    api project(':toolkit-firebase')
 
     testImplementation 'junit:junit:4.12'
 

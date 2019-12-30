@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 
 import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.VoxeetSdk;
-import com.voxeet.sdk.events.error.ReplayConferenceErrorEvent;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.IncomingCallEvent;
 import com.voxeet.sdk.events.success.ConferenceUpdated;
@@ -820,7 +819,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         removeView(true, RemoveViewType.FROM_EVENT);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    /*@Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ReplayConferenceErrorEvent event) {
         Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
         VoxeetSdk.audio().stop();
@@ -832,7 +831,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
 
         removeView(true, RemoveViewType.FROM_EVENT);
-    }
+    }*/
 
     /**
      * On RecordingStatusUpdateEvent event.

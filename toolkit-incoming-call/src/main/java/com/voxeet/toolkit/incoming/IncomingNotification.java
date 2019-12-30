@@ -12,8 +12,8 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.voxeet.push.center.invitation.IIncomingInvitationListener;
-import com.voxeet.push.center.invitation.InvitationBundle;
+import com.voxeet.sdk.push.center.invitation.IIncomingInvitationListener;
+import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
@@ -140,7 +140,6 @@ public class IncomingNotification implements IIncomingInvitationListener {
         if (-1 != notificationId) notificationManager.cancel(notificationId);
         notificationId = 0;
     }
-
 
     public static String getChannelId(@NonNull Context context) {
         return AndroidManifest.readMetadata(context, SDK_CHANNEL_ID, DEFAULT_ID);

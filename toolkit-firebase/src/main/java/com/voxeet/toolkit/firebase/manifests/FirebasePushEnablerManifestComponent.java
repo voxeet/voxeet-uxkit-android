@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
-import com.voxeet.push.utils.NotificationHelper;
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
+import com.voxeet.sdk.push.utils.NotificationHelper;
 import com.voxeet.sdk.services.notification.NotificationTokenHolderFactory;
 import com.voxeet.toolkit.firebase.implementation.FirebaseProvider;
 

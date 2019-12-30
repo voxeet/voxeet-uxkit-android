@@ -14,9 +14,9 @@ import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.PromiseSolver;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.push.center.NotificationCenterFactory;
-import com.voxeet.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.VoxeetSdk;
+import com.voxeet.sdk.push.center.NotificationCenterFactory;
+import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
 
