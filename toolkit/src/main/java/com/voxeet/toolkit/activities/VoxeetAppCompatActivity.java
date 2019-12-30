@@ -291,13 +291,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
     };
 
     private void dismissNotification() {
-        if(null != VoxeetSdk.conference()) {
-            String conferenceId = VoxeetSdk.conference().getConferenceId();
-            if(!TextUtils.isEmpty(conferenceId)) {
-                IncomingNotificationHelper.dismiss(this, conferenceId.hashCode());
-            }
-        }
-        IncomingNotificationHelper.dismiss(this, getIntent());
+        IncomingNotificationHelper.dismiss(this);
     }
 }
 

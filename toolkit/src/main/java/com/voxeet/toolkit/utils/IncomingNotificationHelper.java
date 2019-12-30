@@ -1,10 +1,13 @@
 package com.voxeet.toolkit.utils;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
+import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.toolkit.incoming.IncomingNotification;
 
 public class IncomingNotificationHelper {
@@ -29,5 +32,15 @@ public class IncomingNotificationHelper {
             return true;
         }
         return false;
+    }
+
+    public static boolean dismiss(@NonNull Activity activity) {
+        if (null != VoxeetSdk.conference()) {
+            String conferenceId = VoxeetSdk.conference().getConferenceId();
+            if (!TextUtils.isEmpty(conferenceId)) {
+                IncomingNotificationHelper.dismiss(activity, conferenceId.hashCode());
+            }
+        }
+        IncomingNotificationHelper.dismiss(activity, activity.getIntent());
     }
 }
