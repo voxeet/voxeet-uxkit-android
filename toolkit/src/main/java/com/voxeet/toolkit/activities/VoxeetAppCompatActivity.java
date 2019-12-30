@@ -1,5 +1,6 @@
 package com.voxeet.toolkit.activities;
 
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.voxeet.promise.solve.ErrorPromise;
@@ -23,6 +25,8 @@ import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.toolkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.toolkit.controllers.VoxeetToolkit;
+import com.voxeet.toolkit.incoming.IncomingNotification;
+import com.voxeet.toolkit.utils.IncomingNotificationHelper;
 import com.voxeet.toolkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.toolkit.incoming.factory.IncomingCallFactory;
 import com.voxeet.toolkit.service.AbstractSDKService;
@@ -109,10 +113,12 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
             VoxeetSdk.screenShare().consumeRightsToScreenShare();
         }
 
-        if(null != VoxeetToolkit.instance()) {
+        if (null != VoxeetToolkit.instance()) {
             //to prevent uninitialized toolkit but ... it's highly recommended for future releases to always init
             VoxeetToolkit.instance().getConferenceToolkit().forceReattach();
         }
+
+        dismissNotification();
     }
 
     @NoDocumentation
@@ -139,6 +145,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         if (mIncomingBundleChecker.isBundleValid()) {
             mIncomingBundleChecker.onAccept();
         }
+
+        dismissNotification();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -210,6 +218,13 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
     @Subscribe(threadMode = ThreadMode.MAIN)
     public final void onEvent(ConferenceStatusUpdatedEvent event) {
         mIncomingBundleChecker.flushIntent();
+
+        switch (event.state) {
+            case JOINING:
+            case JOINED:
+                dismissNotification();
+            default: //nothing
+        }
         onConferenceState(event);
     }
 
@@ -274,4 +289,15 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
             sdkService = null;
         }
     };
+
+    private void dismissNotification() {
+        if(null != VoxeetSdk.conference()) {
+            String conferenceId = VoxeetSdk.conference().getConferenceId();
+            if(!TextUtils.isEmpty(conferenceId)) {
+                IncomingNotificationHelper.dismiss(this, conferenceId.hashCode());
+            }
+        }
+        IncomingNotificationHelper.dismiss(this, getIntent());
+    }
 }
+

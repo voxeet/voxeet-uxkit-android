@@ -1,9 +1,11 @@
-package com.voxeet.toolkit.incoming;
+package com.voxeet.toolkit.utils;
 
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+
+import com.voxeet.toolkit.incoming.IncomingNotification;
 
 public class IncomingNotificationHelper {
 
