@@ -11,7 +11,6 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.voxeet.audio.AudioRoute;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.IncomingCallEvent;
@@ -27,6 +26,7 @@ import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.InvitationReceivedEvent;
 import com.voxeet.sdk.json.RecordingStatusUpdatedEvent;
 import com.voxeet.sdk.json.UserInvited;
+import com.voxeet.sdk.media.audio.AudioRoute;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.models.v1.RecordingStatus;
@@ -656,7 +656,8 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final InvitationReceivedEvent event) {
-        if (null != event && null != event.invitations) {
+        //TODO remove this call, not necessary anymore !
+        if (null != event && null != event.conferenceId) {
             List<Participant> users = getUsers();
             if (mMainView != null) {
                 mMainView.onConferenceUsersListUpdate(users);

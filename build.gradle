@@ -19,13 +19,17 @@ ext {
     compileSdkVersion = 28
     targetSdkVersion = 27
     supportLibVersion = "28.0.0"
-    pushSdkVersion = "2.0.73.18"
-    firebaseSdkVersion = "2.0.73.18"
-    voxeetSdkVersion = "2.0.73.18"
-    voxeetSdkToolkitVersion = "2.0.73.18"
-    voxeetIncomingCall = "2.0.73.18"
-    systemServiceVersion = "2.0.73.18"
-    telecomSystemServiceVersion = "2.0.73.18"
+
+    //underlying sdk
+    voxeetSdkVersion = "2.0.76"
+
+    //uxkit modules
+    pushSdkVersion = "2.0.76"
+    firebaseSdkVersion = "2.0.76"
+    voxeetSdkToolkitVersion = "2.0.76"
+    voxeetIncomingCall = "2.0.76"
+    systemServiceVersion = "2.0.76"
+    telecomSystemServiceVersion = "2.0.76"
 }
 
 allprojects {

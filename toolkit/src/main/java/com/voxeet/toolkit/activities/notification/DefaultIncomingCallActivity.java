@@ -19,7 +19,6 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.voxeet.audio.AudioRoute;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
@@ -32,6 +31,7 @@ import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.ParticipantInfo;
+import com.voxeet.sdk.media.audio.AudioRoute;
 import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
