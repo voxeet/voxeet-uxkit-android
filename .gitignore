@@ -12,3 +12,6 @@ build
 
 
 docs/
+
+*.class
+local.properties
