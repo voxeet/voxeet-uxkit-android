@@ -3,10 +3,10 @@ package com.voxeet.toolkit.application;
 import android.app.Application;
 import android.support.annotation.NonNull;
 
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.PromiseSolver;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.utils.Annotate;
@@ -96,7 +96,7 @@ public abstract class VoxeetApplication extends Application {
         //TODO append the current 'solver' in a list and call logUserWithChain if no solver existed
         ParticipantInfo userInfos = VoxeetPreferences.getSavedUserInfo();
         if (null != userInfos)
-            return VoxeetSdk.session().open(userInfos);
+            return VoxeetSDK.session().open(userInfos);
         return new Promise<>(new PromiseSolver<Boolean>() {
             @Override
             public void onCall(@NonNull Solver<Boolean> solver) {

@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.voxeet.sdk.VoxeetSdk;
+import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.toolkit.incoming.IncomingNotification;
 
@@ -74,8 +74,8 @@ public class IncomingNotificationHelper {
      * @return indication of the removal process follow up
      */
     public static boolean dismiss(@NonNull Activity activity) {
-        if (null != VoxeetSdk.conference()) {
-            String conferenceId = VoxeetSdk.conference().getConferenceId();
+        if (null != VoxeetSDK.conference()) {
+            String conferenceId = VoxeetSDK.conference().getConferenceId();
             if (!TextUtils.isEmpty(conferenceId)) {
                 IncomingNotificationHelper.dismiss(activity, conferenceId.hashCode());
             }

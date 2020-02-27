@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.voxeet.sdk.VoxeetSdk;
+import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.utils.Annotate;
@@ -65,8 +65,8 @@ public class VoxeetSpeakerView extends VoxeetView {
                 selected = false;
             }
 
-            if (!selected && null != VoxeetSdk.conference()) {
-                currentSpeaker = findUserById(VoxeetSdk.conference().currentSpeaker());
+            if (!selected && null != VoxeetSDK.conference()) {
+                currentSpeaker = findUserById(VoxeetSDK.conference().currentSpeaker());
                 if (currentSpeaker != null && currentSpeaker.getInfo() != null) {
                     speakerName.setText(currentSpeaker.getInfo().getName());
                     invalidateSpeakerName();
@@ -83,8 +83,8 @@ public class VoxeetSpeakerView extends VoxeetView {
     private Runnable updateVuMeterRunnable = new Runnable() {
         @Override
         public void run() {
-            if (currentSpeaker != null && null != VoxeetSdk.conference()) {
-                double value = VoxeetSdk.conference().getLevel(currentSpeaker);
+            if (currentSpeaker != null && null != VoxeetSDK.conference()) {
+                double value = VoxeetSDK.conference().getLevel(currentSpeaker);
                 vuMeter.updateMeter(value);
             }
 
@@ -270,7 +270,7 @@ public class VoxeetSpeakerView extends VoxeetView {
      * @return the conference user
      */
     private Participant findUserById(@Nullable final String userId) {
-        return VoxeetSdk.conference().findParticipantById(userId);
+        return VoxeetSDK.conference().findParticipantById(userId);
     }
 
     private void loadViaPicasso(Participant conferenceUser, int avatarSize, ImageView imageView) {

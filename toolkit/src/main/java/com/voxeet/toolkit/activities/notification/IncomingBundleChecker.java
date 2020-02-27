@@ -7,11 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
@@ -77,15 +77,15 @@ public class IncomingBundleChecker {
 
             Log.d(TAG, "onAccept: mConferenceId := " + mConferenceId);
             //join the conference
-            Promise<Conference> join = VoxeetSdk.conference().join(mConferenceId);
+            Promise<Conference> join = VoxeetSDK.conference().join(mConferenceId);
             //only when error() is called
 
-            Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSdk.session().isSocketOpen());
-            if (!VoxeetSdk.session().isSocketOpen()) {
+            Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSDK.session().isSocketOpen());
+            if (!VoxeetSDK.session().isSocketOpen()) {
                 ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                 if (null != userInfo) {
-                    VoxeetSdk.session().open(userInfo)
+                    VoxeetSDK.session().open(userInfo)
                             .then(new PromiseExec<Boolean, Conference>() {
                                 @Override
                                 public void onCall(@Nullable Boolean result, @NonNull Solver<Conference> solver) {
@@ -108,8 +108,8 @@ public class IncomingBundleChecker {
                 } else {
                     Log.d(TAG, "onAccept: unable to log the user");
                 }
-            } else if (VoxeetSdk.conference().isLive()) {
-                VoxeetSdk.conference()
+            } else if (VoxeetSDK.conference().isLive()) {
+                VoxeetSDK.conference()
                         .leave()
                         .then(new PromiseExec<Boolean, Object>() {
                             @Override

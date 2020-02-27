@@ -15,11 +15,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
@@ -413,7 +414,8 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     @Nullable
     private MediaStream getMediaStream(@Nullable String userId) {
-        Participant user = VoxeetSdk.conference().findParticipantById(userId);
-        return null != user ? user.streamsHandler().getFirst(MediaStreamType.Camera) : null;
+        return Opt.of(userId).then(id -> VoxeetSDK.conference().findParticipantById(id))
+                .then(Participant::streamsHandler)
+                .then(handler -> handler.getFirst(MediaStreamType.Camera)).orNull();
     }
 }

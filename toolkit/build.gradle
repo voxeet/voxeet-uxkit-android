@@ -96,9 +96,6 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
     compile 'com.squareup.picasso:picasso:2.71828'
 
-    //temporary set audio fixed for pre-2.1 versions
-    compile "com.voxeet.sdk:audio:2.0.2"
-
     compile("com.voxeet.sdk:public-sdk:${rootProject.ext.voxeetSdkVersion}") {
         transitive = true
     }

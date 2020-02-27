@@ -5,11 +5,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceHistoryResult;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.media.audio.AudioRoute;
@@ -81,8 +81,8 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         _wait_for_history_offset = offset;
 
 
-        ConferenceService service = VoxeetSdk.conference();
-        VoxeetSdk.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
+        ConferenceService service = VoxeetSDK.conference();
+        VoxeetSDK.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
                 .then(new PromiseExec<ConferenceHistoryResult, Object>() {
                     @Override
@@ -122,7 +122,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
     @Override
     public void onActionButtonClicked() {
         //leave the current conference
-        VoxeetSdk.conference()
+        VoxeetSDK.conference()
                 .leave()
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override

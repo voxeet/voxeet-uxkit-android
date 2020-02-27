@@ -5,7 +5,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.voxeet.sdk.VoxeetSdk;
+import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.utils.Annotate;
 
 /**
@@ -25,8 +25,8 @@ public class VoxeetActiveSpeakerTimer {
         public void run() {
             if (null != handler) {
                 try {
-                    if (null != listener && null != VoxeetSdk.instance()) {
-                        String fromSdk = VoxeetSdk.conference().currentSpeaker();
+                    if (null != listener && null != VoxeetSDK.instance()) {
+                        String fromSdk = VoxeetSDK.conference().currentSpeaker();
 
                         if (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk)) {
                             currentActiveSpeaker = fromSdk;

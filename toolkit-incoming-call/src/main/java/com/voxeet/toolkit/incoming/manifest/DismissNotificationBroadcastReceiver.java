@@ -9,12 +9,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.PromiseSolver;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.push.center.NotificationCenterFactory;
 import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.services.ConferenceService;
@@ -27,7 +27,7 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Bundle bundle = intent.getExtras();
-        ConferenceService conferenceService = VoxeetSdk.conference();
+        ConferenceService conferenceService = VoxeetSDK.conference();
         InvitationBundle invitationBundle = null;
 
         if (null == conferenceService) return;
@@ -54,8 +54,8 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
     }
 
     private Promise<Boolean> createPromise(@NonNull String conferenceId) {
-        ConferenceService conferenceService = VoxeetSdk.conference();
-        SessionService sessionService = VoxeetSdk.session();
+        ConferenceService conferenceService = VoxeetSDK.conference();
+        SessionService sessionService = VoxeetSDK.session();
         if (null == sessionService || null == conferenceService) {
             return new Promise<>(new PromiseSolver<Boolean>() {
                 @Override

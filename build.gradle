@@ -21,15 +21,15 @@ ext {
     supportLibVersion = "28.0.0"
 
     //underlying sdk
-    voxeetSdkVersion = "2.0.76"
+    voxeetSdkVersion = "2.1"
 
     //uxkit modules
-    pushSdkVersion = "2.0.76"
-    firebaseSdkVersion = "2.0.76"
-    voxeetSdkToolkitVersion = "2.0.76"
-    voxeetIncomingCall = "2.0.76"
-    systemServiceVersion = "2.0.76"
-    telecomSystemServiceVersion = "2.0.76"
+    pushSdkVersion = "2.1"
+    firebaseSdkVersion = "2.1"
+    voxeetSdkToolkitVersion = "2.1"
+    voxeetIncomingCall = "2.1"
+    systemServiceVersion = "2.1"
+    telecomSystemServiceVersion = "2.1"
 }
 
 allprojects {

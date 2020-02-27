@@ -5,10 +5,10 @@ import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.push.center.NotificationCenterFactory;
 import com.voxeet.sdk.push.center.management.EnforcedNotificationMode;
@@ -45,7 +45,7 @@ public class SampleApplication extends MultiDexApplication {
         VoxeetToolkit.instance().enable(ConferenceToolkitController.class);
 
         //the default case of this SDK is to have the SDK with consumerKey and consumerSecret embedded
-        VoxeetSdk.initialize(
+        VoxeetSDK.initialize(
                 BuildConfig.CONSUMER_KEY,
                 BuildConfig.CONSUMER_SECRET
         ); //can be null - will be removed in a later version
@@ -74,7 +74,7 @@ public class SampleApplication extends MultiDexApplication {
             logSelectedUser();
         } else {
             //we have an user
-            VoxeetSdk.session()
+            VoxeetSDK.session()
                     .close()
                     .then(new PromiseExec<Boolean, Object>() {
                         @Override
@@ -97,7 +97,7 @@ public class SampleApplication extends MultiDexApplication {
      * Call this method to log the current selected user
      */
     public void logSelectedUser() {
-        VoxeetSdk.session().open(_current_user)
+        VoxeetSDK.session().open(_current_user)
                 .then(new PromiseExec<Boolean, Object>() {
                     @Override
                     public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {

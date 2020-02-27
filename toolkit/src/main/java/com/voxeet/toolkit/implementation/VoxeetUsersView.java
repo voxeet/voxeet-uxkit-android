@@ -12,8 +12,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
@@ -180,7 +180,7 @@ public class VoxeetUsersView extends VoxeetView {
 
     private List<Participant> filter(List<Participant> users) {
         Log.d("VoxeetUsersView", "filter: !had 1 " + users.size());
-        SessionService sessionService = VoxeetSdk.session();
+        SessionService sessionService = VoxeetSDK.session();
         List<Participant> filter = new ArrayList<>();
         int added = 0;
         int invited = 0;

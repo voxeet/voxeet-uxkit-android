@@ -13,10 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
@@ -92,8 +92,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         SystemServiceFactory.setLastAppCompatActivity(this.getClass());
         startService();
 
-        if (null != VoxeetSdk.instance()) {
-            VoxeetSdk.instance().register(this);
+        if (null != VoxeetSDK.instance()) {
+            VoxeetSDK.instance().register(this);
         }
 
         if (!EventBus.getDefault().isRegistered(this)) {
@@ -109,8 +109,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
             mIncomingBundleChecker.onAccept();
         }
 
-        if (null != VoxeetSdk.screenShare()) {
-            VoxeetSdk.screenShare().consumeRightsToScreenShare();
+        if (null != VoxeetSDK.screenShare()) {
+            VoxeetSDK.screenShare().consumeRightsToScreenShare();
         }
 
         if (null != VoxeetToolkit.instance()) {
@@ -124,10 +124,10 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
     @NoDocumentation
     @Override
     protected void onPause() {
-        if (null != VoxeetSdk.localStats()) {
+        if (null != VoxeetSDK.localStats()) {
             //stop fetching stats if any pending
-            if (!VoxeetSdk.conference().isLive()) {
-                VoxeetSdk.localStats().stopAutoFetch();
+            if (!VoxeetSDK.conference().isLive()) {
+                VoxeetSDK.localStats().stopAutoFetch();
             }
         }
 
@@ -169,8 +169,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         switch (requestCode) {
             case PermissionRefusedEvent.RESULT_CAMERA: {
                 Log.d(TAG, "onActivityResult: camera is ok now");
-                if (null != VoxeetSdk.conference() && VoxeetSdk.conference().isLive()) {
-                    VoxeetSdk.conference().startVideo()
+                if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
+                    VoxeetSDK.conference().startVideo()
                             .then(new PromiseExec<Boolean, Object>() {
                                 @Override
                                 public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
@@ -196,8 +196,8 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean managed = false;
 
-        if (null != VoxeetSdk.screenShare()) {
-            managed = VoxeetSdk.screenShare().onActivityResult(requestCode, resultCode, data);
+        if (null != VoxeetSDK.screenShare()) {
+            managed = VoxeetSDK.screenShare().onActivityResult(requestCode, resultCode, data);
         }
 
         if (!managed) {
@@ -207,7 +207,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(RequestScreenSharePermissionEvent event) {
-        VoxeetSdk.screenShare()
+        VoxeetSDK.screenShare()
                 .sendUserPermissionRequest(this);
     }
 

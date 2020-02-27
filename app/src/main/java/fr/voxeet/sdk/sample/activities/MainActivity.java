@@ -14,11 +14,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.PromiseInOut;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.SocketStateChangeEvent;
 import com.voxeet.sdk.json.ParticipantInfo;
@@ -97,7 +97,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @OnClick(R.id.disconnect)
     public void onDisconnectClick() {
-        SessionService userService = VoxeetSdk.session();
+        SessionService userService = VoxeetSDK.session();
         if (null != userService) userService.close()
                 .then(defaultConsume())
                 .error(createErrorDump());
@@ -126,8 +126,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
     @Override
     public void onBackPressed() {
-        if (null != VoxeetSdk.conference() && VoxeetSdk.conference().isLive()) {
-            VoxeetSdk.conference().leave()
+        if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
+            VoxeetSDK.conference().leave()
                     .then(defaultConsume())
                     .error(createErrorDump());
         } else {
@@ -148,7 +148,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
             VoxeetToolkit.getInstance().enable(VoxeetToolkit.getInstance().getConferenceToolkit());
 
-            ConferenceService service = VoxeetSdk.conference();
+            ConferenceService service = VoxeetSDK.conference();
 
             if (null == service) {
                 Toast.makeText(this, "Invalid state of the SDK !", Toast.LENGTH_SHORT).show();
@@ -170,8 +170,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                         }
                     });
 
-            if (VoxeetSdk.conference().isLive()) {
-                VoxeetSdk.conference()
+            if (VoxeetSDK.conference().isLive()) {
+                VoxeetSDK.conference()
                         .leave()
                         .then(create)
                         //.then(VoxeetSdk.conference().startVideo())
@@ -215,8 +215,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     }
 
     private void onConferenceJoinedSuccessEvent() {
-        SessionService userService = VoxeetSdk.session();
-        ConferenceService conferenceService = VoxeetSdk.conference();
+        SessionService userService = VoxeetSDK.session();
+        ConferenceService conferenceService = VoxeetSDK.conference();
 
         if (null == userService || null == conferenceService) {
             return;

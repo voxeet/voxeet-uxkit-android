@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.voxeet.sdk.VoxeetSdk;
+import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.toolkit.R;
 import com.voxeet.toolkit.views.internal.rounded.RoundedImageView;
@@ -197,7 +197,7 @@ public class VoxeetTimer extends VoxeetView {
     }
 
     private void updateColors() {
-        if (VoxeetSdk.conference().isLive()) {
+        if (VoxeetSDK.conference().isLive()) {
             recordingImage.setColorFilter(inConferenceColor);
             recordingImageAlpha.setColorFilter(inConferenceColor);
         } else {

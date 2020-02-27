@@ -12,7 +12,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.voxeet.sdk.VoxeetSdk;
+import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
@@ -21,6 +21,7 @@ import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.Opt;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -32,6 +33,8 @@ import javax.annotation.Nullable;
 public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Service {
 
     private static final String TAG = AbstractSDKService.class.getSimpleName();
+
+    @Nullable
     protected EventBus eventBus;
     private Handler handler;
 
@@ -43,8 +46,8 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     private ConferenceService conferenceService;
 
     @Nullable
-    public final VoxeetSdk sdk() {
-        return VoxeetSdk.instance();
+    public final VoxeetSDK sdk() {
+        return VoxeetSDK.instance();
     }
 
     @NonNull
@@ -64,7 +67,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     public void onCreate() {
         super.onCreate();
 
-        ConferenceService temp = VoxeetSdk.conference();
+        ConferenceService temp = VoxeetSDK.conference();
         if (null == temp) {
             stopSelf();
             return;
@@ -87,7 +90,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
 
     @NonNull
     protected ConferenceStatus getConferenceStateFromSDK() {
-        if (null != VoxeetSdk.instance()) {
+        if (null != VoxeetSDK.instance()) {
             ConferenceInformation info = conferenceService.getCurrentConference();
             if (null != info) {
                 return info.getConferenceState();
@@ -202,7 +205,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     protected void stopForeground() {
         lastForeground = -1;
 
-        if (eventBus.isRegistered(this)) {
+        if (Opt.of(eventBus).then(e -> e.isRegistered(this)).or(false)) {
             eventBus.unregister(this);
             //eventBus = null;
         }
@@ -214,8 +217,8 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     }
 
     protected void checkEventBus() {
-        eventBus = VoxeetSdk.instance().getEventBus();
-        if (!eventBus.isRegistered(this)) {
+        eventBus = Opt.of(VoxeetSDK.instance()).then(VoxeetSDK::getEventBus).orNull();
+        if (null != eventBus && !eventBus.isRegistered(this)) {
             eventBus.register(this);
         }
     }

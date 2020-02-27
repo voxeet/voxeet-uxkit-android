@@ -7,10 +7,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
@@ -65,8 +65,8 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
     protected void onResume() {
         super.onResume();
 
-        if (null != VoxeetSdk.instance()) {
-            VoxeetSdk.instance().register(this);
+        if (null != VoxeetSDK.instance()) {
+            VoxeetSDK.instance().register(this);
         }
 
         if (!EventBus.getDefault().isRegistered(this)) {
@@ -82,20 +82,20 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
             mIncomingBundleChecker.onAccept();
         }
 
-        if (null != VoxeetSdk.screenShare()) {
-            VoxeetSdk.screenShare().consumeRightsToScreenShare();
+        if (null != VoxeetSDK.screenShare()) {
+            VoxeetSDK.screenShare().consumeRightsToScreenShare();
         }
 
-        VoxeetToolkit.getInstance().getConferenceToolkit().forceReattach();
+        VoxeetToolkit.instance().getConferenceToolkit().forceReattach();
     }
 
     @NoDocumentation
     @Override
     protected void onPause() {
-        if (null != VoxeetSdk.localStats()) {
+        if (null != VoxeetSDK.localStats()) {
             //stop fetching stats if any pending
-            if (!VoxeetSdk.conference().isLive()) {
-                VoxeetSdk.localStats().stopAutoFetch();
+            if (!VoxeetSDK.conference().isLive()) {
+                VoxeetSDK.localStats().stopAutoFetch();
             }
         }
 
@@ -135,8 +135,8 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
         switch (requestCode) {
             case PermissionRefusedEvent.RESULT_CAMERA: {
                 Log.d(TAG, "onActivityResult: camera is ok now");
-                if (null != VoxeetSdk.conference() && VoxeetSdk.conference().isLive()) {
-                    VoxeetSdk.conference().startVideo()
+                if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
+                    VoxeetSDK.conference().startVideo()
                             .then(new PromiseExec<Boolean, Object>() {
                                 @Override
                                 public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
@@ -162,8 +162,8 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean managed = false;
 
-        if (null != VoxeetSdk.screenShare()) {
-            managed = VoxeetSdk.screenShare().onActivityResult(requestCode, resultCode, data);
+        if (null != VoxeetSDK.screenShare()) {
+            managed = VoxeetSDK.screenShare().onActivityResult(requestCode, resultCode, data);
         }
 
         if (!managed) {
@@ -173,7 +173,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(RequestScreenSharePermissionEvent event) {
-        VoxeetSdk.screenShare()
+        VoxeetSDK.screenShare()
                 .sendUserPermissionRequest(this);
     }
 
