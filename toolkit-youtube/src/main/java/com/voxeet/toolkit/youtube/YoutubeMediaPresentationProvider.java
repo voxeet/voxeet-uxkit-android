@@ -1,26 +1,12 @@
 package com.voxeet.toolkit.youtube;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.toolkit.presentation.provider.AbstractMediaPlayerProvider;
 
 /**
  * Manage and create youtube videos
  */
-@Annotate
-public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvider<YoutubeMediaPresentationView> {
-
-    @Nullable
-    private static String youtubeKey;
-
-    /**
-     * Constructor with the developer's app key
-     */
-    public YoutubeMediaPresentationProvider() {
-    }
+@Deprecated
+public class YoutubeMediaPresentationProvider extends com.voxeet.uxkit.youtube.YoutubeMediaPresentationProvider {
 
     /**
      * Set the Youtube API Key for the current session
@@ -31,28 +17,6 @@ public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvide
      * @param youtubeKey a valid key obtained from google's developer website
      */
     public static void setApiKey(@NonNull String youtubeKey) {
-        YoutubeMediaPresentationProvider.youtubeKey = youtubeKey;
-    }
-
-    /**
-     * Method called to check if a given video can be used by this provider
-     * @param url an url to be checked upon
-     * @return true if this provider can be used
-     */
-    @Override
-    public boolean isUrlCompatible(@NonNull String url) {
-        return url.startsWith("https://youtube.com/") || url.startsWith("https://youtu.be/");
-    }
-
-    /**
-     * Creates an instance of the YoutubeViewProvider
-     * @param context a valid context to be linked upon
-     * @return the newly created instance
-     */
-    @NonNull
-    @Override
-    public YoutubeMediaPresentationView createMediaPlayerView(@NonNull Context context) {
-        if(null == youtubeKey) throw new NullPointerException("oopsi invalid youtube key");
-        return new YoutubeMediaPresentationView(youtubeKey, context);
+        com.voxeet.uxkit.youtube.YoutubeMediaPresentationProvider.setApiKey(youtubeKey);
     }
 }

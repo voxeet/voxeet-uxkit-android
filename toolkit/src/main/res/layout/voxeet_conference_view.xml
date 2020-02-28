@@ -41,7 +41,7 @@
             android:layout_gravity="center"
             android:padding="5dp">
 
-            <com.voxeet.toolkit.implementation.VoxeetTimer
+            <com.voxeet.uxkit.implementation.VoxeetTimer
                 android:id="@+id/voxeet_timer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 android:visibility="visible">
 
                 <!-- this view will automatically fill the proper height -->
-                <com.voxeet.toolkit.views.NotchAvoidView
+                <com.voxeet.uxkit.views.NotchAvoidView
                     android:id="@+id/notch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                         android:layout_marginTop="6dp"
                         android:layout_marginRight="20dp" />
 
-                    <com.voxeet.toolkit.implementation.VoxeetUsersView
+                    <com.voxeet.uxkit.implementation.VoxeetUsersView
                         android:id="@+id/participant_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
             </LinearLayout>
 
             <!-- display the current speaker -->
-            <com.voxeet.toolkit.implementation.VoxeetSpeakerView
+            <com.voxeet.uxkit.implementation.VoxeetSpeakerView
                 android:id="@+id/current_speaker_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -128,7 +128,7 @@
             app:showFlip="true" />
 
         <!-- call action buttons -->
-        <com.voxeet.toolkit.implementation.VoxeetActionBarView
+        <com.voxeet.uxkit.implementation.VoxeetActionBarView
             android:id="@+id/conference_bar_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
             app:record_button="false" />
     </LinearLayout>
 
-    <com.voxeet.toolkit.implementation.VoxeetVideoStreamView
+    <com.voxeet.uxkit.implementation.VoxeetVideoStreamView
         android:id="@+id/videoStream"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

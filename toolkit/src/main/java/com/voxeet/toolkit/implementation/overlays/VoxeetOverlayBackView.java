@@ -3,12 +3,12 @@ package com.voxeet.toolkit.implementation.overlays;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.voxeet.toolkit.R;
-import com.voxeet.toolkit.implementation.overlays.abs.AbstractVoxeetOverlayView;
-import com.voxeet.toolkit.implementation.overlays.abs.IExpandableViewProviderListener;
-import com.voxeet.toolkit.providers.logics.IVoxeetSubViewProvider;
+import com.voxeet.uxkit.implementation.overlays.OverlayState;
+import com.voxeet.uxkit.implementation.overlays.abs.IExpandableViewProviderListener;
+import com.voxeet.uxkit.providers.logics.IVoxeetSubViewProvider;
 
-public class VoxeetOverlayBackView extends AbstractVoxeetOverlayView {
+@Deprecated
+public class VoxeetOverlayBackView extends com.voxeet.uxkit.implementation.overlays.VoxeetOverlayBackView {
 
     /**
      * Instantiates a new Voxeet conference view.
@@ -18,21 +18,7 @@ public class VoxeetOverlayBackView extends AbstractVoxeetOverlayView {
      * @param context  the context
      * @param overlay
      */
-    public VoxeetOverlayBackView(@NonNull IExpandableViewProviderListener listener,
-                                 @NonNull IVoxeetSubViewProvider provider,
-                                 @NonNull Context context,
-                                 @NonNull OverlayState overlay) {
+    public VoxeetOverlayBackView(@NonNull IExpandableViewProviderListener listener, @NonNull IVoxeetSubViewProvider provider, @NonNull Context context, @NonNull OverlayState overlay) {
         super(listener, provider, context, overlay);
-    }
-
-    @Override
-    final protected void onActionButtonClicked() {
-        getExpandableViewProviderListener().onActionButtonClicked();
-    }
-
-
-    @Override
-    protected int layout() {
-        return R.layout.voxeet_overlay_back_view;
     }
 }

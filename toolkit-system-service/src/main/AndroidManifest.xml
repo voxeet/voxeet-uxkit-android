@@ -1,14 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.voxeet.toolkit.service">
+    package="com.voxeet.uxkit.service">
 
     <application android:supportsRtl="true">
-        <service android:name="com.voxeet.toolkit.service.VoxeetSystemService"
+        <service android:name="com.voxeet.uxkit.service.VoxeetSystemService"
             android:enabled="true"
             android:exported="false">
         </service>
 
         <provider
-            android:name="com.voxeet.toolkit.service.manifests.VoxeetSystemServiceManifestComponent"
+            android:name="com.voxeet.uxkit.service.manifests.VoxeetSystemServiceManifestComponent"
             android:authorities="${applicationId}.manifests.VoxeetSystemServiceManifestComponent"
             android:enabled="true"
             android:exported="false" />

@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.voxeet.toolkit.mp4">
+    package="com.voxeet.uxkit.mp4">
 
     <application
         android:label="@string/app_name"
         android:supportsRtl="true">
         <provider
-            android:name="com.voxeet.toolkit.mp4.manifests.MP4MediaPresentationProviderManifestComponent"
+            android:name="com.voxeet.uxkit.mp4.manifests.MP4MediaPresentationProviderManifestComponent"
             android:authorities="${applicationId}.manifests.MP4MediaPresentationProviderManifestComponent"
             android:enabled="true"
             android:exported="false" />

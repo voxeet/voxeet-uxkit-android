@@ -12,7 +12,7 @@
         android:layout_height="@dimen/meeting_list_avatar_double"
         android:layout_gravity="center_horizontal">
 
-        <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
+        <com.voxeet.uxkit.views.internal.rounded.RoundedImageView
             android:id="@+id/overlay_avatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -20,7 +20,7 @@
             app:mutate_background="true"
             app:oval="true" />
 
-        <com.voxeet.toolkit.views.internal.rounded.RoundedImageView
+        <com.voxeet.uxkit.views.internal.rounded.RoundedImageView
             android:id="@+id/avatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -8,7 +8,7 @@ import com.google.firebase.FirebaseApp;
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
 import com.voxeet.sdk.push.utils.NotificationHelper;
 import com.voxeet.sdk.services.notification.NotificationTokenHolderFactory;
-import com.voxeet.toolkit.firebase.implementation.FirebaseProvider;
+import com.voxeet.uxkit.firebase.implementation.FirebaseProvider;
 
 public final class FirebasePushEnablerManifestComponent extends AbstractManifestComponentProvider {
 

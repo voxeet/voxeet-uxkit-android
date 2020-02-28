@@ -3,17 +3,13 @@ package com.voxeet.toolkit.incoming.factory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
+
 /**
  * Factory use to store and make the integration of the VoxeetActivities easier
  */
-
+@Deprecated
 public class IncomingCallFactory {
-
-    @Nullable
-    private static Class<? extends IVoxeetActivity> sAcceptedIncomingActivityKlass;
-
-    @Nullable
-    private static Bundle sAcceptedIncomingActivityExtras;
 
     /**
      * Store in memory the current activity to call when incoming call is accepted
@@ -21,11 +17,11 @@ public class IncomingCallFactory {
      * @param klass a nullable klass (null = reset)
      */
     public static void setTempAcceptedIncomingActivity(@Nullable Class<? extends IVoxeetActivity> klass) {
-        sAcceptedIncomingActivityKlass = klass;
+        com.voxeet.uxkit.incoming.factory.IncomingCallFactory.setTempAcceptedIncomingActivity(klass);
     }
 
     public static void setTempExtras(@Nullable Bundle extras) {
-        sAcceptedIncomingActivityExtras = extras;
+        com.voxeet.uxkit.incoming.factory.IncomingCallFactory.setTempExtras(extras);
     }
 
     /**
@@ -34,8 +30,8 @@ public class IncomingCallFactory {
      * @return a valid instance of Class<VoxeetAppCompatActivity>
      */
     @Nullable
-    public static Class<? extends IVoxeetActivity> getAcceptedIncomingActivityKlass() {
-        return sAcceptedIncomingActivityKlass;
+    public static Class<? extends com.voxeet.uxkit.incoming.factory.IVoxeetActivity> getAcceptedIncomingActivityKlass() {
+        return com.voxeet.uxkit.incoming.factory.IncomingCallFactory.getAcceptedIncomingActivityKlass();
     }
 
     /**
@@ -46,6 +42,6 @@ public class IncomingCallFactory {
      */
     @Nullable
     public static Bundle getAcceptedIncomingActivityExtras() {
-        return sAcceptedIncomingActivityExtras;
+        return com.voxeet.uxkit.incoming.factory.IncomingCallFactory.getAcceptedIncomingActivityExtras();
     }
 }

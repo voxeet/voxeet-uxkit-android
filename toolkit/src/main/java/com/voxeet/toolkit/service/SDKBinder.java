@@ -1,13 +1,8 @@
 package com.voxeet.toolkit.service;
 
-import android.os.Binder;
-import android.support.annotation.NonNull;
+import com.voxeet.uxkit.service.AbstractSDKService;
 
-import com.voxeet.sdk.utils.Annotate;
+@Deprecated
+public abstract class SDKBinder<CLASS extends AbstractSDKService> extends com.voxeet.uxkit.service.SDKBinder {
 
-@Annotate
-public abstract class SDKBinder<CLASS extends AbstractSDKService> extends Binder {
-
-    @NonNull
-    public abstract CLASS getService();
 }

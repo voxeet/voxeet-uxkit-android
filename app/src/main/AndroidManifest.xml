@@ -39,7 +39,7 @@
         <!-- Note : any override in the code will replace this metadata -->
         <meta-data
             android:name="voxeet_incoming_class"
-            android:value="com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity" />
+            android:value="com.voxeet.uxkit.activities.notification.DefaultIncomingCallActivity" />
 
         <!-- if a push notification is received from killed-state app, accepted calls will arrive there // possible override in code -->
         <!-- Note : any VoxeetAppCompat activity started will override this metadata -->
@@ -58,7 +58,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity"
+        <activity android:name="com.voxeet.uxkit.activities.notification.DefaultIncomingCallActivity"
             android:launchMode="singleInstance">
             <!-- exteDefaultIncomingCallActivityvity -->
         </activity>

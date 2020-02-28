@@ -15,12 +15,12 @@ import com.voxeet.sdk.push.center.management.EnforcedNotificationMode;
 import com.voxeet.sdk.push.center.management.NotificationMode;
 import com.voxeet.sdk.push.center.management.VersionFilter;
 import com.voxeet.sdk.sample.BuildConfig;
-import com.voxeet.toolkit.activities.notification.DefaultIncomingCallActivity;
-import com.voxeet.toolkit.controllers.ConferenceToolkitController;
-import com.voxeet.toolkit.controllers.VoxeetToolkit;
-import com.voxeet.toolkit.implementation.overlays.OverlayState;
-import com.voxeet.toolkit.incoming.IncomingFullScreen;
-import com.voxeet.toolkit.incoming.IncomingNotification;
+import com.voxeet.uxkit.activities.notification.DefaultIncomingCallActivity;
+import com.voxeet.uxkit.controllers.ConferenceToolkitController;
+import com.voxeet.uxkit.controllers.VoxeetToolkit;
+import com.voxeet.uxkit.implementation.overlays.OverlayState;
+import com.voxeet.uxkit.incoming.IncomingFullScreen;
+import com.voxeet.uxkit.incoming.IncomingNotification;
 
 import org.greenrobot.eventbus.EventBus;
 

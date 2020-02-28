@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.voxeet.sdk.sample.R;
-import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
+import com.voxeet.uxkit.activities.VoxeetAppCompatActivity;
 
 public class ActivityToTestOverlay extends VoxeetAppCompatActivity {
 

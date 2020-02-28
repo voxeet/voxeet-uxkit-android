@@ -26,8 +26,8 @@ import com.voxeet.sdk.models.v1.CreateConferenceResult;
 import com.voxeet.sdk.sample.R;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
-import com.voxeet.toolkit.activities.VoxeetAppCompatActivity;
-import com.voxeet.toolkit.controllers.VoxeetToolkit;
+import com.voxeet.uxkit.activities.VoxeetAppCompatActivity;
+import com.voxeet.uxkit.controllers.VoxeetToolkit;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
