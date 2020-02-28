@@ -35,6 +35,11 @@ public class SampleApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        VoxeetSDK.initialize(
+                BuildConfig.CONSUMER_KEY,
+                BuildConfig.CONSUMER_SECRET
+        ); //can be null - will be removed in a later version
+
         VoxeetToolkit.initialize(this, EventBus.getDefault())
                 .enableOverlay(true);
 
@@ -45,10 +50,6 @@ public class SampleApplication extends MultiDexApplication {
         VoxeetToolkit.instance().enable(ConferenceToolkitController.class);
 
         //the default case of this SDK is to have the SDK with consumerKey and consumerSecret embedded
-        VoxeetSDK.initialize(
-                BuildConfig.CONSUMER_KEY,
-                BuildConfig.CONSUMER_SECRET
-        ); //can be null - will be removed in a later version
         onSdkInitialized();
     }
 
