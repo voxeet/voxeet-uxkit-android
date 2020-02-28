@@ -1,3 +1,11 @@
+def version_from_sdk = { String version ->  project.hasProperty("CICD_FROM_BUILD_ID")
+        ? "${version}-${project.CICD_BUILD_ID}"
+        : "${version}" }
+
+def version_uxkit = { String version ->  project.hasProperty("CICD_BUILD_ID")
+        ? "${version}-${project.CICD_BUILD_ID}"
+        : "${version}" }
+
 buildscript {
     repositories {
         google()
@@ -21,15 +29,15 @@ ext {
     supportLibVersion = "28.0.0"
 
     //underlying sdk
-    voxeetSdkVersion = "2.1"
+    voxeetSdkVersion = version_from_sdk("2.1")
 
     //uxkit modules
-    pushSdkVersion = "2.1"
-    firebaseSdkVersion = "2.1"
-    voxeetSdkToolkitVersion = "2.1"
-    voxeetIncomingCall = "2.1"
-    systemServiceVersion = "2.1"
-    telecomSystemServiceVersion = "2.1"
+    pushSdkVersion = version_uxkit("2.1")
+    firebaseSdkVersion = version_uxkit("2.1")
+    voxeetSdkToolkitVersion = version_uxkit("2.1")
+    voxeetIncomingCall = version_uxkit("2.1")
+    systemServiceVersion = version_uxkit("2.1")
+    telecomSystemServiceVersion = version_uxkit("2.1")
 }
 
 allprojects {
