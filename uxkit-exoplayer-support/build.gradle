@@ -17,11 +17,10 @@ licenseReport {
 repositories {
     google()
     mavenLocal()
-    maven { url "https://dl.bintray.com/voxeet/maven" }
     jcenter()
 }
 
-System.out.println("creating for ${rootProject.ext.voxeetSdkToolkitVersion}")
+System.out.println("creating youtube for ${rootProject.ext.voxeetSdkToolkitVersion}")
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -92,14 +91,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
-    compile 'com.squareup.picasso:picasso:2.71828'
+    compile project(":uxkit")
 
-    compile("com.voxeet.sdk:public-sdk:${rootProject.ext.voxeetSdkVersion}") {
-        transitive = true
-    }
-    compile project(":toolkit-incoming-call")
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.7.3'
 }
 
 apply from: "../tasks.gradle"

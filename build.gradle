@@ -41,33 +41,33 @@ allprojects {
 }
 
 task cleanAll {
-    dependsOn(':toolkit:clean')
-    dependsOn(':toolkit-exoplayer-support:clean')
-    dependsOn(':toolkit-firebase:clean')
-    dependsOn(':toolkit-incoming-call:clean')
-    dependsOn(':toolkit-self-managed-call:clean')
-    dependsOn(':toolkit-system-service:clean')
-    dependsOn(':toolkit-youtube:clean')
+    dependsOn(':uxkit:clean')
+    dependsOn(':uxkit-exoplayer-support:clean')
+    dependsOn(':uxkit-firebase:clean')
+    dependsOn(':uxkit-incoming-call:clean')
+    dependsOn(':uxkit-self-managed-call:clean')
+    dependsOn(':uxkit-system-service:clean')
+    dependsOn(':uxkit-youtube:clean')
 }
 
 task assembleAll {
-    dependsOn(':toolkit:assembleRelease')
-    dependsOn(':toolkit-exoplayer-support:assembleRelease')
-    dependsOn(':toolkit-firebase:assembleRelease')
-    dependsOn(':toolkit-incoming-call:assembleRelease')
-    dependsOn(':toolkit-self-managed-call:assembleRelease')
-    dependsOn(':toolkit-system-service:assembleRelease')
-    dependsOn(':toolkit-youtube:assembleRelease')
+    dependsOn(':uxkit:assembleRelease')
+    dependsOn(':uxkit-exoplayer-support:assembleRelease')
+    dependsOn(':uxkit-firebase:assembleRelease')
+    dependsOn(':uxkit-incoming-call:assembleRelease')
+    dependsOn(':uxkit-self-managed-call:assembleRelease')
+    dependsOn(':uxkit-system-service:assembleRelease')
+    dependsOn(':uxkit-youtube:assembleRelease')
 }
 
 task installAll {
-    dependsOn(':toolkit:install')
-    dependsOn(':toolkit-exoplayer-support:install')
-    dependsOn(':toolkit-firebase:install')
-    dependsOn(':toolkit-incoming-call:install')
-    dependsOn(':toolkit-self-managed-call:install')
-    dependsOn(':toolkit-system-service:install')
-    dependsOn(':toolkit-youtube:install')
+    dependsOn(':uxkit:install')
+    dependsOn(':uxkit-exoplayer-support:install')
+    dependsOn(':uxkit-firebase:install')
+    dependsOn(':uxkit-incoming-call:install')
+    dependsOn(':uxkit-self-managed-call:install')
+    dependsOn(':uxkit-system-service:install')
+    dependsOn(':uxkit-youtube:install')
 }
 
 task clean(type: Delete) {

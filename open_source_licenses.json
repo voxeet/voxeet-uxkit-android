@@ -563,7 +563,7 @@
     {
         "project": "Audio",
         "description": null,
-        "version": "2.0.1",
+        "version": "2.0.2",
         "developers": [
             
         ],
@@ -572,7 +572,21 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:audio:1.0.3"
+        "dependency": "com.voxeet.sdk:audio:2.0.2"
+    },
+    {
+        "project": "Authent",
+        "description": null,
+        "version": "2.1",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:authent:2.1"
     },
     {
         "project": "Converter: Jackson",
@@ -590,6 +604,20 @@
             }
         ],
         "dependency": "com.squareup.retrofit2:converter-jackson:2.3.0"
+    },
+    {
+        "project": "Device_support",
+        "description": null,
+        "version": "2.1",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:device_support:2.1"
     },
     {
         "project": "EventBus",
@@ -624,159 +652,6 @@
             }
         ],
         "dependency": "com.google.code.findbugs:jsr305:3.0.2"
-    },
-    {
-        "project": "Firebase-analytics",
-        "description": null,
-        "version": "16.3.0",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-analytics:16.3.0"
-    },
-    {
-        "project": "Firebase-analytics-impl",
-        "description": null,
-        "version": "16.3.0",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-analytics-impl:16.3.0"
-    },
-    {
-        "project": "Firebase-common",
-        "description": null,
-        "version": "16.0.3",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-common:16.0.3"
-    },
-    {
-        "project": "Firebase-core",
-        "description": null,
-        "version": "16.0.7",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-core:16.0.7"
-    },
-    {
-        "project": "Firebase-iid",
-        "description": null,
-        "version": "17.1.0",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-iid:17.1.0"
-    },
-    {
-        "project": "Firebase-iid-interop",
-        "description": null,
-        "version": "16.0.1",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-iid-interop:16.0.1"
-    },
-    {
-        "project": "Firebase-measurement-connector",
-        "description": null,
-        "version": "17.0.1",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-measurement-connector:17.0.1"
-    },
-    {
-        "project": "Firebase-measurement-connector-impl",
-        "description": null,
-        "version": "17.0.5",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-measurement-connector-impl:17.0.5"
-    },
-    {
-        "project": "Firebase-messaging",
-        "description": null,
-        "version": "17.4.0",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.firebase:firebase-messaging:17.4.0"
     },
     {
         "project": "Gson",
@@ -884,9 +759,9 @@
         "dependency": "com.fasterxml.jackson.core:jackson-databind:2.8.7"
     },
     {
-        "project": "Media",
+        "project": "Log",
         "description": null,
-        "version": "1.72.6",
+        "version": "2.1",
         "developers": [
             
         ],
@@ -895,7 +770,21 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:media:1.72.6"
+        "dependency": "com.voxeet.sdk:log:2.1"
+    },
+    {
+        "project": "Media",
+        "description": null,
+        "version": "1.72.40",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:media:1.72.40"
     },
     {
         "project": "OkHttp",
@@ -913,23 +802,6 @@
             }
         ],
         "dependency": "com.squareup.okhttp3:okhttp:3.10.0"
-    },
-    {
-        "project": "OkHttp Logging Interceptor",
-        "description": null,
-        "version": null,
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Apache 2.0",
-                "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        ],
-        "dependency": "com.squareup.okhttp3:logging-interceptor:3.8.0"
     },
     {
         "project": "Okio",
@@ -966,128 +838,9 @@
         "dependency": "com.squareup.picasso:picasso:2.71828"
     },
     {
-        "project": "Play-services-ads-identifier",
-        "description": null,
-        "version": "16.0.0",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.android.gms:play-services-ads-identifier:16.0.0"
-    },
-    {
-        "project": "Play-services-base",
-        "description": null,
-        "version": "16.0.1",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.android.gms:play-services-base:16.0.1"
-    },
-    {
-        "project": "Play-services-basement",
-        "description": null,
-        "version": "16.0.1",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.android.gms:play-services-basement:16.0.1"
-    },
-    {
-        "project": "Play-services-measurement-api",
-        "description": null,
-        "version": "16.3.0",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.android.gms:play-services-measurement-api:16.3.0"
-    },
-    {
-        "project": "Play-services-measurement-base",
-        "description": null,
-        "version": "16.3.0",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.android.gms:play-services-measurement-base:16.3.0"
-    },
-    {
-        "project": "Play-services-stats",
-        "description": null,
-        "version": "16.0.1",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.android.gms:play-services-stats:16.0.1"
-    },
-    {
-        "project": "Play-services-tasks",
-        "description": null,
-        "version": "16.0.1",
-        "developers": [
-            
-        ],
-        "url": null,
-        "year": null,
-        "licenses": [
-            {
-                "license": "Android Software Development Kit License",
-                "license_url": "https://developer.android.com/studio/terms.html"
-            }
-        ],
-        "dependency": "com.google.android.gms:play-services-tasks:16.0.1"
-    },
-    {
         "project": "Promise",
         "description": null,
-        "version": "1.7.2",
+        "version": "2.5",
         "developers": [
             
         ],
@@ -1096,12 +849,12 @@
         "licenses": [
             
         ],
-        "dependency": "eu.codlab:promise:1.7.2"
+        "dependency": "com.voxeet.sdk:promise:2.5"
     },
     {
         "project": "Public-sdk",
         "description": null,
-        "version": "2.0.21",
+        "version": "2.1",
         "developers": [
             
         ],
@@ -1110,12 +863,12 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:public-sdk:2.0.21"
+        "dependency": "com.voxeet.sdk:public-sdk:2.1"
     },
     {
         "project": "Push",
         "description": null,
-        "version": "2.0.21",
+        "version": "2.1",
         "developers": [
             
         ],
@@ -1124,7 +877,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:push:2.0.21"
+        "dependency": "com.voxeet.sdk:push:2.1"
     },
     {
         "project": "Retrofit",
@@ -1180,7 +933,7 @@
     {
         "project": "Sentry",
         "description": null,
-        "version": "2.0.21",
+        "version": "2.1",
         "developers": [
             
         ],
@@ -1189,7 +942,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:sentry:2.0.21"
+        "dependency": "com.voxeet.sdk:sentry:2.1"
     },
     {
         "project": "Sentry-Java client",
@@ -1226,6 +979,48 @@
         "dependency": "io.sentry:sentry-android:1.7.16"
     },
     {
+        "project": "Stats",
+        "description": null,
+        "version": "0.0.5",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:stats:0.0.5"
+    },
+    {
+        "project": "Telemetry",
+        "description": null,
+        "version": "2.1",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:telemetry:2.1"
+    },
+    {
+        "project": "Utils",
+        "description": null,
+        "version": "2.1",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:utils:2.1"
+    },
+    {
         "project": "VersionedParcelable and friends",
         "description": "Provides a stable but relatively compact binary serialization format that can be passed across processes or persisted safely.",
         "version": "28.0.0",
@@ -1241,6 +1036,20 @@
             }
         ],
         "dependency": "com.android.support:versionedparcelable:28.0.0"
+    },
+    {
+        "project": "Video",
+        "description": null,
+        "version": "2.1",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:video:2.1"
     }
 ]
 

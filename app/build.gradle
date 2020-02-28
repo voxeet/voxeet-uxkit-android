@@ -59,10 +59,10 @@ android {
 }
 
 dependencies {
-    api project(':toolkit')
-    api project(':toolkit-youtube')
-    api project(':toolkit-exoplayer-support')
-    api project(':toolkit-firebase')
+    api project(':uxkit')
+    api project(':uxkit-youtube')
+    api project(':uxkit-exoplayer-support')
+    api project(':uxkit-firebase')
 
     testImplementation 'junit:junit:4.12'
 

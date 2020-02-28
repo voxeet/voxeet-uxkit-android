@@ -34,7 +34,7 @@ assignees: codlab
   - Version:
     - _for each libraries : name -> version_
     - [e.g. Android Sdk public-sdk 1.4.6]
-    - [e.g. Android Sdk toolkit 1.4.6]
+    - [e.g. Android Sdk uxkit 1.4.6]
     - [e.g. Butterknife 7.0.1]
     - [...]
   - Hardware:
