@@ -78,6 +78,16 @@ task installAll {
     dependsOn(':uxkit-youtube:install')
 }
 
+task uploadAll {
+    dependsOn(':uxkit:bintrayUpload')
+    dependsOn(':uxkit-exoplayer-support:bintrayUpload')
+    dependsOn(':uxkit-firebase:bintrayUpload')
+    dependsOn(':uxkit-incoming-call:bintrayUpload')
+    dependsOn(':uxkit-self-managed-call:bintrayUpload')
+    dependsOn(':uxkit-system-service:bintrayUpload')
+    dependsOn(':uxkit-youtube:bintrayUpload')
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

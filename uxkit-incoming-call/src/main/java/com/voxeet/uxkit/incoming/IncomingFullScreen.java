@@ -41,7 +41,6 @@ public class IncomingFullScreen implements IIncomingInvitationListener {
 
     @SuppressLint("WrongConstant")
     @Override
-
     public void onInvitation(@NonNull Context context, @NonNull InvitationBundle invitationBundle) {
 
         String voxeet_default_incoming = AndroidManifest.readMetadata(context, "voxeet_incoming_class", null);
