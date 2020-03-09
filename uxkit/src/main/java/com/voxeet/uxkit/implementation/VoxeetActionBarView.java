@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
@@ -22,9 +21,7 @@ import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.promise.Promise;
-import com.voxeet.promise.solve.ErrorPromise;
-import com.voxeet.promise.solve.PromiseExec;
-import com.voxeet.promise.solve.Solver;
+import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
@@ -35,12 +32,14 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.services.AudioService;
 import com.voxeet.sdk.services.ConferenceService;
+import com.voxeet.sdk.services.SessionService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
 import com.voxeet.sdk.services.media.VideoState;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.NoDocumentation;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.configuration.ActionBar;
@@ -213,18 +212,12 @@ public class VoxeetActionBarView extends VoxeetView {
             ConferenceInformation information = service.getCurrentConference();
 
             if (null != information && information.isOwnVideoStarted() && !VideoState.STARTED.equals(information.getVideoState())) {
-                service.startVideo().then(new PromiseExec<Boolean, Object>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                        Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + result);
-                    }
-                }).error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable error) {
-                        Log.d(TAG, "onAttachedToWindow: starting video ? thrown:=" + error);
-                        error.printStackTrace();
-                    }
-                });
+                service.startVideo()
+                        .then((ThenVoid<Boolean>) aBoolean -> Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean))
+                        .error(error -> {
+                            Log.d(TAG, "onAttachedToWindow: starting video ? thrown:=" + error);
+                            error.printStackTrace();
+                        });
             }
 
             updateCameraState();
@@ -309,11 +302,12 @@ public class VoxeetActionBarView extends VoxeetView {
      * - the screenshare button
      */
     public void invalidateOwnStreams() {
-        Participant user = VoxeetSDK.conference().findParticipantById(VoxeetSDK.session().getParticipantId());
 
-        if (null != user) {
-            MediaStream cameraStream = user.streamsHandler().getFirst(MediaStreamType.Camera);
-            MediaStream screenStream = user.streamsHandler().getFirst(MediaStreamType.ScreenShare);
+        Participant participant = Opt.of(VoxeetSDK.session()).then(SessionService::getParticipantId)
+                .then(id -> VoxeetSDK.conference().findParticipantById(id)).orNull();
+        if (null != participant) {
+            MediaStream cameraStream = participant.streamsHandler().getFirst(MediaStreamType.Camera);
+            MediaStream screenStream = participant.streamsHandler().getFirst(MediaStreamType.ScreenShare);
             if (camera != null && null != cameraStream) {
                 camera.setSelected(cameraStream.videoTracks().size() > 0);
             }
@@ -340,75 +334,41 @@ public class VoxeetActionBarView extends VoxeetView {
         view_3d_wrapper = v.findViewById(R.id.view_3d_wrapper);
         if (null != view_3d) {
             invalidateView3D();
-            view_3d.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    on3DView();
-                }
-            });
+            view_3d.setOnClickListener(v15 -> on3DView());
         }
-        speaker = (ImageView) v.findViewById(R.id.speaker);
+        speaker = v.findViewById(R.id.speaker);
         speaker_wrapper = v.findViewById(R.id.speaker_wrapper);
         updateSpeakerButton();
-        speaker.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speaker.setSelected(!speaker.isSelected());
+        speaker.setOnClickListener(v16 -> {
+            speaker.setSelected(!speaker.isSelected());
 
-                VoxeetSDK.audio().setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
-            }
+            VoxeetSDK.audio().setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
         });
 
-        hangup = (ImageView) v.findViewById(R.id.hangup);
+        hangup = v.findViewById(R.id.hangup);
         hangup_wrapper = v.findViewById(R.id.hangup_wrapper);
-        hangup.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                VoxeetSDK.audio().playSoundType(AudioType.HANGUP);
+        hangup.setOnClickListener(v1 -> {
+            VoxeetSDK.audio().playSoundType(AudioType.HANGUP);
 
-                VoxeetSDK.conference().leave()
-                        .then(new PromiseExec<Boolean, Object>() {
-                            @Override
-                            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                                //manage the result ?
-                            }
-                        })
-                        .error(new ErrorPromise() {
-                            @Override
-                            public void onError(Throwable error) {
-                                //manage the error ?
-                            }
-                        });
-            }
+            VoxeetSDK.conference().leave()
+                    .then(aBoolean -> {
+                        //manage the result ?
+                    })
+                    .error(Throwable::printStackTrace);
         });
 
         microphone = v.findViewById(R.id.microphone);
         microphone_wrapper = v.findViewById(R.id.microphone_wrapper);
-        microphone.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleMute();
-            }
-        });
+        microphone.setOnClickListener(v12 -> toggleMute());
 
-        camera = (ImageView) v.findViewById(R.id.camera);
+        camera = v.findViewById(R.id.camera);
         camera_wrapper = v.findViewById(R.id.camera_wrapper);
-        camera.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleCamera();
-            }
-        });
+        camera.setOnClickListener(v13 -> toggleCamera());
 
         screenshare = v.findViewById(R.id.screenshare);
         screenshare_wrapper = v.findViewById(R.id.screenshare_wrapper);
         if (null != screenshare) {
-            screenshare.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    toggleScreenShare();
-                }
-            });
+            screenshare.setOnClickListener(v14 -> toggleScreenShare());
         }
 
         ActionBar configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar;
@@ -473,18 +433,12 @@ public class VoxeetActionBarView extends VoxeetView {
 
             if (null != video) {
                 camera.setEnabled(false);
-                video.then(new PromiseExec<Boolean, Object>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                        camera.setEnabled(true);
-                        updateCameraState();
-                    }
-                }).error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable error) {
-                        camera.setEnabled(true);
-                        updateCameraState();
-                    }
+                video.then(aBoolean -> {
+                    camera.setEnabled(true);
+                    updateCameraState();
+                }).error(error -> {
+                    camera.setEnabled(true);
+                    updateCameraState();
                 });
             }
         }
@@ -519,10 +473,7 @@ public class VoxeetActionBarView extends VoxeetView {
      */
     protected void toggleScreenShare() {
         if (canScreenShare()) {
-            Point size = VoxeetSDK.screenShare().getScreenSize(getContext());
-            VoxeetSDK.screenShare()
-                    .setScreenSizeInformation(VoxeetSDK.screenShare().getScreenSizeScaled(size, 720))
-                    .toggleScreenShare();
+            VoxeetSDK.screenShare().toggleScreenShare();
         }
     }
 
@@ -544,7 +495,7 @@ public class VoxeetActionBarView extends VoxeetView {
         if (hangup != null)
             hangup_wrapper.setVisibility(displayLeave ? VISIBLE : GONE);
 
-        boolean screenShareEnabled = VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled();
+        boolean screenShareEnabled = VoxeetToolkit.instance().getConferenceToolkit().isScreenShareEnabled();
         if (screenshare != null)
             screenshare_wrapper.setVisibility(displayScreenShare && !listener && screenShareEnabled ? VISIBLE : GONE);
     }
@@ -618,7 +569,7 @@ public class VoxeetActionBarView extends VoxeetView {
             hangup_wrapper.setVisibility(displayLeave ? visibility : GONE);
 
 
-        boolean screenShareEnabled = VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled();
+        boolean screenShareEnabled = VoxeetToolkit.instance().getConferenceToolkit().isScreenShareEnabled();
         if (screenshare != null)
             screenshare_wrapper.setVisibility(displayScreenShare && screenShareEnabled ? visibility : GONE);
     }

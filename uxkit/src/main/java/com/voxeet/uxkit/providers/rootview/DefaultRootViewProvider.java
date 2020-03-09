@@ -33,7 +33,6 @@ public class DefaultRootViewProvider extends AbstractRootViewProvider {
     @Override
     public FrameLayout getRootView() {
         Activity activity = getCurrentActivity();
-        Log.d(TAG, "getDefaultRootView: " + activity);
         if (null != activity) {
             if (null == containerFrameLayout) {
                 containerFrameLayout = new VoxeetOverlayContainerFrameLayout(activity);

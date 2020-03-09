@@ -211,9 +211,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
         }
 
         handler.removeCallbacks(stopForeground);
-        //handler.postDelayed(stopForeground, 2000);
         stopForeground.run();
-        //stopSelf();
     }
 
     protected void checkEventBus() {

@@ -3,10 +3,6 @@ package com.voxeet.uxkit.utils;
 import android.graphics.Point;
 import android.support.annotation.NonNull;
 
-/**
- * Created by kevinleperf on 20/11/2017.
- */
-
 public class Corner {
     private Point _point;
     private Type _type;

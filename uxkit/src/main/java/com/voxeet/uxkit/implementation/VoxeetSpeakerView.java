@@ -239,11 +239,9 @@ public class VoxeetSpeakerView extends VoxeetView {
     @NoDocumentation
     @Override
     protected void bindView(View v) {
-        currentSpeakerView = (RoundedImageView) v.findViewById(R.id.speaker_image);
-
-        vuMeter = (VoxeetVuMeter) v.findViewById(R.id.vu_meter);
-
-        speakerName = (TextView) v.findViewById(R.id.speaker_name);
+        currentSpeakerView = v.findViewById(R.id.speaker_image);
+        vuMeter = v.findViewById(R.id.vu_meter);
+        speakerName = v.findViewById(R.id.speaker_name);
     }
 
     /**
@@ -259,7 +257,7 @@ public class VoxeetSpeakerView extends VoxeetView {
     }
 
     private void invalidateSpeakerName() {
-        vuMeter.setVisibility(/*mDisplaySpeakerName ? View.GONE : */View.VISIBLE);
+        vuMeter.setVisibility(View.VISIBLE);
         speakerName.setVisibility(mDisplaySpeakerName ? View.VISIBLE : View.GONE);
     }
 

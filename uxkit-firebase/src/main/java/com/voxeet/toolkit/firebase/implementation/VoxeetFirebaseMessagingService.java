@@ -9,22 +9,7 @@ import com.voxeet.sdk.services.notification.INotificationTokenProvider;
 import com.voxeet.sdk.services.notification.NotificationTokenHolderFactory;
 import com.voxeet.sdk.utils.Annotate;
 
+@Deprecated
 @Annotate
-public class VoxeetFirebaseMessagingService extends FirebaseMessagingService {
-
-    public VoxeetFirebaseMessagingService() {
-        super();
-    }
-
-    @Override
-    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        INotificationTokenProvider provider = NotificationTokenHolderFactory.provider;
-        if (null != provider) {
-            provider.log("New notification with body " + remoteMessage.getData());
-
-            boolean managed = NotificationCenterFactory.instance.manageRemoteMessage(getApplicationContext(), remoteMessage.getData());
-
-            provider.log("notification managed := " + managed);
-        }
-    }
+public class VoxeetFirebaseMessagingService extends com.voxeet.uxkit.firebase.implementation.VoxeetFirebaseMessagingService {
 }

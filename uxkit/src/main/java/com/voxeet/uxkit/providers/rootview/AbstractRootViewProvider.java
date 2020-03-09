@@ -73,7 +73,6 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
      * Can be null if current activity is finishing or event the mApp.
      */
     public void setCurrentActivity(Activity activity) {
-        Log.d(TAG, "setCurrentActivity: " + getClass() + " " + activity.getClass().getSimpleName());
         mCurrentActivity = activity;
     }
 
@@ -85,7 +84,6 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
      */
     @Nullable
     public Activity getCurrentActivity() {
-        Log.d(TAG, "getCurrentActivity: " + getClass() + " " + mCurrentActivity);
         return mCurrentActivity;
     }
 
@@ -100,7 +98,6 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
 
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
-        Log.d(TAG, "onActivityResumed: " + activity.getClass().getSimpleName());
         mIsActivityResumed = true;
         setCurrentActivity(activity);
 
@@ -111,7 +108,6 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
 
     @Override
     public void onActivityPaused(@NonNull Activity activity) {
-        Log.d(TAG, "onActivityPaused: " + activity.getClass().getSimpleName());
         mIsActivityResumed = false;
 
         if (mListener != null) {
@@ -121,18 +117,16 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
 
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
-        Log.d(TAG, "onActivityCreated: " + activity.getClass().getSimpleName());
+
     }
 
     @Override
     public void onActivityStarted(Activity activity) {
-        Log.d(TAG, "onActivityStarted: " + activity.getClass().getSimpleName());
 
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
-        Log.d(TAG, "onActivityStopped: " + activity.getClass().getSimpleName());
 
     }
 

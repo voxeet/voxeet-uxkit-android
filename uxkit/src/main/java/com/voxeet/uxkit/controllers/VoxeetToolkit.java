@@ -10,7 +10,9 @@ import android.util.Log;
 import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.services.telemetry.SdkEnvironment;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.utils.NoDocumentation;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.BuildConfig;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
 import com.voxeet.uxkit.providers.rootview.AbstractRootViewProvider;
@@ -132,7 +134,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
         mIsOverEnabled = enabled;
 
-
         for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
             controller.onOverlayEnabled(enabled);
         }
@@ -214,17 +215,10 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
      * @return true if the controller was found and activated or already activated
      */
     public <T extends AbstractConferenceToolkitController> boolean enable(@NonNull Class<T> controllerKlass) {
-        AbstractConferenceToolkitController firstController = null;
+        AbstractConferenceToolkitController firstController = Map.find(mConferenceToolkitControllers,
+                controller -> null != controller && controller.getClass().equals(controllerKlass));
 
-        for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
-            if (null != controller && controller.getClass().equals(controllerKlass)) {
-                firstController = controller;
-                break;
-            }
-        }
-
-        if (null != firstController) return enable(firstController);
-        return false;
+        return Opt.of(firstController).then(this::enable).or(false);
     }
 
     /**

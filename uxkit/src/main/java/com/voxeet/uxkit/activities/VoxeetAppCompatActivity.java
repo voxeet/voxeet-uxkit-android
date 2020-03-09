@@ -160,31 +160,18 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
 
     @NoDocumentation
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        switch (requestCode) {
-            case PermissionRefusedEvent.RESULT_CAMERA: {
-                Log.d(TAG, "onActivityResult: camera is ok now");
-                if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
-                    VoxeetSDK.conference().startVideo()
-                            .then(new PromiseExec<Boolean, Object>() {
-                                @Override
-                                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-
-                                }
-                            })
-                            .error(new ErrorPromise() {
-                                @Override
-                                public void onError(@NonNull Throwable error) {
-                                    error.printStackTrace();
-                                }
-                            });
-                }
-                return;
+        if (requestCode == PermissionRefusedEvent.RESULT_CAMERA) {
+            Log.d(TAG, "onActivityResult: camera is ok now");
+            if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
+                VoxeetSDK.conference().startVideo()
+                        .then(result -> {
+                        })
+                        .error(Throwable::printStackTrace);
             }
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -204,8 +191,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(RequestScreenSharePermissionEvent event) {
-        VoxeetSDK.screenShare()
-                .sendUserPermissionRequest(this);
+        VoxeetSDK.screenShare().sendUserPermissionRequest(this);
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

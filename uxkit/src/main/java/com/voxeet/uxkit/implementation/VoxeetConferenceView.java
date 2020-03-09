@@ -147,14 +147,11 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             }
         });
 
-        this.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (isExpanded && null != mScaleOnPinchDetector) {
-                    return mScaleOnPinchDetector.onTouchEvent(event);
-                }
-                return false;
+        this.setOnTouchListener((v, event) -> {
+            if (isExpanded && null != mScaleOnPinchDetector) {
+                return mScaleOnPinchDetector.onTouchEvent(event);
             }
+            return false;
         });
     }
 
@@ -532,7 +529,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
 
-        boolean enableInConfiguration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
+        boolean enableInConfiguration = VoxeetToolkit.instance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
         if (enableInConfiguration && null != information && !information.isListener()) {
             conferenceActionBarView.setDisplayScreenShare(true);
         } else {
@@ -668,12 +665,9 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
             mConferenceViewRendererControl = new ConferenceViewRendererControl(this, selfView, selectedView);
 
-            selfView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (VoxeetSDK.instance() != null) {
-                        mConferenceViewRendererControl.switchCamera();
-                    }
+            selfView.setOnClickListener(view1 -> {
+                if (VoxeetSDK.instance() != null) {
+                    mConferenceViewRendererControl.switchCamera();
                 }
             });
 

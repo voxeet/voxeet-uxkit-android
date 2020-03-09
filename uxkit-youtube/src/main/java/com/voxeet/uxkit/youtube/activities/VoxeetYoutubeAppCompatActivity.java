@@ -129,26 +129,16 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
 
     @NoDocumentation
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
-
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionRefusedEvent.RESULT_CAMERA: {
                 Log.d(TAG, "onActivityResult: camera is ok now");
                 if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
                     VoxeetSDK.conference().startVideo()
-                            .then(new PromiseExec<Boolean, Object>() {
-                                @Override
-                                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
+                            .then((result, solver) -> {
 
-                                }
                             })
-                            .error(new ErrorPromise() {
-                                @Override
-                                public void onError(@NonNull Throwable error) {
-                                    error.printStackTrace();
-                                }
-                            });
+                            .error(Throwable::printStackTrace);
                 }
                 return;
             }
@@ -173,8 +163,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(RequestScreenSharePermissionEvent event) {
-        VoxeetSDK.screenShare()
-                .sendUserPermissionRequest(this);
+        VoxeetSDK.screenShare().sendUserPermissionRequest(this);
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

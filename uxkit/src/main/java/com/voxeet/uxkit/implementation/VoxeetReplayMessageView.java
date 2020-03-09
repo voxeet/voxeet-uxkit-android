@@ -125,12 +125,5 @@ public class VoxeetReplayMessageView extends AbstractVoxeetExpandableView implem
     @Override
     protected void bindView(View view) {
         selectedView = view.findViewById(R.id.selected_video_view);
-
-        //layoutTimer = view.findViewById(R.id.layout_timer);
-
-        //voxeetTimer = view.findViewById(R.id.voxeet_timer);
-
-        //addListeners for voxeet dispatch events
-        //addListener(voxeetTimer);
     }
 }

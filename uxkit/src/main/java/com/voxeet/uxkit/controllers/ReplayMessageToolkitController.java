@@ -16,6 +16,9 @@ import com.voxeet.sdk.media.audio.AudioRoute;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.v1.HistoryConference;
 import com.voxeet.sdk.services.ConferenceService;
+import com.voxeet.sdk.utils.Map;
+import com.voxeet.sdk.utils.MapFilter;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.configuration.Configuration;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
 import com.voxeet.uxkit.implementation.overlays.abs.IExpandableViewProviderListener;
@@ -26,9 +29,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-/**
- * Created by kevinleperf on 15/01/2018.
- */
+import java.util.ArrayList;
 
 public class ReplayMessageToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
@@ -84,29 +85,21 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         ConferenceService service = VoxeetSDK.conference();
         VoxeetSDK.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
         service.conferenceHistory(conferenceId)
-                .then(new PromiseExec<ConferenceHistoryResult, Object>() {
-                    @Override
-                    public void onCall(@Nullable ConferenceHistoryResult event, @NonNull Solver<Object> solver) {
-                        //possibility to manage the conference history event right here
-                        HistoryConference history_conference = findFirstMatch(event);
+                .then((event, solver) -> {
+                    //possibility to manage the conference history event right here
+                    HistoryConference history_conference = findFirstMatch(event);
 
-                        if (history_conference != null) {
-                            _last_conference_duration = history_conference.getConferenceRecordingDuration();
-                        } else {
-                            //must be because it is not the current conference which returned something !
-                        }
-
-                        _wait_for_history = false;
+                    if (history_conference != null) {
+                        _last_conference_duration = history_conference.getConferenceRecordingDuration();
                     }
+
+                    _wait_for_history = false;
                 })
-                .error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable throwable) {
-                        Log.d(TAG, "onHistoryError: " + throwable.getMessage());
-                        throwable.printStackTrace();
+                .error(throwable -> {
+                    Log.d(TAG, "onHistoryError: " + throwable.getMessage());
+                    throwable.printStackTrace();
 
-                        _wait_for_history = false;
-                    }
+                    _wait_for_history = false;
                 });
 
         //TODO here, do a Promise.all with the two different method !
@@ -124,18 +117,10 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
         //leave the current conference
         VoxeetSDK.conference()
                 .leave()
-                .then(new PromiseExec<Boolean, Object>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                        //do something here ?
-                    }
+                .then((result, solver) -> {
+                    //do something here ?
                 })
-                .error(new ErrorPromise() {
-                    @Override
-                    public void onError(Throwable error) {
-                        error.printStackTrace();
-                    }
-                });
+                .error(error -> error.printStackTrace());
     }
 
     @Override
@@ -166,13 +151,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
      */
     @Nullable
     private HistoryConference findFirstMatch(@NonNull ConferenceHistoryResult event) {
-        for (HistoryConference item : event.items) {
-            if (_last_conference.equalsIgnoreCase(item.getConferenceId())
-                    && item.getConferenceRecordingDuration() > 0) {
-                return item;
-            }
-        }
-
-        return null;
+        return Map.find(Opt.of(event.items).or(new ArrayList<>()),
+                item -> _last_conference.equalsIgnoreCase(item.getConferenceId()) && item.getConferenceRecordingDuration() > 0);
     }
 }

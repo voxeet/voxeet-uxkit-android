@@ -60,14 +60,11 @@ public abstract class VoxeetApplication extends Application {
      * @return a valid promise which will initialize the SDK
      */
     public Promise<Boolean> initializeSDK() {
-        return new Promise<>(new PromiseSolver<Boolean>() {
-            @Override
-            public void onCall(@NonNull Solver<Boolean> solver) {
-                //TODO as said right above, for now, the implementation does not check for multiple calls
-                //TODO append the current 'solver' in a list and call uniqueInitialSDK if no solver existed
-                //when the uniqueInitialize resoles, simply flush the awaiting 'solver's
-                solver.resolve(uniqueInitializeSDK());
-            }
+        return new Promise<>(solver -> {
+            //TODO as said right above, for now, the implementation does not check for multiple calls
+            //TODO append the current 'solver' in a list and call uniqueInitialSDK if no solver existed
+            //when the uniqueInitialize resoles, simply flush the awaiting 'solver's
+            solver.resolve(uniqueInitializeSDK());
         });
     }
 
@@ -97,11 +94,6 @@ public abstract class VoxeetApplication extends Application {
         ParticipantInfo userInfos = VoxeetPreferences.getSavedUserInfo();
         if (null != userInfos)
             return VoxeetSDK.session().open(userInfos);
-        return new Promise<>(new PromiseSolver<Boolean>() {
-            @Override
-            public void onCall(@NonNull Solver<Boolean> solver) {
-                solver.resolve(true);
-            }
-        });
+        return new Promise<>(solver -> solver.resolve(true));
     }
 }

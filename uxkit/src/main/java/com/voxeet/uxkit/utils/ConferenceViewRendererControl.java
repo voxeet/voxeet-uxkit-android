@@ -12,6 +12,7 @@ import com.voxeet.android.media.MediaStreamType;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.Solver;
+import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.media.camera.CameraContext;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.views.VideoView;
@@ -23,7 +24,6 @@ import javax.annotation.Nullable;
 
 public class ConferenceViewRendererControl {
 
-    private static final String TAG = ConferenceViewRendererControl.class.getSimpleName();
     @NonNull
     private WeakReference<VoxeetConferenceView> parent;
 
@@ -47,14 +47,13 @@ public class ConferenceViewRendererControl {
 
 
     private ConferenceViewRendererControl() {
-        parent = new WeakReference<>(null);
-        selfVideoView = new WeakReference<>(null);
-        otherVideoView = new WeakReference<>(null);
+
     }
 
     public ConferenceViewRendererControl(@NonNull VoxeetConferenceView parent,
                                          @NonNull VideoView selfVideoView,
                                          @NonNull VideoView otherVideoView) {
+        this();
         this.parent = new WeakReference<>(parent);
         this.selfVideoView = new WeakReference<>(selfVideoView);
         this.otherVideoView = new WeakReference<>(otherVideoView);
@@ -226,19 +225,11 @@ public class ConferenceViewRendererControl {
         }
 
         VoxeetSDK.mediaDevice().switchCamera()
-                .then(new PromiseExec<Boolean, Object>() {
-                    @Override
-                    public void onCall(@android.support.annotation.Nullable Boolean result, @NonNull Solver<Object> solver) {
-                        CameraContext provider = VoxeetSDK.mediaDevice().getCameraContext();
-                        updateMirror(provider.isDefaultFrontFacing());
-                    }
+                .then(aBoolean -> {
+                    CameraContext provider = VoxeetSDK.mediaDevice().getCameraContext();
+                    updateMirror(provider.isDefaultFrontFacing());
                 })
-                .error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable error) {
-                        error.printStackTrace();
-                    }
-                });
+                .error(Throwable::printStackTrace);
     }
 
     public void updateMirror(boolean isFrontCamera) {

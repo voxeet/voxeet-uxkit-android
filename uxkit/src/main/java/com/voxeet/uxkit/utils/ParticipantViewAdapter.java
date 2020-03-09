@@ -101,15 +101,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     }
 
     private void filter() {
-        /*
-        List<Participant> temp_users = new ArrayList<>();
 
-        for (Participant user : users) {
-            if (!ConferenceParticipantStatus.LEFT.equals(user.getStatus())) temp_users.add(user);
-        }
-
-        users = temp_users;
-        */
     }
 
     private boolean is(Participant p, ConferenceParticipantStatus s) {
@@ -194,19 +186,15 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
             holder.overlay.setVisibility(View.GONE);
         }
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
+        holder.itemView.setOnLongClickListener(view -> {
+            if (equalsToUser(selectedUserId, user)) {
+                selectedUserId = null;
 
-                if (equalsToUser(selectedUserId, user)) {
-                    selectedUserId = null;
-
-                    if (listener != null)
-                        listener.onParticipantUnselected(user);
-                    notifyDataSetChanged();
-                }
-                return true;
+                if (listener != null)
+                    listener.onParticipantUnselected(user);
+                notifyDataSetChanged();
             }
+            return true;
         });
 
         if (null != mRequestUserIdChanged && mRequestUserIdChanged.equals(user.getId())) {
@@ -225,38 +213,35 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
             loadStreamOnto(userId, holder);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!on_air) {
-                    Log.d(TAG, "onClick: click on an invalid user, we can't select him");
-                    return;
+        holder.itemView.setOnClickListener(v -> {
+            if (!on_air) {
+                Log.d(TAG, "onClick: click on an invalid user, we can't select him");
+                return;
+            }
+
+            String userId = user.getId();
+            //toggle media screen call next stream
+
+            loadStreamOnto(userId, holder);
+
+
+            MediaStream stream = getMediaStream(userId);
+
+            if (null != user.getId()) {
+                Log.d(TAG, "onClick: selecting the user " + user.getId());
+                if (null == selectedUserId || !equalsToUser(selectedUserId, user)) {
+                    selectedUserId = user.getId();
+
+                    if (listener != null)
+                        listener.onParticipantSelected(user, stream);
+                } else {
+                    selectedUserId = null; //deselecting
+
+                    if (listener != null)
+                        listener.onParticipantUnselected(user);
                 }
 
-                String userId = user.getId();
-                //toggle media screen call next stream
-
-                loadStreamOnto(userId, holder);
-
-
-                MediaStream stream = getMediaStream(userId);
-
-                if (null != user.getId()) {
-                    Log.d(TAG, "onClick: selecting the user " + user.getId());
-                    if (null == selectedUserId || !equalsToUser(selectedUserId, user)) {
-                        selectedUserId = user.getId();
-
-                        if (listener != null)
-                            listener.onParticipantSelected(user, stream);
-                    } else {
-                        selectedUserId = null; //deselecting
-
-                        if (listener != null)
-                            listener.onParticipantUnselected(user);
-                    }
-
-                    notifyDataSetChanged();
-                }
+                notifyDataSetChanged();
             }
         });
 
@@ -349,14 +334,6 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      * @param user
      */
     public void onMediaStreamUpdated(@Nullable Participant user) {
-        //removed unecessary change of current selected it
-        /*
-        MediaStream stream = user.streamsHandler().getFirst(MediaStreamType.Camera);
-        if (null != stream && stream.videoTracks().size() > 0) {
-            mRequestUserIdChanged = user.getId();
-        }
-        */
-
         notifyDataSetChanged();
     }
 
@@ -400,13 +377,10 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         ViewHolder(@NonNull View view) {
             super(view);
 
-            videoView = (VideoView) view.findViewById(R.id.participant_video_view);
-
-            name = (TextView) view.findViewById(R.id.name);
-
-            overlay = (ImageView) view.findViewById(R.id.overlay_avatar);
-
-            avatar = (RoundedImageView) view.findViewById(R.id.avatar);
+            videoView = view.findViewById(R.id.participant_video_view);
+            name = view.findViewById(R.id.name);
+            overlay = view.findViewById(R.id.overlay_avatar);
+            avatar = view.findViewById(R.id.avatar);
         }
     }
 

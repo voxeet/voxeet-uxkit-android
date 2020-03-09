@@ -21,6 +21,6 @@ public final class YoutubeMediaPresentationProviderManifestComponent extends Abs
 
     @Override
     protected String getDefaultAuthority() {
-        return "com.voxeet.toolkit.mp4.manifests.";
+        return "com.voxeet.uxkit.youtube.manifests.";
     }
 }

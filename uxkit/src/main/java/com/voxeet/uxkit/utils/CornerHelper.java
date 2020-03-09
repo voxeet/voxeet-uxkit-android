@@ -78,13 +78,10 @@ public class CornerHelper {
     }
 
     public static void sendToCorner(final VoxeetView view, final WindowManager windowManager, final Context context) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Corner corner = CornerHelper.getClosestCorner(view, windowManager, context);
-                Point closest_corner = CornerHelper.getFinalPositionForCorner(view, windowManager, context, corner);
-                view.animate().x(closest_corner.x).y(closest_corner.y).setDuration(200).start();
-            }
+        mHandler.post(() -> {
+            Corner corner = CornerHelper.getClosestCorner(view, windowManager, context);
+            Point closest_corner = CornerHelper.getFinalPositionForCorner(view, windowManager, context, corner);
+            view.animate().x(closest_corner.x).y(closest_corner.y).setDuration(200).start();
         });
     }
 }

@@ -8,11 +8,6 @@ import com.voxeet.sdk.models.Participant;
 
 import java.util.List;
 
-
-/**
- * Created by kevinleperf on 15/01/2018.
- */
-
 public interface IVoxeetView {
     /**
      * On conference joined.

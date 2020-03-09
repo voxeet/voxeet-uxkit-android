@@ -178,7 +178,6 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     private List<Participant> filter(List<Participant> users) {
-        Log.d("VoxeetUsersView", "filter: !had 1 " + users.size());
         SessionService sessionService = VoxeetSDK.session();
         List<Participant> filter = new ArrayList<>();
         int added = 0;
@@ -197,8 +196,6 @@ public class VoxeetUsersView extends VoxeetView {
             }
         }
 
-        Log.d("VoxeetUsersView", "filter: " + added + " " + invited);
-
         if (added == 1 && invited < 1) {
             //TODO add configuration for this mode
             filter = new ArrayList<>();
@@ -216,12 +213,9 @@ public class VoxeetUsersView extends VoxeetView {
     @Override
     public void onStreamAddedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamAddedEvent(conference, user, mediaStream);
-        postOnUi(new Runnable() {
-            @Override
-            public void run() {
-                if (adapter != null) {
-                    adapter.updateUsers();
-                }
+        postOnUi(() -> {
+            if (adapter != null) {
+                adapter.updateUsers();
             }
         });
     }
@@ -236,12 +230,9 @@ public class VoxeetUsersView extends VoxeetView {
     @Override
     public void onStreamUpdatedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamUpdatedEvent(conference, user, mediaStream);
-        postOnUi(new Runnable() {
-            @Override
-            public void run() {
-                if (adapter != null) {
-                    adapter.updateUsers();
-                }
+        postOnUi(() -> {
+            if (adapter != null) {
+                adapter.updateUsers();
             }
         });
     }
@@ -256,12 +247,9 @@ public class VoxeetUsersView extends VoxeetView {
     @Override
     public void onStreamRemovedEvent(@NonNull Conference conference, @NonNull Participant user, @NonNull MediaStream mediaStream) {
         super.onStreamRemovedEvent(conference, user, mediaStream);
-        postOnUi(new Runnable() {
-            @Override
-            public void run() {
-                if (adapter != null) {
-                    adapter.updateUsers();
-                }
+        postOnUi(() -> {
+            if (adapter != null) {
+                adapter.updateUsers();
             }
         });
     }

@@ -19,11 +19,15 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.PromiseSolver;
 import com.voxeet.promise.solve.Solver;
+import com.voxeet.promise.solve.ThenPromise;
+import com.voxeet.promise.solve.ThenValue;
+import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.VoxeetSdk;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.v2.ParticipantUpdatedEvent;
@@ -33,12 +37,15 @@ import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.media.audio.AudioRoute;
 import com.voxeet.sdk.media.audio.SoundManager;
+import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.services.AudioService;
+import com.voxeet.sdk.services.SessionService;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.sdk.utils.AudioType;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.application.VoxeetApplication;
 import com.voxeet.uxkit.utils.LoadLastSavedOverlayStateEvent;
@@ -86,63 +93,37 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
 
         setContentView(R.layout.voxeet_activity_incoming_call);
 
-        mUsername = (TextView) findViewById(R.id.voxeet_incoming_username);
-        mAvatar = (RoundedImageView) findViewById(R.id.voxeet_incoming_avatar_image);
-        mStateTextView = (TextView) findViewById(R.id.voxeet_incoming_text);
-        mAcceptTextView = (TextView) findViewById(R.id.voxeet_incoming_accept);
-        mDeclineTextView = (TextView) findViewById(R.id.voxeet_incoming_decline);
+        mUsername = findViewById(R.id.voxeet_incoming_username);
+        mAvatar = findViewById(R.id.voxeet_incoming_avatar_image);
+        mStateTextView = findViewById(R.id.voxeet_incoming_text);
+        mAcceptTextView = findViewById(R.id.voxeet_incoming_accept);
+        mDeclineTextView = findViewById(R.id.voxeet_incoming_decline);
 
-        mDeclineTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onDecline();
-            }
-        });
+        mDeclineTextView.setOnClickListener(view -> onDecline());
 
-        mAcceptTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onAccept();
-            }
-        });
+        mAcceptTextView.setOnClickListener(view -> onAccept());
 
         mHandler = new Handler();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (null != mHandler)
-                        finish();
-                } catch (Exception e) {
-                    ExceptionManager.sendException(e);
-                }
+        mHandler.postDelayed(() -> {
+            try {
+                if (null != mHandler)
+                    finish();
+            } catch (Exception e) {
+                ExceptionManager.sendException(e);
             }
         }, AndroidManifest.readMetadataInt(this, DEFAULT_VOXEET_INCOMING_CALL_DURATION_KEY,
                 DEFAULT_VOXEET_INCOMING_CALL_DURATION_VALUE));
 
-        tryInitializedSDK().then(new PromiseExec<Boolean, Boolean>() {
-            @Override
-            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
-                Log.d(TAG, "onCall: initialized ? " + result);
+        tryInitializedSDK().then((ThenPromise<Boolean, Boolean>) result -> {
+            if (!Opt.of(VoxeetSDK.session()).then(SessionService::isSocketOpen).or(false)) {
+                ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
-                if (!VoxeetSdk.session().isSocketOpen()) {
-                    Log.d(TAG, "onCall: try to log user");
-                    ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
-
-                    if (null != userInfo) {
-                        solver.resolve(VoxeetSdk.session().open(userInfo));
-                    } else {
-                        solver.resolve(false);
-                    }
-                } else {
-                    solver.resolve(true);
-                }
+                if (null != userInfo) return VoxeetSDK.session().open(userInfo);
+                return Promise.resolve(false);
             }
-        }).then(new PromiseExec<Boolean, Object>() {
-            @Override
-            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                Log.d(TAG, "onCall: user logged !");
-            }
+            return Promise.resolve(true);
+        }).then(aBoolean -> {
+            Log.d(TAG, "onCall: user logged !");
         }).error(simpleError(false));
     }
 
@@ -168,40 +149,37 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
         }
 
 
-        tryInitializedSDK().then(new PromiseExec<Boolean, Object>() {
-            @Override
-            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                if (!isResumed) {
-                    Log.d(TAG, "onCall: not resumed, quit promise");
-                    return;
+        tryInitializedSDK().then((result) -> {
+            if (!isResumed) {
+                Log.d(TAG, "onCall: not resumed, quit promise");
+                return;
+            }
+
+            Activity activity = DefaultIncomingCallActivity.this;
+
+            mEventBus = VoxeetSDK.instance().getEventBus();
+
+            if (mIncomingBundleChecker.isBundleValid() && mEventBus != null) {
+                if (!mEventBus.isRegistered(activity)) {
+                    mEventBus.register(activity);
                 }
 
-                Activity activity = DefaultIncomingCallActivity.this;
+                mUsername.setText(mIncomingBundleChecker.getUserName());
+                try {
+                    Picasso.get()
+                            .load(mIncomingBundleChecker.getAvatarUrl())
+                            .placeholder(R.drawable.default_avatar)
+                            .error(R.drawable.default_avatar)
+                            .into(mAvatar);
+                } catch (Exception e) {
 
-                mEventBus = VoxeetSdk.instance().getEventBus();
-
-                if (mIncomingBundleChecker.isBundleValid() && mEventBus != null) {
-                    if (!mEventBus.isRegistered(activity)) {
-                        mEventBus.register(activity);
-                    }
-
-                    mUsername.setText(mIncomingBundleChecker.getUserName());
-                    try {
-                        Picasso.get()
-                                .load(mIncomingBundleChecker.getAvatarUrl())
-                                .placeholder(R.drawable.default_avatar)
-                                .error(R.drawable.default_avatar)
-                                .into(mAvatar);
-                    } catch (Exception e) {
-
-                    }
-                } else {
-                    finish();
                 }
+            } else {
+                finish();
+            }
 
-                if (!mIncomingBundleChecker.isSameConference(VoxeetSdk.conference().getConferenceId())) {
-                    mEventBus.post(new LoadLastSavedOverlayStateEvent());
-                }
+            if (!mIncomingBundleChecker.isSameConference(VoxeetSDK.conference().getConferenceId())) {
+                mEventBus.post(new LoadLastSavedOverlayStateEvent());
             }
         }).error(simpleError(true));
     }
@@ -252,39 +230,32 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ParticipantUpdatedEvent event) {
-        if(ConferenceParticipantStatus.DECLINE.equals(event.participant.getStatus())) {
+        if (ConferenceParticipantStatus.DECLINE.equals(event.participant.getStatus())) {
             finish();
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceStatusUpdatedEvent event) {
-        if (ConferenceStatus.JOINING.equals(event.state) && mIncomingBundleChecker.isSameConference(event.conference.getId())) {
+        if (ConferenceStatus.JOINING.equals(event.state) && mIncomingBundleChecker.isSameConference(Opt.of(event.conference).then(Conference::getId).orNull())) {
             finish();
         }
     }
 
     @Nullable
     protected String getConferenceId() {
-        return mIncomingBundleChecker != null && mIncomingBundleChecker.isBundleValid() ? mIncomingBundleChecker.getConferenceId() : null;
+        return Opt.of(mIncomingBundleChecker).then(IncomingBundleChecker::isBundleValid).or(false) ? mIncomingBundleChecker.getConferenceId() : null;
     }
 
     protected void onDecline() {
-        tryInitializedSDK().then(new PromiseExec<Boolean, Boolean>() {
-            @Override
-            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
-                if (getConferenceId() != null && null != VoxeetSdk.conference()) {
-                    solver.resolve(VoxeetSdk.conference().decline(getConferenceId()));
-                } else {
-                    solver.resolve(false);
-                }
+        tryInitializedSDK().then((ThenPromise<Boolean, Boolean>) aBoolean -> {
+            if (getConferenceId() != null && null != VoxeetSDK.conference()) {
+                return VoxeetSDK.conference().decline(getConferenceId());
+            } else {
+                return Promise.resolve(false);
             }
-        }).then(new PromiseExec<Boolean, Object>() {
-            @Override
-            public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                finish();
-            }
-        }).error(simpleError(true));
+        }).then((ThenVoid<Boolean>) o -> finish())
+                .error(simpleError(true));
     }
 
     protected void onAccept() {
@@ -296,25 +267,21 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
     }
 
     private void onAcceptWithPermission() {
-        tryInitializedSDK().then(new PromiseExec<Boolean, Boolean>() {
-            @Override
-            public void onCall(@Nullable Boolean result, @NonNull Solver<Boolean> solver) {
-                if (mIncomingBundleChecker.isBundleValid()) {
-                    Intent intent = mIncomingBundleChecker.createActivityAccepted(DefaultIncomingCallActivity.this);
-                    //start the accepted call
-                    startActivity(intent);
+        tryInitializedSDK().then(aBoolean -> {
+            if (mIncomingBundleChecker.isBundleValid()) {
+                Intent intent = mIncomingBundleChecker.createActivityAccepted(DefaultIncomingCallActivity.this);
+                //start the accepted call
+                startActivity(intent);
 
-                    //and finishing this one - before the prejoined event
-                    finish();
-                    overridePendingTransition(0, 0);
-                }
+                //and finishing this one - before the prejoined event
+                finish();
+                overridePendingTransition(0, 0);
             }
         }).error(simpleError(true));
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         switch (requestCode) {
             case RECORD_AUDIO_RESULT: {
@@ -368,43 +335,29 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
      * @return a promise resolving the initialization state
      */
     private Promise<Boolean> tryInitializedSDK() {
-        return new Promise<>(new PromiseSolver<Boolean>() {
-            @Override
-            public void onCall(@NonNull Solver<Boolean> solver) {
-                Application app = getApplication();
-                if (null != VoxeetSdk.instance()) {
-                    //the SDK is already initialized
-                    solver.resolve(true);
-                } else if (null != app && app instanceof VoxeetApplication) {
-                    //if we have a VoxeetApplication, we can manage the state
-                    ((VoxeetApplication) app).initializeSDK().then(new PromiseExec<Boolean, Object>() {
-                        @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> sss) {
-                            Log.d(TAG, "onCall: sdk initialized now");
-                            solver.resolve(result);
-                        }
-                    }).error(new ErrorPromise() {
-                        @Override
-                        public void onError(@NonNull Throwable error) {
-                            solver.reject(error);
-                        }
-                    });
-                } else {
-                    //if we are
-                    Log.d(TAG, "onCall: sdk not initialized, please make your App override VoxeetApplication and follow the README.md");
-                    solver.resolve(false);
-                }
+        return new Promise<>(solver -> {
+            Application app = getApplication();
+            if (null != VoxeetSDK.instance()) {
+                //the SDK is already initialized
+                solver.resolve(true);
+            } else if (app instanceof VoxeetApplication) {
+                //if we have a VoxeetApplication, we can manage the state
+                ((VoxeetApplication) app).initializeSDK().then((result, sss) -> {
+                    Log.d(TAG, "onCall: sdk initialized now");
+                    solver.resolve(result);
+                }).error(solver::reject);
+            } else {
+                //if we are
+                Log.d(TAG, "onCall: sdk not initialized, please make your App override VoxeetApplication and follow the README.md");
+                solver.resolve(false);
             }
         });
     }
 
     private ErrorPromise simpleError(boolean quit) {
-        return new ErrorPromise() {
-            @Override
-            public void onError(@NonNull Throwable error) {
-                error.printStackTrace();
-                if (quit) finish();
-            }
+        return error -> {
+            error.printStackTrace();
+            if (quit) finish();
         };
     }
 }

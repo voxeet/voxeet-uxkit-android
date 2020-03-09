@@ -21,7 +21,6 @@ import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
 
 public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
-    private static final String TAG = DismissNotificationBroadcastReceiver.class.getSimpleName();
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -36,20 +35,11 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
 
         if (null != invitationBundle && null != invitationBundle.conferenceId) {
             InvitationBundle finalInvitationBundle = invitationBundle;
-            createPromise(invitationBundle.conferenceId).then(new PromiseExec<Boolean, Object>() {
-                @Override
-                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                    Log.d(TAG, "onCall done");
-                    NotificationCenterFactory.instance.onInvitationCanceledReceived(context, finalInvitationBundle.asMap(),
-                            Build.MANUFACTURER, Build.VERSION.SDK_INT);
-                }
-            }).error(new ErrorPromise() {
-                @Override
-                public void onError(@NonNull Throwable error) {
-                    NotificationCenterFactory.instance.onInvitationCanceledReceived(context, finalInvitationBundle.asMap(),
-                            Build.MANUFACTURER, Build.VERSION.SDK_INT);
-                }
-            });
+            createPromise(invitationBundle.conferenceId).then((result, solver) -> {
+                NotificationCenterFactory.instance.onInvitationCanceledReceived(context, finalInvitationBundle.asMap(),
+                        Build.MANUFACTURER, Build.VERSION.SDK_INT);
+            }).error(error -> NotificationCenterFactory.instance.onInvitationCanceledReceived(context, finalInvitationBundle.asMap(),
+                    Build.MANUFACTURER, Build.VERSION.SDK_INT));
         }
     }
 
@@ -57,43 +47,17 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
         ConferenceService conferenceService = VoxeetSDK.conference();
         SessionService sessionService = VoxeetSDK.session();
         if (null == sessionService || null == conferenceService) {
-            return new Promise<>(new PromiseSolver<Boolean>() {
-                @Override
-                public void onCall(@NonNull Solver<Boolean> solver) {
-                    solver.reject(new IllegalStateException("SDK Uninitialized in " + DismissNotificationBroadcastReceiver.class.getSimpleName()));
-                }
-            });
+            return new Promise<>(solver -> solver.reject(new IllegalStateException("SDK Uninitialized in " + DismissNotificationBroadcastReceiver.class.getSimpleName())));
         }
 
         if (sessionService.isSocketOpen()) {
             return conferenceService.decline(conferenceId);
         } else {
-            return new Promise<>(new PromiseSolver<Boolean>() {
-                @Override
-                public void onCall(@NonNull final Solver<Boolean> solver) {
-                    sessionService.open().then(new PromiseExec<Boolean, Object>() {
-                        @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver internal_solver) {
-                            conferenceService.decline(conferenceId).then(new PromiseExec<Boolean, Object>() {
-                                @Override
-                                public void onCall(@Nullable Boolean result, @NonNull Solver<Object> internal_solver) {
-                                    solver.resolve(result);
-                                }
-                            }).error(new ErrorPromise() {
-                                @Override
-                                public void onError(@NonNull Throwable error) {
-                                    solver.reject(error);
-                                }
-                            });
-                        }
-                    }).error(new ErrorPromise() {
-                        @Override
-                        public void onError(@NonNull Throwable error) {
-                            solver.reject(error);
-                        }
-                    });
-                }
-            });
+            //TODO refactor with open decline resolve error
+            return new Promise<>(solver -> sessionService.open().then((result, internal_solver) -> conferenceService.decline(conferenceId)
+                    .then((result1, internal_solver1) -> solver.resolve(result1))
+                    .error(solver::reject)
+            ).error(solver::reject));
         }
     }
 }

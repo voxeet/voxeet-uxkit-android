@@ -21,6 +21,6 @@ public final class VoxeetSystemServiceManifestComponent extends AbstractManifest
 
     @Override
     protected String getDefaultAuthority() {
-        return "com.voxeet.toolkit.service.manifests.";
+        return "com.voxeet.uxkit.service.manifests.";
     }
 }

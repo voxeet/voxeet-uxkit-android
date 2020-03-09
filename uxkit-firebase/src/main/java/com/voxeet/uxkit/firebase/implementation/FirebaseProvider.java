@@ -24,18 +24,6 @@ import com.voxeet.sdk.utils.Annotate;
 @Annotate
 public class FirebaseProvider implements INotificationTokenProvider {
 
-    private static final String SDK_CHANNEL_ID = "voxeet_sdk_channel_id";
-    private static final String SDK_CHANNEL_NAME = "voxeet_sdk_channel_name";
-    private static final String SDK_CHANNEL_DESCRIPTION = "voxeet_sdk_channel_description";
-    private static final String SDK_CHANNEL_COLOR = "voxeet_sdk_channel_color";
-
-    private static final String DEFAULT_ID = "VideoConference";
-    private static final String DEFAULT_NAME = "Video Conference";
-    private static final String DEFAULT_DESCRIPTION = "Incoming calls are managed here";
-    private static final int DEFAULT_COLOR = Color.WHITE;
-
-    private static boolean ChannelSet = false;
-
     private boolean _enabled;
     private boolean _can_log;
 
