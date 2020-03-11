@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
+import com.voxeet.sdk.services.TelemetryService;
 import com.voxeet.sdk.services.telemetry.SdkEnvironment;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Map;
@@ -50,7 +51,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         if (null == sInstance) {
             Log.d(TAG, "initialize: toolkit initializing");
 
-            VoxeetSDK.telemetry().registerEnvironment(SdkEnvironment.UXKIT, BuildConfig.VERSION_NAME);
+            TelemetryService.register(SdkEnvironment.UXKIT, BuildConfig.VERSION_NAME);
             sInstance = new VoxeetToolkit();
 
             DefaultRootViewProvider provider = new DefaultRootViewProvider(application, sInstance);
