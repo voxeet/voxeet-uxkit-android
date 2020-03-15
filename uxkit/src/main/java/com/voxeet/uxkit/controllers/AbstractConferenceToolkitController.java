@@ -120,7 +120,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
         mHandler = new Handler(Looper.getMainLooper());
 
-        mRootViewProvider = VoxeetToolkit.getInstance().getDefaultRootViewProvider();
+        mRootViewProvider = VoxeetToolkit.instance().getDefaultRootViewProvider();
 
         setViewRetainedOnLeave(false);
         setParams();
@@ -201,7 +201,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     public boolean isOverlayEnabled() {
-        return VoxeetToolkit.getInstance().isEnabled();
+        return VoxeetToolkit.instance().isEnabled();
     }
 
     public void setRootViewProvider(@NonNull AbstractRootViewProvider provider) {

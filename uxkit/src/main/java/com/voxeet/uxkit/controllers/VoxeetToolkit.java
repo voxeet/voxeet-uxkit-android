@@ -265,10 +265,15 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
+    @Nullable
     private <CF extends AbstractConferenceToolkitController> CF getAbstractToolkit(Class<CF> klass) {
         for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
             if (controller.getClass().isAssignableFrom(klass)) {
-                return (CF) controller;
+                try {
+                    return (CF) controller;
+                } catch (Exception e) {
+
+                }
             }
         }
         return null;
@@ -286,9 +291,9 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
             mConferenceToolkitControllers.add(controller);
 
             //then call the current state of the activity for this one
-            Activity activity = mProvider.getCurrentActivity();
+            Activity activity = Opt.of(mProvider).then(AbstractRootViewProvider::getCurrentActivity).orNull();
             if (controller.isEnabled() && null != activity) {
-                if (!mProvider.isCurrentActivityResumed())
+                if (!Opt.of(mProvider).then(AbstractRootViewProvider::isCurrentActivityResumed).or(false))
                     controller.onActivityPaused(activity);
                 else
                     controller.onActivityResumed(activity);
@@ -302,7 +307,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
 
             //then call the current state of the activity for this one
-            Activity activity = mProvider.getCurrentActivity();
+            Activity activity = Opt.of(mProvider).then(AbstractRootViewProvider::getCurrentActivity).orNull();
             if (controller.isEnabled() && null != activity) {
                 controller.onActivityPaused(activity);
                 controller.removeView(true, RemoveViewType.FROM_HUD);
@@ -312,11 +317,13 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
     @NoDocumentation
     public void setCurrentActivity(@NonNull Activity activity) {
-        mProvider.setCurrentActivity(activity);
+        if (null != mProvider)
+            mProvider.setCurrentActivity(activity);
     }
 
     @NoDocumentation
+    @Nullable
     public Activity getCurrentActivity() {
-        return mProvider.getCurrentActivity();
+        return Opt.of(mProvider).then(AbstractRootViewProvider::getCurrentActivity).orNull();
     }
 }

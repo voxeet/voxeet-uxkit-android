@@ -24,7 +24,7 @@ public class VoxeetToolkit extends com.voxeet.uxkit.controllers.VoxeetToolkit {
     @NoDocumentation
     @Deprecated
     public static com.voxeet.uxkit.controllers.VoxeetToolkit getInstance() {
-        return com.voxeet.uxkit.controllers.VoxeetToolkit.getInstance();
+        return com.voxeet.uxkit.controllers.VoxeetToolkit.instance();
     }
 
     /**

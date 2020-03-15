@@ -371,7 +371,7 @@ public class VoxeetActionBarView extends VoxeetView {
             screenshare.setOnClickListener(v14 -> toggleScreenShare());
         }
 
-        ActionBar configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar;
+        ActionBar configuration = VoxeetToolkit.instance().getConferenceToolkit().Configuration.ActionBar;
         StateListDrawable selector_camera = createOverridenSelector(configuration.camera_on, configuration.camera_off);
         StateListDrawable selector_microphone = createOverridenSelector(configuration.mic_on, configuration.mic_off);
         StateListDrawable selector_screenshare = createOverridenSelector(configuration.screenshare_on, configuration.screenshare_off);
@@ -634,7 +634,7 @@ public class VoxeetActionBarView extends VoxeetView {
             return false;
         } else if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_DENIED) {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Validate.requestMandatoryPermissions(VoxeetToolkit.getInstance().getCurrentActivity(),
+                Validate.requestMandatoryPermissions(VoxeetToolkit.instance().getCurrentActivity(),
                         new String[]{permission}, result_code);
             }
             return false;

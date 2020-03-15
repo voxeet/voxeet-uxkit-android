@@ -146,7 +146,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         } else {
             String conferenceAlias = joinConfEditText.getText().toString();
 
-            VoxeetToolkit.getInstance().enable(VoxeetToolkit.getInstance().getConferenceToolkit());
+            VoxeetToolkit.instance().enable(VoxeetToolkit.instance().getConferenceToolkit());
 
             ConferenceService service = VoxeetSDK.conference();
 

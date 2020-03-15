@@ -281,7 +281,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
     protected void toggleBackground() {
         int background = 0;
         Integer color = null;
-        Overlay overlay = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.Overlay;
+        Overlay overlay = VoxeetToolkit.instance().getConferenceToolkit().Configuration.Overlay;
 
         if (isExpanded()) {
             background = R.drawable.background_maximized_color;
