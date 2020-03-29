@@ -10,7 +10,7 @@ import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.PromiseExec;
 import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.json.ParticipantInfo;
-import com.voxeet.sdk.push.center.NotificationCenterFactory;
+import com.voxeet.sdk.push.center.NotificationCenter;
 import com.voxeet.sdk.push.center.management.EnforcedNotificationMode;
 import com.voxeet.sdk.push.center.management.NotificationMode;
 import com.voxeet.sdk.push.center.management.VersionFilter;
@@ -119,11 +119,11 @@ public class SampleApplication extends MultiDexApplication {
 
     private void onSdkInitialized() {
         //it's possible to use the meta-data in the AndroidManifest to directly control the default incoming activity
-        NotificationCenterFactory.instance.register(NotificationMode.FULLSCREEN_INCOMING_CALL, new IncomingFullScreen(DefaultIncomingCallActivity.class));
-        NotificationCenterFactory.instance.register(NotificationMode.OVERHEAD_INCOMING_CALL, new IncomingNotification());
-        NotificationCenterFactory.instance.setEnforcedNotificationMode(EnforcedNotificationMode.MIXED_INCOMING_CALL);
+        NotificationCenter.instance.register(NotificationMode.FULLSCREEN_INCOMING_CALL, new IncomingFullScreen(DefaultIncomingCallActivity.class));
+        NotificationCenter.instance.register(NotificationMode.OVERHEAD_INCOMING_CALL, new IncomingNotification());
+        NotificationCenter.instance.setEnforcedNotificationMode(EnforcedNotificationMode.MIXED_INCOMING_CALL);
 
         //add filter to excluse fullscreen from Android Q
-        NotificationCenterFactory.instance.register(NotificationMode.FULLSCREEN_INCOMING_CALL, new VersionFilter(VersionFilter.ALL, 29));
+        NotificationCenter.instance.register(NotificationMode.FULLSCREEN_INCOMING_CALL, new VersionFilter(VersionFilter.ALL, 29));
     }
 }

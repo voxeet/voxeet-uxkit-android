@@ -9,12 +9,7 @@ import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
-import com.voxeet.promise.solve.ErrorPromise;
-import com.voxeet.promise.solve.PromiseExec;
-import com.voxeet.promise.solve.Solver;
 import com.voxeet.promise.solve.ThenPromise;
-import com.voxeet.promise.solve.ThenValue;
-import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.preferences.VoxeetPreferences;

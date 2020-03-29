@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import fr.voxeet.sdk.sample.application.SampleApplication;
 import fr.voxeet.sdk.sample.main_screen.UserAdapter;
-import fr.voxeet.sdk.sample.main_screen.UserItem;
+import fr.voxeet.sdk.sample.main_screen.ParticipantItem;
 import fr.voxeet.sdk.sample.users.UsersHelper;
 
 public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
@@ -136,8 +136,8 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     }
 
     @Override
-    public void onUserSelected(UserItem user_item) {
-        _application.selectUser(user_item.getUserInfo());
+    public void onUserSelected(ParticipantItem user_item) {
+        _application.selectUser(user_item.getParticipantInfo());
     }
 
     private void joinCall() {

@@ -1,6 +1,8 @@
 package fr.voxeet.sdk.sample.main_screen;
 
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.sample.R;
+import com.voxeet.sdk.utils.Opt;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -19,18 +22,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     private UserClickListener _listener;
 
     public void setSelected(ParticipantInfo currentUser) {
-        for (UserItem user_item : _user_items) {
-            user_item.setSelected(user_item.getUserInfo().equals(currentUser));
+        for (ParticipantItem user_item : _user_items) {
+            user_item.setSelected(user_item.getParticipantInfo().equals(currentUser));
         }
 
         notifyDataSetChanged();
     }
 
     public interface UserClickListener {
-        void onUserSelected(UserItem user_item);
+        void onUserSelected(ParticipantItem user_item);
     }
 
-    private UserItem[] _user_items;
+    private ParticipantItem[] _user_items;
 
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -43,7 +46,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     }
 
-    public UserAdapter(@NonNull UserClickListener listener, UserItem[] user_items) {
+    public UserAdapter(@NonNull UserClickListener listener, ParticipantItem[] user_items) {
         this();
 
         _listener = listener;
@@ -52,9 +55,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     private void onClickItemAtPosition(int position) {
         if (position < _user_items.length) {
-            UserItem user_item = _user_items[position];
+            ParticipantItem user_item = _user_items[position];
 
-            for (UserItem item : _user_items)
+            for (ParticipantItem item : _user_items)
                 item.setSelected(false);
             user_item.setSelected(true);
 
@@ -64,7 +67,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     public void reset() {
-        for (UserItem item : _user_items) item.setSelected(false);
+        for (ParticipantItem item : _user_items) item.setSelected(false);
         notifyDataSetChanged();
     }
 
@@ -89,7 +92,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         @Bind(R.id.background)
         View background;
 
-        UserItem user_info;
+        ParticipantItem user_info;
 
         private UserViewHolder(View itemView) {
             super(itemView);
@@ -99,12 +102,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             itemView.setOnClickListener(this);
         }
 
-        public void apply(UserItem user_info) {
+        public void apply(@Nullable ParticipantItem user_info) {
             this.user_info = user_info;
+            boolean selected = Opt.of(user_info).then(ParticipantItem::isSelected).or(false);
+            ParticipantInfo participantInfo = Opt.of(user_info).then(ParticipantItem::getParticipantInfo).orNull();
+            Integer drawable = Opt.of(user_info).then(ParticipantItem::getDrawable).orNull();
 
 
             int color;
-            if (user_info.isSelected()) {
+            if (selected) {
                 color = itemView.getContext().getResources().getColor(R.color.grey_light);
             } else {
                 color = itemView.getContext().getResources().getColor(R.color.transparent);
@@ -112,9 +118,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
             background.setBackgroundColor(color);
 
-            if (user_info != null && user_info.getUserInfo() != null) {
-                username.setText(user_info.getUserInfo().getName());
-                portrait.setImageResource(user_info.getDrawable());
+            if (null != participantInfo) {
+                username.setText(participantInfo.getName());
+                if (null != drawable) portrait.setImageResource(drawable);
                 portrait.setVisibility(View.VISIBLE);
             } else {
                 username.setText("");
