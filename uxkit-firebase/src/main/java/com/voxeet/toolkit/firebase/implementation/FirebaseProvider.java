@@ -1,15 +1,9 @@
 package com.voxeet.toolkit.firebase.implementation;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.voxeet.sdk.push.utils.NotificationHelper;
-import com.voxeet.sdk.services.notification.INotificationTokenProvider;
 import com.voxeet.sdk.utils.Annotate;
 
 /**

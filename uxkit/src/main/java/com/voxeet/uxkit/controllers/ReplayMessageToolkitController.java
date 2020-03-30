@@ -7,9 +7,6 @@ import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
-import com.voxeet.promise.solve.ErrorPromise;
-import com.voxeet.promise.solve.PromiseExec;
-import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.events.sdk.ConferenceHistoryResult;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.media.audio.AudioRoute;
@@ -17,7 +14,6 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.v1.HistoryConference;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.utils.Map;
-import com.voxeet.sdk.utils.MapFilter;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.configuration.Configuration;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;

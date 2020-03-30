@@ -3,19 +3,12 @@ package com.voxeet.uxkit.incoming.manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
-import com.voxeet.promise.solve.ErrorPromise;
-import com.voxeet.promise.solve.PromiseExec;
-import com.voxeet.promise.solve.PromiseSolver;
-import com.voxeet.promise.solve.Solver;
-import com.voxeet.sdk.push.center.NotificationCenterFactory;
+import com.voxeet.sdk.push.center.NotificationCenter;
 import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
@@ -36,10 +29,8 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
         if (null != invitationBundle && null != invitationBundle.conferenceId) {
             InvitationBundle finalInvitationBundle = invitationBundle;
             createPromise(invitationBundle.conferenceId).then((result, solver) -> {
-                NotificationCenterFactory.instance.onInvitationCanceledReceived(context, finalInvitationBundle.asMap(),
-                        Build.MANUFACTURER, Build.VERSION.SDK_INT);
-            }).error(error -> NotificationCenterFactory.instance.onInvitationCanceledReceived(context, finalInvitationBundle.asMap(),
-                    Build.MANUFACTURER, Build.VERSION.SDK_INT));
+                NotificationCenter.instance.onInvitationCanceledReceived(context, finalInvitationBundle.conferenceId);
+            }).error(error -> NotificationCenter.instance.onInvitationCanceledReceived(context, finalInvitationBundle.conferenceId));
         }
     }
 

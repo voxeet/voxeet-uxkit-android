@@ -12,9 +12,12 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.voxeet.sdk.json.ParticipantInfo;
+import com.voxeet.sdk.models.ParticipantNotification;
 import com.voxeet.sdk.push.center.invitation.IIncomingInvitationListener;
 import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.utils.AndroidManifest;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.uxkit.incoming.factory.IncomingCallFactory;
 import com.voxeet.uxkit.incoming.manifest.DismissNotificationBroadcastReceiver;
@@ -66,7 +69,7 @@ public class IncomingNotification implements IIncomingInvitationListener {
         PendingIntent pendingIntentAccepted = PendingIntent.getActivity(context, INCOMING_NOTIFICATION_REQUEST_CODE, accept, PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent pendingIntentDismissed = PendingIntent.getBroadcast(context, INCOMING_NOTIFICATION_REQUEST_CODE, dismiss, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        String inviterName = !TextUtils.isEmpty(invitationBundle.inviterName) ? invitationBundle.inviterName : "";
+        String inviterName = Opt.of(invitationBundle.inviter).then(ParticipantNotification::getInfo).then(ParticipantInfo::getName).or("");
 
         Notification lastNotification = new NotificationCompat.Builder(context, channelId)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

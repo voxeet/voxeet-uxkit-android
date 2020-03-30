@@ -4,7 +4,7 @@ import android.support.annotation.DrawableRes;
 
 import com.voxeet.sdk.json.ParticipantInfo;
 
-public class UserItem {
+public class ParticipantItem {
 
     @DrawableRes
     private int _drawable;
@@ -12,10 +12,10 @@ public class UserItem {
     private ParticipantInfo _user_info;
     private boolean _selected;
 
-    private UserItem() {
+    private ParticipantItem() {
     }
 
-    public UserItem(@DrawableRes int drawable, ParticipantInfo user_info) {
+    public ParticipantItem(@DrawableRes int drawable, ParticipantInfo user_info) {
         this();
 
         _drawable = drawable;
@@ -27,7 +27,7 @@ public class UserItem {
         return _drawable;
     }
 
-    public ParticipantInfo getUserInfo() {
+    public ParticipantInfo getParticipantInfo() {
         return _user_info;
     }
 
