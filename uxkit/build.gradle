@@ -101,3 +101,4 @@ dependencies {
 }
 
 apply from: "../tasks.gradle"
+apply from: "../license.gradle"

@@ -80,3 +80,5 @@ dependencies {
 
 //uncomment for firebase tests
 //apply plugin: 'com.google.gms.google-services'
+
+apply from: "../license.gradle"
