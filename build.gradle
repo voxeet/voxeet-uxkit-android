@@ -12,14 +12,20 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.6.1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
 
-        classpath 'com.jaredsburrows:gradle-license-plugin:0.8.42'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.6'
+        classpath 'com.jaredsburrows:gradle-license-plugin:0.8.70'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:1.0.2'
     }
 }
+
+def modules_sdk = [
+        'uxkit', 'uxkit-exoplayer-support', 'uxkit-firebase',
+        'uxkit-incoming-call', 'uxkit-self-managed-call', 'uxkit-system-service',
+        'uxkit-youtube'
+]
 
 ext {
     buildToolsVersion = "28.0.3"
@@ -48,44 +54,36 @@ allprojects {
     }
 }
 
+
 task cleanAll {
-    dependsOn(':uxkit:clean')
-    dependsOn(':uxkit-exoplayer-support:clean')
-    dependsOn(':uxkit-firebase:clean')
-    dependsOn(':uxkit-incoming-call:clean')
-    dependsOn(':uxkit-self-managed-call:clean')
-    dependsOn(':uxkit-system-service:clean')
-    dependsOn(':uxkit-youtube:clean')
+    dependsOn = modules_sdk.collect { ":${it}:clean" }
 }
 
 task assembleAll {
-    dependsOn(':uxkit:assembleRelease')
-    dependsOn(':uxkit-exoplayer-support:assembleRelease')
-    dependsOn(':uxkit-firebase:assembleRelease')
-    dependsOn(':uxkit-incoming-call:assembleRelease')
-    dependsOn(':uxkit-self-managed-call:assembleRelease')
-    dependsOn(':uxkit-system-service:assembleRelease')
-    dependsOn(':uxkit-youtube:assembleRelease')
+    dependsOn = modules_sdk.collect { ":${it}:assembleRelease" }
+}
+
+task licenseAll {
+    dependsOn = modules_sdk.collect { ":${it}:licenseReleaseReport" }
+
+    modules_sdk.collect { "${it}/src/main/assets" }
+            .each { folder -> new File(folder).mkdirs() }
+
+    modules_sdk.each { name ->
+        def report = "${name}/build/reports/licenses/licenseReleaseReport.json"
+        def new_report = "${name}/build/reports/licenses/${name}.json"
+        new File(report).renameTo(new File(new_report))
+
+        copy { from new_report into "${name}/src/main/assets/" }
+    }
 }
 
 task installAll {
-    dependsOn(':uxkit:install')
-    dependsOn(':uxkit-exoplayer-support:install')
-    dependsOn(':uxkit-firebase:install')
-    dependsOn(':uxkit-incoming-call:install')
-    dependsOn(':uxkit-self-managed-call:install')
-    dependsOn(':uxkit-system-service:install')
-    dependsOn(':uxkit-youtube:install')
+    dependsOn = modules_sdk.collect { ":${it}:install" }
 }
 
 task uploadAll {
-    dependsOn(':uxkit:bintrayUpload')
-    dependsOn(':uxkit-exoplayer-support:bintrayUpload')
-    dependsOn(':uxkit-firebase:bintrayUpload')
-    dependsOn(':uxkit-incoming-call:bintrayUpload')
-    dependsOn(':uxkit-self-managed-call:bintrayUpload')
-    dependsOn(':uxkit-system-service:bintrayUpload')
-    dependsOn(':uxkit-youtube:bintrayUpload')
+    dependsOn = modules_sdk.collect { ":${it}:bintrayUpload" }
 }
 
 task clean(type: Delete) {
