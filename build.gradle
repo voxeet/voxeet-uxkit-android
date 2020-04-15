@@ -1,8 +1,8 @@
-def version_from_sdk = { String version ->  project.hasProperty("CICD_FROM_BUILD_ID")
+def version_from_sdk = { String version ->  project.hasProperty("CICD_FROM_BUILD_ID") && project.CICD_FROM_BUILD_ID.size() > 0
         ? "${version}-${project.CICD_BUILD_ID}"
         : "${version}" }
 
-def version_uxkit = { String version ->  project.hasProperty("CICD_BUILD_ID")
+def version_uxkit = { String version ->  project.hasProperty("CICD_BUILD_ID") && project.CICD_BUILD_ID.size() > 0
         ? "${version}-${project.CICD_BUILD_ID}"
         : "${version}" }
 
@@ -29,15 +29,15 @@ ext {
     supportLibVersion = "28.0.0"
 
     //underlying sdk
-    voxeetSdkVersion = version_from_sdk("2.2.0")
+    voxeetSdkVersion = version_from_sdk("2.3.0")
 
     //uxkit modules
-    pushSdkVersion = version_uxkit("2.2.0")
-    firebaseSdkVersion = version_uxkit("2.2.0")
-    voxeetSdkToolkitVersion = version_uxkit("2.2.0")
-    voxeetIncomingCall = version_uxkit("2.2.0")
-    systemServiceVersion = version_uxkit("2.2.0")
-    telecomSystemServiceVersion = version_uxkit("2.2.0")
+    pushSdkVersion = version_uxkit("2.3.0")
+    firebaseSdkVersion = version_uxkit("2.3.0")
+    voxeetSdkToolkitVersion = version_uxkit("2.3.0")
+    voxeetIncomingCall = version_uxkit("2.3.0")
+    systemServiceVersion = version_uxkit("2.3.0")
+    telecomSystemServiceVersion = version_uxkit("2.3.0")
 }
 
 allprojects {

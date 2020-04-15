@@ -577,7 +577,7 @@
     {
         "project": "Authent",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -586,7 +586,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:authent:2.1"
+        "dependency": "com.voxeet.sdk:authent:2.3.0"
     },
     {
         "project": "Converter: Jackson",
@@ -608,7 +608,7 @@
     {
         "project": "Device_support",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -617,7 +617,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:device_support:2.1"
+        "dependency": "com.voxeet.sdk:device_support:2.3.0"
     },
     {
         "project": "EventBus",
@@ -761,7 +761,7 @@
     {
         "project": "Log",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -770,7 +770,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:log:2.1"
+        "dependency": "com.voxeet.sdk:log:2.3.0"
     },
     {
         "project": "Media",
@@ -785,6 +785,20 @@
             
         ],
         "dependency": "com.voxeet.sdk:media:1.72.40"
+    },
+    {
+        "project": "Models",
+        "description": null,
+        "version": "2.3.0",
+        "developers": [
+            
+        ],
+        "url": null,
+        "year": null,
+        "licenses": [
+            
+        ],
+        "dependency": "com.voxeet.sdk:models:2.3.0"
     },
     {
         "project": "OkHttp",
@@ -840,7 +854,7 @@
     {
         "project": "Promise",
         "description": null,
-        "version": "2.5",
+        "version": "2.6.1",
         "developers": [
             
         ],
@@ -849,12 +863,12 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:promise:2.5"
+        "dependency": "com.voxeet.sdk:promise:2.6.1"
     },
     {
         "project": "Public-sdk",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -863,12 +877,12 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:public-sdk:2.1"
+        "dependency": "com.voxeet.sdk:public-sdk:2.3.0"
     },
     {
         "project": "Push",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -877,7 +891,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:push:2.1"
+        "dependency": "com.voxeet.sdk:push:2.3.0"
     },
     {
         "project": "Retrofit",
@@ -933,7 +947,7 @@
     {
         "project": "Sentry",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -942,7 +956,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:sentry:2.1"
+        "dependency": "com.voxeet.sdk:sentry:2.3.0"
     },
     {
         "project": "Sentry-Java client",
@@ -995,7 +1009,7 @@
     {
         "project": "Telemetry",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -1004,12 +1018,12 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:telemetry:2.1"
+        "dependency": "com.voxeet.sdk:telemetry:2.3.0"
     },
     {
         "project": "Utils",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -1018,7 +1032,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:utils:2.1"
+        "dependency": "com.voxeet.sdk:utils:2.3.0"
     },
     {
         "project": "VersionedParcelable and friends",
@@ -1040,7 +1054,7 @@
     {
         "project": "Video",
         "description": null,
-        "version": "2.1",
+        "version": "2.3.0",
         "developers": [
             
         ],
@@ -1049,7 +1063,7 @@
         "licenses": [
             
         ],
-        "dependency": "com.voxeet.sdk:video:2.1"
+        "dependency": "com.voxeet.sdk:video:2.3.0"
     }
 ]
 
