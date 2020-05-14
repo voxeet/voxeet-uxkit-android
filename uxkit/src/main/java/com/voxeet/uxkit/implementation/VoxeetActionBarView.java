@@ -19,7 +19,7 @@ import android.widget.ImageView;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStreamType;
+import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
@@ -35,7 +35,7 @@ import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
-import com.voxeet.sdk.services.media.VideoState;
+import com.voxeet.sdk.services.media.MediaState;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.NoDocumentation;
@@ -211,7 +211,7 @@ public class VoxeetActionBarView extends VoxeetView {
             ConferenceService service = VoxeetSDK.conference();
             ConferenceInformation information = service.getCurrentConference();
 
-            if (null != information && information.isOwnVideoStarted() && !VideoState.STARTED.equals(information.getVideoState())) {
+            if (null != information && information.isOwnVideoStarted() && !MediaState.STARTED.equals(information.getVideoState())) {
                 service.startVideo()
                         .then((ThenVoid<Boolean>) aBoolean -> Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean))
                         .error(error -> {
@@ -446,7 +446,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(VideoStateEvent event) {
-        updateCameraState(event.videoState);
+        updateCameraState(event.mediaState);
     }
 
     private void updateCameraState() {
@@ -454,7 +454,7 @@ public class VoxeetActionBarView extends VoxeetView {
         if (null != information) updateCameraState(information.getVideoState());
     }
 
-    private void updateCameraState(@NonNull VideoState videoState) {
+    private void updateCameraState(@NonNull MediaState videoState) {
         if(null == camera) return;
 
         switch (videoState) {

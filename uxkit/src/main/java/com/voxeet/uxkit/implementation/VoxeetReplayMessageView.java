@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStreamType;
+import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.views.VideoView;

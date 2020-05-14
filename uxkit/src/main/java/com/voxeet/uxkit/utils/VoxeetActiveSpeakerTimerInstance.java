@@ -6,7 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.voxeet.VoxeetSDK;
+import com.voxeet.sdk.models.Conference;
+import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.utils.Annotate;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Simple Timer made to schedule interactions accross the Speakers in a conference
@@ -14,45 +19,46 @@ import com.voxeet.sdk.utils.Annotate;
  * This class can be started, stopped and get the current active speaker
  */
 @Annotate
-public class VoxeetActiveSpeakerTimer {
+public final class VoxeetActiveSpeakerTimer {
 
     private ActiveSpeakerListener listener;
     private String currentActiveSpeaker;
 
     private Handler handler;
-    private Runnable refreshActiveSpeaker = new Runnable() {
-        @Override
-        public void run() {
-            if (null != handler) {
-                try {
-                    if (null != listener && null != VoxeetSDK.instance()) {
-                        String fromSdk = VoxeetSDK.conference().currentSpeaker();
+    private Runnable refreshActiveSpeaker = null;
 
-                        if (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk)) {
-                            currentActiveSpeaker = fromSdk;
-                            listener.onActiveSpeakerUpdated(currentActiveSpeaker);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (handler != null) {
-                    handler.postDelayed(this, 1000);
-                }
-            }
-        }
-    };
+    private HashMap<String, Double> audioLevels = new HashMap<>();
 
     private VoxeetActiveSpeakerTimer() {
+        refreshActiveSpeaker = () -> {
+            try {
+                if (null != handler && null != listener && null != VoxeetSDK.instance()) {
+                    String fromSdk = VoxeetSDK.conference().currentSpeaker();
+                    Conference conference = VoxeetSDK.conference().getConference();
 
+                    if (null != conference) {
+                        List<Participant> participants = VoxeetSDK.conference().getParticipants();
+
+                        for (Participant participant : participants) {
+                            if (null == participant || null == participant.getId()) continue;
+
+                            double audioLevel = VoxeetSDK.conference().audioLevel(participant);
+                            audioLevels.put(participant.getId(), audioLevel);
+                        }
+                    }
+                    if (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk)) {
+                        currentActiveSpeaker = fromSdk;
+                        listener.onActiveSpeakerUpdated(currentActiveSpeaker);
+                    }
+                }
+                handler.postDelayed(refreshActiveSpeaker, 1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
     }
 
-    /**
-     * Create an instance of the timer
-     *
-     * @param listener a valid instance of a listener to receive the callback
-     */
-    public VoxeetActiveSpeakerTimer(@NonNull ActiveSpeakerListener listener) {
+    public setActiveSpeakerListener(@NonNull ActiveSpeakerListener listener) {
         this();
 
         this.listener = listener;

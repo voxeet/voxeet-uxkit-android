@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStreamType;
+import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.events.sdk.CameraSwitchSuccessEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.VideoPresentationPaused;

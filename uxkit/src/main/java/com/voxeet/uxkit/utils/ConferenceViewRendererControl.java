@@ -8,7 +8,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
-import com.voxeet.android.media.MediaStreamType;
+import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.media.camera.CameraContext;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.views.VideoView;
