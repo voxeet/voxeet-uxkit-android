@@ -27,7 +27,7 @@
         <attr name="view_src" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="VoxeetUsersView">
+    <declare-styleable name="VoxeetParticipantsView">
         <attr name="speaking_user_color" format="color" />
         <attr name="selected_user_color" format="color" />
         <attr name="display_name" format="boolean" />

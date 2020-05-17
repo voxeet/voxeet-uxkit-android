@@ -9,9 +9,13 @@ import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.Opt;
+import com.voxeet.uxkit.implementation.VoxeetSpeakerView;
+import com.voxeet.uxkit.views.internal.VoxeetVuMeter;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Simple Timer made to schedule interactions accross the Speakers in a conference
@@ -19,8 +23,11 @@ import java.util.List;
  * This class can be started, stopped and get the current active speaker
  */
 @Annotate
-public final class VoxeetActiveSpeakerTimer {
+public final class VoxeetSpeakersTimerInstance {
 
+    public final static VoxeetSpeakersTimerInstance instance = new VoxeetSpeakersTimerInstance();
+
+    private CopyOnWriteArrayList<SpeakersUpdated> speakers_listeners = new CopyOnWriteArrayList<>();
     private ActiveSpeakerListener listener;
     private String currentActiveSpeaker;
 
@@ -29,9 +36,10 @@ public final class VoxeetActiveSpeakerTimer {
 
     private HashMap<String, Double> audioLevels = new HashMap<>();
 
-    private VoxeetActiveSpeakerTimer() {
+    private VoxeetSpeakersTimerInstance() {
         refreshActiveSpeaker = () -> {
             try {
+                //TODO since using the active speaker's O(n) loop and doing same here, mutualize code and remove the call to the SDK alltogether
                 if (null != handler && null != listener && null != VoxeetSDK.instance()) {
                     String fromSdk = VoxeetSDK.conference().currentSpeaker();
                     Conference conference = VoxeetSDK.conference().getConference();
@@ -48,18 +56,31 @@ public final class VoxeetActiveSpeakerTimer {
                     }
                     if (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk)) {
                         currentActiveSpeaker = fromSdk;
-                        listener.onActiveSpeakerUpdated(currentActiveSpeaker);
+                        try {
+                            listener.onActiveSpeakerUpdated(currentActiveSpeaker);
+                        } catch (Exception e) {
+
+                        }
                     }
+
+                    //also warn the listeners
+                    sendSpeakersUpdated();
                 }
-                handler.postDelayed(refreshActiveSpeaker, 1000);
+                handler.postDelayed(refreshActiveSpeaker, VoxeetSpeakerView.REFRESH_METER);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         };
     }
 
-    public setActiveSpeakerListener(@NonNull ActiveSpeakerListener listener) {
-        this();
+    /**
+     * Optional listener to set to receive events when a new active speaker loop has finished
+     * <p>
+     * Only one is available in memory. A getter for each audio level is available and will get refreshed every 1s
+     *
+     * @param listener
+     */
+    public void setActiveSpeakerListener(@NonNull ActiveSpeakerListener listener) {
 
         this.listener = listener;
     }
@@ -100,11 +121,50 @@ public final class VoxeetActiveSpeakerTimer {
     }
 
     /**
+     * Optional method for fast and possibly spammy behaviour from apps where views can be rendered multiple times.
+     * The value returned is a cached one and refreshed every 1s
+     *
+     * @param participant
+     * @return the audio level for the given participant or null
+     */
+    public double audioLevel(@NonNull Participant participant) {
+        String id = Opt.of(participant).then(Participant::getId).or("");
+        if (audioLevels.containsKey(id)) {
+            return Opt.of(audioLevels.get(id)).or(0d);
+        }
+        return 0d;
+    }
+
+    public void register(@NonNull SpeakersUpdated listener) {
+        if (!speakers_listeners.contains(listener)) {
+            speakers_listeners.add(listener);
+        }
+    }
+
+    public void unregister(@NonNull SpeakersUpdated listener) {
+        speakers_listeners.remove(listener);
+    }
+
+    private void sendSpeakersUpdated() {
+        for (SpeakersUpdated speaker : speakers_listeners) {
+            try {
+                speaker.onSpeakersUpdated();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * Listener of the active speaker of a conference
      * <p>
      * Any call this method will be catch for errors and printed in the error logs
      */
     public static interface ActiveSpeakerListener {
         void onActiveSpeakerUpdated(@Nullable String activeSpeakerUserId);
+    }
+
+    public static interface SpeakersUpdated {
+        void onSpeakersUpdated();
     }
 }

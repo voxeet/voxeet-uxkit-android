@@ -1,5 +1,7 @@
 package com.voxeet.uxkit.utils;
 
+import android.support.annotation.NonNull;
+
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.models.Participant;
 
@@ -14,12 +16,12 @@ public interface IParticipantViewListener {
      *
      * @param user the user
      */
-    void onParticipantSelected(Participant user, MediaStream requested_mediaStream);
+    void onParticipantSelected(@NonNull Participant user);
 
     /**
      * A conference user has been unselected.
      *
      * @param user the user
      */
-    void onParticipantUnselected(Participant user);
+    void onParticipantUnselected(@NonNull Participant user);
 }

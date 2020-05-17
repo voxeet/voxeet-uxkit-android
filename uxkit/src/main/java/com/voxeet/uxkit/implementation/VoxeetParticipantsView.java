@@ -32,7 +32,7 @@ import java.util.List;
  * Simple View to manage how Users are displayed "on top" of the screen (or wherever the default list should be positionned)
  */
 @Annotate
-public class VoxeetUsersView extends VoxeetView {
+public class VoxeetParticipantsView extends VoxeetView {
 
     private RecyclerView recyclerView;
 
@@ -51,7 +51,7 @@ public class VoxeetUsersView extends VoxeetView {
      * @param context the context
      */
     @NoDocumentation
-    public VoxeetUsersView(Context context) {
+    public VoxeetParticipantsView(Context context) {
         super(context);
 
         internalInit();
@@ -64,7 +64,7 @@ public class VoxeetUsersView extends VoxeetView {
      * @param attrs   the attrs
      */
     @NoDocumentation
-    public VoxeetUsersView(Context context, AttributeSet attrs) {
+    public VoxeetParticipantsView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         internalInit();
@@ -83,7 +83,7 @@ public class VoxeetUsersView extends VoxeetView {
      * @param defStyleAttr the def style attr
      */
     @NoDocumentation
-    public VoxeetUsersView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public VoxeetParticipantsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         updateAttrs(attrs);
@@ -120,16 +120,16 @@ public class VoxeetUsersView extends VoxeetView {
     }
 
     private void updateAttrs(AttributeSet attrs) {
-        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetUsersView);
+        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.VoxeetParticipantsView);
 
-        boolean nameEnabled = attributes.getBoolean(R.styleable.VoxeetUsersView_display_name, true);
+        boolean nameEnabled = attributes.getBoolean(R.styleable.VoxeetParticipantsView_display_name, true);
 
-        displaySelf = attributes.getBoolean(R.styleable.VoxeetUsersView_display_self, false);
+        displaySelf = attributes.getBoolean(R.styleable.VoxeetParticipantsView_display_self, false);
 
-        displayNonAir = attributes.getBoolean(R.styleable.VoxeetUsersView_display_user_lefts, true);
+        displayNonAir = attributes.getBoolean(R.styleable.VoxeetParticipantsView_display_user_lefts, true);
 
         Users configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.Users;
-        ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetUsersView_speaking_user_color);
+        ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetParticipantsView_speaking_user_color);
         if (null != configuration.speaking_user_color)
             setSelectedUserColor(configuration.speaking_user_color);
         else if (color != null)

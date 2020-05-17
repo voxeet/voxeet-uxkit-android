@@ -35,9 +35,9 @@ import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;
 public class VoxeetSpeakerView extends VoxeetView {
     private final String TAG = VoxeetSpeakerView.class.getSimpleName();
 
-    private final int REFRESH_SPEAKER = 1000;
+    public static final int REFRESH_SPEAKER = 1000;
 
-    private final int REFRESH_METER = 100;
+    public static final int REFRESH_METER = 100;
 
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -84,7 +84,7 @@ public class VoxeetSpeakerView extends VoxeetView {
         @Override
         public void run() {
             if (currentSpeaker != null && null != VoxeetSDK.conference()) {
-                double value = VoxeetSDK.conference().getLevel(currentSpeaker);
+                double value = VoxeetSDK.conference().audioLevel(currentSpeaker);
                 vuMeter.updateMeter(value);
             }
 

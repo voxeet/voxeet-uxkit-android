@@ -38,7 +38,7 @@ import com.voxeet.uxkit.implementation.overlays.abs.AbstractVoxeetExpandableView
 import com.voxeet.uxkit.utils.ConferenceViewRendererControl;
 import com.voxeet.uxkit.utils.IParticipantViewListener;
 import com.voxeet.uxkit.utils.ToolkitUtils;
-import com.voxeet.uxkit.utils.VoxeetActiveSpeakerTimer;
+import com.voxeet.uxkit.utils.VoxeetSpeakersTimerInstance;
 import com.voxeet.uxkit.views.NotchAvoidView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -49,13 +49,13 @@ import org.webrtc.RendererCommon;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VoxeetConferenceView extends AbstractVoxeetExpandableView implements IParticipantViewListener, VoxeetActiveSpeakerTimer.ActiveSpeakerListener {
+public class VoxeetConferenceView extends AbstractVoxeetExpandableView implements IParticipantViewListener, VoxeetSpeakersTimerInstance.ActiveSpeakerListener {
     private final String TAG = VoxeetConferenceView.class.getSimpleName();
 
     @Nullable
     private VoxeetVideoStreamView videoStream;
 
-    private VoxeetUsersView participantView;
+    private VoxeetParticipantsView participantView;
 
     private VoxeetActionBarView conferenceActionBarView;
 
@@ -69,7 +69,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     private VideoView selfView;
     private ViewGroup layoutParticipant;
 
-    private VoxeetActiveSpeakerTimer voxeetActiveSpeakerTimer;
+    private VoxeetSpeakersTimerInstance voxeetActiveSpeakerTimer;
     private VoxeetTimer voxeetTimer;
 
     private NotchAvoidView notchView;
@@ -98,7 +98,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     @SuppressLint("ClickableViewAccessibility")
     private void internalInit() {
         if (null == voxeetActiveSpeakerTimer)
-            voxeetActiveSpeakerTimer = new VoxeetActiveSpeakerTimer(this);
+            voxeetActiveSpeakerTimer = VoxeetSpeakersTimerInstance.instance;
 
         mPreviouslyScreenShare = false;
 
@@ -170,7 +170,9 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (null == voxeetActiveSpeakerTimer)
-            voxeetActiveSpeakerTimer = new VoxeetActiveSpeakerTimer(this);
+            voxeetActiveSpeakerTimer = VoxeetSpeakersTimerInstance.instance;
+
+        voxeetActiveSpeakerTimer.setActiveSpeakerListener(this);
         voxeetActiveSpeakerTimer.start();
         updateUi();
 
@@ -704,7 +706,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     @Override
-    public void onParticipantSelected(Participant user, MediaStream mediaStream) {
+    public void onParticipantSelected(@NonNull Participant user) {
         speakerView.lockScreen(user);
         updateSpeakerViewVisibility();
         updateUi();
@@ -762,7 +764,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     @Override
-    public void onParticipantUnselected(Participant user) {
+    public void onParticipantUnselected(@NonNull Participant user) {
         speakerView.unlockScreen();
         showSpeakerView();
 
