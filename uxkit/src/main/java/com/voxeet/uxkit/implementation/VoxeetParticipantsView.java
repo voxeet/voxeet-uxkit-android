@@ -172,7 +172,6 @@ public class VoxeetParticipantsView extends VoxeetView {
         postOnUi(() -> {
             adapter.setUsers(filter(conference.getParticipants()));
             adapter.updateUsers();
-            recyclerView.setLayoutManager(horizontalLayout);
         });
     }
 
