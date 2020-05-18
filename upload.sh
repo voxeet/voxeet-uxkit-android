@@ -2,7 +2,7 @@
 
 rm -rf build */build
 
-./gradlew -PCICD_FROM_BUILD_ID="$1" -PCICD_BUILD_ID="$1" :cleanAll :licenseAll
+./gradlew -PCICD_FROM_BUILD_ID="$1" -PCICD_BUILD_ID="$1" :cleanAll :assembleAll :licenseAll
 
 sleep 5
 

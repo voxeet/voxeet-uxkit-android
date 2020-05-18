@@ -1,8 +1,8 @@
-def version_from_sdk = { String version ->  project.hasProperty("CICD_FROM_BUILD_ID")
+def version_from_sdk = { String version ->  project.hasProperty("CICD_FROM_BUILD_ID") && project.CICD_FROM_BUILD_ID.length() > 0
         ? "${version}-${project.CICD_BUILD_ID}"
         : "${version}" }
 
-def version_uxkit = { String version ->  project.hasProperty("CICD_BUILD_ID")
+def version_uxkit = { String version ->  project.hasProperty("CICD_BUILD_ID") && project.CICD_BUILD_ID.length() > 0
         ? "${version}-${project.CICD_BUILD_ID}"
         : "${version}" }
 
