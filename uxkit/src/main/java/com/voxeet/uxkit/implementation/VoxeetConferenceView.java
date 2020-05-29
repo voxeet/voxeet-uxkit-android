@@ -494,8 +494,31 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         }
 
         String currentActiveSpeaker = getCurrentActiveSpeaker();
-        loopUserForStreamInVideoViewIfUnattached(currentActiveSpeaker, users, MediaStreamType.ScreenShare);
-        loopUserForStreamInVideoViewIfUnattached(currentActiveSpeaker, users, MediaStreamType.Camera);
+        String selectedUserId = speakerView.getSelectedUserId();
+
+        if (null != selectedUserId) {
+            //selected user
+            Participant forced = VoxeetSDK.conference().findParticipantById(selectedUserId);
+            if (null != forced) {
+                MediaStream stream = forced.streamsHandler().getFirst(MediaStreamType.Camera);
+                if (null == stream || stream.videoTracks().size() == 0) { //without any video, force remove
+                    selectedView.unAttach();
+                } else if (null == selectedView.getPeerId() || !selectedView.isAttached() || !selectedUserId.equals(currentActiveSpeaker)) {
+                    //or if needs attached
+                    selectedView.attach(selectedUserId, stream);
+                }
+            }
+        } else if (null != currentActiveSpeaker) { //else, do we have an active speaker ?
+            if (null != selectedView.getPeerId() || selectedView.isAttached()) {
+                //should we unattach ?
+                if (!currentActiveSpeaker.equals(selectedView.getPeerId())) {
+                    selectedView.unAttach();
+                }
+            }
+
+            loopUserForStreamInVideoViewIfUnattached(currentActiveSpeaker, users, MediaStreamType.ScreenShare);
+            loopUserForStreamInVideoViewIfUnattached(currentActiveSpeaker, users, MediaStreamType.Camera);
+        }
 
         if (null != localUserMediaStream) {
             if (localUserMediaStream.videoTracks().size() > 0) {
@@ -536,6 +559,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         } else {
             conferenceActionBarView.setDisplayScreenShare(false);
         }
+
     }
 
     private void loopUserForStreamInVideoViewIfUnattached(@Nullable String currentSelectedUserId,
