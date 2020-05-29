@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.voxeet.VoxeetSDK;
@@ -38,7 +39,7 @@ public class VoxeetParticipantsView extends VoxeetView {
 
     private ParticipantViewAdapter adapter;
 
-    private RecyclerView.LayoutManager horizontalLayout;
+    private LinearLayoutManager horizontalLayout;
 
     private boolean displaySelf = false;
     private boolean displayNonAir = true;
@@ -96,7 +97,7 @@ public class VoxeetParticipantsView extends VoxeetView {
      */
     public void setNamesEnabled(boolean enabled) {
         adapter.setNamesEnabled(enabled);
-        adapter.notifyDataSetChanged();
+        adapter.updateUsers();
     }
 
     /**
@@ -106,7 +107,7 @@ public class VoxeetParticipantsView extends VoxeetView {
      */
     public void setSelectedUserColor(int color) {
         adapter.setSelectedUserColor(color);
-        adapter.notifyDataSetChanged();
+        adapter.updateUsers();
     }
 
     @NoDocumentation
@@ -277,10 +278,11 @@ public class VoxeetParticipantsView extends VoxeetView {
     @NoDocumentation
     @Override
     public void init() {
-        if (adapter == null)
-            adapter = new ParticipantViewAdapter(getContext());
-
         horizontalLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+
+        if (adapter == null)
+            adapter = new ParticipantViewAdapter(horizontalLayout, getContext());
+
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(horizontalLayout);
@@ -318,7 +320,6 @@ public class VoxeetParticipantsView extends VoxeetView {
     public void notifyDatasetChanged() {
         if (null != adapter) {
             adapter.updateUsers();
-            adapter.notifyDataSetChanged();
         }
     }
 }
