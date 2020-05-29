@@ -8,7 +8,7 @@ dependencies {
 }
 ```
 
-See the main process and our various articles on our [website](https://www.voxeet.com/documentation/uxkit/java)
+See the main process and our various articles on our [website](https://dolby.io/developers/interactivity-apis/client-ux-kit/uxkit-voxeet-java)
 
 ## License
 
