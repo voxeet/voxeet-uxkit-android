@@ -73,8 +73,6 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
      * @param users the list of user to populate the adapter
      */
     public void setUsers(List<Participant> users) {
-
-        List<Participant> to_remove = new ArrayList<>();
         //add all the new users
         for (Participant participant : users) {
             if (air.contains(participant) || inv.contains(participant) || left.contains(participant) || other.contains(participant)) {
@@ -141,19 +139,15 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
     private void addParticipant(@NonNull Participant participant) {
         if (participant.isLocallyActive()) {
-            Log.d(TAG, "addParticipant: air " + participant.getInfo().getName());
             air.add(participant);
             notifyItemInserted(air.size() - 1);
         } else if (is(participant, ConferenceParticipantStatus.RESERVED)) {
-            Log.d(TAG, "addParticipant: inv " + participant.getInfo().getName());
             inv.add(participant);
             notifyItemInserted(inv.size() + air.size() - 1);
         } else if (is(participant, ConferenceParticipantStatus.LEFT)) {
-            Log.d(TAG, "addParticipant: left " + participant.getInfo().getName());
             left.add(participant);
             notifyItemInserted(left.size() + inv.size() + air.size() - 1);
         } else {
-            Log.d(TAG, "addParticipant: other " + participant.getInfo().getName());
             notifyItemInserted(other.size() + left.size() + inv.size() + air.size() - 1);
             other.add(participant);
         }
@@ -203,6 +197,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         }
     }
 
+    @Nullable
     private Participant getItem(int position) {
         if (position < air.size()) return air.get(position);
         position -= air.size();
@@ -213,7 +208,9 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         if (position < left.size()) return left.get(position);
         position -= left.size();
 
-        return other.get(position);
+        if (position < other.size())
+            return other.get(position);
+        return null;
     }
 
     @Override
@@ -279,7 +276,14 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         participantView.setTag(holder);
 
         int position = holder.getLayoutPosition();
+
         final Participant user = getItem(position);
+        if (null == user) {
+            participantView.setVisibility(View.INVISIBLE);
+            return;
+        } else if (participantView.getVisibility() != View.VISIBLE) {
+            participantView.setVisibility(View.VISIBLE);
+        }
 
         boolean on_air = user.isLocallyActive();
         participantView.setParticipant(user);
@@ -348,7 +352,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         }
     }
 
-    private static interface Apply {
+    private interface Apply {
         boolean is(Participant participant);
     }
 }
