@@ -39,6 +39,7 @@ import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
 import com.voxeet.uxkit.implementation.VoxeetConferenceView;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
 import com.voxeet.uxkit.implementation.overlays.abs.AbstractVoxeetOverlayView;
@@ -655,8 +656,12 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         }
     }
 
-    private void onConferenceLeftEvent(ConferenceStatusUpdatedEvent event) {
-        Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(UXKitNotInConferenceEvent event) {
+        onConferenceLeftEvent(null);
+    }
+
+    private void onConferenceLeftEvent(@Nullable ConferenceStatusUpdatedEvent event) {
         VoxeetSDK.audio().stop();
 
         if (null != mMainView) {

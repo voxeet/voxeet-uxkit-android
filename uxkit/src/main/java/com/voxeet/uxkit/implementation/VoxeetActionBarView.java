@@ -44,6 +44,7 @@ import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.configuration.ActionBar;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
+import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -349,6 +350,11 @@ public class VoxeetActionBarView extends VoxeetView {
         hangup_wrapper = v.findViewById(R.id.hangup_wrapper);
         hangup.setOnClickListener(v1 -> {
             VoxeetSDK.audio().playSoundType(AudioType.HANGUP);
+
+            if(!VoxeetSDK.conference().isLive()) {
+                EventBus.getDefault().post(new UXKitNotInConferenceEvent());
+                return;
+            }
 
             VoxeetSDK.conference().leave()
                     .then(aBoolean -> {
