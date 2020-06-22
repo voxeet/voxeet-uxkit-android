@@ -4,7 +4,7 @@
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:uxkit:2.2.0') { transitive = true }
+  compile ('com.voxeet.sdk:uxkit:2.+') { transitive = true }
 }
 ```
 
