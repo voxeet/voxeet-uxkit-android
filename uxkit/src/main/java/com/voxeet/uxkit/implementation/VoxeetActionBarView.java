@@ -209,12 +209,19 @@ public class VoxeetActionBarView extends VoxeetView {
         super.onAttachedToWindow();
 
         if (null != VoxeetSDK.conference()) {
+            if (!EventBus.getDefault().isRegistered(this)) {
+                EventBus.getDefault().register(this);
+            }
+
             ConferenceService service = VoxeetSDK.conference();
             ConferenceInformation information = service.getCurrentConference();
 
             if (null != information && information.isOwnVideoStarted() && !MediaState.STARTED.equals(information.getVideoState())) {
                 service.startVideo()
-                        .then((ThenVoid<Boolean>) aBoolean -> Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean))
+                        .then(aBoolean -> {
+                            Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean);
+                            updateCameraState();
+                        })
                         .error(error -> {
                             Log.d(TAG, "onAttachedToWindow: starting video ? thrown:=" + error);
                             error.printStackTrace();
@@ -223,6 +230,16 @@ public class VoxeetActionBarView extends VoxeetView {
 
             updateCameraState();
         }
+    }
+
+    @NoDocumentation
+    @Override
+    protected void onDetachedFromWindow() {
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+
+        super.onDetachedFromWindow();
     }
 
     /**
