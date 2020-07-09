@@ -123,7 +123,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         ArrayList<Participant> removed_from_air = updateArray(air, 0, p -> !p.isLocallyActive());
         ArrayList<Participant> removed_from_inv = updateArray(inv, air.size(), p -> !is(p, ConferenceParticipantStatus.RESERVED));
         ArrayList<Participant> removed_from_left = updateArray(left, air.size() + inv.size(), p -> !is(p, ConferenceParticipantStatus.LEFT));
-        ArrayList<Participant> removed_from_other = updateArray(other, other.size() + inv.size(), p -> p.isLocallyActive() || is(p, ConferenceParticipantStatus.LEFT) || is(p, ConferenceParticipantStatus.RESERVED));
+        ArrayList<Participant> removed_from_other = updateArray(other, air.size() + inv.size() + left.size(), p -> p.isLocallyActive() || is(p, ConferenceParticipantStatus.LEFT) || is(p, ConferenceParticipantStatus.RESERVED));
 
         to_readd.addAll(removed_from_air);
         to_readd.addAll(removed_from_inv);
