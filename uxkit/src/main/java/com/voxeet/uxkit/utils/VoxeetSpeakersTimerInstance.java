@@ -25,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Annotate
 public final class VoxeetSpeakersTimerInstance {
 
+    private final static int INTERVALS_BEFORE_NEXT_SPEAKER_UPDATED = 50; //
     public final static VoxeetSpeakersTimerInstance instance = new VoxeetSpeakersTimerInstance();
 
     private CopyOnWriteArrayList<SpeakersUpdated> speakers_listeners = new CopyOnWriteArrayList<>();
@@ -35,6 +36,8 @@ public final class VoxeetSpeakersTimerInstance {
     private Runnable refreshActiveSpeaker = null;
 
     private HashMap<String, Double> audioLevels = new HashMap<>();
+
+    private int current_loop_state = 0;
 
     private VoxeetSpeakersTimerInstance() {
         refreshActiveSpeaker = () -> {
@@ -54,17 +57,27 @@ public final class VoxeetSpeakersTimerInstance {
                             audioLevels.put(participant.getId(), audioLevel);
                         }
                     }
-                    if (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk)) {
+
+                    //check if it's time to update the current active speaker (every 5 times - current value of INTERVALS_BEFORE_NEXT_SPEAKER_UPDATED)
+                    boolean new_loop_activespeaker = false;
+                    current_loop_state++;
+                    if (current_loop_state >= INTERVALS_BEFORE_NEXT_SPEAKER_UPDATED) {
+                        current_loop_state = 0;
+                        new_loop_activespeaker = true;
+                    }
+
+
+                    if (new_loop_activespeaker && null != fromSdk && (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk))) {
                         currentActiveSpeaker = fromSdk;
                         try {
                             listener.onActiveSpeakerUpdated(currentActiveSpeaker);
                         } catch (Exception e) {
 
                         }
-                    }
 
-                    //also warn the listeners
-                    sendSpeakersUpdated();
+                        //also warn the listeners
+                        sendSpeakersUpdated();
+                    }
                 }
                 handler.postDelayed(refreshActiveSpeaker, VoxeetSpeakerView.REFRESH_METER);
             } catch (Exception e) {
