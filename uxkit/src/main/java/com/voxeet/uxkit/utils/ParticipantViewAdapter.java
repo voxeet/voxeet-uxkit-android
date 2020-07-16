@@ -1,6 +1,7 @@
 package com.voxeet.uxkit.utils;
 
 import android.content.Context;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,6 +43,8 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     private IParticipantViewListener listener;
 
     private int selectedUserColor;
+
+    private boolean videoActivable = true;
 
     private ParticipantViewAdapter() {
 
@@ -291,6 +294,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         participantView.setShowName(namesEnabled);
         participantView.setAvatarSize(avatarSize);
         participantView.setSelected(equalsToUser(selectedUserId, user));
+        participantView.setVideoActivable(videoActivable);
 
         participantView.refresh();
 
@@ -331,6 +335,12 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         });
 
         setAnimation(holder.itemView, position);
+    }
+
+    @MainThread
+    public void setVideoActivable(boolean state) {
+        this.videoActivable = state;
+        refreshVisible();
     }
 
     /**

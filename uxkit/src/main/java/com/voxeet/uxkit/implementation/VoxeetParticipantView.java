@@ -40,6 +40,7 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
     private RoundedImageView avatar;
     private ImageView overlay;
 
+    private boolean videoActivable = true;
     private boolean selected;
 
     @Nullable
@@ -221,6 +222,11 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
     }
 
     private void loadStreamOnto() {
+        if(!videoActivable) {
+            setNoVideo();
+            return;
+        }
+
         String id = Opt.of(participant).then(Participant::getId).orNull();
         MediaStream normalStream = getMediaStream(id);
 
@@ -241,10 +247,14 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
         }
 
         if (!attached) {
-            videoView.unAttach();
-            videoView.setVisibility(View.GONE);
-            avatar.setVisibility(View.VISIBLE);
+            setNoVideo();
         }
+    }
+
+    private void setNoVideo() {
+        videoView.unAttach();
+        videoView.setVisibility(View.GONE);
+        avatar.setVisibility(View.VISIBLE);
     }
 
     public void setShowName(boolean showName) {
@@ -257,5 +267,9 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
 
     public void setSelectedUserColor(int selectedUserColor) {
         this.selectedUserColor = selectedUserColor;
+    }
+
+    public void setVideoActivable(boolean state) {
+        this.videoActivable = state;
     }
 }
