@@ -9,6 +9,7 @@
     <color name="border_color">#e4e4e4</color>
     <color name="divider_color">@color/grey_light</color>
 
+    <color name="gray_alpha">#66000000</color>
     <color name="grey_light">#e9e9e9</color>
     <color name="white_alpha">#a4ffffff</color>
     <color name="blue">#4280c5</color>

@@ -57,6 +57,7 @@ import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.configuration.ActionBar;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
+import com.voxeet.uxkit.implementation.devices.IMediaDeviceControlListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -98,6 +99,9 @@ public class VoxeetActionBarView extends VoxeetView {
         updateSpeakerButtonWithDevices();
     };
     private List<MediaDevice> devices = new ArrayList<>();
+
+    @Nullable
+    private IMediaDeviceControlListener onSpeakerAction;
 
     /**
      * Instantiates a new Voxeet conference bar view.
@@ -378,6 +382,14 @@ public class VoxeetActionBarView extends VoxeetView {
         speaker_wrapper = v.findViewById(R.id.speaker_wrapper);
         updateSpeakerButton();
         speaker.setOnClickListener(v16 -> {
+            if (null != onSpeakerAction) {
+                try {
+                    onSpeakerAction.onMediaRouteButtonInteraction();
+                } catch (Exception e) {
+
+                }
+                return;
+            }
             speaker.setSelected(!speaker.isSelected());
 
             VoxeetSDK.audio().enumerateDevices().then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
@@ -816,5 +828,10 @@ public class VoxeetActionBarView extends VoxeetView {
             if (filtered.size() > 0) return filtered.get(0);
         }
         return null;
+    }
+
+    public VoxeetActionBarView setMediaDeviceControl(@Nullable IMediaDeviceControlListener onSpeakerAction) {
+        this.onSpeakerAction = onSpeakerAction;
+        return this;
     }
 }
