@@ -343,10 +343,11 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
             if (null != activeSpeaker) {
                 currentSpeaker = activeSpeaker;
             }
-            if (currentSpeaker != null && currentSpeaker.getInfo() != null) {
-                speakerName.setText(currentSpeaker.getInfo().getName());
-                invalidateSpeakerName();
-            }
+        }
+
+        if (currentSpeaker != null && currentSpeaker.getInfo() != null) {
+            speakerName.setText(currentSpeaker.getInfo().getName());
+            invalidateSpeakerName();
         }
 
         if (currentWidth <= 0) {

@@ -269,6 +269,11 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
         this.selectedUserColor = selectedUserColor;
     }
 
+    @Override
+    public int getId() {
+        return Opt.of(participant).then(Participant::getId).then(String::hashCode).or(0);
+    }
+
     public void setVideoActivable(boolean state) {
         this.videoActivable = state;
     }

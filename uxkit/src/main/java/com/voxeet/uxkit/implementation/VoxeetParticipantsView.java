@@ -79,6 +79,18 @@ public class VoxeetParticipantsView extends VoxeetView {
 
     private void internalInit() {
         mHandler = new Handler(Looper.getMainLooper());
+
+        horizontalLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+
+        if (adapter == null) {
+            adapter = new ParticipantViewAdapter(horizontalLayout, getContext());
+        }
+
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(horizontalLayout);
+
+        setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.conference_view_avatar_size));
     }
 
     /**
@@ -283,16 +295,6 @@ public class VoxeetParticipantsView extends VoxeetView {
     @NoDocumentation
     @Override
     public void init() {
-        horizontalLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-
-        if (adapter == null)
-            adapter = new ParticipantViewAdapter(horizontalLayout, getContext());
-
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(horizontalLayout);
-
-        setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.conference_view_avatar_size));
     }
 
     @NoDocumentation
@@ -331,7 +333,7 @@ public class VoxeetParticipantsView extends VoxeetView {
     @MainThread
     public void setVideoActivable(boolean state) {
         this.videoActivable = state;
-        if(null != adapter) {
+        if (null != adapter) {
             adapter.setVideoActivable(state);
         }
     }

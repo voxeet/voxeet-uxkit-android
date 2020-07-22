@@ -30,6 +30,7 @@ public final class VoxeetSpeakersTimerInstance {
     private CopyOnWriteArrayList<SpeakersUpdated> speakers_listeners = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<ActiveSpeakerListener> activespeakers_listeners = new CopyOnWriteArrayList<>();
     private String currentActiveSpeaker;
+    private String lastActiveSpeaker;
 
     private Handler handler;
     private Runnable refreshActiveSpeaker = null;
@@ -65,9 +66,15 @@ public final class VoxeetSpeakersTimerInstance {
                         new_loop_activespeaker = true;
                     }
 
-                    if (new_loop_activespeaker && null != fromSdk && (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk))) {
-                        currentActiveSpeaker = fromSdk;
+                    //we save the last active speaker known
+                    if (null != fromSdk) {
+                        lastActiveSpeaker = fromSdk;
+                    }
+
+                    if (new_loop_activespeaker && (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk))) {
+                        currentActiveSpeaker = lastActiveSpeaker;
                         sendActiveSpeakersUpdated();
+                        lastActiveSpeaker = null;
                     }
 
                     //also warn the listeners
