@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -19,15 +17,21 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.VoxeetSDK;
+import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.Participant;
+import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.NoDocumentation;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.utils.VoxeetSpeakersTimerInstance;
 import com.voxeet.uxkit.utils.WindowHelper;
 import com.voxeet.uxkit.views.internal.VoxeetVuMeter;
 import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;
+
+import java.util.List;
 
 /**
  * View made to display a given user
@@ -97,6 +101,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         super.onAttachedToWindow();
 
 
+        VoxeetSpeakersTimerInstance.instance.registerActiveSpeakerListener(this);
         VoxeetSpeakersTimerInstance.instance.register(this);
         mAttached = true;
         onResume();
@@ -105,6 +110,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
     @NoDocumentation
     @Override
     protected void onDetachedFromWindow() {
+        VoxeetSpeakersTimerInstance.instance.unregisterActiveSpeakerListener(this);
         VoxeetSpeakersTimerInstance.instance.unregister(this);
         mAttached = false;
         onPause();
@@ -228,7 +234,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         return VoxeetSDK.conference().findParticipantById(userId);
     }
 
-    private void loadViaPicasso(Participant conferenceUser, int avatarSize, ImageView imageView) {
+    private boolean loadViaPicasso(Participant conferenceUser, int avatarSize, ImageView imageView) {
         try {
             String avatarUrl = null;
             if (null != conferenceUser && null != conferenceUser.getInfo()) {
@@ -250,9 +256,11 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
                         .resize(avatarSize, avatarSize)
                         .into(imageView);
             }
+            return true;
         } catch (Exception e) {
             ExceptionManager.sendException(e);
             Log.e(TAG, "error " + e.getMessage());
+            return false;
         }
     }
 
@@ -304,6 +312,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
      */
     @Override
     public void onResume() {
+        VoxeetSpeakersTimerInstance.instance.registerActiveSpeakerListener(this);
         VoxeetSpeakersTimerInstance.instance.register(this);
     }
 
@@ -311,7 +320,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
      * Call this method to pause the various callbacks
      */
     public void onPause() {
-        VoxeetSpeakersTimerInstance.instance.unregister(this);
+
     }
 
     @Override
@@ -322,18 +331,26 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
 
         if (selected && currentSpeaker != null && currentSpeaker.getId() != null) {
             //if we had a user but he disappeared...
-            selected = findUserById(currentSpeaker.getId()) != null;
+            Participant participant = findUserById(currentSpeaker.getId());
+            selected = null != participant && participant.isLocallyActive();
         } else {
             //had a user but predicate did not pass
             selected = false;
         }
 
         if (!selected && null != VoxeetSDK.conference()) {
-            currentSpeaker = findUserById(VoxeetSDK.conference().currentSpeaker());
+            Participant activeSpeaker = findUserById(VoxeetSDK.conference().currentSpeaker());
+            if (null != activeSpeaker) {
+                currentSpeaker = activeSpeaker;
+            }
             if (currentSpeaker != null && currentSpeaker.getInfo() != null) {
                 speakerName.setText(currentSpeaker.getInfo().getName());
                 invalidateSpeakerName();
             }
+        }
+
+        if (currentWidth <= 0) {
+            currentWidth = getWidth() * 2; //currentWidth = width /2 when resize
         }
 
         if (currentSpeaker != null && currentWidth > 0)
@@ -343,12 +360,24 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
     @Override
     public void onSpeakersUpdated() {
         if (null != currentSpeaker) {
-            Log.d("VoxeetSpeakersTimerInstance", "onSpeakersUpdated: " + currentSpeaker.getStatus());
             if (!currentSpeaker.isLocallyActive()) currentSpeaker = null;
         }
 
         if (null == currentSpeaker) {
-            onActiveSpeakerUpdated(null);
+            //we don't have any speaker, look for at least the first one
+            List<Participant> participants = Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
+                if (ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus())) return true;
+                if (participant.getId().equals(VoxeetSDK.session().getParticipantId()))
+                    return false;
+                return Opt.of(participant.streamsHandler())
+                        .then(s -> s.getFirst(MediaStreamType.Camera))
+                        .then(s -> s.audioTracks().size() > 0 || s.videoTracks().size() > 0).or(false);
+            });
+
+            if (participants.size() > 0) {
+                currentSpeaker = participants.get(0);
+                onActiveSpeakerUpdated(currentSpeaker.getId());
+            }
         }
 
         if (currentSpeaker != null && null != VoxeetSDK.conference()) {

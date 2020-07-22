@@ -28,7 +28,7 @@ public final class VoxeetSpeakersTimerInstance {
     public final static VoxeetSpeakersTimerInstance instance = new VoxeetSpeakersTimerInstance();
 
     private CopyOnWriteArrayList<SpeakersUpdated> speakers_listeners = new CopyOnWriteArrayList<>();
-    private ActiveSpeakerListener listener;
+    private CopyOnWriteArrayList<ActiveSpeakerListener> activespeakers_listeners = new CopyOnWriteArrayList<>();
     private String currentActiveSpeaker;
 
     private Handler handler;
@@ -42,7 +42,7 @@ public final class VoxeetSpeakersTimerInstance {
         refreshActiveSpeaker = () -> {
             try {
                 //TODO since using the active speaker's O(n) loop and doing same here, mutualize code and remove the call to the SDK alltogether
-                if (null != handler && null != listener && null != VoxeetSDK.instance()) {
+                if (null != handler && null != VoxeetSDK.instance()) {
                     String fromSdk = VoxeetSDK.conference().currentSpeaker();
                     Conference conference = VoxeetSDK.conference().getConference();
 
@@ -65,14 +65,9 @@ public final class VoxeetSpeakersTimerInstance {
                         new_loop_activespeaker = true;
                     }
 
-
                     if (new_loop_activespeaker && null != fromSdk && (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk))) {
                         currentActiveSpeaker = fromSdk;
-                        try {
-                            listener.onActiveSpeakerUpdated(currentActiveSpeaker);
-                        } catch (Exception e) {
-
-                        }
+                        sendActiveSpeakersUpdated();
                     }
 
                     //also warn the listeners
@@ -85,6 +80,11 @@ public final class VoxeetSpeakersTimerInstance {
         };
     }
 
+    @Deprecated
+    public void setActiveSpeakerListener(@NonNull ActiveSpeakerListener listener) {
+        registerActiveSpeakerListener(listener);
+    }
+
     /**
      * Optional listener to set to receive events when a new active speaker loop has finished
      * <p>
@@ -92,9 +92,14 @@ public final class VoxeetSpeakersTimerInstance {
      *
      * @param listener
      */
-    public void setActiveSpeakerListener(@NonNull ActiveSpeakerListener listener) {
+    public void registerActiveSpeakerListener(@NonNull ActiveSpeakerListener listener) {
+        if (!activespeakers_listeners.contains(listener)) {
+            activespeakers_listeners.add(listener);
+        }
+    }
 
-        this.listener = listener;
+    public void unregisterActiveSpeakerListener(@NonNull ActiveSpeakerListener listener) {
+        activespeakers_listeners.remove(listener);
     }
 
     /**
@@ -155,6 +160,16 @@ public final class VoxeetSpeakersTimerInstance {
 
     public void unregister(@NonNull SpeakersUpdated listener) {
         speakers_listeners.remove(listener);
+    }
+
+    private void sendActiveSpeakersUpdated() {
+        for (ActiveSpeakerListener speaker : activespeakers_listeners) {
+            try {
+                speaker.onActiveSpeakerUpdated(currentActiveSpeaker);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void sendSpeakersUpdated() {
