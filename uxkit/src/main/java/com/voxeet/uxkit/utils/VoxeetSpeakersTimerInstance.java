@@ -10,8 +10,6 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Opt;
-import com.voxeet.uxkit.implementation.VoxeetSpeakerView;
-import com.voxeet.uxkit.views.internal.VoxeetVuMeter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Annotate
 public final class VoxeetSpeakersTimerInstance {
 
+    public static final int REFRESH_METER = 100;
     private final static int INTERVALS_BEFORE_NEXT_SPEAKER_UPDATED = 50; //
     public final static VoxeetSpeakersTimerInstance instance = new VoxeetSpeakersTimerInstance();
 
@@ -74,12 +73,12 @@ public final class VoxeetSpeakersTimerInstance {
                         } catch (Exception e) {
 
                         }
-
-                        //also warn the listeners
-                        sendSpeakersUpdated();
                     }
+
+                    //also warn the listeners
+                    sendSpeakersUpdated();
                 }
-                handler.postDelayed(refreshActiveSpeaker, VoxeetSpeakerView.REFRESH_METER);
+                handler.postDelayed(refreshActiveSpeaker, VoxeetSpeakersTimerInstance.REFRESH_METER);
             } catch (Exception e) {
                 e.printStackTrace();
             }
