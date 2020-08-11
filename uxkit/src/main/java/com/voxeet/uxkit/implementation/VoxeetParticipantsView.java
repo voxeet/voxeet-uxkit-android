@@ -5,7 +5,9 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -37,6 +39,9 @@ public class VoxeetParticipantsView extends VoxeetView {
 
     private RecyclerView recyclerView;
 
+    private boolean videoActivable = true;
+
+    @Nullable
     private ParticipantViewAdapter adapter;
 
     private LinearLayoutManager horizontalLayout;
@@ -74,6 +79,18 @@ public class VoxeetParticipantsView extends VoxeetView {
 
     private void internalInit() {
         mHandler = new Handler(Looper.getMainLooper());
+
+        horizontalLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+
+        if (adapter == null) {
+            adapter = new ParticipantViewAdapter(horizontalLayout, getContext());
+        }
+
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(horizontalLayout);
+
+        setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.conference_view_avatar_size));
     }
 
     /**
@@ -278,16 +295,6 @@ public class VoxeetParticipantsView extends VoxeetView {
     @NoDocumentation
     @Override
     public void init() {
-        horizontalLayout = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-
-        if (adapter == null)
-            adapter = new ParticipantViewAdapter(horizontalLayout, getContext());
-
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(horizontalLayout);
-
-        setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.conference_view_avatar_size));
     }
 
     @NoDocumentation
@@ -320,6 +327,14 @@ public class VoxeetParticipantsView extends VoxeetView {
     public void notifyDatasetChanged() {
         if (null != adapter) {
             adapter.updateUsers();
+        }
+    }
+
+    @MainThread
+    public void setVideoActivable(boolean state) {
+        this.videoActivable = state;
+        if (null != adapter) {
+            adapter.setVideoActivable(state);
         }
     }
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <View
+        android:id="@+id/devices_picker_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray_alpha" />
+
+    <com.voxeet.sdk.views.RoundedFrameLayout
+        android:layout_width="@dimen/voxeet_devices_picker_width"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="4dp"
+        android:clickable="true"
+        android:elevation="5dp"
+        android:focusable="true"
+        app:roundedCornerRadius="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/grey_light"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/voxeet_default_margin">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/media_output"
+                    android:textColor="#9E9E9E"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/devices_picker_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/voxeet_default_padding"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </com.voxeet.sdk.views.RoundedFrameLayout>
+</FrameLayout>

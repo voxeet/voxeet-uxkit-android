@@ -1,13 +1,17 @@
 package com.voxeet.uxkit.activities;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.pm.PermissionInfoCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -51,6 +55,12 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
 
     @Nullable
     private AbstractSDKService sdkService;
+
+    /**
+     * Flag set to true when the last request for camera permission failed, use the commit method to restore it to false
+     * after the adequate warning has been made to the user
+     */
+    private boolean _camera_permission_permnantly_banned = false;
 
     @NoDocumentation
     public VoxeetAppCompatActivity() {
@@ -155,17 +165,44 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         }
     }
 
+    /**
+     * Simple method warning if the last call for the camera permission was unsuccessful and the user did prevent any future popup for permission
+     *
+     * @return a flag indicating if the permission has been permanently refused
+     */
+    public boolean isCameraPermissionBanned() {
+        if (Validate.hasCameraPermissions(this)) return false;
+        if (_camera_permission_permnantly_banned) return true;
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        //    if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) return true;
+        //}
+        return false;
+    }
+
+    /**
+     * when the user has been warned by the developers about the permnantly refused error, simply reset back to normal
+     */
+    public void commitCameraPermissionBannedWarned() {
+        _camera_permission_permnantly_banned = false;
+    }
+
     @NoDocumentation
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         if (requestCode == PermissionRefusedEvent.RESULT_CAMERA) {
-            Log.d(TAG, "onActivityResult: camera is ok now");
-            if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
-                VoxeetSDK.conference().startVideo()
-                        .then(result -> {
-                        })
-                        .error(Throwable::printStackTrace);
+            if (isPermissionSet(Manifest.permission.CAMERA, permissions, grantResults)) {
+                Log.d(TAG, "onActivityResult: camera is ok now");
+                if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
+                    VoxeetSDK.conference().startVideo()
+                            .then(result -> {
+                            })
+                            .error(Throwable::printStackTrace);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    _camera_permission_permnantly_banned = true;
+                }
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -272,6 +309,19 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
 
     private void dismissNotification() {
         IncomingNotificationHelper.dismiss(this);
+    }
+
+    private boolean isPermissionSet(@NonNull String permission, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (null == permission) return false;
+
+        if (null != permissions && null != grantResults && permissions.length == grantResults.length) {
+            for (int i = 0; i < permissions.length; i++) {
+                if (permission.equals(permissions[i])) {
+                    return PackageManager.PERMISSION_DENIED != grantResults[i];
+                }
+            }
+        }
+        return false;
     }
 }
 

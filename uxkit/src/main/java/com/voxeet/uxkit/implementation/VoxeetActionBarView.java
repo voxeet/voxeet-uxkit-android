@@ -8,6 +8,8 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -16,11 +18,19 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.dolby.voice.devicemanagement.devices.AudioDevicesManager;
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.stream.MediaStreamType;
+import com.voxeet.audio2.AudioDeviceManager;
+import com.voxeet.audio2.devices.MediaDevice;
+import com.voxeet.audio2.devices.description.ConnectionState;
+import com.voxeet.audio2.devices.description.DeviceType;
 import com.voxeet.promise.Promise;
+import com.voxeet.promise.solve.ErrorPromise;
+import com.voxeet.promise.solve.ThenPromise;
 import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
@@ -28,6 +38,7 @@ import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
 import com.voxeet.sdk.events.v2.VideoStateEvent;
 import com.voxeet.sdk.media.audio.AudioRoute;
+import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.services.AudioService;
@@ -38,6 +49,7 @@ import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
 import com.voxeet.sdk.services.media.MediaState;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.AudioType;
+import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.utils.Validate;
@@ -45,10 +57,14 @@ import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.configuration.ActionBar;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
+import com.voxeet.uxkit.implementation.devices.IMediaDeviceControlListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class used to display the various action buttons in the conference
@@ -78,10 +94,14 @@ public class VoxeetActionBarView extends VoxeetView {
     private ViewGroup camera_wrapper;
     private ViewGroup hangup_wrapper;
     private ViewGroup screenshare_wrapper;
-    private ViewGroup view_3d_wrapper;
+    private SoundManager.Call<List<MediaDevice>> onAudioDeviceUpdate = update -> {
+        VoxeetActionBarView.this.devices = null != update ? update : new ArrayList<>();
+        updateSpeakerButtonWithDevices();
+    };
+    private List<MediaDevice> devices = new ArrayList<>();
 
-    private View view_3d;
-    private OnView3D view3d_listener;
+    @Nullable
+    private IMediaDeviceControlListener onSpeakerAction;
 
     /**
      * Instantiates a new Voxeet conference bar view.
@@ -203,18 +223,34 @@ public class VoxeetActionBarView extends VoxeetView {
         setUserPreferences();
     }
 
+    private boolean attached = false;
+
     @NoDocumentation
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+        attached = true;
+
+        if (null != VoxeetSDK.audio()) {
+            VoxeetSDK.audio().registerUpdateDevices(this.onAudioDeviceUpdate);
+            updateSpeakerButton();
+        }
+
         if (null != VoxeetSDK.conference()) {
+            if (!EventBus.getDefault().isRegistered(this)) {
+                EventBus.getDefault().register(this);
+            }
+
             ConferenceService service = VoxeetSDK.conference();
             ConferenceInformation information = service.getCurrentConference();
 
             if (null != information && information.isOwnVideoStarted() && !MediaState.STARTED.equals(information.getVideoState())) {
                 service.startVideo()
-                        .then((ThenVoid<Boolean>) aBoolean -> Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean))
+                        .then(aBoolean -> {
+                            Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean);
+                            updateCameraState();
+                        })
                         .error(error -> {
                             Log.d(TAG, "onAttachedToWindow: starting video ? thrown:=" + error);
                             error.printStackTrace();
@@ -223,6 +259,17 @@ public class VoxeetActionBarView extends VoxeetView {
 
             updateCameraState();
         }
+    }
+
+    @NoDocumentation
+    @Override
+    protected void onDetachedFromWindow() {
+        attached = false;
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
+
+        super.onDetachedFromWindow();
     }
 
     /**
@@ -331,19 +378,43 @@ public class VoxeetActionBarView extends VoxeetView {
     @NoDocumentation
     @Override
     protected void bindView(View v) {
-        view_3d = v.findViewById(R.id.view_3d);
-        view_3d_wrapper = v.findViewById(R.id.view_3d_wrapper);
-        if (null != view_3d) {
-            invalidateView3D();
-            view_3d.setOnClickListener(v15 -> on3DView());
-        }
         speaker = v.findViewById(R.id.speaker);
         speaker_wrapper = v.findViewById(R.id.speaker_wrapper);
         updateSpeakerButton();
         speaker.setOnClickListener(v16 -> {
+            if (null != onSpeakerAction) {
+                try {
+                    onSpeakerAction.onMediaRouteButtonInteraction();
+                } catch (Exception e) {
+
+                }
+                return;
+            }
             speaker.setSelected(!speaker.isSelected());
 
-            VoxeetSDK.audio().setAudioRoute(speaker.isSelected() ? AudioRoute.ROUTE_SPEAKER : AudioRoute.ROUTE_PHONE);
+            VoxeetSDK.audio().enumerateDevices().then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
+                MediaDevice standard = oneOf(mediaDevices, ConnectionState.CONNECTED, DeviceType.INTERNAL_SPEAKER, DeviceType.NORMAL_MEDIA);
+                //MediaDevice external = oneOf(mediaDevices, ConnectionState.CONNECTED, DeviceType.EXTERNAL_SPEAKER, DeviceType.BLUETOOTH, DeviceType.WIRED_HEADSET);
+
+                MediaDevice to_connect;
+                if (null != standard) {
+                    to_connect = oneOf(mediaDevices, ConnectionState.DISCONNECTED, DeviceType.BLUETOOTH, DeviceType.WIRED_HEADSET, DeviceType.EXTERNAL_SPEAKER);
+                } else {
+                    to_connect = oneOf(mediaDevices, ConnectionState.DISCONNECTED, DeviceType.INTERNAL_SPEAKER, DeviceType.NORMAL_MEDIA);
+                }
+
+                if (null != to_connect) {
+                    return VoxeetSDK.audio().connect(to_connect);
+                }
+
+                try {
+                    throw new IllegalStateException("No devices found");
+                } catch (Exception e) {
+                    return Promise.reject(e);
+                }
+            }).error(error -> {
+                Toast.makeText(getContext(), "No devices found", Toast.LENGTH_SHORT).show();
+            });
         });
 
         hangup = v.findViewById(R.id.hangup);
@@ -351,7 +422,7 @@ public class VoxeetActionBarView extends VoxeetView {
         hangup.setOnClickListener(v1 -> {
             VoxeetSDK.audio().playSoundType(AudioType.HANGUP);
 
-            if(!VoxeetSDK.conference().isLive()) {
+            if (!VoxeetSDK.conference().isLive()) {
                 EventBus.getDefault().post(new UXKitNotInConferenceEvent());
                 return;
             }
@@ -396,10 +467,6 @@ public class VoxeetActionBarView extends VoxeetView {
         }
 
         updateCameraState();
-    }
-
-    private void on3DView() {
-        if (null != view3d_listener) view3d_listener.onView3D();
     }
 
     /**
@@ -461,7 +528,7 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     private void updateCameraState(@NonNull MediaState videoState) {
-        if(null == camera) return;
+        if (null == camera) return;
 
         switch (videoState) {
             case STARTED:
@@ -560,13 +627,14 @@ public class VoxeetActionBarView extends VoxeetView {
     private void updateVisibilities(int visibility) {
         boolean listener = isListener();
 
-        updateSpeakerButton();
+        //updateSpeakerButton();
 
         if (microphone != null)
             microphone_wrapper.setVisibility(displayMute && !listener ? visibility : GONE);
 
+        //always show the speaker button
         if (speaker != null)
-            speaker_wrapper.setVisibility(displaySpeaker ? visibility : GONE);
+            speaker_wrapper.setVisibility(displaySpeaker ? View.VISIBLE : GONE);
 
         if (camera != null)
             camera_wrapper.setVisibility(displayCamera && !listener ? visibility : GONE);
@@ -650,53 +718,49 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
     private void updateSpeakerButton() {
-        if (null != VoxeetSDK.instance()) {
-            AudioService service = VoxeetSDK.audio();
+        AudioService service = VoxeetSDK.audio();
 
-            boolean headset = service.isWiredHeadsetOn();
-            headset |= service.isBluetoothHeadsetConnected();
-            Log.d("SpeakerButton", "updateSpeakerButton: has wired head set on =" + service.isWiredHeadsetOn() + " bluetooth = " + service.isBluetoothHeadsetConnected());
-            if (headset) {
+        service.enumerateDevices().then(devices -> {
+            VoxeetActionBarView.this.devices = devices;
+            updateSpeakerButtonWithDevices();
+        }).error(error -> {
+
+        });
+    }
+
+    private void updateSpeakerButtonWithDevices() {
+        Log.d(TAG, "updateSpeakerButtonWithDevices: ");
+        ActionBar configuration = VoxeetToolkit.instance().getConferenceToolkit().Configuration.ActionBar;
+        StateListDrawable selector_speaker = createOverridenSelector(configuration.speaker_on, configuration.speaker_off);
+        StateListDrawable selector_hangup = createOverridenSelectorPressed(configuration.hangup, configuration.hangup_pressed);
+
+        if (null != selector_speaker) speaker.setImageDrawable(selector_speaker);
+        else if (null != VoxeetSDK.instance() && attached) {
+            List<MediaDevice> connecting = Filter.filter(devices, device -> ConnectionState.CONNECTING.equals(device.connectionState()));
+            List<MediaDevice> connected = Filter.filter(devices, device -> ConnectionState.CONNECTED.equals(device.connectionState()));
+
+            DeviceType deviceType = DeviceType.INTERNAL_SPEAKER;
+
+            if (connecting.size() > 0) {
+                for (MediaDevice device : connecting) {
+                    if (null != device) deviceType = device.deviceType();
+                }
+
                 speaker.setAlpha(0.5f);
                 speaker.setEnabled(false);
                 speaker.setSelected(false);
-            } else {
-                speaker.setAlpha(1.0f);
+            } else if (connected.size() > 0) {
+                for (MediaDevice device : connected) {
+                    if (null != device) deviceType = device.deviceType();
+                }
+
+                speaker.setAlpha(1.f);
                 speaker.setEnabled(true);
-                speaker.setSelected(VoxeetSDK.audio().isSpeakerOn());
+                speaker.setSelected(true);
             }
+
+            speaker.setImageResource(getSpeakerIcon(deviceType));
         }
-    }
-
-    /**
-     * Set the 3D Button's click listener
-     *
-     * @param listener the listener instance
-     * @return the current instance
-     */
-    @Deprecated
-    @NonNull
-    public VoxeetActionBarView setView3dListener(@Nullable OnView3D listener) {
-        view3d_listener = listener;
-        invalidateView3D();
-        return this;
-    }
-
-    private void invalidateView3D() {
-        view_3d_wrapper.setVisibility(view3d_listener != null ? View.VISIBLE : View.GONE);
-    }
-
-    /**
-     * Interface called when user has clicked on the 3d button. The listener should then display a view to manipulate the users
-     */
-    @Annotate
-    @Deprecated
-    public interface OnView3D {
-
-        /**
-         * Method called when the button is pressed. Warning : make sure not the fire any exceptions inside.
-         */
-        void onView3D();
     }
 
     private boolean isListener() {
@@ -739,5 +803,35 @@ public class VoxeetActionBarView extends VoxeetView {
         states.addState(new int[]{android.R.attr.state_selected}, drawable_on);
 
         return states;
+    }
+
+    @DrawableRes
+    private int getSpeakerIcon(DeviceType deviceType) {
+        switch (deviceType) {
+            case BLUETOOTH:
+                return R.drawable.speaker_on_bluetooth;
+            case EXTERNAL_SPEAKER:
+                return R.drawable.speaker_on;
+            case WIRED_HEADSET:
+                return R.drawable.speaker_on_headset;
+            case INTERNAL_SPEAKER:
+            case NORMAL_MEDIA:
+                return R.drawable.speaker_off;
+        }
+        return R.drawable.speaker_on_bluetooth;
+    }
+
+    @Nullable
+    private MediaDevice oneOf(@NonNull List<MediaDevice> list, @NonNull ConnectionState connectionState, @NonNull DeviceType... deviceTypes) {
+        for (DeviceType deviceType : deviceTypes) {
+            List<MediaDevice> filtered = Filter.filter(list, mediaDevice -> ConnectionState.CONNECTED.equals(mediaDevice.platformConnectionState()) && connectionState.equals(mediaDevice.connectionState()) && deviceType.equals(mediaDevice.deviceType()));
+            if (filtered.size() > 0) return filtered.get(0);
+        }
+        return null;
+    }
+
+    public VoxeetActionBarView setMediaDeviceControl(@Nullable IMediaDeviceControlListener onSpeakerAction) {
+        this.onSpeakerAction = onSpeakerAction;
+        return this;
     }
 }

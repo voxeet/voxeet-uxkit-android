@@ -9,4 +9,9 @@
     <string name="voxeet_incoming_call_accept">Décrocher</string>
     <string name="invalid_bundle">Bundle invalide !</string>
     <string name="voxeet_waiting_for_users">En attente de participants…</string>
+
+    <string name="bluetooth">"Bluetooth"</string>
+    <string name="external_speaker">"Haut parleur"</string>
+    <string name="internal_speaker">"Ecouteur interne"</string>
+    <string name="wired_headset">"Casque filaire"</string>
 </resources>
