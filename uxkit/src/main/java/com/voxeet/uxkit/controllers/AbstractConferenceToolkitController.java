@@ -31,7 +31,6 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.models.v1.RecordingStatus;
-import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.services.AudioService;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
@@ -803,7 +802,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                     if (ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus()))
                         return true;
                     // if not a user
-                    if(!ParticipantType.USER.equals(participant.participantType())) return false;
+                    // if(!ParticipantType.USER.equals(participant.participantType())) return false;
                     // if connecting but with already a stream
                     if (ConferenceParticipantStatus.CONNECTING.equals(participant.getStatus())) {
                         MediaStream stream = participant.streamsHandler().getFirst(MediaStreamType.Camera);
