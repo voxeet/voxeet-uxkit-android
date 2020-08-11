@@ -91,7 +91,9 @@ public class VoxeetMediaRoutePickerMediaDeviceView extends LinearLayout {
     private String getDeviceName() {
         switch (Opt.of(device).then(MediaDevice::deviceType).or(DeviceType.INTERNAL_SPEAKER)) {
             case BLUETOOTH:
-                return Opt.of(device).then(MediaDevice::name).or(getContext().getString(R.string.bluetooth));
+                //TODO hhhhmmmm the new audio api provides ::name, will restore in the 3.0 branch
+                //return Opt.of(device).then(MediaDevice::name).or(getContext().getString(R.string.bluetooth));
+                return Opt.of(device).then(MediaDevice::id).or(getContext().getString(R.string.bluetooth));
             case WIRED_HEADSET:
                 return getContext().getString(R.string.wired_headset);
             case EXTERNAL_SPEAKER:
