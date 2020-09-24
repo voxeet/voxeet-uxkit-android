@@ -21,6 +21,7 @@ import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
+import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.NoDocumentation;
@@ -336,6 +337,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         } else {
             //had a user but predicate did not pass
             selected = false;
+            currentSpeaker = findUserById(activeSpeakerUserId);
         }
 
         if (!selected && null != VoxeetSDK.conference()) {
@@ -367,12 +369,20 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         if (null == currentSpeaker) {
             //we don't have any speaker, look for at least the first one
             List<Participant> participants = Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
-                if (ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus())) return true;
-                if (participant.getId().equals(VoxeetSDK.session().getParticipantId()))
+                ParticipantType type = Opt.of(participant.participantType()).or(ParticipantType.NONE);
+
+                if ("00000000-0000-0000-0000-000000000000".equals(participant.getId()))
                     return false;
-                return Opt.of(participant.streamsHandler())
-                        .then(s -> s.getFirst(MediaStreamType.Camera))
-                        .then(s -> s.audioTracks().size() > 0 || s.videoTracks().size() > 0).or(false);
+                if (!(type.equals(ParticipantType.DVC) || type.equals(ParticipantType.USER) || type.equals(ParticipantType.PSTN))) {
+                    return false;
+                }
+
+                if (Opt.of(participant.getId()).or("").equals(VoxeetSDK.session().getParticipantId())) {
+                    //prevent own user to be "active speaker"
+                    return false;
+                }
+                if (ConferenceParticipantStatus.ON_AIR == participant.getStatus()) return true;
+                return ConferenceParticipantStatus.CONNECTING == participant.getStatus() && null != participant.streamsHandler().getFirst(MediaStreamType.Camera);
             });
 
             if (participants.size() > 0) {
