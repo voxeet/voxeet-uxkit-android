@@ -299,11 +299,12 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
     }
 
     /**
-     * Get the selected user for this instance of the view
+     * Get the selected user for this instance of the view. Deprecated in favor of getCurrentSpeaker()
      *
      * @return the UserId
      */
     @Nullable
+    @Deprecated
     public String getSelectedUserId() {
         return selected && null != currentSpeaker ? currentSpeaker.getId() : null;
     }
@@ -330,10 +331,12 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
             currentSpeaker = null;
         }
 
-        if (selected && currentSpeaker != null && currentSpeaker.getId() != null) {
-            //if we had a user but he disappeared...
+        if ((selected || null == activeSpeakerUserId) && currentSpeaker != null && currentSpeaker.getId() != null) {
+            //if we had a user but he disappeared... or simply no new user and someone was active
             Participant participant = findUserById(currentSpeaker.getId());
-            selected = null != participant && participant.isLocallyActive();
+            if (selected) { //in both selected or update for new active, we check if in case of selected, we are still
+                selected = null != participant && participant.isLocallyActive();
+            }
         } else {
             //had a user but predicate did not pass
             selected = false;

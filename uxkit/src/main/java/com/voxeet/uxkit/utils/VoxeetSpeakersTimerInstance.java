@@ -6,9 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.voxeet.VoxeetSDK;
+import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
+import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
 
 import java.util.HashMap;
@@ -71,8 +74,26 @@ public final class VoxeetSpeakersTimerInstance {
                         lastActiveSpeaker = fromSdk;
                     }
 
-                    if (new_loop_activespeaker && (null == currentActiveSpeaker || !currentActiveSpeaker.equals(fromSdk))) {
-                        currentActiveSpeaker = lastActiveSpeaker;
+                    if (new_loop_activespeaker && (null == currentActiveSpeaker || !currentActiveSpeaker.equals(lastActiveSpeaker))) {
+                        //if we had a previous active speaker
+                        if (null != lastActiveSpeaker) {
+                            Participant participant = VoxeetSDK.conference().findParticipantById(lastActiveSpeaker);
+
+                            //still available... we set it
+                            if (null != participant && participant.isLocallyActive()) {
+                                currentActiveSpeaker = lastActiveSpeaker;
+                            }
+                        }
+
+                        //now we check the current active speaker as well
+                        if (null != currentActiveSpeaker) {
+                            Participant participant = VoxeetSDK.conference().findParticipantById(currentActiveSpeaker);
+
+                            if (null == participant || !participant.isLocallyActive()) {
+                                currentActiveSpeaker = null;
+                            }
+                        }
+
                         sendActiveSpeakersUpdated();
                         lastActiveSpeaker = null;
                     }
@@ -142,6 +163,31 @@ public final class VoxeetSpeakersTimerInstance {
     @Nullable
     public String getCurrentActiveSpeaker() {
         return currentActiveSpeaker;
+    }
+
+    @Nullable
+    public String getCurrentActiveSpeakerOrDefault() {
+        //get the selected user OR the "refreshed"/"cached" active speaker
+        String activeSpeaker = getCurrentActiveSpeaker();
+        if (null != activeSpeaker && activeSpeaker.equals(VoxeetSDK.session().getParticipantId())) {
+            activeSpeaker = null;
+        }
+
+        if (null == activeSpeaker) {
+            List<Participant> on_line = Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
+                if (Opt.of(participant.getId()).or("").equals(VoxeetSDK.session().getParticipantId())) {
+                    //prevent own user to be "active speaker"
+                    return false;
+                }
+                if (ConferenceParticipantStatus.ON_AIR == participant.getStatus()) return true;
+                return ConferenceParticipantStatus.CONNECTING == participant.getStatus() && null != participant.streamsHandler().getFirst(MediaStreamType.Camera);
+            });
+
+            if (on_line.size() > 0) {
+                activeSpeaker = Opt.of(on_line.get(0)).then(Participant::getId).orNull();
+            }
+        }
+        return activeSpeaker;
     }
 
     /**
