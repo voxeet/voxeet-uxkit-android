@@ -231,6 +231,8 @@ public class VoxeetActionBarView extends VoxeetView {
             updateSpeakerButton();
         }
 
+        checkMicrophoneButtonState();
+
         if (null != VoxeetSDK.conference()) {
             if (!EventBus.getDefault().isRegistered(this)) {
                 EventBus.getDefault().register(this);
@@ -277,6 +279,7 @@ public class VoxeetActionBarView extends VoxeetView {
             EventBus.getDefault().register(this);
         }
 
+        checkMicrophoneButtonState();
         updateSpeakerButton();
         ConferenceService service = VoxeetSDK.conference();
         ConferenceInformation information = service.getCurrentConference();
@@ -361,6 +364,8 @@ public class VoxeetActionBarView extends VoxeetView {
             //the user is not yet in the conference or won't be
             updateVisibilities(View.GONE);
         }
+
+        checkMicrophoneButtonState();
     }
 
     @NoDocumentation
@@ -676,6 +681,14 @@ public class VoxeetActionBarView extends VoxeetView {
         updateSpeakerButton();
     }
 
+    private void checkMicrophoneButtonState() {
+        // also invalidate information about mute stream
+        if (null != VoxeetSDK.conference()) {
+            boolean enabled = !VoxeetSDK.conference().isMuted() && checkMicrophonePermission();
+
+            if (null != microphone) microphone.setEnabled(enabled);
+        }
+    }
 
     private boolean checkMicrophonePermission() {
         return checkPermission(Manifest.permission.RECORD_AUDIO,
