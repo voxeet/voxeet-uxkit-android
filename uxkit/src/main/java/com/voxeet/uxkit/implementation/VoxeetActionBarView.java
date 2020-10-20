@@ -475,9 +475,14 @@ public class VoxeetActionBarView extends VoxeetView {
     protected void toggleMute() {
         boolean new_muted_state = !VoxeetSDK.conference().isMuted();
 
-        if (new_muted_state || checkMicrophonePermission()) {
+        if(!checkMicrophonePermission()) {
+            microphone.setSelected(true);
+            microphone.setEnabled(false);
+            VoxeetSDK.conference().mute(true);
+        } else {
             //if we unmute, check for microphone state
             microphone.setSelected(new_muted_state);
+            microphone.setEnabled(true);
 
             VoxeetSDK.conference().mute(new_muted_state);
         }
@@ -686,10 +691,10 @@ public class VoxeetActionBarView extends VoxeetView {
         // also invalidate information about mute stream
         if (null != VoxeetSDK.conference() && null != microphone) {
             if(!checkMicrophonePermission()) {
-                microphone.setSelected(false);
+                microphone.setSelected(true); //mute state is selected
                 microphone.setEnabled(false);
             } else {
-                microphone.setSelected(!VoxeetSDK.conference().isMuted());
+                microphone.setSelected(VoxeetSDK.conference().isMuted());
             }
         }
     }
