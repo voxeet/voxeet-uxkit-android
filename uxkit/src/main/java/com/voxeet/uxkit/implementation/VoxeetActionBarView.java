@@ -466,6 +466,7 @@ public class VoxeetActionBarView extends VoxeetView {
         }
 
         updateCameraState();
+        checkMicrophoneButtonState();
     }
 
     /**
@@ -683,10 +684,13 @@ public class VoxeetActionBarView extends VoxeetView {
 
     private void checkMicrophoneButtonState() {
         // also invalidate information about mute stream
-        if (null != VoxeetSDK.conference()) {
-            boolean enabled = !VoxeetSDK.conference().isMuted() && checkMicrophonePermission();
-
-            if (null != microphone) microphone.setEnabled(enabled);
+        if (null != VoxeetSDK.conference() && null != microphone) {
+            if(!checkMicrophonePermission()) {
+                microphone.setSelected(false);
+                microphone.setEnabled(false);
+            } else {
+                microphone.setSelected(!VoxeetSDK.conference().isMuted());
+            }
         }
     }
 
