@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -20,24 +19,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.dolby.voice.devicemanagement.devices.AudioDevicesManager;
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.stream.MediaStreamType;
-import com.voxeet.audio2.AudioDeviceManager;
 import com.voxeet.audio2.devices.MediaDevice;
 import com.voxeet.audio2.devices.description.ConnectionState;
 import com.voxeet.audio2.devices.description.DeviceType;
 import com.voxeet.promise.Promise;
-import com.voxeet.promise.solve.ErrorPromise;
 import com.voxeet.promise.solve.ThenPromise;
-import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
 import com.voxeet.sdk.events.v2.VideoStateEvent;
-import com.voxeet.sdk.media.audio.AudioRoute;
 import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
@@ -237,6 +231,8 @@ public class VoxeetActionBarView extends VoxeetView {
             updateSpeakerButton();
         }
 
+        checkMicrophoneButtonState();
+
         if (null != VoxeetSDK.conference()) {
             if (!EventBus.getDefault().isRegistered(this)) {
                 EventBus.getDefault().register(this);
@@ -283,6 +279,7 @@ public class VoxeetActionBarView extends VoxeetView {
             EventBus.getDefault().register(this);
         }
 
+        checkMicrophoneButtonState();
         updateSpeakerButton();
         ConferenceService service = VoxeetSDK.conference();
         ConferenceInformation information = service.getCurrentConference();
@@ -367,6 +364,8 @@ public class VoxeetActionBarView extends VoxeetView {
             //the user is not yet in the conference or won't be
             updateVisibilities(View.GONE);
         }
+
+        checkMicrophoneButtonState();
     }
 
     @NoDocumentation
@@ -467,6 +466,7 @@ public class VoxeetActionBarView extends VoxeetView {
         }
 
         updateCameraState();
+        checkMicrophoneButtonState();
     }
 
     /**
@@ -475,9 +475,14 @@ public class VoxeetActionBarView extends VoxeetView {
     protected void toggleMute() {
         boolean new_muted_state = !VoxeetSDK.conference().isMuted();
 
-        if (new_muted_state || checkMicrophonePermission()) {
+        if(!checkMicrophonePermission()) {
+            microphone.setSelected(true);
+            microphone.setEnabled(false);
+            VoxeetSDK.conference().mute(true);
+        } else {
             //if we unmute, check for microphone state
             microphone.setSelected(new_muted_state);
+            microphone.setEnabled(true);
 
             VoxeetSDK.conference().mute(new_muted_state);
         }
@@ -682,6 +687,17 @@ public class VoxeetActionBarView extends VoxeetView {
         updateSpeakerButton();
     }
 
+    private void checkMicrophoneButtonState() {
+        // also invalidate information about mute stream
+        if (null != VoxeetSDK.conference() && null != microphone) {
+            if(!checkMicrophonePermission()) {
+                microphone.setSelected(true); //mute state is selected
+                microphone.setEnabled(false);
+            } else {
+                microphone.setSelected(VoxeetSDK.conference().isMuted());
+            }
+        }
+    }
 
     private boolean checkMicrophonePermission() {
         return checkPermission(Manifest.permission.RECORD_AUDIO,

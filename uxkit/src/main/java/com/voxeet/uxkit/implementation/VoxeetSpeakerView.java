@@ -21,6 +21,7 @@ import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
+import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.NoDocumentation;
@@ -298,11 +299,12 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
     }
 
     /**
-     * Get the selected user for this instance of the view
+     * Get the selected user for this instance of the view. Deprecated in favor of getCurrentSpeaker()
      *
      * @return the UserId
      */
     @Nullable
+    @Deprecated
     public String getSelectedUserId() {
         return selected && null != currentSpeaker ? currentSpeaker.getId() : null;
     }
@@ -329,13 +331,16 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
             currentSpeaker = null;
         }
 
-        if (selected && currentSpeaker != null && currentSpeaker.getId() != null) {
-            //if we had a user but he disappeared...
+        if ((selected || null == activeSpeakerUserId) && currentSpeaker != null && currentSpeaker.getId() != null) {
+            //if we had a user but he disappeared... or simply no new user and someone was active
             Participant participant = findUserById(currentSpeaker.getId());
-            selected = null != participant && participant.isLocallyActive();
+            if (selected) { //in both selected or update for new active, we check if in case of selected, we are still
+                selected = null != participant && participant.isLocallyActive();
+            }
         } else {
             //had a user but predicate did not pass
             selected = false;
+            currentSpeaker = findUserById(activeSpeakerUserId);
         }
 
         if (!selected && null != VoxeetSDK.conference()) {
@@ -367,12 +372,20 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         if (null == currentSpeaker) {
             //we don't have any speaker, look for at least the first one
             List<Participant> participants = Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
-                if (ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus())) return true;
-                if (participant.getId().equals(VoxeetSDK.session().getParticipantId()))
+                ParticipantType type = Opt.of(participant.participantType()).or(ParticipantType.NONE);
+
+                if ("00000000-0000-0000-0000-000000000000".equals(participant.getId()))
                     return false;
-                return Opt.of(participant.streamsHandler())
-                        .then(s -> s.getFirst(MediaStreamType.Camera))
-                        .then(s -> s.audioTracks().size() > 0 || s.videoTracks().size() > 0).or(false);
+                if (!(type.equals(ParticipantType.DVC) || type.equals(ParticipantType.USER) || type.equals(ParticipantType.PSTN))) {
+                    return false;
+                }
+
+                if (Opt.of(participant.getId()).or("").equals(VoxeetSDK.session().getParticipantId())) {
+                    //prevent own user to be "active speaker"
+                    return false;
+                }
+                if (ConferenceParticipantStatus.ON_AIR == participant.getStatus()) return true;
+                return ConferenceParticipantStatus.CONNECTING == participant.getStatus() && null != participant.streamsHandler().getFirst(MediaStreamType.Camera);
             });
 
             if (participants.size() > 0) {

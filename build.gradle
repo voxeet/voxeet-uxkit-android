@@ -31,7 +31,7 @@ ext {
     buildToolsVersion = "28.0.3"
     minSdkVersion = 16
     compileSdkVersion = 28
-    targetSdkVersion = 27
+    targetSdkVersion = 28
     supportLibVersion = "28.0.0"
 
     //underlying sdk
@@ -48,6 +48,7 @@ ext {
 
 allprojects {
     repositories {
+        maven { url "https://android-sdk.voxeet.com/release" }
         mavenLocal()
         google()
         jcenter()

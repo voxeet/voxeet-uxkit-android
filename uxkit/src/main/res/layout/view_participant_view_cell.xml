@@ -41,7 +41,7 @@
                 android:layout_height="match_parent"
                 android:visibility="gone"
                 app:circle="true"
-                app:scaleType="scale_fill" />
+                app:streamScaleType="scale_fill" />
         </LinearLayout>
 
     </FrameLayout>
