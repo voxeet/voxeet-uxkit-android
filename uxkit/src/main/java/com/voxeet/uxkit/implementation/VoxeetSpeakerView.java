@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -19,27 +17,29 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.VoxeetSDK;
+import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.Participant;
+import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
+import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.utils.Annotate;
+import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.NoDocumentation;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.utils.VoxeetSpeakersTimerInstance;
 import com.voxeet.uxkit.utils.WindowHelper;
 import com.voxeet.uxkit.views.internal.VoxeetVuMeter;
 import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;
+
+import java.util.List;
 
 /**
  * View made to display a given user
  */
 @Annotate
-public class VoxeetSpeakerView extends VoxeetView {
+public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimerInstance.ActiveSpeakerListener, VoxeetSpeakersTimerInstance.SpeakersUpdated {
     private final String TAG = VoxeetSpeakerView.class.getSimpleName();
-
-    public static final int REFRESH_SPEAKER = 1000;
-
-    public static final int REFRESH_METER = 100;
-
-    private Handler handler = new Handler(Looper.getMainLooper());
 
     private int currentWidth;
 
@@ -53,44 +53,6 @@ public class VoxeetSpeakerView extends VoxeetView {
     private Participant currentSpeaker = null;
 
     private boolean selected = false;
-
-    private Runnable updateSpeakerRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (selected && currentSpeaker != null && currentSpeaker.getId() != null) {
-                //if we had a user but he disappeared...
-                selected = findUserById(currentSpeaker.getId()) != null;
-            } else {
-                //had a user but predicate did not pass
-                selected = false;
-            }
-
-            if (!selected && null != VoxeetSDK.conference()) {
-                currentSpeaker = findUserById(VoxeetSDK.conference().currentSpeaker());
-                if (currentSpeaker != null && currentSpeaker.getInfo() != null) {
-                    speakerName.setText(currentSpeaker.getInfo().getName());
-                    invalidateSpeakerName();
-                }
-            }
-
-            if (currentSpeaker != null && currentWidth > 0)
-                loadViaPicasso(currentSpeaker, currentWidth / 2, currentSpeakerView);
-
-            if (mAttached) handler.postDelayed(this, REFRESH_SPEAKER);
-        }
-    };
-
-    private Runnable updateVuMeterRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (currentSpeaker != null && null != VoxeetSDK.conference()) {
-                double value = VoxeetSDK.conference().audioLevel(currentSpeaker);
-                vuMeter.updateMeter(value);
-            }
-
-            if (mAttached) handler.postDelayed(this, REFRESH_METER);
-        }
-    };
 
     private boolean mDisplaySpeakerName = false;
     private TextView speakerName;
@@ -139,6 +101,9 @@ public class VoxeetSpeakerView extends VoxeetView {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+
+        VoxeetSpeakersTimerInstance.instance.registerActiveSpeakerListener(this);
+        VoxeetSpeakersTimerInstance.instance.register(this);
         mAttached = true;
         onResume();
     }
@@ -146,6 +111,8 @@ public class VoxeetSpeakerView extends VoxeetView {
     @NoDocumentation
     @Override
     protected void onDetachedFromWindow() {
+        VoxeetSpeakersTimerInstance.instance.unregisterActiveSpeakerListener(this);
+        VoxeetSpeakersTimerInstance.instance.unregister(this);
         mAttached = false;
         onPause();
 
@@ -187,9 +154,6 @@ public class VoxeetSpeakerView extends VoxeetView {
         currentSpeakerView.setImageDrawable(null);
 
         vuMeter.reset();
-
-        handler.removeCallbacks(updateSpeakerRunnable);
-        handler.removeCallbacks(updateVuMeterRunnable);
     }
 
     /**
@@ -271,7 +235,7 @@ public class VoxeetSpeakerView extends VoxeetView {
         return VoxeetSDK.conference().findParticipantById(userId);
     }
 
-    private void loadViaPicasso(Participant conferenceUser, int avatarSize, ImageView imageView) {
+    private boolean loadViaPicasso(Participant conferenceUser, int avatarSize, ImageView imageView) {
         try {
             String avatarUrl = null;
             if (null != conferenceUser && null != conferenceUser.getInfo()) {
@@ -293,9 +257,11 @@ public class VoxeetSpeakerView extends VoxeetView {
                         .resize(avatarSize, avatarSize)
                         .into(imageView);
             }
+            return true;
         } catch (Exception e) {
             ExceptionManager.sendException(e);
             Log.e(TAG, "error " + e.getMessage());
+            return false;
         }
     }
 
@@ -333,11 +299,12 @@ public class VoxeetSpeakerView extends VoxeetView {
     }
 
     /**
-     * Get the selected user for this instance of the view
+     * Get the selected user for this instance of the view. Deprecated in favor of getCurrentSpeaker()
      *
      * @return the UserId
      */
     @Nullable
+    @Deprecated
     public String getSelectedUserId() {
         return selected && null != currentSpeaker ? currentSpeaker.getId() : null;
     }
@@ -347,21 +314,89 @@ public class VoxeetSpeakerView extends VoxeetView {
      */
     @Override
     public void onResume() {
-        handler.removeCallbacks(updateSpeakerRunnable);
-        handler.removeCallbacks(updateVuMeterRunnable);
-
-        handler.removeCallbacksAndMessages(updateSpeakerRunnable);
-        handler.removeCallbacksAndMessages(updateVuMeterRunnable);
-
-        handler.post(updateSpeakerRunnable);
-        handler.post(updateVuMeterRunnable);
+        VoxeetSpeakersTimerInstance.instance.registerActiveSpeakerListener(this);
+        VoxeetSpeakersTimerInstance.instance.register(this);
     }
 
     /**
      * Call this method to pause the various callbacks
      */
     public void onPause() {
-        handler.removeCallbacks(null);
-        handler.removeCallbacksAndMessages(null);
+
+    }
+
+    @Override
+    public void onActiveSpeakerUpdated(@Nullable String activeSpeakerUserId) {
+        if (null != currentSpeaker && !currentSpeaker.isLocallyActive()) {
+            currentSpeaker = null;
+        }
+
+        if ((selected || null == activeSpeakerUserId) && currentSpeaker != null && currentSpeaker.getId() != null) {
+            //if we had a user but he disappeared... or simply no new user and someone was active
+            Participant participant = findUserById(currentSpeaker.getId());
+            if (selected) { //in both selected or update for new active, we check if in case of selected, we are still
+                selected = null != participant && participant.isLocallyActive();
+            }
+        } else {
+            //had a user but predicate did not pass
+            selected = false;
+            currentSpeaker = findUserById(activeSpeakerUserId);
+        }
+
+        if (!selected && null != VoxeetSDK.conference()) {
+            Participant activeSpeaker = findUserById(VoxeetSDK.conference().currentSpeaker());
+            if (null != activeSpeaker) {
+                currentSpeaker = activeSpeaker;
+            }
+        }
+
+        if (currentSpeaker != null && currentSpeaker.getInfo() != null) {
+            speakerName.setText(currentSpeaker.getInfo().getName());
+            invalidateSpeakerName();
+        }
+
+        if (currentWidth <= 0) {
+            currentWidth = getWidth() * 2; //currentWidth = width /2 when resize
+        }
+
+        if (currentSpeaker != null && currentWidth > 0)
+            loadViaPicasso(currentSpeaker, currentWidth / 2, currentSpeakerView);
+    }
+
+    @Override
+    public void onSpeakersUpdated() {
+        if (null != currentSpeaker) {
+            if (!currentSpeaker.isLocallyActive()) currentSpeaker = null;
+        }
+
+        if (null == currentSpeaker) {
+            //we don't have any speaker, look for at least the first one
+            List<Participant> participants = Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
+                ParticipantType type = Opt.of(participant.participantType()).or(ParticipantType.NONE);
+
+                if ("00000000-0000-0000-0000-000000000000".equals(participant.getId()))
+                    return false;
+                if (!(type.equals(ParticipantType.DVC) || type.equals(ParticipantType.USER) || type.equals(ParticipantType.PSTN))) {
+                    return false;
+                }
+
+                if (Opt.of(participant.getId()).or("").equals(VoxeetSDK.session().getParticipantId())) {
+                    //prevent own user to be "active speaker"
+                    return false;
+                }
+                if (ConferenceParticipantStatus.ON_AIR == participant.getStatus()) return true;
+                return ConferenceParticipantStatus.CONNECTING == participant.getStatus() && null != participant.streamsHandler().getFirst(MediaStreamType.Camera);
+            });
+
+            if (participants.size() > 0) {
+                currentSpeaker = participants.get(0);
+                onActiveSpeakerUpdated(currentSpeaker.getId());
+            }
+        }
+
+        if (currentSpeaker != null && null != VoxeetSDK.conference()) {
+            double value = VoxeetSDK.conference().audioLevel(currentSpeaker);
+            vuMeter.updateMeter(value);
+        }
     }
 }

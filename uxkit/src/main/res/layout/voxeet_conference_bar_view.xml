@@ -78,24 +78,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/view_3d_wrapper"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_horizontal"
-        android:paddingLeft="@dimen/conferencebar_view_padding_left_right"
-        android:paddingRight="@dimen/conferencebar_view_padding_left_right">
-
-
-        <ImageView
-            android:id="@+id/view_3d"
-            android:layout_width="@dimen/conferencebar_view_item_height"
-            android:layout_height="@dimen/conferencebar_view_item_height"
-            android:layout_gravity="center"
-            android:src="@drawable/view_3d" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/screenshare_wrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
