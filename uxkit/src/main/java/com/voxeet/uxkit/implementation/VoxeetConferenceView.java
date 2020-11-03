@@ -16,6 +16,9 @@ import android.widget.TextView;
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.stream.MediaStreamType;
+import com.voxeet.audio2.devices.MediaDevice;
+import com.voxeet.audio2.devices.description.ConnectionState;
+import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.events.sdk.CameraSwitchSuccessEvent;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.VideoPresentationPaused;
@@ -23,17 +26,23 @@ import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
+import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
+import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
+import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
+import com.voxeet.sdk.utils.Filter;
+import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.configuration.ActionBar;
 import com.voxeet.uxkit.configuration.Configuration;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
+import com.voxeet.uxkit.implementation.devices.VoxeetMediaRoutePickerView;
 import com.voxeet.uxkit.implementation.overlays.abs.AbstractVoxeetExpandableView;
 import com.voxeet.uxkit.utils.ConferenceViewRendererControl;
 import com.voxeet.uxkit.utils.IParticipantViewListener;
@@ -57,16 +66,16 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     private VoxeetParticipantsView participantView;
 
-    private VoxeetActionBarView conferenceActionBarView;
+    private VoxeetActionBarView conferenceBarView;
 
-    private VoxeetSpeakerView speakerView;
+    private VoxeetSpeakerView currentSpeakerView;
 
     private ViewGroup layoutTimer;
 
     @Nullable
-    private VideoView selectedView;
+    private VideoView videoView;
 
-    private VideoView selfView;
+    private VideoView selfVideoView;
     private ViewGroup layoutParticipant;
 
     private VoxeetSpeakersTimerInstance voxeetActiveSpeakerTimer;
@@ -84,6 +93,17 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     private ConferenceViewRendererControl mConferenceViewRendererControl;
 
+    private VoxeetMediaRoutePickerView mediaRoutePicker;
+    private SoundManager.Call<List<MediaDevice>> onDevices = this::refreshConnectedDevice;
+
+    private boolean resumed = false;
+
+    @Nullable
+    private MediaDevice connectedDevice;
+
+    @Nullable
+    private Participant participantSelected;
+
     /**
      * Instantiates a new Voxeet conference view.
      *
@@ -93,6 +113,15 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         super(context);
 
         internalInit();
+    }
+
+    /**
+     * Check if audio mode or video mode is activated. For now, always video mode enabled
+     *
+     * @return
+     */
+    private boolean isVideoActivated() {
+        return true;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -130,14 +159,14 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                     else down++;
                 }
 
-                if (null != selectedView) {
+                if (null != videoView) {
                     if (up > down) {
-                        if (!RendererCommon.ScalingType.SCALE_ASPECT_FILL.equals(selectedView.getScalingType())) {
-                            selectedView.setVideoFill();
+                        if (!RendererCommon.ScalingType.SCALE_ASPECT_FILL.equals(videoView.getScalingType())) {
+                            videoView.setVideoFill();
                         }
                     } else {
-                        if (!RendererCommon.ScalingType.SCALE_ASPECT_FIT.equals(selectedView.getScalingType())) {
-                            selectedView.setVideoFit();
+                        if (!RendererCommon.ScalingType.SCALE_ASPECT_FIT.equals(videoView.getScalingType())) {
+                            videoView.setVideoFit();
                         }
                     }
                 }
@@ -174,15 +203,33 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         voxeetActiveSpeakerTimer.setActiveSpeakerListener(this);
         voxeetActiveSpeakerTimer.start();
-        updateUi();
+
+        VoxeetSDK.audio().registerUpdateDevices(onDevices);
 
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
+
+        // update the UI buttons for listener mode
+        ConferenceInformation information = Opt.of(VoxeetSDK.conference().getConference())
+                .then(Conference::getId)
+                .then(id -> VoxeetSDK.conference().getConferenceInformation(id))
+                .orNull();
+        boolean isListener = Opt.of(information).then(ConferenceInformation::isListener).or(false);
+
+        conferenceBarView.setDisplayMute(!isListener);
+        conferenceBarView.setDisplayCamera(!isListener);
+
+
+        resumed = true;
+        voxeetActiveSpeakerTimer.start();
+        connectedDevice = null;
     }
 
     @Override
     protected void onDetachedFromWindow() {
+        VoxeetSDK.audio().unregisterUpdateDevices(onDevices);
+        resumed = false;
         voxeetActiveSpeakerTimer.stop();
         voxeetActiveSpeakerTimer = null;
         if (EventBus.getDefault().isRegistered(this)) {
@@ -196,22 +243,61 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onResume() {
         super.onResume();
 
-        //updateUi();
+        refreshUI();
     }
 
-    private void updateUi() {
-        ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
+    private void refreshUI() {
+        if (null == getContext()) {
+            return;
+        }
 
-        if (null != information) {
-            //check for the conference state
-            checkStateValue();
+        currentSpeakerView.onConferenceUsersListUpdate(getParticipants());
 
-            updateConferenceBarViewVisibility();
+        refreshConnectedDevice();
+        refreshVideoActivated();
+        //streams get refreshed in the above function
+        //refreshMediaStreams();
 
-            refreshMediaStreams();
-            refreshUIVisibility();
+        conferenceBarView.onResume();
+
+        if (!isExpanded) {
+            if (null != participantView) participantView.setVisibility(View.GONE);
+            if (selfVideoView.isAttached())
+                selfVideoView.setVisibility(View.GONE);
         } else {
-            onConferenceLeaving(); //Left ? but left does not show anything
+            if (null != participantView) participantView.setVisibility(View.VISIBLE);
+            if (selfVideoView.isAttached())
+                selfVideoView.setVisibility(View.VISIBLE);
+        }
+
+        selfVideoView.requestLayout();
+
+        ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
+        if (null != information) {
+            switch (information.getConferenceState()) {
+                case DEFAULT:
+                case CREATING:
+                    onConferenceCreating();
+                    break;
+                case CREATED:
+                    onConferenceCreation(information.getConference());
+                    break;
+                case JOINING:
+                    onConferenceJoining(information.getConference());
+                    break;
+                case JOINED:
+                    onConferenceJoined(information.getConference());
+                    break;
+                case FIRST_PARTICIPANT:
+                    onConferenceFromNoOneToOneUser();
+                    break;
+                case NO_MORE_PARTICIPANT:
+                    onConferenceNoMoreUser();
+                    break;
+                case LEAVING:
+                case LEFT:
+                    onConferenceLeaving();
+            }
         }
     }
 
@@ -219,14 +305,14 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onStop() {
         super.onStop();
 
-        if (null != selfView) {
-            selfView.unAttach();
+        if (null != selfVideoView) {
+            selfVideoView.unAttach();
         }
 
-        if (null != selectedView) {
-            mPreviouslyAttachedPeerId = selectedView.getPeerId();
-            mPreviouslyScreenShare = selectedView.isScreenShare();
-            selectedView.unAttach();
+        if (null != videoView) {
+            mPreviouslyAttachedPeerId = videoView.getPeerId();
+            mPreviouslyScreenShare = videoView.isScreenShare();
+            videoView.unAttach();
         }
     }
 
@@ -234,16 +320,16 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onDestroy() {
         super.onDestroy();
 
-        if (null != selfView) {
-            selfView.unAttach();
+        if (null != selfVideoView) {
+            selfVideoView.unAttach();
         }
 
-        if (null != selectedView) {
+        if (null != videoView) {
             //reset the "saved" information"
             mPreviouslyAttachedPeerId = null;
             mPreviouslyScreenShare = false;
 
-            selectedView.unAttach();
+            videoView.unAttach();
         }
     }
 
@@ -253,14 +339,14 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         //expanded and minimized
         conferenceState.setVisibility(View.VISIBLE);
-        speakerView.setVisibility(View.GONE);
-        selfView.setVisibility(View.GONE);
+        currentSpeakerView.setVisibility(View.GONE);
+        selfVideoView.setVisibility(View.GONE);
         participantView.setVisibility(View.VISIBLE);
         voxeetTimer.setVisibility(View.GONE);
         notchView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-        conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceCreating();
-        Log.d(TAG, "onConferenceCreating: " + View.VISIBLE + " " + conferenceActionBarView.getVisibility());
+        conferenceBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
+        conferenceBarView.onConferenceCreating();
+        Log.d(TAG, "onConferenceCreating: " + View.VISIBLE + " " + conferenceBarView.getVisibility());
 
         Conference conference = VoxeetSDK.conference().getConference();
         if (null != conference) participantView.update(conference);
@@ -273,14 +359,14 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         //expanded and minimized
         updateTextState(R.string.voxeet_call);
         conferenceState.setVisibility(View.VISIBLE);
-        speakerView.setVisibility(View.GONE);
-        selfView.setVisibility(View.GONE);
+        currentSpeakerView.setVisibility(View.GONE);
+        selfVideoView.setVisibility(View.GONE);
         participantView.setVisibility(View.VISIBLE);
         voxeetTimer.setVisibility(View.GONE);
         notchView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-        conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceCreation(conference);
-        Log.d(TAG, "onConferenceCreation: " + View.VISIBLE + " " + conferenceActionBarView.getVisibility());
+        conferenceBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
+        conferenceBarView.onConferenceCreation(conference);
+        Log.d(TAG, "onConferenceCreation: " + View.VISIBLE + " " + conferenceBarView.getVisibility());
 
         if (null != conference) participantView.update(conference);
     }
@@ -292,15 +378,15 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         //expanded and minimized
         updateTextState(R.string.voxeet_call);
         conferenceState.setVisibility(View.VISIBLE);
-        speakerView.setVisibility(View.GONE);
-        selfView.setVisibility(View.GONE);
+        currentSpeakerView.setVisibility(View.GONE);
+        selfVideoView.setVisibility(View.GONE);
         participantView.setVisibility(View.VISIBLE);
         voxeetTimer.setVisibility(View.GONE);
         notchView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-        Log.d(TAG, "onConferenceJoining: " + View.VISIBLE + " " + conferenceActionBarView.getVisibility());
+        Log.d(TAG, "onConferenceJoining: " + View.VISIBLE + " " + conferenceBarView.getVisibility());
 
-        conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceJoining(conference);
+        conferenceBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
+        conferenceBarView.onConferenceJoining(conference);
 
         if (null != conference) participantView.update(conference);
     }
@@ -312,14 +398,14 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         updateTextState(R.string.voxeet_call);
         conferenceState.setVisibility(View.VISIBLE);
         if (isExpanded) {
-            if (null != selectedView) selectedView.setVisibility(View.GONE);
-            speakerView.setVisibility(View.GONE);
+            if (null != videoView) videoView.setVisibility(View.GONE);
+            currentSpeakerView.setVisibility(View.GONE);
             participantView.setVisibility(View.VISIBLE);
             voxeetTimer.setVisibility(View.GONE);
             notchView.setVisibility(View.VISIBLE);
         } else {
-            if (null != selectedView) selectedView.setVisibility(View.GONE);
-            speakerView.setVisibility(View.GONE);
+            if (null != videoView) videoView.setVisibility(View.GONE);
+            currentSpeakerView.setVisibility(View.GONE);
             participantView.setVisibility(View.VISIBLE);
             voxeetTimer.setVisibility(View.GONE);
             notchView.setVisibility(View.GONE);
@@ -329,14 +415,14 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         if (null != user) {
             MediaStream stream = user.streamsHandler().getFirst(MediaStreamType.Camera);
             if (!ToolkitUtils.hasParticipants() && null != stream && stream.videoTracks().size() > 0) {
-                selectedView.setVisibility(View.VISIBLE);
+                videoView.setVisibility(View.VISIBLE);
                 mConferenceViewRendererControl.attachStreamToSelf(stream);
-                if (!isExpanded) selfView.setVisibility(View.GONE);
+                if (!isExpanded) selfVideoView.setVisibility(View.GONE);
             }
         }
 
-        conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceJoined(conference);
+        conferenceBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
+        conferenceBarView.onConferenceJoined(conference);
 
         if (null != conference) participantView.update(conference);
     }
@@ -348,8 +434,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         conferenceState.setVisibility(View.GONE);
         if (isExpanded) {
             conferenceState.setVisibility(View.GONE);
-            if (null != selectedView && selectedView.isAttached())
-                selectedView.setVisibility(View.VISIBLE);
+            if (null != videoView && videoView.isAttached())
+                videoView.setVisibility(View.VISIBLE);
             else showSpeakerView();
             participantView.setVisibility(View.VISIBLE);
             voxeetTimer.setVisibility(View.GONE);
@@ -360,18 +446,18 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             voxeetTimer.setVisibility(View.VISIBLE);
             notchView.setVisibility(View.GONE);
 
-            if (null != selectedView && selectedView.isAttached())
-                selectedView.setVisibility(View.VISIBLE);
+            if (null != videoView && videoView.isAttached())
+                videoView.setVisibility(View.VISIBLE);
             else showSpeakerView();
         }
 
 
-        conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceFromNoOneToOneUser();
+        conferenceBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
+        conferenceBarView.onConferenceFromNoOneToOneUser();
 
         //just in case
         updateSpeakerViewVisibility();
-        Log.d(TAG, "onConferenceFromNoOneToOneUser: " + View.VISIBLE + " " + conferenceActionBarView.getVisibility());
+        Log.d(TAG, "onConferenceFromNoOneToOneUser: " + View.VISIBLE + " " + conferenceBarView.getVisibility());
 
         Conference conference = VoxeetSDK.conference().getConference();
         if (null != conference) participantView.update(conference);
@@ -387,18 +473,18 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         updateTextState(R.string.voxeet_waiting_for_users);
         conferenceState.setVisibility(View.VISIBLE);
         if (isExpanded) {
-            if (null != selectedView && (!selectedView.isAttached() || !ownUserId.equals(selectedView.getPeerId()))) {
-                selectedView.setVisibility(View.GONE);
+            if (null != videoView && (!videoView.isAttached() || !ownUserId.equals(videoView.getPeerId()))) {
+                videoView.setVisibility(View.GONE);
             }
-            speakerView.setVisibility(View.GONE);
+            currentSpeakerView.setVisibility(View.GONE);
             participantView.setVisibility(View.VISIBLE);
             voxeetTimer.setVisibility(View.GONE);
             notchView.setVisibility(View.VISIBLE);
         } else {
-            if (null != selectedView && (!selectedView.isAttached() || !ownUserId.equals(selectedView.getPeerId()))) {
-                selectedView.setVisibility(View.GONE);
+            if (null != videoView && (!videoView.isAttached() || !ownUserId.equals(videoView.getPeerId()))) {
+                videoView.setVisibility(View.GONE);
             }
-            speakerView.setVisibility(View.GONE);
+            currentSpeakerView.setVisibility(View.GONE);
             participantView.setVisibility(View.VISIBLE);
             voxeetTimer.setVisibility(View.GONE);
             notchView.setVisibility(View.GONE);
@@ -407,9 +493,9 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         Conference conference = VoxeetSDK.conference().getConference();
         if (null != conference) participantView.update(conference);
 
-        conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceNoMoreUser();
-        Log.d(TAG, "onConferenceNoMoreUser: " + View.VISIBLE + " " + conferenceActionBarView.getVisibility());
+        conferenceBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
+        conferenceBarView.onConferenceNoMoreUser();
+        Log.d(TAG, "onConferenceNoMoreUser: " + View.VISIBLE + " " + conferenceBarView.getVisibility());
     }
 
     @Override
@@ -422,7 +508,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         updateTextState(R.string.voxeet_leaving);
         conferenceState.setVisibility(View.VISIBLE);
         showSpeakerView();
-        selfView.setVisibility(View.GONE);
+        selfVideoView.setVisibility(View.GONE);
         participantView.setVisibility(View.GONE);
         voxeetTimer.setVisibility(View.GONE);
         notchView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
@@ -430,21 +516,21 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         Conference conference = VoxeetSDK.conference().getConference();
         if (null != conference) participantView.update(conference);
 
-        conferenceActionBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
-        conferenceActionBarView.onConferenceLeaving();
-        Log.d(TAG, "onConferenceLeaving: " + View.VISIBLE + " " + conferenceActionBarView.getVisibility());
+        conferenceBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
+        conferenceBarView.onConferenceLeaving();
+        Log.d(TAG, "onConferenceLeaving: " + View.VISIBLE + " " + conferenceBarView.getVisibility());
     }
 
     @Override
     public void onConferenceDestroyed() {
         super.onConferenceDestroyed();
 
-        if (null != selfView) {
-            selfView.unAttach();
+        if (null != selfVideoView) {
+            selfVideoView.unAttach();
         }
 
-        if (null != selectedView) {
-            selectedView.unAttach();
+        if (null != videoView) {
+            videoView.unAttach();
         }
     }
 
@@ -452,13 +538,22 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     public void onConferenceLeft() {
         super.onConferenceLeft();
 
-        if (null != selfView) {
-            selfView.unAttach();
+        if (null != selfVideoView) {
+            selfVideoView.unAttach();
         }
 
-        if (null != selectedView) {
-            selectedView.unAttach();
+        if (null != videoView) {
+            videoView.unAttach();
         }
+    }
+
+    private void refreshVideoActivated() {
+        boolean isVideoActivated = isVideoActivated();
+
+        if (null != participantView)
+            participantView.setVideoActivable(isVideoActivated);
+
+        refreshMediaStreams();
     }
 
     private void refreshMediaStreams() {
@@ -467,20 +562,20 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         ConferenceService service = VoxeetSDK.conference();
         List<Participant> users = service.getParticipants();
 
-        String currentUserAttached = selectedView.getPeerId();
+        String currentUserAttached = videoView.getPeerId();
         Participant localUser = service.findParticipantById(localUserId);
         Participant user = service.findParticipantById(currentUserAttached);
-        MediaStream localUserMediaStream = localUser.streamsHandler().getFirst(MediaStreamType.Camera);
+        MediaStream localUserMediaStream = Opt.of(localUser).then(Participant::streamsHandler).then(s -> s.getFirst(MediaStreamType.Camera)).orNull();
 
-
-        if (ToolkitUtils.hasParticipants() && localUserId.equalsIgnoreCase(currentUserAttached)) {
-            selectedView.unAttach();
-            selectedView.setMirror(false);
+        if (hasParticipants() && localUserId.equalsIgnoreCase(currentUserAttached)) {
+            currentUserAttached = null;
+            videoView.unAttach();
+            videoView.setMirror(false);
         }
 
         if (null != currentUserAttached) {
-            MediaStream stream = user.streamsHandler().getFirst(MediaStreamType.Camera);
-            MediaStream screenShareStream = user.streamsHandler().getFirst(MediaStreamType.ScreenShare);
+            MediaStream stream = Opt.of(user).then(Participant::streamsHandler).then(s -> s.getFirst(MediaStreamType.Camera)).orNull();
+            MediaStream screenShareStream = Opt.of(user).then(Participant::streamsHandler).then(s -> s.getFirst(MediaStreamType.ScreenShare)).orNull();
             boolean unAttach = true;
             boolean hasScreenShare = null != screenShareStream && screenShareStream.videoTracks().size() > 0;
             boolean hasVideo = null != stream && stream.videoTracks().size() > 0;
@@ -490,29 +585,19 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                 unAttach = false;
             }
 
-            if (unAttach) selectedView.unAttach();
+            if (unAttach) videoView.unAttach();
         }
 
         String currentActiveSpeaker = getCurrentActiveSpeaker();
-        String selectedUserId = speakerView.getSelectedUserId();
 
-        if (null != selectedUserId) {
-            //selected user
-            Participant forced = VoxeetSDK.conference().findParticipantById(selectedUserId);
-            if (null != forced) {
-                MediaStream stream = forced.streamsHandler().getFirst(MediaStreamType.Camera);
-                if (null == stream || stream.videoTracks().size() == 0) { //without any video, force remove
-                    selectedView.unAttach();
-                } else if (null == selectedView.getPeerId() || !selectedView.isAttached() || !selectedUserId.equals(currentActiveSpeaker)) {
-                    //or if needs attached
-                    selectedView.attach(selectedUserId, stream);
-                }
-            }
+        if (!isVideoActivated()) {
+            Log.d(TAG, "refreshMediaStreams: audio mode only, no video");
+            videoView.unAttach();
         } else if (null != currentActiveSpeaker) { //else, do we have an active speaker ?
-            if (null != selectedView.getPeerId() || selectedView.isAttached()) {
+            if (null != videoView.getPeerId() || videoView.isAttached()) {
                 //should we unattach ?
-                if (!currentActiveSpeaker.equals(selectedView.getPeerId())) {
-                    selectedView.unAttach();
+                if (!currentActiveSpeaker.equals(videoView.getPeerId())) {
+                    videoView.unAttach();
                 }
             }
 
@@ -522,42 +607,42 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         if (null != localUserMediaStream) {
             if (localUserMediaStream.videoTracks().size() > 0) {
-                selfView.attach(localUserId, localUserMediaStream);
+                selfVideoView.attach(localUserId, localUserMediaStream);
 
-                selfView.setMirror(VoxeetSDK.mediaDevice().getCameraContext().isDefaultFrontFacing());
-                if (isExpanded) selfView.setVisibility(View.VISIBLE);
-                else selfView.setVisibility(View.GONE);
+                selfVideoView.setMirror(VoxeetSDK.mediaDevice().getCameraContext().isDefaultFrontFacing());
+                if (isExpanded) selfVideoView.setVisibility(View.VISIBLE);
+                else selfVideoView.setVisibility(View.GONE);
             } else {
-                selfView.unAttach();
-                selfView.setVisibility(View.GONE);
+                selfVideoView.unAttach();
+                selfVideoView.setVisibility(View.GONE);
             }
         }
 
-        if (!service.hasParticipants()) {
-            speakerView.setVisibility(View.GONE);
-            selectedView.setVisibility(View.GONE);
-        } else if (!selectedView.isAttached()) {
-            speakerView.onResume();
-            speakerView.setVisibility(View.VISIBLE);
-            selectedView.unAttach();
-            selectedView.setVisibility(View.GONE);
+        if (!hasParticipants()) {
+            currentSpeakerView.setVisibility(View.GONE);
+            videoView.setVisibility(View.GONE);
+        } else if (!videoView.isAttached()) {
+            currentSpeakerView.onResume();
+            currentSpeakerView.setVisibility(View.VISIBLE);
+            videoView.unAttach();
+            videoView.setVisibility(View.GONE);
         } else {
             //participants are here so we don't have our own video on top
             //force unmirrored view with participants
-            selectedView.setMirror(false);
-            speakerView.onPause();
-            speakerView.setVisibility(View.GONE);
+            videoView.setMirror(false);
+            currentSpeakerView.onPause();
+            currentSpeakerView.setVisibility(View.GONE);
         }
 
-        conferenceActionBarView.invalidateOwnStreams();
+        conferenceBarView.invalidateOwnStreams();
 
         ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
 
         boolean enableInConfiguration = VoxeetToolkit.instance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
         if (enableInConfiguration && null != information && !information.isListener()) {
-            conferenceActionBarView.setDisplayScreenShare(true);
+            conferenceBarView.setDisplayScreenShare(true);
         } else {
-            conferenceActionBarView.setDisplayScreenShare(false);
+            conferenceBarView.setDisplayScreenShare(false);
         }
 
     }
@@ -589,16 +674,36 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             }
         }
 
-        if ((!selectedView.isAttached() || MediaStreamType.ScreenShare.equals(mediaStreamType)) && null != foundToAttach && foundToAttach.videoTracks().size() > 0) {
-            selectedView.setVisibility(View.VISIBLE);
-            selectedView.attach(userIdFoundToAttach, foundToAttach);
+        if ((!videoView.isAttached() || MediaStreamType.ScreenShare.equals(mediaStreamType)) && null != foundToAttach && foundToAttach.videoTracks().size() > 0) {
+            videoView.setVisibility(View.VISIBLE);
+            videoView.attach(userIdFoundToAttach, foundToAttach);
         }
 
         if (null == foundToAttach) {
-            MediaStreamType stream = selectedView.current();
+            MediaStreamType stream = videoView.current();
             if (null != stream && stream.equals(mediaStreamType)) {
-                selectedView.setVisibility(View.GONE);
-                selectedView.unAttach();
+                videoView.setVisibility(View.GONE);
+                videoView.unAttach();
+            }
+        }
+    }
+
+    private void refreshConnectedDevice() {
+        VoxeetSDK.audio().enumerateDevices().then((ThenVoid<List<MediaDevice>>) this::refreshConnectedDevice)
+                .error(Throwable::printStackTrace);
+    }
+
+    private void refreshConnectedDevice(List<MediaDevice> devices) {
+        if (!resumed || null == devices) return;
+
+        List<MediaDevice> connected = Filter.filter(Opt.of(devices).or(new ArrayList<>()), item -> item.platformConnectionState() == ConnectionState.CONNECTED && item.connectionState() == ConnectionState.CONNECTED);
+
+        if (connected.size() > 0) {
+            MediaDevice mediaDevice = connected.get(0);
+            String lastId = Opt.of(connectedDevice).then(MediaDevice::id).or("_default_");
+            if (null == connectedDevice || !lastId.equals(mediaDevice.id())) {
+                connectedDevice = mediaDevice;
+                //TODO add information about which device is now connected ?
             }
         }
     }
@@ -609,7 +714,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             MediaStream stream = user.streamsHandler().getFirst(MediaStreamType.Camera);
             if (null != stream && stream.videoTracks().size() > 0) {
                 mConferenceViewRendererControl.attachStreamToSelf(stream);
-                if (!isExpanded) selfView.setVisibility(View.GONE);
+                if (!isExpanded) selfVideoView.setVisibility(View.GONE);
             }
         }
     }
@@ -622,8 +727,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @Override
     public void onPreExpandedView() {
-        if (selfView.isAttached()) {
-            selfView.setVisibility(View.VISIBLE);
+        if (selfVideoView.isAttached()) {
+            selfVideoView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -635,11 +740,11 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         layoutParticipant.setVisibility(View.VISIBLE);
         participantView.notifyDatasetChanged();
 
-        conferenceActionBarView.onToggleSize(true);
+        conferenceBarView.onToggleSize(true);
 
         refreshUIVisibility();
-        if (selectedView != null) {
-            selectedView.setCornerRadius(0);
+        if (videoView != null) {
+            videoView.setCornerRadius(0);
         }
 
         mConferenceViewRendererControl.enableClick(true);
@@ -649,7 +754,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @Override
     public void onPreMinizedView() {
-        selfView.setVisibility(View.GONE);
+        selfVideoView.setVisibility(View.GONE);
     }
 
     @Override
@@ -663,10 +768,10 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         participantView.notifyDatasetChanged();
         layoutParticipant.setVisibility(View.GONE);
 
-        conferenceActionBarView.onToggleSize(false);
+        conferenceBarView.onToggleSize(false);
 
         refreshUIVisibility();
-        updateUi();
+        refreshUI();
         checkForLocalUserStreamVideo();
     }
 
@@ -682,15 +787,15 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             conferenceState = view.findViewById(R.id.conference_state);
             layoutParticipant = view.findViewById(R.id.layout_participant);
 
-            speakerView = view.findViewById(R.id.current_speaker_view);
+            currentSpeakerView = view.findViewById(R.id.current_speaker_view);
 
-            selectedView = view.findViewById(R.id.selected_video_view);
+            videoView = view.findViewById(R.id.selected_video_view);
 
-            selfView = view.findViewById(R.id.self_video_view);
+            selfVideoView = view.findViewById(R.id.self_video_view);
 
-            mConferenceViewRendererControl = new ConferenceViewRendererControl(this, selfView, selectedView);
+            mConferenceViewRendererControl = new ConferenceViewRendererControl(this, selfVideoView, videoView);
 
-            selfView.setOnClickListener(view1 -> {
+            selfVideoView.setOnClickListener(view1 -> {
                 if (VoxeetSDK.instance() != null) {
                     mConferenceViewRendererControl.switchCamera();
                 }
@@ -698,7 +803,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
             layoutTimer = view.findViewById(R.id.layout_timer);
 
-            conferenceActionBarView = view.findViewById(R.id.conference_bar_view);
+            conferenceBarView = view.findViewById(R.id.conference_bar_view);
 
             participantView = view.findViewById(R.id.participant_view);
             participantView.setParticipantListener(this);
@@ -707,22 +812,26 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
             notchView = view.findViewById(R.id.notch);
 
+            mediaRoutePicker = view.findViewById(R.id.media_route_picker);
+
+            if (null != conferenceBarView)
+                conferenceBarView.setMediaDeviceControl(mediaRoutePicker);
 
             Configuration configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration;
             ActionBar actionBarConfiguration = configuration.ActionBar;
-            conferenceActionBarView.setDisplayCamera(actionBarConfiguration.displayCamera);
-            conferenceActionBarView.setDisplayLeave(actionBarConfiguration.displayLeave);
-            conferenceActionBarView.setDisplayMute(actionBarConfiguration.displayMute);
-            conferenceActionBarView.setDisplayScreenShare(actionBarConfiguration.displayScreenShare);
-            conferenceActionBarView.setDisplaySpeaker(actionBarConfiguration.displaySpeaker);
+            conferenceBarView.setDisplayCamera(actionBarConfiguration.displayCamera);
+            conferenceBarView.setDisplayLeave(actionBarConfiguration.displayLeave);
+            conferenceBarView.setDisplayMute(actionBarConfiguration.displayMute);
+            conferenceBarView.setDisplayScreenShare(actionBarConfiguration.displayScreenShare);
+            conferenceBarView.setDisplaySpeaker(actionBarConfiguration.displaySpeaker);
 
             //addListeners for voxeet dispatch events
-            addListener(speakerView);
-            addListener(conferenceActionBarView);
+            addListener(currentSpeakerView);
+            addListener(conferenceBarView);
             addListener(participantView);
             addListener(voxeetTimer);
 
-            updateUi();
+            refreshUI();
         } catch (Exception e) {
             ExceptionManager.sendException(e);
             e.printStackTrace();
@@ -730,10 +839,13 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     @Override
-    public void onParticipantSelected(@NonNull Participant user) {
-        speakerView.lockScreen(user);
-        updateSpeakerViewVisibility();
-        updateUi();
+    public void onParticipantSelected(@NonNull Participant participant) {
+        if (null != participant) {
+            participantSelected = participant;
+            currentSpeakerView.lockScreen(participant);
+        }
+
+        refreshUI();
     }
 
     @Override
@@ -743,7 +855,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         updateSpeakerViewVisibility();
         participantView.onUserAddedEvent(conference, user);
 
-        updateUi();
+        refreshUI();
     }
 
     @Override
@@ -753,7 +865,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         updateSpeakerViewVisibility();
         participantView.onUserUpdatedEvent(conference, user);
 
-        updateUi();
+        refreshUI();
     }
 
     @Override
@@ -763,7 +875,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         updateSpeakerViewVisibility();
         participantView.onStreamAddedEvent(conference, user, mediaStream);
 
-        updateUi();
+        refreshUI();
     }
 
     @Override
@@ -773,7 +885,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         updateSpeakerViewVisibility();
         participantView.onStreamUpdatedEvent(conference, user, mediaStream);
 
-        updateUi();
+        refreshUI();
     }
 
     @Override
@@ -784,16 +896,15 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         updateSpeakerViewVisibility();
         participantView.onStreamRemovedEvent(conference, user, mediaStream);
 
-        updateUi();
+        refreshUI();
     }
 
     @Override
     public void onParticipantUnselected(@NonNull Participant user) {
-        speakerView.unlockScreen();
-        showSpeakerView();
+        participantSelected = null;
+        currentSpeakerView.unlockScreen();
 
-        updateSpeakerViewVisibility();
-        updateUi();
+        refreshUI();
     }
 
 
@@ -876,7 +987,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         ConferenceInformation conferenceInformation = service.getCurrentConference();
 
         boolean enableInConfiguration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
-        conferenceActionBarView.setDisplayScreenShare(enableInConfiguration && VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled());
+        conferenceBarView.setDisplayScreenShare(enableInConfiguration && VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled());
 
         switch (state) {
             case CREATING:
@@ -912,46 +1023,47 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     private void updateSpeakerViewVisibility() {
-        if (null != speakerView) {
-            String selectedUser = speakerView.getSelectedUserId();
+        if (null != currentSpeakerView) {
+            String selectedUser = Opt.of(participantSelected).then(Participant::getId).orNull();
             if (null != selectedUser) {
                 Participant user = VoxeetSDK.conference().findParticipantById(selectedUser);
                 if (null == user) {
-                    speakerView.unlockScreen();
+                    participantSelected = null;
+                    currentSpeakerView.unlockScreen();
                 }
             }
         }
 
-        if (null != selectedView) {
-            String selectedUser = selectedView.getPeerId();
+        if (null != videoView) {
+            String selectedUser = videoView.getPeerId();
             if (null != selectedUser) {
                 Participant user = VoxeetSDK.conference().findParticipantById(selectedUser);
                 if (null == user) {
-                    selectedView.unAttach();
+                    videoView.unAttach();
                 }
             }
         }
 
-        if (null != selectedView && selectedView.isAttached()) {
+        if (null != videoView && videoView.isAttached()) {
             hideSpeakerView();
-        } else if (VoxeetSDK.conference().getParticipants().size() > 0) {
-            if (null != selectedView) selectedView.setVisibility(View.GONE);
+        } else if (getParticipants().size() > 0) {
+            if (null != videoView) videoView.setVisibility(View.GONE);
             showSpeakerView();
         } else {
             hideSpeakerView();
-            if (null != selectedView) selectedView.setVisibility(View.GONE);
+            if (null != videoView) videoView.setVisibility(View.GONE);
         }
     }
 
     public void hideSpeakerView() {
-        speakerView.setVisibility(View.GONE);
-        speakerView.onPause();
+        currentSpeakerView.onPause();
+        currentSpeakerView.setVisibility(View.GONE);
     }
 
     public void showSpeakerView() {
-        if (VoxeetSDK.conference().hasParticipants()) {
-            speakerView.setVisibility(View.VISIBLE);
-            speakerView.onResume();
+        if (hasParticipants()) {
+            currentSpeakerView.setVisibility(View.VISIBLE);
+            currentSpeakerView.onResume();
         } else {
             onConferenceNoMoreUser();
         }
@@ -962,7 +1074,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         boolean hide = null == information || ConferenceParticipantType.LISTENER.equals(information.getConferenceParticipantType());
 
-        conferenceActionBarView.setVisibility(hide ? View.GONE : View.VISIBLE);
+        conferenceBarView.setVisibility(hide ? View.GONE : View.VISIBLE);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -973,14 +1085,53 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     @Nullable
     private String getCurrentActiveSpeaker() {
         //get the selected user OR the "refreshed"/"cached" active speaker
-        String activeSpeaker = speakerView.getSelectedUserId();
-        if (null == activeSpeaker && null != voxeetActiveSpeakerTimer)
-            activeSpeaker = voxeetActiveSpeakerTimer.getCurrentActiveSpeaker();
-        return activeSpeaker;
+        String activeSpeaker = Opt.of(participantSelected).then(Participant::getId).orNull();
+        if (null != activeSpeaker && activeSpeaker.equals(VoxeetSDK.session().getParticipantId())) {
+            activeSpeaker = null;
+        }
+
+        Participant participant = VoxeetSDK.conference().findParticipantById(Opt.of(activeSpeaker).or(""));
+        if (null != participant && participant.isLocallyActive()) {
+            return activeSpeaker;
+        }
+
+        return VoxeetSpeakersTimerInstance.instance.getCurrentActiveSpeakerOrDefault();
     }
 
     @Override
     public void onActiveSpeakerUpdated(@Nullable String activeSpeakerUserId) {
-        updateUi();
+        if (null != participantSelected && participantSelected.isLocallyActive()) {
+            activeSpeakerUserId = participantSelected.getId();
+        }
+
+        if (null == activeSpeakerUserId || !activeSpeakerUserId.equals(VoxeetSDK.session().getParticipantId())) {
+            currentSpeakerView.onActiveSpeakerUpdated(activeSpeakerUserId);
+        }
+
+        refreshUI();
+    }
+
+    //TODO optimize by collecting the participants on the beginning of the loop only
+    private List<Participant> getParticipants() {
+        return Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
+            ParticipantType type = Opt.of(participant.participantType()).or(ParticipantType.NONE);
+
+            if ("00000000-0000-0000-0000-000000000000".equals(participant.getId())) return false;
+            if (!(type.equals(ParticipantType.DVC) || type.equals(ParticipantType.USER) || type.equals(ParticipantType.PSTN))) {
+                return false;
+            }
+
+            if (Opt.of(participant.getId()).or("").equals(VoxeetSDK.session().getParticipantId())) {
+                //prevent own user to be "active speaker"
+                return false;
+            }
+            if (ConferenceParticipantStatus.ON_AIR == participant.getStatus()) return true;
+            return ConferenceParticipantStatus.CONNECTING == participant.getStatus() && null != participant.streamsHandler().getFirst(MediaStreamType.Camera);
+        });
+    }
+
+    //TODO optimize by collecting the participants on the beginning of the loop only
+    private boolean hasParticipants() {
+        return getParticipants().size() > 0;
     }
 }

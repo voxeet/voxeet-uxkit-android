@@ -144,4 +144,9 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
+    <com.voxeet.uxkit.implementation.devices.VoxeetMediaRoutePickerView
+        android:id="@+id/media_route_picker"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </FrameLayout>

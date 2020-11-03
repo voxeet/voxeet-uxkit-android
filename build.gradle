@@ -48,6 +48,7 @@ ext {
 
 allprojects {
     repositories {
+        maven { url "https://android-sdk.voxeet.com/release" }
         mavenLocal()
         google()
         jcenter()
