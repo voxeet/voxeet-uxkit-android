@@ -35,15 +35,15 @@ ext {
     supportLibVersion = "28.0.0"
 
     //underlying sdk
-    voxeetSdkVersion = version_from_sdk("3.0.0")
+    voxeetSdkVersion = version_from_sdk("3.0.2")
 
     //uxkit modules
-    pushSdkVersion = version_uxkit("3.0.0")
-    firebaseSdkVersion = version_uxkit("3.0.0")
-    voxeetSdkToolkitVersion = version_uxkit("3.0.0")
-    voxeetIncomingCall = version_uxkit("3.0.0")
-    systemServiceVersion = version_uxkit("3.0.0")
-    telecomSystemServiceVersion = version_uxkit("3.0.0")
+    pushSdkVersion = version_uxkit("3.0.2")
+    firebaseSdkVersion = version_uxkit("3.0.2")
+    voxeetSdkToolkitVersion = version_uxkit("3.0.2")
+    voxeetIncomingCall = version_uxkit("3.0.2")
+    systemServiceVersion = version_uxkit("3.0.2")
+    telecomSystemServiceVersion = version_uxkit("3.0.2")
 }
 
 allprojects {
