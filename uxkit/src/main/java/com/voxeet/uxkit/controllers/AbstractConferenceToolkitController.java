@@ -251,11 +251,9 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             mHandler.postDelayed(() -> {
                 try {
                     //request audio focus and set in voice call
-                    if (null != VoxeetSDK.instance()) {
-                        AudioService service = VoxeetSDK.audio();
-                        service.requestAudioFocus();
-                        service.checkOutputRoute();
-                    }
+                    AudioService service = VoxeetSDK.audio();
+                    service.requestAudioFocus();
+                    service.checkOutputRoute();
 
                     log("run: add view" + mMainView);
                     if (mMainView != null) {
@@ -701,9 +699,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             return;
         }
 
-        if (null != VoxeetSDK.instance()) {
-            VoxeetSDK.audio().stop();
-        }
+        VoxeetSDK.audio().stop();
 
         if (null != mMainView) {
             mMainView.onConferenceDestroyed();
@@ -803,7 +799,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                     if (ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus()))
                         return true;
                     // if not a user
-                    if(!ParticipantType.USER.equals(participant.participantType())) return false;
+                    if (!ParticipantType.USER.equals(participant.participantType())) return false;
                     // if connecting but with already a stream
                     if (ConferenceParticipantStatus.CONNECTING.equals(participant.getStatus())) {
                         MediaStream stream = participant.streamsHandler().getFirst(MediaStreamType.Camera);
@@ -840,8 +836,6 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     @NonNull
     private String optConferenceId() {
         ConferenceService service = VoxeetSDK.conference();
-        if (null == service) return "";
-        String conferenceId = service.getConferenceId();
-        return null != conferenceId ? conferenceId : "";
+        return Opt.of(service.getConferenceId()).or("");
     }
 }

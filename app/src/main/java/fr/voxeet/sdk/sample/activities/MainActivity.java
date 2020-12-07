@@ -150,7 +150,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
             ConferenceService service = VoxeetSDK.conference();
 
-            if (null == service) {
+            if (!VoxeetSDK.instance().isInitialized()) {
                 Toast.makeText(this, "Invalid state of the SDK !", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -217,10 +217,6 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
     private void onConferenceJoinedSuccessEvent() {
         SessionService userService = VoxeetSDK.session();
         ConferenceService conferenceService = VoxeetSDK.conference();
-
-        if (null == userService || null == conferenceService) {
-            return;
-        }
 
         List<ParticipantInfo> users = UsersHelper.getExternalIds(userService.getParticipantId());
 
