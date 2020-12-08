@@ -1,10 +1,27 @@
 # Voxeet Android UXKit
 
-## Integration the UXKit
+## Integrating the UXKit
+
+### SDK 3.0 Repository
+
+After accepting the [Dolby Software License Agreement](https://github.com/voxeet/voxeet-sdk-android/blob/main/LICENSE), update the main build.gradle file with the following repository :
+
+```
+allprojects {
+    repositories {
+        maven { url "https://android-sdk.voxeet.com/release" }
+        ...
+    }
+}
+```
+
+### App's dependencies
+
+Then update the app's dependencies with :
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:uxkit:2.+') { transitive = true }
+  compile ('com.voxeet.sdk:uxkit:3.+') { transitive = true }
 }
 ```
 

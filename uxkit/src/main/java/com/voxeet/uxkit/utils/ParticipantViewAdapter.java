@@ -1,6 +1,7 @@
 package com.voxeet.uxkit.utils;
 
 import android.content.Context;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -42,6 +43,8 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
     private IParticipantViewListener listener;
 
     private int selectedUserColor;
+
+    private boolean videoActivable = true;
 
     private ParticipantViewAdapter() {
 
@@ -123,7 +126,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         ArrayList<Participant> removed_from_air = updateArray(air, 0, p -> !p.isLocallyActive());
         ArrayList<Participant> removed_from_inv = updateArray(inv, air.size(), p -> !is(p, ConferenceParticipantStatus.RESERVED));
         ArrayList<Participant> removed_from_left = updateArray(left, air.size() + inv.size(), p -> !is(p, ConferenceParticipantStatus.LEFT));
-        ArrayList<Participant> removed_from_other = updateArray(other, other.size() + inv.size(), p -> p.isLocallyActive() || is(p, ConferenceParticipantStatus.LEFT) || is(p, ConferenceParticipantStatus.RESERVED));
+        ArrayList<Participant> removed_from_other = updateArray(other, air.size() + inv.size() + left.size(), p -> p.isLocallyActive() || is(p, ConferenceParticipantStatus.LEFT) || is(p, ConferenceParticipantStatus.RESERVED));
 
         to_readd.addAll(removed_from_air);
         to_readd.addAll(removed_from_inv);
@@ -291,6 +294,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         participantView.setShowName(namesEnabled);
         participantView.setAvatarSize(avatarSize);
         participantView.setSelected(equalsToUser(selectedUserId, user));
+        participantView.setVideoActivable(videoActivable);
 
         participantView.refresh();
 
@@ -331,6 +335,12 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         });
 
         setAnimation(holder.itemView, position);
+    }
+
+    @MainThread
+    public void setVideoActivable(boolean state) {
+        this.videoActivable = state;
+        refreshVisible();
     }
 
     /**

@@ -26,7 +26,7 @@
         android:layout_height="match_parent"
         android:visibility="gone"
         app:cornerRadius="@dimen/voxeet_overlay_minized_corner"
-        app:scaleType="scale_fill" />
+        app:streamScaleType="scale_fill" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -124,7 +124,7 @@
             android:layout_marginTop="48dp"
             android:layout_marginBottom="32dp"
             app:cornerRadius="5dp"
-            app:scaleType="scale_fit"
+            app:streamScaleType="scale_fit"
             app:showFlip="true" />
 
         <!-- call action buttons -->
@@ -144,4 +144,9 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
+    <com.voxeet.uxkit.implementation.devices.VoxeetMediaRoutePickerView
+        android:id="@+id/media_route_picker"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </FrameLayout>

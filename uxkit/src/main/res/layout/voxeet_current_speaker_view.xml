@@ -6,14 +6,6 @@
     android:layout_gravity="center"
     android:orientation="vertical">
 
-
-    <TextView
-        android:id="@+id/speaker_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginBottom="24dp" />
-
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,10 +14,10 @@
 
         <com.voxeet.uxkit.views.internal.VoxeetVuMeter
             android:id="@+id/vu_meter"
-            app:roundedCircle="true"
             android:layout_width="@dimen/meeting_list_avatar_vu_double"
             android:layout_height="@dimen/meeting_list_avatar_vu_double"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            app:roundedCircle="true" />
 
         <com.voxeet.uxkit.views.internal.rounded.RoundedImageView
             android:id="@+id/speaker_image"
@@ -38,4 +30,15 @@
             app:mutate_background="true"
             app:oval="true" />
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/speaker_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="@color/participant_view_cell_textColor_inactive" />
+
 </LinearLayout>

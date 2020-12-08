@@ -25,6 +25,7 @@
     <dimen name="dimen_0">0dp</dimen>
     <dimen name="dimen_1">1dp</dimen>
     <dimen name="voxeet_incoming_call_activity_padding">64dp</dimen>
+    <dimen name="voxeet_default_padding">8dp</dimen>
     <dimen name="voxeet_default_margin">16dp</dimen>
     <dimen name="voxeet_incoming_call_username">16dp</dimen>
     <dimen name="voxeet_conference_state_expanded">24dp</dimen>
@@ -37,4 +38,5 @@
     <dimen name="voxeet_overlay_margin">16dp</dimen>
     <dimen name="conferencebar_view_item_height">60dp</dimen>
     <dimen name="conferencebar_view_padding_left_right">6dp</dimen>
+    <dimen name="voxeet_devices_picker_width">250dp</dimen>
 </resources>

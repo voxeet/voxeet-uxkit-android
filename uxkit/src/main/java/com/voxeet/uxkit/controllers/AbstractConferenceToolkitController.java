@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.voxeet.VoxeetSDK;
+import com.voxeet.android.media.MediaStream;
+import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.IncomingCallEvent;
 import com.voxeet.sdk.events.success.ConferenceUpdated;
@@ -29,6 +31,7 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.models.v1.RecordingStatus;
+import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.services.AudioService;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
@@ -792,8 +795,23 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     private void checkStopOutgoingCall() {
         boolean found = null != Map.find(Opt.of(VoxeetSDK.conference())
                         .then(ConferenceService::getParticipants).or(new ArrayList<>()),
-                participant -> null != participant.getId() && !participant.getId().equals(VoxeetSDK.session().getParticipantId())
-                        && ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus()));
+                participant -> {
+                    // if invalid or ourselves
+                    if (null == participant.getId() || participant.getId().equals(VoxeetSDK.session().getParticipantId()))
+                        return false;
+                    // if known as on air
+                    if (ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus()))
+                        return true;
+                    // if not a user
+                    if(!ParticipantType.USER.equals(participant.participantType())) return false;
+                    // if connecting but with already a stream
+                    if (ConferenceParticipantStatus.CONNECTING.equals(participant.getStatus())) {
+                        MediaStream stream = participant.streamsHandler().getFirst(MediaStreamType.Camera);
+                        if (null == stream) return false;
+                        return stream.audioTracks().size() > 0 || stream.videoTracks().size() > 0;
+                    }
+                    return false;
+                });
 
         if (found) {
             VoxeetSDK.audio().stop();

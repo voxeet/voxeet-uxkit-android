@@ -19,4 +19,10 @@
     <string name="voxeet_incoming_call_accept">Accept</string>
     <string name="invalid_bundle">Invalid Bundle !</string>
     <string name="voxeet_waiting_for_users">Waiting for users…</string>
+    <string name="media_output">Media output</string>
+
+    <string name="bluetooth">"Bluetooth Headset"</string>
+    <string name="external_speaker">"External Speaker"</string>
+    <string name="internal_speaker">"Internal Speaker"</string>
+    <string name="wired_headset">"Wired Headset"</string>
 </resources>
