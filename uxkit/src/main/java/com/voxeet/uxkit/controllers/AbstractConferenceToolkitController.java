@@ -429,13 +429,19 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         return mDefaultOverlayState;
     }
 
-    private void minimize() {
+    /**
+     * Minimize the overlay
+     */
+    public void minimize() {
         Log.d("DefaultRootViewProvider", "minimize");
         if (null != mMainView) mMainView.minimize();
         SAVED_OVERLAY_STATE = OverlayState.MINIMIZED;
     }
 
-    private void expand() {
+    /**
+     * Expand the overlay
+     */
+    public void expand() {
         Log.d("DefaultRootViewProvider", "expand");
         if (null != mMainView) mMainView.expand();
         SAVED_OVERLAY_STATE = OverlayState.EXPANDED;
@@ -472,7 +478,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
 
     /**
-     * Check wether this controller can be called
+     * Check whether this controller can be called
      *
      * @return the activation state of this controller
      */
