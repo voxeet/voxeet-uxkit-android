@@ -1,5 +1,7 @@
 package com.voxeet.uxkit.configuration;
 
+import android.content.Context;
+
 import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.NoDocumentation;
 
@@ -29,4 +31,9 @@ public class Configuration {
      * Hold the Overlay configuration instance for this specific Configuration holder
      */
     public final Overlay Overlay = new Overlay();
+
+    /**
+     * Hold the Contextual configration instance this specific Configuration holder
+     */
+    public final Contextual Contextual = new Contextual();
 }

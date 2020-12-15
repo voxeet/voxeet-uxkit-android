@@ -14,6 +14,10 @@ import android.widget.FrameLayout;
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.stream.MediaStreamType;
+import com.voxeet.audio2.devices.MediaDevice;
+import com.voxeet.audio2.devices.description.ConnectionState;
+import com.voxeet.audio2.devices.description.DeviceType;
+import com.voxeet.promise.solve.ThenPromise;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.IncomingCallEvent;
 import com.voxeet.sdk.events.success.ConferenceUpdated;
@@ -26,7 +30,6 @@ import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.RecordingStatusUpdatedEvent;
-import com.voxeet.sdk.media.audio.AudioRoute;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
@@ -42,6 +45,7 @@ import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.configuration.Configuration;
 import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
 import com.voxeet.uxkit.implementation.VoxeetConferenceView;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
@@ -75,6 +79,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class AbstractConferenceToolkitController implements VoxeetOverlayContainerFrameLayout.OnSizeChangedListener {
     //TODO put this static variable into each controller with an abstract method to make sure of no collision with various impl
     private static OverlayState SAVED_OVERLAY_STATE = null;
+
+    public final Configuration Configuration = new Configuration();
 
     private Context mContext;
     @NonNull
@@ -590,7 +596,19 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     private void onConferenceJoinedEvent(ConferenceStatusUpdatedEvent event) {
         if (validFilter(event.conference.getAlias()) || validFilter(event.conference.getId())) {
-            VoxeetSDK.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
+
+            if (isEnabled() && Configuration.Contextual.default_speaker_on) {
+                Log.d(TAG, "onConferenceJoinedEvent: switching to speaker");
+                VoxeetSDK.audio().enumerateDevices().then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
+                    MediaDevice speaker = Map.find(mediaDevices,
+                            mediaDevice -> mediaDevice.deviceType() == DeviceType.EXTERNAL_SPEAKER
+                                    && mediaDevice.platformConnectionState() == ConnectionState.CONNECTED);
+
+                    if (null == speaker)
+                        throw new IllegalStateException("Impossible to make output to speaker");
+                    return VoxeetSDK.audio().connect(speaker);
+                }).error(error -> Log.e(TAG, "onError: ", error));
+            }
 
             displayView();
 
