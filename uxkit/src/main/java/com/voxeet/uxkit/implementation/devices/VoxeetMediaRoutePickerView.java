@@ -72,7 +72,7 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
         VoxeetSDK.audio().registerUpdateDevices(this::onDevice);
         attached = true;
 
-        VoxeetSDK.audio().enumerateDevices().then(this::onDevice).error(Throwable::printStackTrace);
+        refreshDevices();
     }
 
     @Override
@@ -88,6 +88,10 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
 
         this.know_devices = Filter.filter(Opt.of(mediaDevices).or(new ArrayList<>()), mediaDevice -> null != mediaDevice && mediaDevice.platformConnectionState() == ConnectionState.CONNECTED && !DeviceType.NORMAL_MEDIA.equals(mediaDevice.deviceType()));
         this.refresh();
+    }
+
+    public void refreshDevices() {
+        VoxeetSDK.audio().enumerateDevices().then(this::onDevice).error(Throwable::printStackTrace);
     }
 
     private void refresh() {
@@ -125,5 +129,8 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
     @Override
     public void onMediaRouteButtonInteraction() {
         setVisibility(View.VISIBLE);
+
+        // also check for devices which could have happened while out of the window
+        refreshDevices();
     }
 }

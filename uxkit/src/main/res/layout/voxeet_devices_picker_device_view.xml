@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:background="@drawable/support_effect"
     android:clickable="true"
     android:focusable="true"
     android:paddingLeft="@dimen/voxeet_default_margin"
@@ -29,6 +29,7 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:ellipsize="end"
+        android:textColor="@android:color/black"
         android:textStyle="bold"
         tools:text="Some device" />
 </LinearLayout>

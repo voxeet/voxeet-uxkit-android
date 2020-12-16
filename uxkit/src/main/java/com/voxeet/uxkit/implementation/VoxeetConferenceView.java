@@ -795,11 +795,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
             mConferenceViewRendererControl = new ConferenceViewRendererControl(this, selfVideoView, videoView);
 
-            selfVideoView.setOnClickListener(view1 -> {
-                if (VoxeetSDK.instance() != null) {
-                    mConferenceViewRendererControl.switchCamera();
-                }
-            });
+            selfVideoView.setOnClickListener(view1 -> mConferenceViewRendererControl.switchCamera());
 
             layoutTimer = view.findViewById(R.id.layout_timer);
 
