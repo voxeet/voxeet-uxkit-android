@@ -32,7 +32,7 @@ public class IncomingNotificationHelper {
      * Dismiss a possible Notification from the SystemBar if the `IncomingNotification.EXTRA_NOTIFICATION_ID` is referenced in the `Intent`
      *
      * @param context the context to use to obtain the `NotificationManager` instance
-     * @param intent the Activity's Intent
+     * @param intent  the Activity's Intent
      * @return indication of the removal process follow up
      */
     public static boolean dismiss(@NonNull Context context,
@@ -52,7 +52,7 @@ public class IncomingNotificationHelper {
      * Dismiss a possible Notification from the SystemBar if the `notificationId` is ongoing.
      * This method is safe to call since the `NotificationManager` will simply drop the call if no `Notification` with such ID exists
      *
-     * @param context the context to use to obtain the `NotificationManager` instance
+     * @param context        the context to use to obtain the `NotificationManager` instance
      * @param notificationId the notificationId to dismiss
      * @return indication of the removal process follow up
      */
@@ -74,11 +74,10 @@ public class IncomingNotificationHelper {
      * @return indication of the removal process follow up
      */
     public static boolean dismiss(@NonNull Activity activity) {
-        if (null != VoxeetSDK.conference()) {
-            String conferenceId = VoxeetSDK.conference().getConferenceId();
-            if (!TextUtils.isEmpty(conferenceId)) {
-                IncomingNotificationHelper.dismiss(activity, conferenceId.hashCode());
-            }
+        String conferenceId = VoxeetSDK.conference().getConferenceId();
+        if (!TextUtils.isEmpty(conferenceId)) {
+            //silently dimiss the notification for a conferenceId if for any reason, we would have one still ongoing for the conference joined
+            IncomingNotificationHelper.dismiss(activity, conferenceId.hashCode());
         }
         return IncomingNotificationHelper.dismiss(activity, activity.getIntent());
 

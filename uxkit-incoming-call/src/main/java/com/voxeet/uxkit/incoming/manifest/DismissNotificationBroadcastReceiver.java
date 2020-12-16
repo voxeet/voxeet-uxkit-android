@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
+import com.voxeet.sdk.exceptions.VoxeetSDKNotInitiliazedException;
 import com.voxeet.sdk.push.center.NotificationCenter;
 import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.services.ConferenceService;
@@ -19,13 +20,11 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Bundle bundle = intent.getExtras();
-        ConferenceService conferenceService = VoxeetSDK.conference();
         InvitationBundle invitationBundle = null;
-
-        if (null == conferenceService) return;
 
         if (null != bundle) invitationBundle = new InvitationBundle(bundle);
 
+        //TODO create a way to register for dismissed conference invitation when the sdk is unintialized
         if (null != invitationBundle && null != invitationBundle.conferenceId) {
             InvitationBundle finalInvitationBundle = invitationBundle;
             createPromise(invitationBundle.conferenceId).then((result, solver) -> {
@@ -37,8 +36,8 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
     private Promise<Boolean> createPromise(@NonNull String conferenceId) {
         ConferenceService conferenceService = VoxeetSDK.conference();
         SessionService sessionService = VoxeetSDK.session();
-        if (null == sessionService || null == conferenceService) {
-            return new Promise<>(solver -> solver.reject(new IllegalStateException("SDK Uninitialized in " + DismissNotificationBroadcastReceiver.class.getSimpleName())));
+        if (!VoxeetSDK.instance().isInitialized()) {
+            return new Promise<>(solver -> solver.reject(new VoxeetSDKNotInitiliazedException("SDK Uninitialized in " + DismissNotificationBroadcastReceiver.class.getSimpleName())));
         }
 
         if (sessionService.isSocketOpen()) {

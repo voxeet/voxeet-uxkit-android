@@ -62,9 +62,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
     protected void onResume() {
         super.onResume();
 
-        if (null != VoxeetSDK.instance()) {
-            VoxeetSDK.instance().register(this);
-        }
+        VoxeetSDK.instance().register(this);
 
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this); //registering this activity
@@ -79,9 +77,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
             mIncomingBundleChecker.onAccept();
         }
 
-        if (null != VoxeetSDK.screenShare()) {
-            VoxeetSDK.screenShare().consumeRightsToScreenShare();
-        }
+        VoxeetSDK.screenShare().consumeRightsToScreenShare();
 
         VoxeetToolkit.instance().getConferenceToolkit().forceReattach();
     }
@@ -89,11 +85,9 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
     @NoDocumentation
     @Override
     protected void onPause() {
-        if (null != VoxeetSDK.localStats()) {
-            //stop fetching stats if any pending
-            if (!VoxeetSDK.conference().isLive()) {
-                VoxeetSDK.localStats().stopAutoFetch();
-            }
+        //stop fetching stats if any pending
+        if (!VoxeetSDK.conference().isLive()) {
+            VoxeetSDK.localStats().stopAutoFetch();
         }
 
         EventBus.getDefault().unregister(this);
@@ -130,7 +124,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
         switch (requestCode) {
             case PermissionRefusedEvent.RESULT_CAMERA: {
                 Log.d(TAG, "onActivityResult: camera is ok now");
-                if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
+                if (VoxeetSDK.conference().isLive()) {
                     VoxeetSDK.conference().startVideo()
                             .then((result, solver) -> {
 
@@ -147,11 +141,7 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
     @NoDocumentation
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        boolean managed = false;
-
-        if (null != VoxeetSDK.screenShare()) {
-            managed = VoxeetSDK.screenShare().onActivityResult(requestCode, resultCode, data);
-        }
+        boolean managed = VoxeetSDK.screenShare().onActivityResult(requestCode, resultCode, data);
 
         if (!managed) {
             super.onActivityResult(requestCode, resultCode, data);
