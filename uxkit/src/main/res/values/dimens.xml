@@ -39,4 +39,6 @@
     <dimen name="conferencebar_view_item_height">60dp</dimen>
     <dimen name="conferencebar_view_padding_left_right">6dp</dimen>
     <dimen name="voxeet_devices_picker_width">250dp</dimen>
+
+    <dimen name="bar_item_icon_padding">10dp</dimen>
 </resources>
