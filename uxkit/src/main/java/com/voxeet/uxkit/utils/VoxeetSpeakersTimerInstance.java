@@ -46,7 +46,7 @@ public final class VoxeetSpeakersTimerInstance {
         refreshActiveSpeaker = () -> {
             try {
                 //TODO since using the active speaker's O(n) loop and doing same here, mutualize code and remove the call to the SDK alltogether
-                if (null != handler && null != VoxeetSDK.instance()) {
+                if (null != handler) {
                     String fromSdk = VoxeetSDK.conference().currentSpeaker();
                     Conference conference = VoxeetSDK.conference().getConference();
 

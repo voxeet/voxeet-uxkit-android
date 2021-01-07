@@ -15,6 +15,21 @@ allprojects {
 }
 ```
 
+**Note for Beta releases of the SDK: ** When using a beta release, add as well `"https://android-sdk.voxeet.com/beta"` after the release line. With this, you will be able to use the beta versions of the UXKit which are using beta versions of the SDK.
+
+### Available beta versions
+
+#### v3.0.3-BETA2
+
+use beta version of the SDK, v3.0.3-BETA2012071606
+
+- VoxeetSDK.instance() is always valid
+- VoxeetSDK.<services()> are always instantiated
+- VoxeetSDK.initialize(...) still needs to be called to enable network-related calls
+- The speaker action refreshes the devices on top of displaying those media devices
+- Media output shows properly the list's text color
+- Add static IncomingNotification.Configuration to override some fields
+
 ### App's dependencies
 
 Then update the app's dependencies with :

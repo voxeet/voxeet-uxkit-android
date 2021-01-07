@@ -116,7 +116,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
                 .then((result, solver) -> {
                     //do something here ?
                 })
-                .error(error -> error.printStackTrace());
+                .error(Throwable::printStackTrace);
     }
 
     @Override

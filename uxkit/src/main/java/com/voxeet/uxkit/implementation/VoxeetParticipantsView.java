@@ -199,9 +199,10 @@ public class VoxeetParticipantsView extends VoxeetView {
         int added = 0;
         int invited = 0;
         for (Participant user : users) {
-            boolean invite = null != users && ConferenceParticipantStatus.RESERVED.equals(user.getStatus());
+            if(null == user) continue;
+            boolean invite = ConferenceParticipantStatus.RESERVED.equals(user.getStatus());
 
-            if (isDisplaySelf() || (null != sessionService && !sessionService.isLocalParticipant(user))) {
+            if (isDisplaySelf() || !sessionService.isLocalParticipant(user)) {
                 boolean had = isDisplayNonAir(); //if display every users
                 if (!had) had = user.isLocallyActive();
                 if (!had) had = invite;
