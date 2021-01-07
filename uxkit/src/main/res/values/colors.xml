@@ -107,9 +107,4 @@
     <color name="VoxeetGreenDark">#6B9D44</color>
     <color name="recent_search_bar_grey">#FBFBFB</color>
     <color name="voxeet_background_incoming_call">@color/black</color>
-
-    <color name="bar_item_on_background_color">#FFFFFF</color>
-    <color name="bar_item_on_icon_color">#000000</color>
-    <color name="bar_item_off_background_color">#B2000000</color>
-    <color name="bar_item_off_icon_color">#FFFFFF</color>
 </resources>
