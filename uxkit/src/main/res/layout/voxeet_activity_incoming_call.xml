@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:drawablePadding="4dp"
-                android:drawableTop="@drawable/call_hangup_button"
+                android:drawableTop="@drawable/hangup"
                 android:gravity="center"
                 android:text="@string/voxeet_incoming_call_decline"
                 android:textColor="@color/white" />
