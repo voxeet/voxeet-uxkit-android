@@ -695,9 +695,9 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         VoxeetSDK.audio().stop();
 
         if (null != mMainView) {
-            mMainView.onConferenceDestroyed();
+            mMainView.onConferenceError(event.error);
 
-            removeView(true, RemoveViewType.FROM_EVENT);
+            removeView(true, RemoveViewType.FROM_EVENT, false, 3000);
         }
     }
 

@@ -19,7 +19,9 @@ import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.audio2.devices.MediaDevice;
 import com.voxeet.audio2.devices.description.ConnectionState;
 import com.voxeet.promise.solve.ThenVoid;
+import com.voxeet.sdk.events.promises.ServerErrorException;
 import com.voxeet.sdk.events.sdk.CameraSwitchSuccessEvent;
+import com.voxeet.sdk.exceptions.ConferenceAtMaxCapacityError;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.VideoPresentationPaused;
 import com.voxeet.sdk.json.VideoPresentationPlay;
@@ -547,6 +549,37 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         }
     }
 
+    @Override
+    public void onConferenceError(Throwable error) {
+        super.onConferenceError(error);
+
+        //don't call updateUi here
+
+        if (error instanceof ConferenceAtMaxCapacityError) {
+            updateTextState(R.string.capacity_limit_error);
+        }
+        else if (error instanceof ServerErrorException) {
+            updateTextState(error.getMessage());
+        }
+        else{
+            updateTextState(R.string.conference_error);
+        }
+
+        //expanded and minimized
+        conferenceState.setVisibility(View.VISIBLE);
+        selfVideoView.setVisibility(View.GONE);
+        participantView.setVisibility(View.GONE);
+        voxeetTimer.setVisibility(View.GONE);
+        notchView.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+
+        Conference conference = VoxeetSDK.conference().getConference();
+        if (null != conference) participantView.update(conference);
+
+        conferenceBarView.setVisibility(!isExpanded ? View.GONE : View.VISIBLE);
+        conferenceBarView.onConferenceError(error);
+        Log.d(TAG, "onConferenceError: " + View.VISIBLE + " " + conferenceBarView.getVisibility());
+    }
+
     private void refreshVideoActivated() {
         boolean isVideoActivated = isVideoActivated();
 
@@ -952,7 +985,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         }
     }
 
-    private void updateTextState(@StringRes int string) {
+    private void updateTextSize() {
         float size;
         if (isExpanded) {
             size = getResources().getDimension(R.dimen.voxeet_conference_state_expanded);
@@ -960,6 +993,15 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             size = getResources().getDimension(R.dimen.voxeet_conference_state_minimized);
         }
         conferenceState.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+    }
+
+    private void updateTextState(@StringRes int string) {
+        updateTextSize();
+        conferenceState.setText(string);
+    }
+
+    private void updateTextState(String string) {
+        updateTextSize();
         conferenceState.setText(string);
     }
 
