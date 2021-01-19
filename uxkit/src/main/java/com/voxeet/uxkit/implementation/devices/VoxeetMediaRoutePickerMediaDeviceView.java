@@ -117,7 +117,7 @@ public class VoxeetMediaRoutePickerMediaDeviceView extends LinearLayout {
             case USB:
             case INTERNAL_SPEAKER:
             default:
-                return R.drawable.media_smartpone;
+                return R.drawable.media_smartphone;
         }
     }
 }

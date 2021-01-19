@@ -23,11 +23,6 @@
     <color name="orange">#ff8500</color>
     <color name="green">#7ac24b</color>
 
-    <color name="separator_chat_view_grey">#EBEBEB</color>
-    <color name="chat_send_grey">#A3A3A3</color>
-    <color name="background_chat_listview">#FBFBFB</color>
-    <color name="background_dialog">#FBFBFB</color>
-
     <color name="hint_text_color">#b2b2b2</color>
     <color name="default_font_color">#3b3b3b</color>
     <color name="default_title_color">#a0a0a0</color>
@@ -107,4 +102,19 @@
     <color name="VoxeetGreenDark">#6B9D44</color>
     <color name="recent_search_bar_grey">#FBFBFB</color>
     <color name="voxeet_background_incoming_call">@color/black</color>
+
+    <color name="bar_item_on_background_color">#FFFFFF</color>
+    <color name="bar_item_on_icon_color">#000000</color>
+    <color name="bar_item_off_background_color">#B2000000</color>
+    <color name="bar_item_off_icon_color">#FFFFFF</color>
+
+    <color name="bar_item_hangup_background_color">#F54051</color>
+    <color name="bar_item_hangup_icon_color">#FFFFFF</color>
+    <color name="bar_item_hangup_pressed_background_color">#831E27</color>
+    <color name="bar_item_hangup_pressed_icon_color">#FFFFFF</color>
+
+    <color name="bar_item_pickup_background_color">#7AC24B</color>
+    <color name="bar_item_pickup_icon_color_white">#FFFFFF</color>
+    <color name="bar_item_pickup_icon_color_light">#88FFFFFF</color>
+
 </resources>

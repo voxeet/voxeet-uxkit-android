@@ -1,0 +1,11 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/bar_item_background_on" />
+
+    <item android:top="@dimen/bar_item_icon_padding"
+        android:bottom="@dimen/bar_item_icon_padding"
+        android:right="@dimen/bar_item_icon_padding"
+        android:left="@dimen/bar_item_icon_padding"
+        android:drawable="@drawable/media_headset_mic" />
+
+</layer-list>
