@@ -343,7 +343,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
             currentSpeaker = findUserById(activeSpeakerUserId);
         }
 
-        if (!selected && null != VoxeetSDK.conference()) {
+        if (!selected) {
             Participant activeSpeaker = findUserById(VoxeetSDK.conference().currentSpeaker());
             if (null != activeSpeaker) {
                 currentSpeaker = activeSpeaker;

@@ -226,35 +226,31 @@ public class VoxeetActionBarView extends VoxeetView {
 
         attached = true;
 
-        if (null != VoxeetSDK.audio()) {
-            VoxeetSDK.audio().registerUpdateDevices(this.onAudioDeviceUpdate);
-            updateSpeakerButton();
-        }
+        VoxeetSDK.audio().registerUpdateDevices(this.onAudioDeviceUpdate);
+        updateSpeakerButton();
 
         checkMicrophoneButtonState();
 
-        if (null != VoxeetSDK.conference()) {
-            if (!EventBus.getDefault().isRegistered(this)) {
-                EventBus.getDefault().register(this);
-            }
-
-            ConferenceService service = VoxeetSDK.conference();
-            ConferenceInformation information = service.getCurrentConference();
-
-            if (null != information && information.isOwnVideoStarted() && !MediaState.STARTED.equals(information.getVideoState())) {
-                service.startVideo()
-                        .then(aBoolean -> {
-                            Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean);
-                            updateCameraState();
-                        })
-                        .error(error -> {
-                            Log.d(TAG, "onAttachedToWindow: starting video ? thrown:=" + error);
-                            error.printStackTrace();
-                        });
-            }
-
-            updateCameraState();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
         }
+
+        ConferenceService service = VoxeetSDK.conference();
+        ConferenceInformation information = service.getCurrentConference();
+
+        if (null != information && information.isOwnVideoStarted() && !MediaState.STARTED.equals(information.getVideoState())) {
+            service.startVideo()
+                    .then(aBoolean -> {
+                        Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean);
+                        updateCameraState();
+                    })
+                    .error(error -> {
+                        Log.d(TAG, "onAttachedToWindow: starting video ? thrown:=" + error);
+                        error.printStackTrace();
+                    });
+        }
+
+        updateCameraState();
     }
 
     @NoDocumentation
@@ -691,7 +687,7 @@ public class VoxeetActionBarView extends VoxeetView {
     private void checkMicrophoneButtonState() {
         // also invalidate information about mute stream
         if (null != VoxeetSDK.conference() && null != microphone) {
-            if(!checkMicrophonePermission()) {
+            if (!checkMicrophonePermission()) {
                 microphone.setSelected(true); //mute state is selected
                 microphone.setEnabled(false);
             } else {

@@ -19,7 +19,6 @@ import org.greenrobot.eventbus.EventBus;
 public class ConferenceToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
     private boolean mScreenShareEnabled = false;
-    public final Configuration Configuration = new Configuration();
 
     @NoDocumentation
     public ConferenceToolkitController(Context context, EventBus eventbus, OverlayState overlay) {

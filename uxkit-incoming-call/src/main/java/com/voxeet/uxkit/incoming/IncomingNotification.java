@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.voxeet.sdk.json.ParticipantInfo;
@@ -33,6 +32,10 @@ public class IncomingNotification implements IIncomingInvitationListener {
     public final static int INCOMING_NOTIFICATION_REQUEST_CODE = 928;
     private static final String TAG = IncomingNotification.class.getSimpleName();
     public final static String EXTRA_NOTIFICATION_ID = "EXTRA_NOTIFICATION_ID";
+
+    // will hold the various static configuration for the IncomingNotification
+    // to edit, preferrably use either Factory component in the manifest or Application override when dealing with FCM
+    public final static IncomingNotificationConfiguration Configuration = new IncomingNotificationConfiguration();
 
     private SecureRandom random;
     private int notificationId = -1;
@@ -78,8 +81,8 @@ public class IncomingNotification implements IIncomingInvitationListener {
                 .setSmallIcon(R.drawable.ic_incoming_call_notification)
                 .addAction(R.drawable.ic_incoming_call_dismiss, context.getString(R.string.voxeet_incoming_notification_button_dismiss), pendingIntentDismissed)
                 .addAction(R.drawable.ic_incoming_call_accept, context.getString(R.string.voxeet_incoming_notification_button_accept), pendingIntentAccepted)
-                .setAutoCancel(true)
-                .setOngoing(true)
+                .setAutoCancel(IncomingNotification.Configuration.IsAutoCancel)
+                .setOngoing(IncomingNotification.Configuration.IsOnGoing)
                 .build();
         //TODO Android Use Full Screen Intent with according permission -> possible improvement
 

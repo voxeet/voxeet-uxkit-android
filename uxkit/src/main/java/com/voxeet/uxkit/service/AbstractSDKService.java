@@ -67,12 +67,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     public void onCreate() {
         super.onCreate();
 
-        ConferenceService temp = VoxeetSDK.conference();
-        if (null == temp) {
-            stopSelf();
-            return;
-        }
-        conferenceService = temp;
+        conferenceService = VoxeetSDK.conference();
 
         lastForeground = -1;
 
@@ -90,11 +85,9 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
 
     @NonNull
     protected ConferenceStatus getConferenceStateFromSDK() {
-        if (null != VoxeetSDK.instance()) {
-            ConferenceInformation info = conferenceService.getCurrentConference();
-            if (null != info) {
-                return info.getConferenceState();
-            }
+        ConferenceInformation info = conferenceService.getCurrentConference();
+        if (null != info) {
+            return info.getConferenceState();
         }
 
         return ConferenceStatus.DEFAULT;
@@ -123,9 +116,6 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
                 setForegroundState(getConferenceStateJoined());
                 break;
             case LEFT:
-                setForegroundState(getConferenceStateLeft());
-                stopForeground();
-                break;
             case ERROR:
                 setForegroundState(getConferenceStateLeft());
                 stopForeground();
