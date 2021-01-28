@@ -27,6 +27,7 @@ import com.voxeet.uxkit.configuration.Users;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.utils.IParticipantViewListener;
 import com.voxeet.uxkit.utils.ParticipantViewAdapter;
+import com.voxeet.uxkit.utils.ToolkitUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,7 +160,8 @@ public class VoxeetParticipantsView extends VoxeetView {
     }
 
     public void update(@NonNull Conference conference) {
-        adapter.setUsers(filter(conference.getParticipants()));
+        List<Participant> participants = ToolkitUtils.filterParticipants(conference.getParticipants());
+        adapter.setUsers(filter(participants));
         adapter.updateUsers();
     }
 
@@ -173,7 +175,8 @@ public class VoxeetParticipantsView extends VoxeetView {
     public void onUserAddedEvent(@NonNull Conference conference, @NonNull Participant user) {
         super.onUserAddedEvent(conference, user);
 
-        adapter.setUsers(filter(conference.getParticipants()));
+        List<Participant> participants = ToolkitUtils.filterParticipants(conference.getParticipants());
+        adapter.setUsers(filter(participants));
         adapter.updateUsers();
     }
 
@@ -188,7 +191,8 @@ public class VoxeetParticipantsView extends VoxeetView {
         super.onUserUpdatedEvent(conference, user);
 
         postOnUi(() -> {
-            adapter.setUsers(filter(conference.getParticipants()));
+            List<Participant> participants = ToolkitUtils.filterParticipants(conference.getParticipants());
+            adapter.setUsers(filter(participants));
             adapter.updateUsers();
         });
     }
@@ -199,7 +203,7 @@ public class VoxeetParticipantsView extends VoxeetView {
         int added = 0;
         int invited = 0;
         for (Participant user : users) {
-            if(null == user) continue;
+            if (null == user) continue;
             boolean invite = ConferenceParticipantStatus.RESERVED.equals(user.getStatus());
 
             if (isDisplaySelf() || !sessionService.isLocalParticipant(user)) {

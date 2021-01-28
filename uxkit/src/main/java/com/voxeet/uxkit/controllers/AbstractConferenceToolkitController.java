@@ -54,6 +54,7 @@ import com.voxeet.uxkit.providers.containers.IVoxeetOverlayViewProvider;
 import com.voxeet.uxkit.providers.logics.IVoxeetSubViewProvider;
 import com.voxeet.uxkit.providers.rootview.AbstractRootViewProvider;
 import com.voxeet.uxkit.utils.LoadLastSavedOverlayStateEvent;
+import com.voxeet.uxkit.utils.ToolkitUtils;
 import com.voxeet.uxkit.views.internal.VoxeetOverlayContainerFrameLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -773,7 +774,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         if (null != mMainView) {
             ConferenceInformation currentConference = VoxeetSDK.conference().getCurrentConference();
             if (null != currentConference) {
-                mMainView.onConferenceUpdated(currentConference.getConference().getParticipants());
+                mMainView.onConferenceUpdated(ToolkitUtils.filterParticipants(currentConference.getConference().getParticipants()));
             }
         }
     }
