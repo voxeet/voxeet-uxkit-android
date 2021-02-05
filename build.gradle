@@ -38,12 +38,12 @@ ext {
     voxeetSdkVersion = version_from_sdk("3.0.3")
 
     //uxkit modules
-    pushSdkVersion = version_uxkit("3.0.3")
-    firebaseSdkVersion = version_uxkit("3.0.3")
-    voxeetSdkToolkitVersion = version_uxkit("3.0.3")
-    voxeetIncomingCall = version_uxkit("3.0.3")
-    systemServiceVersion = version_uxkit("3.0.3")
-    telecomSystemServiceVersion = version_uxkit("3.0.3")
+    pushSdkVersion = version_uxkit("3.0.4")
+    firebaseSdkVersion = version_uxkit("3.0.4")
+    voxeetSdkToolkitVersion = version_uxkit("3.0.4")
+    voxeetIncomingCall = version_uxkit("3.0.4")
+    systemServiceVersion = version_uxkit("3.0.4")
+    telecomSystemServiceVersion = version_uxkit("3.0.4")
 }
 
 allprojects {
