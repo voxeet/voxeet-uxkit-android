@@ -851,8 +851,10 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             switch (SAVED_OVERLAY_STATE) {
                 case MINIMIZED:
                     minimize();
+                    break;
                 case EXPANDED:
                     maximize();
+                    break;
                 default:
             }
         }
