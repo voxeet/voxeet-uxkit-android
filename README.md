@@ -17,6 +17,28 @@ allprojects {
 
 **Note for Beta releases of the SDK: ** When using a beta release, add as well `"https://android-sdk.voxeet.com/beta"` after the release line. With this, you will be able to use the beta versions of the UXKit which are using beta versions of the SDK.
 
+### Available stable versions
+
+The list will only feature new most recents versions
+
+#### v3.0.4
+
+use SDK version v3.0.3
+
+- Add enhanced action buttons
+- add maximize and minimize methods
+
+#### v3.0.3
+
+use SDK version v3.0.3
+
+- VoxeetSDK.instance() is always valid
+- VoxeetSDK.<services()> are always instantiated
+- VoxeetSDK.initialize(...) still needs to be called to enable network-related calls
+- The speaker action refreshes the devices on top of displaying those media devices
+- Media output shows properly the list's text color
+- Add static IncomingNotification.Configuration to override some fields
+
 ### Available beta versions
 
 #### v3.0.3-BETA2
