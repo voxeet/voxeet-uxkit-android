@@ -474,9 +474,10 @@ public class VoxeetActionBarView extends VoxeetView {
         if (!checkMicrophonePermission()) {
             microphone.setSelected(true);
             microphone.setEnabled(false);
+
             VoxeetSDK.conference().mute(true);
         } else {
-            //if we unmute, check for microphone state
+            // if we unmute, check for microphone state
             microphone.setSelected(new_muted_state);
             microphone.setEnabled(true);
 
@@ -758,7 +759,6 @@ public class VoxeetActionBarView extends VoxeetView {
                     if (null != device) deviceType = device.deviceType();
                 }
 
-                speaker.setAlpha(0.5f);
                 speaker.setEnabled(false);
                 speaker.setSelected(false);
             } else if (connected.size() > 0) {
@@ -766,7 +766,6 @@ public class VoxeetActionBarView extends VoxeetView {
                     if (null != device) deviceType = device.deviceType();
                 }
 
-                speaker.setAlpha(1.f);
                 speaker.setEnabled(true);
                 speaker.setSelected(true);
             }
