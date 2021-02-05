@@ -418,7 +418,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         //set the new state to the view
         if (mMainView != null) {
             if (OverlayState.EXPANDED.equals(overlay)) {
-                expand();
+                maximize();
             } else {
                 minimize();
             }
@@ -434,14 +434,20 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         return mDefaultOverlayState;
     }
 
-    private void minimize() {
+    /**
+     * Minimize the overlay
+     */
+    public void minimize() {
         Log.d("DefaultRootViewProvider", "minimize");
         if (null != mMainView) mMainView.minimize();
         SAVED_OVERLAY_STATE = OverlayState.MINIMIZED;
     }
 
-    private void expand() {
-        Log.d("DefaultRootViewProvider", "expand");
+    /**
+     * Maximize the overlay
+     */
+    public void maximize() {
+        Log.d("DefaultRootViewProvider", "maximize");
         if (null != mMainView) mMainView.expand();
         SAVED_OVERLAY_STATE = OverlayState.EXPANDED;
     }
@@ -796,7 +802,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             if (null == state) state = getDefaultOverlayState();
 
             if (OverlayState.EXPANDED.equals(state)) {
-                expand();
+                maximize();
             } else {
                 minimize();
             }
@@ -846,7 +852,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                 case MINIMIZED:
                     minimize();
                 case EXPANDED:
-                    expand();
+                    maximize();
                 default:
             }
         }
