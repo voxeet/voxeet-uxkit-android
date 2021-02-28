@@ -1,11 +1,3 @@
-def version_from_sdk = { String version ->  project.hasProperty("CICD_FROM_BUILD_ID") && project.CICD_FROM_BUILD_ID.length() > 0
-        ? "${version}-${project.CICD_BUILD_ID}"
-        : "${version}" }
-
-def version_uxkit = { String version ->  project.hasProperty("CICD_BUILD_ID") && project.CICD_BUILD_ID.length() > 0
-        ? "${version}-${project.CICD_BUILD_ID}"
-        : "${version}" }
-
 buildscript {
     repositories {
         google()
@@ -35,19 +27,16 @@ ext {
     supportLibVersion = "28.0.0"
 
     //underlying sdk
-    voxeetSdkVersion = version_from_sdk("3.0.3")
-
-    //uxkit modules
-    pushSdkVersion = version_uxkit("3.0.4")
-    firebaseSdkVersion = version_uxkit("3.0.4")
-    voxeetSdkToolkitVersion = version_uxkit("3.0.4")
-    voxeetIncomingCall = version_uxkit("3.0.4")
-    systemServiceVersion = version_uxkit("3.0.4")
-    telecomSystemServiceVersion = version_uxkit("3.0.4")
+    //voxeetSdkVersion defined in the sdk.gradle file
+    //voxeetUXKitVersion defined in the uxkit.gradle file
 }
+
+apply from: "./uxkit.gradle"
+apply from: "./sdk.gradle"
 
 allprojects {
     repositories {
+        maven { url "https://android-sdk.voxeet.com/beta" }
         maven { url "https://android-sdk.voxeet.com/release" }
         mavenLocal()
         google()
