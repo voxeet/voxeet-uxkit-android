@@ -1,7 +1,9 @@
 package com.voxeet.uxkit.service.manifests;
 
 import android.content.Context;
+import android.content.pm.ProviderInfo;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
 import com.voxeet.uxkit.service.SystemServiceFactory;
@@ -10,7 +12,7 @@ import com.voxeet.uxkit.service.VoxeetSystemService;
 public final class VoxeetSystemServiceManifestComponent extends AbstractManifestComponentProvider {
 
     @Override
-    protected void init(@NonNull Context context) {
+    protected void init(@NonNull Context context, @Nullable ProviderInfo providerInfo) {
         SystemServiceFactory.registerSDKServiceClass(VoxeetSystemService.class);
     }
 

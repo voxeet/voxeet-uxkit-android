@@ -1,7 +1,9 @@
 package com.voxeet.uxkit.mp4.manifests;
 
 import android.content.Context;
+import android.content.pm.ProviderInfo;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
 import com.voxeet.uxkit.mp4.MP4MediaPresentationProvider;
@@ -10,7 +12,7 @@ import com.voxeet.uxkit.presentation.controller.MediaPlayerProviderController;
 public final class MP4MediaPresentationProviderManifestComponent extends AbstractManifestComponentProvider {
 
     @Override
-    protected void init(@NonNull Context context) {
+    protected void init(@NonNull Context context, @Nullable ProviderInfo providerInfo) {
         MediaPlayerProviderController.register(new MP4MediaPresentationProvider());
     }
 
