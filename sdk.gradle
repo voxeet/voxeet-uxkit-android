@@ -1,6 +1,5 @@
-def BETA = "BETA2102181729"
 def version_from_sdk = { String version ->  project.hasProperty("SDK_SUFFIX") && project.SDK_SUFFIX.length() > 0
         ? "${version}-${project.SDK_SUFFIX}"
-        : (null != BETA ? "${version}-${BETA}" : "${version}" ) }
+        : version }
 
 rootProject.ext.voxeetSdkVersion = version_from_sdk("3.1.0")

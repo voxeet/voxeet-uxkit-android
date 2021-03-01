@@ -71,6 +71,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife:7.0.1'
 
     api "com.android.support:design:${rootProject.ext.supportLibVersion}"
+    implementation 'com.android.support:multidex:1.0.3'
 
     //when working with our oauth example
     //this converter is here to convert "string" only result
