@@ -86,6 +86,12 @@ public interface IVoxeetView {
     void onConferenceLeft();
 
     /**
+     * On conference error.
+     */
+
+    void onConferenceError(Throwable error);
+
+    /**
      * View resumed
      */
     void onResume();

@@ -229,6 +229,16 @@ public abstract class VoxeetView extends FrameLayout
         }
     }
 
+    /**
+     * On conference error.
+     */
+    @Override
+    public void onConferenceError(Throwable error) {
+        for (VoxeetView child : mListeners) {
+            child.onConferenceError(error);
+        }
+    }
+
     @Override
     public void onResume() {
         for (VoxeetView child : mListeners) {
