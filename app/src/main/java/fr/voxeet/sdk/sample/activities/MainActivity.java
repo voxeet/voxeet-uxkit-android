@@ -22,7 +22,7 @@ import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.SocketStateChangeEvent;
 import com.voxeet.sdk.json.ParticipantInfo;
-import com.voxeet.sdk.models.v1.CreateConferenceResult;
+import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.sample.R;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
@@ -155,12 +155,12 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                 return;
             }
 
-            PromiseInOut<CreateConferenceResult, Object> create = service.create(conferenceAlias)
-                    .then(new PromiseExec<CreateConferenceResult, Object>() {
+            PromiseInOut<Conference, Object> create = service.create(conferenceAlias)
+                    .then(new PromiseExec<Conference, Object>() {
                         @Override
-                        public void onCall(@Nullable CreateConferenceResult result, @NonNull Solver<Object> solver) {
+                        public void onCall(@Nullable Conference result, @NonNull Solver<Object> solver) {
                             try {
-                                String conferenceId = null != result ? result.conferenceId : null;
+                                String conferenceId = null != result ? result.getId() : null;
                                 if (null == conferenceId)
                                     throw new NullPointerException("ConferenceId null");
                                 solver.resolve(service.join(conferenceId));

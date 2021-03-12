@@ -1,6 +1,8 @@
 <resources>
     <string name="participant_number">#%1$d</string>
     <string name="mute_error">Something went wrong. Please try again muting that person</string>
+    <string name="capacity_limit_error">Unable to join. Conference is at maximum capacity</string>
+    <string name="conference_error">Conference error</string>
     <string name="format_timer">%1$d:%2$02d</string>
     <string name="voxeet_call">Appel en cours…</string>
     <string name="voxeet_leaving">Appel terminé…</string>

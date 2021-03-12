@@ -1,7 +1,9 @@
 package com.voxeet.uxkit.firebase.manifests;
 
 import android.content.Context;
+import android.content.pm.ProviderInfo;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.firebase.FirebaseApp;
@@ -13,7 +15,7 @@ import com.voxeet.uxkit.firebase.implementation.FirebaseProvider;
 public final class FirebasePushEnablerManifestComponent extends AbstractManifestComponentProvider {
 
     @Override
-    protected void init(@NonNull Context context) {
+    protected void init(@NonNull Context context, @Nullable ProviderInfo providerInfo) {
         Log.d(getClass().getSimpleName(), "init: enabling Firebase");
         FirebaseProvider provider = new FirebaseProvider();
 

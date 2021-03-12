@@ -14,12 +14,6 @@ licenseReport {
     copyJsonReportToAssets = true
 }
 
-repositories {
-    google()
-    mavenLocal()
-    jcenter()
-}
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -28,7 +22,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName rootProject.ext.systemServiceVersion
+        versionName rootProject.ext.voxeetUXKitVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -65,7 +59,7 @@ android {
 }
 
 group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-version = rootProject.ext.systemServiceVersion
+version = rootProject.ext.voxeetUXKitVersion
 
 bintray {
     user = project.properties["VOXEET_DEVELOPER_ID"]
