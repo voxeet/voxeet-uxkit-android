@@ -21,6 +21,10 @@ allprojects {
 
 The list will only feature new most recents versions
 
+#### v3.1.2
+
+use SDK version 3.1.2
+
 #### v3.0.4
 
 use SDK version v3.0.3
