@@ -10,6 +10,7 @@ After accepting the [Dolby Software License Agreement](https://github.com/voxeet
 allprojects {
     repositories {
         maven { url "https://android-sdk.voxeet.com/release" }
+        maven { url "https://dl.bintray.com/voxeet/maven" }
         ...
     }
 }
@@ -20,6 +21,10 @@ allprojects {
 ### Available stable versions
 
 The list will only feature new most recents versions
+
+#### v3.1.3
+
+use SDK version 3.1.4 which updates device database
 
 #### v3.1.2
 
