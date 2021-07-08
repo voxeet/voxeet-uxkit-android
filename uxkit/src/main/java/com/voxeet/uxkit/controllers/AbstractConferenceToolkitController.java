@@ -41,7 +41,6 @@ import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Map;
-import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.uxkit.R;
@@ -119,7 +118,6 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     }
 
-    @NoDocumentation
     protected AbstractConferenceToolkitController(Context context, EventBus eventbus) {
         removeRunnables = new CopyOnWriteArrayList();
         mContext = context;
@@ -140,7 +138,6 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * <p>
      * ensures the main view is valid
      */
-    @NoDocumentation
     protected void init() {
         Activity activity = VoxeetToolkit.instance().getCurrentActivity();
 

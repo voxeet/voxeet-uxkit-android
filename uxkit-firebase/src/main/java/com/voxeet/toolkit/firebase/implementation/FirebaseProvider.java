@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.voxeet.sdk.push.utils.NotificationHelper;
-import com.voxeet.sdk.utils.Annotate;
 
 /**
  * Simple Firebase wrapper
@@ -15,7 +14,6 @@ import com.voxeet.sdk.utils.Annotate;
  * note : in the current version, the isEnabled() method has been renamed to
  * isTokenUploadAllowed(), in a future release it can switch back to its "normal" behaviour
  */
-@Annotate
 @Deprecated
 public class FirebaseProvider extends com.voxeet.uxkit.firebase.implementation.FirebaseProvider {
 

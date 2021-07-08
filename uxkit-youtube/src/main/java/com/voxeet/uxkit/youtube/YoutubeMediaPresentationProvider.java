@@ -4,13 +4,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
 
 /**
  * Manage and create youtube videos
  */
-@Annotate
 public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvider<YoutubeMediaPresentationView> {
 
     @Nullable

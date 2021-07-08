@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
-import com.voxeet.sdk.utils.Annotate;
-
-@Annotate
 public class VoxeetSystemService extends AbstractSDKService<VoxeetSystemService.VoxeetSystemBinder> {
 
     public static class VoxeetSystemBinder extends SDKBinder<VoxeetSystemService> {

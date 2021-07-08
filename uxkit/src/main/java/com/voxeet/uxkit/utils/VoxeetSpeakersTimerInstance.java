@@ -10,7 +10,6 @@ import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
 
@@ -23,7 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * <p>
  * This class can be started, stopped and get the current active speaker
  */
-@Annotate
 public final class VoxeetSpeakersTimerInstance {
 
     public static final int REFRESH_METER = 100;

@@ -7,16 +7,12 @@ import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
 
 /**
  * This class guide the users to implement the SDK following the standard features
  */
-@Annotate
 public abstract class VoxeetApplication extends Application {
 
-    @NoDocumentation
     public VoxeetApplication() {
         super();
     }

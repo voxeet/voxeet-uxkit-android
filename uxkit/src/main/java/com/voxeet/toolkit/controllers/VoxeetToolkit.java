@@ -2,8 +2,6 @@ package com.voxeet.toolkit.controllers;
 
 import android.app.Application;
 
-import com.voxeet.sdk.utils.NoDocumentation;
-
 import org.greenrobot.eventbus.EventBus;
 
 /**
@@ -21,7 +19,6 @@ public class VoxeetToolkit extends com.voxeet.uxkit.controllers.VoxeetToolkit {
         return com.voxeet.uxkit.controllers.VoxeetToolkit.initialize(application, eventBus);
     }
 
-    @NoDocumentation
     @Deprecated
     public static com.voxeet.uxkit.controllers.VoxeetToolkit getInstance() {
         return com.voxeet.uxkit.controllers.VoxeetToolkit.instance();

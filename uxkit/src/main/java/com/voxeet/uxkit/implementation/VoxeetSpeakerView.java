@@ -22,9 +22,7 @@ import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.models.v2.ParticipantType;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Filter;
-import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.utils.VoxeetSpeakersTimerInstance;
@@ -37,7 +35,6 @@ import java.util.List;
 /**
  * View made to display a given user
  */
-@Annotate
 public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimerInstance.ActiveSpeakerListener, VoxeetSpeakersTimerInstance.SpeakersUpdated {
     private final String TAG = VoxeetSpeakerView.class.getSimpleName();
 
@@ -64,7 +61,6 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
      *
      * @param context the context
      */
-    @NoDocumentation
     public VoxeetSpeakerView(Context context) {
         super(context);
     }
@@ -75,7 +71,6 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
      * @param context the context
      * @param attrs   the attrs
      */
-    @NoDocumentation
     public VoxeetSpeakerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -89,14 +84,12 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
-    @NoDocumentation
     public VoxeetSpeakerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         updateAttrs(attrs);
     }
 
-    @NoDocumentation
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -108,7 +101,6 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         onResume();
     }
 
-    @NoDocumentation
     @Override
     protected void onDetachedFromWindow() {
         VoxeetSpeakersTimerInstance.instance.unregisterActiveSpeakerListener(this);
@@ -164,7 +156,6 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         setShowSpeakerName(true);
     }
 
-    @NoDocumentation
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -173,7 +164,6 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         if (orientation <= 0) orientation = 0;
     }
 
-    @NoDocumentation
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -194,13 +184,11 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
         currentSpeakerView.setLayoutParams(params);
     }
 
-    @NoDocumentation
     @Override
     protected int layout() {
         return R.layout.voxeet_current_speaker_view;
     }
 
-    @NoDocumentation
     @Override
     protected void bindView(View v) {
         currentSpeakerView = v.findViewById(R.id.speaker_image);
@@ -213,7 +201,6 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
      *
      * @param display
      */
-    @NoDocumentation
     protected void setShowSpeakerName(boolean display) {
         mDisplaySpeakerName = display;
 

@@ -1,15 +1,10 @@
 package com.voxeet.uxkit.configuration;
 
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
-
 /**
  * Hold the Configuration for the Users displayed by default on top
  */
-@Annotate
 public class Users {
 
-    @NoDocumentation
     public Users() {
 
     }
