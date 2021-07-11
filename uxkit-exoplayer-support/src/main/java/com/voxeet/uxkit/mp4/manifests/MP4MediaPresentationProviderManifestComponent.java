@@ -23,6 +23,6 @@ public final class MP4MediaPresentationProviderManifestComponent extends Abstrac
 
     @Override
     protected String getDefaultAuthority() {
-        return "com.voxeet.toolkit.mp4.manifests.";
+        return "com.voxeet.uxkit.mp4.manifests.";
     }
 }

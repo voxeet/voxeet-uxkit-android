@@ -187,7 +187,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
     }
 
     /**
-     * Disable every com.voxeet.toolkit.controllers
+     * Disable every com.voxeet.uxkit.controllers
      */
     public void disableAll() {
         for (AbstractConferenceToolkitController internal_controller : mConferenceToolkitControllers) {
