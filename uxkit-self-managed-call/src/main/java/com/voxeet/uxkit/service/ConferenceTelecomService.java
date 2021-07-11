@@ -11,10 +11,7 @@ import android.telecom.RemoteConference;
 import android.telecom.RemoteConnection;
 import android.util.Log;
 
-import com.voxeet.sdk.utils.Annotate;
-
 @RequiresApi(api = Build.VERSION_CODES.M)
-@Annotate
 public class ConferenceTelecomService extends ConnectionService {
     private final static String TAG = ConferenceTelecomService.class.getSimpleName();
     private ConferenceConnection connection;

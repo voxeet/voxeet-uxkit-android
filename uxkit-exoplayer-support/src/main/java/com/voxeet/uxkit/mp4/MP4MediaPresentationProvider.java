@@ -3,13 +3,11 @@ package com.voxeet.uxkit.mp4;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
 
 /**
  * Manage and create standard and classic mp4 view manager
  */
-@Annotate
 public class MP4MediaPresentationProvider extends AbstractMediaPlayerProvider<MP4MediaPresentationView> {
 
     /**

@@ -19,8 +19,6 @@ import com.voxeet.android.media.MediaStream;
 import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.models.Participant;
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.uxkit.R;
@@ -30,7 +28,6 @@ import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;
 /**
  * Simple View to manage how a Participant will be displayed on top
  */
-@Annotate
 public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeakersTimerInstance.SpeakersUpdated {
 
 
@@ -57,7 +54,6 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
      *
      * @param context the context
      */
-    @NoDocumentation
     public VoxeetParticipantView(Context context) {
         super(context);
 
@@ -70,7 +66,6 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
      * @param context the context
      * @param attrs   the attrs
      */
-    @NoDocumentation
     public VoxeetParticipantView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -84,7 +79,6 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
-    @NoDocumentation
     public VoxeetParticipantView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 

@@ -14,13 +14,11 @@ import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
 
 /**
  * Simple implementation to help integrate youtube into Apps
  */
-@Annotate
 public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implements YouTubePlayer.OnInitializedListener {
 
     private YouTubePlayerView youtubeView;

@@ -2,8 +2,6 @@ package com.voxeet.uxkit.controllers;
 
 import android.content.Context;
 
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.uxkit.configuration.Configuration;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
 import com.voxeet.uxkit.implementation.overlays.abs.IExpandableViewProviderListener;
@@ -15,12 +13,10 @@ import org.greenrobot.eventbus.EventBus;
 /**
  * Holds and manipulate the various elements to display the Overlay for a Conference in any app using it
  */
-@Annotate
 public class ConferenceToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
     private boolean mScreenShareEnabled = false;
 
-    @NoDocumentation
     public ConferenceToolkitController(Context context, EventBus eventbus, OverlayState overlay) {
         super(context, eventbus);
 
@@ -29,13 +25,11 @@ public class ConferenceToolkitController extends AbstractConferenceToolkitContro
         setVoxeetSubViewProvider(new DefaultConferenceSubViewProvider());
     }
 
-    @NoDocumentation
     @Override
     protected boolean validFilter(String conference) {
         return isEnabled();
     }
 
-    @NoDocumentation
     @Override
     public void onActionButtonClicked() {
         //nothing to do

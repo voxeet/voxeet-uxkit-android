@@ -1,15 +1,10 @@
 package com.voxeet.uxkit.configuration;
 
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
-
 /**
  * Hold the Configuration for the Overlay displayed to the user
  */
-@Annotate
 public class Overlay {
 
-    @NoDocumentation
     public Overlay() {
 
     }

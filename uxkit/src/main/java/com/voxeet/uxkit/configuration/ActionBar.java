@@ -1,15 +1,10 @@
 package com.voxeet.uxkit.configuration;
 
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
-
 /**
  * Configuration the default VoxeetActionBarView instances
  */
-@Annotate
 public class ActionBar {
 
-    @NoDocumentation
     public ActionBar() {
 
     }

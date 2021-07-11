@@ -21,13 +21,11 @@ import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
 
 /**
  * Simple implementation to help integrate ExoPlayer for MP4 into Apps
  */
-@Annotate
 public class MP4MediaPresentationView extends AbstractMediaPlayerView {
 
     private SimpleExoPlayer exoPlayer;

@@ -36,6 +36,6 @@ public final class FirebasePushEnablerManifestComponent extends AbstractManifest
 
     @Override
     protected String getDefaultAuthority() {
-        return "com.voxeet.toolkit.firebase.manifests.";
+        return "com.voxeet.uxkit.firebase.manifests.";
     }
 }

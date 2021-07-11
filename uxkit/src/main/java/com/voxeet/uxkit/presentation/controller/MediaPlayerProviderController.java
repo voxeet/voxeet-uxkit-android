@@ -3,7 +3,6 @@ package com.voxeet.uxkit.presentation.controller;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,7 +12,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * - api (':toolkit-exoplayer-support') to support ExoPlayer for mp4 urls
  * - api (':toolkit-youtube') to support Youtube playback for ... youtube urls
  */
-@Annotate
 public class MediaPlayerProviderController {
 
     private final static CopyOnWriteArrayList<AbstractMediaPlayerProvider> MEDIA_PLAYER_PROVIDERS = new CopyOnWriteArrayList<>();

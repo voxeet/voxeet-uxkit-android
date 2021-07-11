@@ -20,8 +20,6 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.services.SessionService;
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.configuration.Users;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
@@ -35,7 +33,6 @@ import java.util.List;
 /**
  * Simple View to manage how Users are displayed "on top" of the screen (or wherever the default list should be positionned)
  */
-@Annotate
 public class VoxeetParticipantsView extends VoxeetView {
 
     private RecyclerView recyclerView;
@@ -57,7 +54,6 @@ public class VoxeetParticipantsView extends VoxeetView {
      *
      * @param context the context
      */
-    @NoDocumentation
     public VoxeetParticipantsView(Context context) {
         super(context);
 
@@ -70,7 +66,6 @@ public class VoxeetParticipantsView extends VoxeetView {
      * @param context the context
      * @param attrs   the attrs
      */
-    @NoDocumentation
     public VoxeetParticipantsView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -101,7 +96,6 @@ public class VoxeetParticipantsView extends VoxeetView {
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
-    @NoDocumentation
     public VoxeetParticipantsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
@@ -128,12 +122,10 @@ public class VoxeetParticipantsView extends VoxeetView {
         adapter.updateUsers();
     }
 
-    @NoDocumentation
     public boolean isDisplaySelf() {
         return displaySelf;
     }
 
-    @NoDocumentation
     public boolean isDisplayNonAir() {
         return displayNonAir;
     }
@@ -297,18 +289,15 @@ public class VoxeetParticipantsView extends VoxeetView {
         adapter.updateUsers();
     }
 
-    @NoDocumentation
     @Override
     public void init() {
     }
 
-    @NoDocumentation
     @Override
     protected int layout() {
         return R.layout.voxeet_participant_view;
     }
 
-    @NoDocumentation
     @Override
     protected void bindView(View view) {
         recyclerView = view.findViewById(R.id.participant_recycler_view);
@@ -328,7 +317,6 @@ public class VoxeetParticipantsView extends VoxeetView {
         mHandler.post(runnable);
     }
 
-    @NoDocumentation
     public void notifyDatasetChanged() {
         if (null != adapter) {
             adapter.updateUsers();

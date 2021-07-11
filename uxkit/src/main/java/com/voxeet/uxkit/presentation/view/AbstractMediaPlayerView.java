@@ -13,12 +13,10 @@ import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
-import com.voxeet.sdk.utils.Annotate;
 
 /**
  * Abstract View to manage and expose Video Presentation
  */
-@Annotate
 public abstract class AbstractMediaPlayerView extends FrameLayout {
 
     /**

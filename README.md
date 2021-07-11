@@ -10,7 +10,6 @@ After accepting the [Dolby Software License Agreement](https://github.com/voxeet
 allprojects {
     repositories {
         maven { url "https://android-sdk.voxeet.com/release" }
-        maven { url "https://dl.bintray.com/voxeet/maven" }
         ...
     }
 }
@@ -21,6 +20,16 @@ allprojects {
 ### Available stable versions
 
 The list will only feature new most recents versions
+
+#### v3.2.0
+
+- Official compatibiltiy with SDK 3.2+
+- Removed deprecated toolkit classes (replaced by uxkit classes)
+- Fix issue where the mute button could be disabled even with microphone permission granted
+
+#### v3.1.4
+
+Compatibility for SDK 3.2+ where the documentation annotations changed
 
 #### v3.1.3
 

@@ -41,10 +41,8 @@ import com.voxeet.sdk.services.SessionService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
 import com.voxeet.sdk.services.media.MediaState;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Filter;
-import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.R;
@@ -63,7 +61,6 @@ import java.util.List;
 /**
  * Class used to display the various action buttons in the conference
  */
-@Annotate
 public class VoxeetActionBarView extends VoxeetView {
 
     private final String TAG = VoxeetActionBarView.class.getSimpleName();
@@ -102,7 +99,6 @@ public class VoxeetActionBarView extends VoxeetView {
      *
      * @param context the context
      */
-    @NoDocumentation
     public VoxeetActionBarView(Context context) {
         super(context);
 
@@ -115,7 +111,6 @@ public class VoxeetActionBarView extends VoxeetView {
      * @param context the context
      * @param attrs   the attrs
      */
-    @NoDocumentation
     public VoxeetActionBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -208,7 +203,6 @@ public class VoxeetActionBarView extends VoxeetView {
      * @param attrs        the attrs
      * @param defStyleAttr the def style attr
      */
-    @NoDocumentation
     public VoxeetActionBarView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
@@ -219,7 +213,6 @@ public class VoxeetActionBarView extends VoxeetView {
 
     private boolean attached = false;
 
-    @NoDocumentation
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -253,7 +246,6 @@ public class VoxeetActionBarView extends VoxeetView {
         updateCameraState();
     }
 
-    @NoDocumentation
     @Override
     protected void onDetachedFromWindow() {
         attached = false;
@@ -364,13 +356,11 @@ public class VoxeetActionBarView extends VoxeetView {
         checkMicrophoneButtonState();
     }
 
-    @NoDocumentation
     @Override
     public void init() {
         setWillNotDraw(false);
     }
 
-    @NoDocumentation
     @Override
     protected void bindView(View v) {
         speaker = v.findViewById(R.id.speaker);
@@ -650,7 +640,6 @@ public class VoxeetActionBarView extends VoxeetView {
             screenshare_wrapper.setVisibility(displayScreenShare && screenShareEnabled ? visibility : GONE);
     }
 
-    @NoDocumentation
     @Override
     protected int layout() {
         return R.layout.voxeet_conference_bar_view;
@@ -686,13 +675,14 @@ public class VoxeetActionBarView extends VoxeetView {
 
     private void checkMicrophoneButtonState() {
         // also invalidate information about mute stream
-        if (null != VoxeetSDK.conference() && null != microphone) {
-            if (!checkMicrophonePermission()) {
-                microphone.setSelected(true); //mute state is selected
-                microphone.setEnabled(false);
-            } else {
-                microphone.setSelected(VoxeetSDK.conference().isMuted());
-            }
+        if (null == microphone) return;
+
+        if (!checkMicrophonePermission()) {
+            microphone.setSelected(true); //mute state is selected
+            microphone.setEnabled(false);
+        } else {
+            microphone.setSelected(VoxeetSDK.conference().isMuted());
+            microphone.setEnabled(true);
         }
     }
 

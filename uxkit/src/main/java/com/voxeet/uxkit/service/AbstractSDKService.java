@@ -20,7 +20,6 @@ import com.voxeet.sdk.push.utils.NotificationHelper;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Opt;
 
 import org.greenrobot.eventbus.EventBus;
@@ -29,7 +28,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import javax.annotation.Nullable;
 
-@Annotate
 public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Service {
 
     private static final String TAG = AbstractSDKService.class.getSimpleName();

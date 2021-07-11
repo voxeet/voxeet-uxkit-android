@@ -8,9 +8,7 @@ import com.voxeet.sdk.push.center.NotificationCenter;
 import com.voxeet.sdk.push.center.RemoteMessageFactory;
 import com.voxeet.sdk.services.notification.INotificationTokenProvider;
 import com.voxeet.sdk.services.notification.NotificationTokenHolderFactory;
-import com.voxeet.sdk.utils.Annotate;
 
-@Annotate
 public class VoxeetFirebaseMessagingService extends FirebaseMessagingService {
 
     public VoxeetFirebaseMessagingService() {

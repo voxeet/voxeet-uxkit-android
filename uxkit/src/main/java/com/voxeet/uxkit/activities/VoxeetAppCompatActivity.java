@@ -19,8 +19,6 @@ import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
-import com.voxeet.sdk.utils.Annotate;
-import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.activities.notification.IncomingBundleChecker;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
@@ -47,7 +45,6 @@ import org.greenrobot.eventbus.ThreadMode;
  * Few things to consider :
  * - singleTop / singleInstance
  */
-@Annotate
 public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxeetActivity {
 
     private static final String TAG = VoxeetAppCompatActivity.class.getSimpleName();
@@ -62,7 +59,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
      */
     private boolean _camera_permission_permnantly_banned = false;
 
-    @NoDocumentation
     public VoxeetAppCompatActivity() {
         super();
     }
@@ -77,7 +73,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         //nothing, override to change
     }
 
-    @NoDocumentation
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +83,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         startService();
     }
 
-    @NoDocumentation
     @Override
     protected void onResume() {
         super.onResume();
@@ -121,7 +115,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         dismissNotification();
     }
 
-    @NoDocumentation
     @Override
     protected void onPause() {
         //stop fetching stats if any pending
@@ -134,7 +127,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         super.onPause();
     }
 
-    @NoDocumentation
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -180,7 +172,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         _camera_permission_permnantly_banned = false;
     }
 
-    @NoDocumentation
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -203,7 +194,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
         }
     }
 
-    @NoDocumentation
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean managed = VoxeetSDK.screenShare().onActivityResult(requestCode, resultCode, data);

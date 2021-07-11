@@ -9,9 +9,7 @@ import android.util.Log;
 
 import com.voxeet.sdk.services.TelemetryService;
 import com.voxeet.sdk.services.telemetry.SdkEnvironment;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.sdk.utils.Map;
-import com.voxeet.sdk.utils.NoDocumentation;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.BuildConfig;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
@@ -26,7 +24,6 @@ import java.util.List;
 /**
  * Simple VoxeetToolkit implementation
  */
-@Annotate
 public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
     private final static String TAG = VoxeetToolkit.class.getSimpleName();
@@ -62,7 +59,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         return sInstance;
     }
 
-    @NoDocumentation
     @Deprecated
     public static VoxeetToolkit getInstance() {
         return sInstance;
@@ -85,7 +81,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
      * <p>
      * public until the switch from implementation is made to the new package
      */
-    @NoDocumentation
     public VoxeetToolkit() {
     }
 
@@ -97,7 +92,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
      *
      * @param provider
      */
-    @NoDocumentation
     public void setProvider(@NonNull AbstractRootViewProvider provider) {
         mProvider = provider;
     }
@@ -139,7 +133,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
-    @NoDocumentation
     @NonNull
     public AbstractRootViewProvider getDefaultRootViewProvider() {
         return mProvider;
@@ -154,19 +147,16 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         return mIsOverEnabled;
     }
 
-    @NoDocumentation
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
 
     }
 
-    @NoDocumentation
     @Override
     public void onActivityStarted(Activity activity) {
 
     }
 
-    @NoDocumentation
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
         for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
@@ -174,7 +164,6 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
-    @NoDocumentation
     @Override
     public void onActivityPaused(@NonNull Activity activity) {
         for (AbstractConferenceToolkitController controller : mConferenceToolkitControllers) {
@@ -182,26 +171,23 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
-    @NoDocumentation
     @Override
     public void onActivityStopped(Activity activity) {
 
     }
 
-    @NoDocumentation
     @Override
     public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
 
     }
 
-    @NoDocumentation
     @Override
     public void onActivityDestroyed(Activity activity) {
 
     }
 
     /**
-     * Disable every com.voxeet.toolkit.controllers
+     * Disable every com.voxeet.uxkit.controllers
      */
     public void disableAll() {
         for (AbstractConferenceToolkitController internal_controller : mConferenceToolkitControllers) {
@@ -314,13 +300,11 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
         }
     }
 
-    @NoDocumentation
     public void setCurrentActivity(@NonNull Activity activity) {
         if (null != mProvider)
             mProvider.setCurrentActivity(activity);
     }
 
-    @NoDocumentation
     @Nullable
     public Activity getCurrentActivity() {
         return Opt.of(mProvider).then(AbstractRootViewProvider::getCurrentActivity).orNull();

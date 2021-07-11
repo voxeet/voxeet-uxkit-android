@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.voxeet.VoxeetSDK;
-import com.voxeet.sdk.utils.Annotate;
 import com.voxeet.uxkit.incoming.IncomingNotification;
 
 /**
@@ -25,7 +24,6 @@ import com.voxeet.uxkit.incoming.IncomingNotification;
  * - onResume called after an activity creation (was destroyed/inexistant) (can be an invitation clicked)
  * - ConferenceStatusUpdatedEvent for the Conference, the SDK may be calling for joining in parallel, this way, the notification gets cleaned at the same time
  */
-@Annotate
 public class IncomingNotificationHelper {
 
     /**
