@@ -675,13 +675,14 @@ public class VoxeetActionBarView extends VoxeetView {
 
     private void checkMicrophoneButtonState() {
         // also invalidate information about mute stream
-        if (null != VoxeetSDK.conference() && null != microphone) {
-            if (!checkMicrophonePermission()) {
-                microphone.setSelected(true); //mute state is selected
-                microphone.setEnabled(false);
-            } else {
-                microphone.setSelected(VoxeetSDK.conference().isMuted());
-            }
+        if (null == microphone) return;
+
+        if (!checkMicrophonePermission()) {
+            microphone.setSelected(true); //mute state is selected
+            microphone.setEnabled(false);
+        } else {
+            microphone.setSelected(VoxeetSDK.conference().isMuted());
+            microphone.setEnabled(true);
         }
     }
 
