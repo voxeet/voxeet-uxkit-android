@@ -21,6 +21,10 @@ allprojects {
 
 The list will only feature new most recents versions
 
+#### v3.2.1
+
+- The SDK 3.2.0 add a missing dependency block ; this fix adds the expected SoLoader dependency
+
 #### v3.2.0
 
 - Official compatibiltiy with SDK 3.2+
