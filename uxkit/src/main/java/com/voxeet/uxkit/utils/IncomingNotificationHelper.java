@@ -78,6 +78,5 @@ public class IncomingNotificationHelper {
             IncomingNotificationHelper.dismiss(activity, conferenceId.hashCode());
         }
         return IncomingNotificationHelper.dismiss(activity, activity.getIntent());
-
     }
 }
