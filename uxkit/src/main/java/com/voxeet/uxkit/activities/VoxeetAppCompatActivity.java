@@ -111,8 +111,6 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
             //to prevent uninitialized toolkit but ... it's highly recommended for future releases to always init
             VoxeetToolkit.instance().getConferenceToolkit().forceReattach();
         }
-
-        dismissNotification();
     }
 
     @Override
