@@ -7,7 +7,7 @@
     <string name="ok">Okey</string>
     <string name="cancel">Cancel</string>
     <string name="leave_conference_title">Leave conference</string>
-    <string name="leave_conference_message">A conference is live. Would you like to leave it ?</string>
+    <string name="leave_conference_message">A conference is live. Would you like to leave it?</string>
     <string name="loading">Loading, please wait…</string>
     <string name="connection_service">Voxeet connection test</string>
     <string name="conference_name">Conference name</string>
