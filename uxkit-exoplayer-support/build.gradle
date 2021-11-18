@@ -1,8 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
 
-apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.jaredsburrows.license'
 
 licenseReport {
@@ -25,6 +22,7 @@ android {
         versionCode 1
         versionName rootProject.ext.voxeetUXKitVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.voxeetUXKitVersion}\""
     }
 
     buildTypes {
@@ -59,22 +57,6 @@ android {
     }
 }
 
-group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-version = rootProject.ext.voxeetUXKitVersion
-
-bintray {
-    user = project.properties["VOXEET_DEVELOPER_ID"]
-    key = project.properties["BINTRAY_API_KEY"]
-    configurations = ['archives'] //When uploading configuration files
-    pkg {
-        userOrg = project.properties["VOXEET_MAIN_DEVELOPER_ID"]
-        repo = "maven" // project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-        name = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-        publicDownloadNumbers = true
-        publish = true
-    }
-}
-
 configurations {
     javadocDeps
 }
@@ -84,13 +66,14 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
-    compile project(":uxkit")
+    implementation "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
+    implementation project(":uxkit")
 
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.7.3'
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.7.3'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.13.3'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.13.3'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.13.3'
 }
 
 apply from: "../tasks.gradle"
 apply from: "../license.gradle"
+apply from: "../advanced_gradle/publishing.gradle"

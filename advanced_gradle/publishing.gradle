@@ -1,0 +1,27 @@
+apply plugin: 'com.android.library'
+//apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                artifactId = "${project.name}"
+                groupId = rootProject.ext.groupId
+                version = rootProject.ext.voxeetUXKitVersion
+            }
+        }
+        repositories {
+            mavenLocal()
+        }
+    }
+}

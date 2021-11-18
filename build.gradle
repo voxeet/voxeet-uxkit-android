@@ -2,14 +2,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.android.tools.build:gradle:4.2.0'
 
-        classpath 'com.jaredsburrows:gradle-license-plugin:0.8.70'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:1.0.2'
+        classpath 'com.jaredsburrows:gradle-license-plugin:0.8.91-SNAPSHOT'
     }
 }
 
@@ -26,6 +24,8 @@ ext {
     targetSdkVersion = 29
     supportLibVersion = "28.0.0"
 
+    groupId="com.voxeet.sdk"
+    androidXVersion = "1.3.+"
     //underlying sdk
     //voxeetSdkVersion defined in the sdk.gradle file
     //voxeetUXKitVersion defined in the uxkit.gradle file
@@ -69,11 +69,11 @@ task licenseAll {
 }
 
 task installAll {
-    dependsOn = modules_sdk.collect { ":${it}:install" }
+    dependsOn = modules_sdk.collect { ":${it}:publishToMavenLocal" }
 }
 
 task uploadAll {
-    dependsOn = modules_sdk.collect { ":${it}:bintrayUpload" }
+    dependsOn = modules_sdk.collect { ":${it}:publish" }
 }
 
 task clean(type: Delete) {

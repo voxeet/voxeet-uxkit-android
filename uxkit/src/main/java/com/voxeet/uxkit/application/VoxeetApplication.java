@@ -1,7 +1,7 @@
 package com.voxeet.uxkit.application;
 
 import android.app.Application;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;

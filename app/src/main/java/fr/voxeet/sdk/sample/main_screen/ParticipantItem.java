@@ -1,6 +1,7 @@
 package fr.voxeet.sdk.sample.main_screen;
 
-import android.support.annotation.DrawableRes;
+
+import androidx.annotation.DrawableRes;
 
 import com.voxeet.sdk.json.ParticipantInfo;
 

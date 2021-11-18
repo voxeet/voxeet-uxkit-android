@@ -1,6 +1,6 @@
 package com.voxeet.uxkit.implementation;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.models.Conference;

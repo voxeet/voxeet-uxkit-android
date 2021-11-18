@@ -1,8 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
 
-apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.jaredsburrows.license'
 
 licenseReport {
@@ -24,6 +21,7 @@ android {
         versionCode 1
         versionName rootProject.ext.voxeetUXKitVersion
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.voxeetUXKitVersion}\""
     }
 
     buildTypes {
@@ -58,22 +56,6 @@ android {
     }
 }
 
-group = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-version = rootProject.ext.voxeetUXKitVersion
-
-bintray {
-    user = project.properties["VOXEET_DEVELOPER_ID"]
-    key = project.properties["BINTRAY_API_KEY"]
-    configurations = ['archives'] //When uploading configuration files
-    pkg {
-        userOrg = project.properties["VOXEET_MAIN_DEVELOPER_ID"]
-        repo = "maven" // project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-        name = project.properties["VOXEET_MAVEN_PUBLISHED_GROUPID"]
-        publicDownloadNumbers = true
-        publish = true
-    }
-}
-
 configurations {
     javadocDeps
 }
@@ -91,3 +73,4 @@ dependencies {
 
 apply from: "../tasks.gradle"
 apply from: "../license.gradle"
+apply from: "../advanced_gradle/publishing.gradle"

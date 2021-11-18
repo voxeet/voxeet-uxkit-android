@@ -2,8 +2,8 @@ package com.voxeet.uxkit.mp4.manifests;
 
 import android.content.Context;
 import android.content.pm.ProviderInfo;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
 import com.voxeet.uxkit.mp4.MP4MediaPresentationProvider;

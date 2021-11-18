@@ -1,6 +1,6 @@
 package fr.voxeet.sdk.sample.oauth;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
