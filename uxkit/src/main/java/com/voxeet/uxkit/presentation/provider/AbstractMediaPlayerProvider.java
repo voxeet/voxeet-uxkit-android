@@ -1,7 +1,7 @@
 package com.voxeet.uxkit.presentation.provider;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
 

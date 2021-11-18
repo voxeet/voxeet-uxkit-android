@@ -2,9 +2,10 @@ package com.voxeet.uxkit.firebase.manifests;
 
 import android.content.Context;
 import android.content.pm.ProviderInfo;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.firebase.FirebaseApp;
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;

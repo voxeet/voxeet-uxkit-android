@@ -2,7 +2,7 @@ package com.voxeet.uxkit.utils;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
@@ -122,7 +122,7 @@ public class ConferenceViewRendererControl {
         }
     }
 
-    public void attachStreamToSelf(@android.support.annotation.Nullable MediaStream stream) {
+    public void attachStreamToSelf(@Nullable MediaStream stream) {
         VideoView selectedView = getOtherVideoView();
         VideoView selfView = getSelfVideoView();
 

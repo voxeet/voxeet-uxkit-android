@@ -2,7 +2,7 @@ package com.voxeet.uxkit.mp4;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -56,7 +56,7 @@ public class MP4MediaPresentationView extends AbstractMediaPlayerView {
         lastKey = videoPresentationStarted.key;
 
         if (exoPlayer == null) {
-            exoPlayer = ExoPlayerFactory.newSimpleInstance(
+            exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(),
                     new DefaultRenderersFactory(getContext()),
                     new DefaultTrackSelector(),
                     new DefaultLoadControl());

@@ -4,11 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
-import com.voxeet.sdk.exceptions.VoxeetSDKNotInitiliazedException;
+import com.voxeet.sdk.exceptions.VoxeetSDKNotInitializedException;
 import com.voxeet.sdk.push.center.NotificationCenter;
 import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.services.ConferenceService;
@@ -37,7 +38,7 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
         ConferenceService conferenceService = VoxeetSDK.conference();
         SessionService sessionService = VoxeetSDK.session();
         if (!VoxeetSDK.instance().isInitialized()) {
-            return new Promise<>(solver -> solver.reject(new VoxeetSDKNotInitiliazedException("SDK Uninitialized in " + DismissNotificationBroadcastReceiver.class.getSimpleName())));
+            return new Promise<>(solver -> solver.reject(new VoxeetSDKNotInitializedException("SDK Uninitialized in " + DismissNotificationBroadcastReceiver.class.getSimpleName())));
         }
 
         if (sessionService.isSocketOpen()) {

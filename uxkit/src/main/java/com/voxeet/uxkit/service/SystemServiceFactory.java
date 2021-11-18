@@ -1,6 +1,6 @@
 package com.voxeet.uxkit.service;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.voxeet.uxkit.activities.VoxeetAppCompatActivity;
 
