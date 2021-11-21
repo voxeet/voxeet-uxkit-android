@@ -21,6 +21,21 @@ allprojects {
 
 The list will only feature new most recents versions
 
+#### v3.3.0
+
+- Use SDK 3.3.0
+- Set build tools/compile and target to 31.0.0
+- Fix texts in the translations
+
+#### v3.2.3
+
+- Use SDK 3.2.3
+- Fix an issue where the invitation notification could be dismissed without active interactions
+
+#### v3.2.2
+
+- Use SDK 3.2.2
+
 #### v3.2.1
 
 - The SDK 3.2.0 add a missing dependency block ; this fix adds the expected SoLoader dependency

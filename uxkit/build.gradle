@@ -20,7 +20,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName rootProject.ext.voxeetUXKitVersion
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.voxeetUXKitVersion}\""
     }
 
@@ -62,16 +62,16 @@ configurations {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
-    compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
-    compile 'com.squareup.picasso:picasso:2.71828'
+    api "androidx.core:core:${rootProject.ext.androidXCore}"
+    api "androidx.appcompat:appcompat:${rootProject.ext.androidXAppCompatVersion}"
+    api "androidx.recyclerview:recyclerview:${rootProject.ext.androidXRecyclerVersion}"
+    api 'com.squareup.picasso:picasso:2.71828'
 
-    compile("com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}") { transitive = true }
-    compile project(":uxkit-incoming-call")
+    api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
+    api project(":uxkit-incoming-call")
 }
 
 apply from: "../advanced_gradle/publishing.gradle"
