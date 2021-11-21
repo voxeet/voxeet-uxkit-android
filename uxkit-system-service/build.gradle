@@ -20,7 +20,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName rootProject.ext.voxeetUXKitVersion
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.ext.voxeetUXKitVersion}\""
     }
 
@@ -61,8 +61,8 @@ configurations {
 }
 
 dependencies {
-    compile "com.android.support:support-compat:${rootProject.ext.supportLibVersion}"
-    compile project(":uxkit")
+    api "androidx.core:core:${rootProject.ext.androidXCore}"
+    api project(":uxkit")
 }
 
 apply from: "../tasks.gradle"
