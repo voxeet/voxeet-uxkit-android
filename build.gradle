@@ -37,11 +37,11 @@ apply from: "./sdk.gradle"
 
 allprojects {
     repositories {
-        maven { url "https://android-sdk.voxeet.com/beta" }
-        maven { url "https://android-sdk.voxeet.com/release" }
         mavenLocal()
         google()
         mavenCentral()
+        maven { url "https://android-sdk.voxeet.com/beta" }
+        maven { url "https://android-sdk.voxeet.com/release" }
     }
 }
 

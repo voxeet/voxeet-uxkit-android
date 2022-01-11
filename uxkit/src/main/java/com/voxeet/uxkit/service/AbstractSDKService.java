@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 
 import androidx.annotation.DrawableRes;
@@ -167,7 +168,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
             Intent notificationIntent = new Intent(this, getActivityClass());
 
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                    notificationIntent, 0);
+                    notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
             Notification notification = new NotificationCompat.Builder(this, NotificationHelper.getChannelId(this))
                     .setSmallIcon(getSmallIcon())
