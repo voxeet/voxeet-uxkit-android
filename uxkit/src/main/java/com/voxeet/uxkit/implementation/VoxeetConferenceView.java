@@ -1152,21 +1152,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     //TODO optimize by collecting the participants on the beginning of the loop only
     private List<Participant> getParticipants() {
-        return Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
-            ParticipantType type = Opt.of(participant.participantType()).or(ParticipantType.NONE);
-
-            if ("00000000-0000-0000-0000-000000000000".equals(participant.getId())) return false;
-            if (!(type.equals(ParticipantType.DVC) || type.equals(ParticipantType.USER) || type.equals(ParticipantType.PSTN))) {
-                return false;
-            }
-
-            if (Opt.of(participant.getId()).or("").equals(VoxeetSDK.session().getParticipantId())) {
-                //prevent own user to be "active speaker"
-                return false;
-            }
-            if (ConferenceParticipantStatus.ON_AIR == participant.getStatus()) return true;
-            return ConferenceParticipantStatus.CONNECTING == participant.getStatus() && null != participant.streamsHandler().getFirst(MediaStreamType.Camera);
-        });
+        return Filter.filter(VoxeetSDK.conference().getParticipants(), ToolkitUtils::isParticipant);
     }
 
     //TODO optimize by collecting the participants on the beginning of the loop only

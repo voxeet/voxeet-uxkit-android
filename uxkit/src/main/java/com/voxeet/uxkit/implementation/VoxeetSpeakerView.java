@@ -25,6 +25,7 @@ import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.utils.ToolkitUtils;
 import com.voxeet.uxkit.utils.VoxeetSpeakersTimerInstance;
 import com.voxeet.uxkit.utils.WindowHelper;
 import com.voxeet.uxkit.views.internal.VoxeetVuMeter;
@@ -358,22 +359,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
 
         if (null == currentSpeaker) {
             //we don't have any speaker, look for at least the first one
-            List<Participant> participants = Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
-                ParticipantType type = Opt.of(participant.participantType()).or(ParticipantType.NONE);
-
-                if ("00000000-0000-0000-0000-000000000000".equals(participant.getId()))
-                    return false;
-                if (!(type.equals(ParticipantType.DVC) || type.equals(ParticipantType.USER) || type.equals(ParticipantType.PSTN))) {
-                    return false;
-                }
-
-                if (Opt.of(participant.getId()).or("").equals(VoxeetSDK.session().getParticipantId())) {
-                    //prevent own user to be "active speaker"
-                    return false;
-                }
-                if (ConferenceParticipantStatus.ON_AIR == participant.getStatus()) return true;
-                return ConferenceParticipantStatus.CONNECTING == participant.getStatus() && null != participant.streamsHandler().getFirst(MediaStreamType.Camera);
-            });
+            List<Participant> participants = Filter.filter(VoxeetSDK.conference().getParticipants(), ToolkitUtils::isParticipant);
 
             if (participants.size() > 0) {
                 currentSpeaker = participants.get(0);
@@ -381,9 +367,10 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
             }
         }
 
-        if (currentSpeaker != null && null != VoxeetSDK.conference()) {
+        if (null != currentSpeaker && null != VoxeetSDK.conference()) {
             double value = VoxeetSDK.conference().audioLevel(currentSpeaker);
-            vuMeter.updateMeter(value);
+            boolean isInActiveSpeaker = VoxeetSpeakersTimerInstance.instance.activeSpeakers().contains(currentSpeaker.getId());
+            vuMeter.updateMeter(value, isInActiveSpeaker);
         }
     }
 }

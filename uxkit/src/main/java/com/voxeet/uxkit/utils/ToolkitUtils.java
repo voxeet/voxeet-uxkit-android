@@ -14,6 +14,7 @@ import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.utils.MapFilter;
 import com.voxeet.sdk.utils.Opt;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ToolkitUtils {
@@ -27,16 +28,25 @@ public class ToolkitUtils {
         ParticipantType type = Opt.of(participant.participantType()).or(ParticipantType.NONE);
 
         if ("00000000-0000-0000-0000-000000000000".equals(participant.getId())) return false;
-        if (!(type.equals(ParticipantType.DVC) || type.equals(ParticipantType.USER) || type.equals(ParticipantType.PSTN))) {
+
+        List<ParticipantType> valids = Arrays.asList(ParticipantType.DVC,
+                ParticipantType.USER,
+                ParticipantType.PSTN,
+                ParticipantType.ROBOT_PSTN,
+                ParticipantType.ROBOT_SPEAKER,
+                ParticipantType.ROBOT);
+        ParticipantType found = Map.find(valids, participantType -> participantType.equals(type));
+
+        if (null == found) {
             return false;
         }
 
-        if (ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus()) && !ownUserId.equals(participant.getId()))
-            return true;
-        if (ConferenceParticipantStatus.CONNECTING.equals(participant.getStatus()) && !ownUserId.equals(participant.getId()) && participant.streams().size() > 0)
-            return true;
-
-        return false;
+        if (Opt.of(participant.getId()).or("").equals(ownUserId)) {
+            //prevent own user to be "active speaker"
+            return false;
+        }
+        if (ConferenceParticipantStatus.ON_AIR == participant.getStatus()) return true;
+        return ConferenceParticipantStatus.CONNECTING == participant.getStatus() && null != participant.streamsHandler().getFirst(MediaStreamType.Camera);
     }
 
     public static List<Participant> filterParticipants(@NonNull List<Participant> participants) {

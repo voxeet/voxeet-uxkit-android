@@ -7,12 +7,18 @@ import androidx.annotation.Nullable;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.stream.MediaStreamType;
+import com.voxeet.sdk.events.v3.ActiveSpeakerChangeEvent;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,8 +31,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class VoxeetSpeakersTimerInstance {
 
     public static final int REFRESH_METER = 100;
-    private final static int INTERVALS_BEFORE_NEXT_SPEAKER_UPDATED = 50; //
+    private final static int INTERVALS_BEFORE_NEXT_SPEAKER_UPDATED = 15; //it will be * REFRESH_METER
     public final static VoxeetSpeakersTimerInstance instance = new VoxeetSpeakersTimerInstance();
+    private final ActiveSpeakerHolder activeSpeakerHolder;
 
     private CopyOnWriteArrayList<SpeakersUpdated> speakers_listeners = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<ActiveSpeakerListener> activespeakers_listeners = new CopyOnWriteArrayList<>();
@@ -41,6 +48,9 @@ public final class VoxeetSpeakersTimerInstance {
     private int current_loop_state = 0;
 
     private VoxeetSpeakersTimerInstance() {
+        activeSpeakerHolder = new ActiveSpeakerHolder();
+        activeSpeakerHolder.register(EventBus.getDefault());
+
         refreshActiveSpeaker = () -> {
             try {
                 //TODO since using the active speaker's O(n) loop and doing same here, mutualize code and remove the call to the SDK alltogether
@@ -189,6 +199,16 @@ public final class VoxeetSpeakersTimerInstance {
     }
 
     /**
+     * Get the last list of active speakers sent from the backend. This is using
+     * the ActiveSpeakerChangeEvent internally. Note: whereas the other methods in the object are providing
+     * active speaker mostly based on the audio level,
+     * @return
+     */
+    public List<String> activeSpeakers() {
+        return Opt.of(activeSpeakerHolder.activeSpeakers).or(new ArrayList<>());
+    }
+
+    /**
      * Optional method for fast and possibly spammy behaviour from apps where views can be rendered multiple times.
      * The value returned is a cached one and refreshed every 1s
      *
@@ -244,5 +264,24 @@ public final class VoxeetSpeakersTimerInstance {
 
     public static interface SpeakersUpdated {
         void onSpeakersUpdated();
+    }
+
+    private class ActiveSpeakerHolder {
+        protected List<String> activeSpeakers;
+        public ActiveSpeakerHolder() {
+
+        }
+
+        public void register(@NonNull EventBus eventBus) {
+            if(!eventBus.isRegistered(this)) {
+                eventBus.register(this);
+            }
+        }
+
+        @Subscribe(threadMode = ThreadMode.MAIN)
+        public void onEvent(@NonNull ActiveSpeakerChangeEvent event) {
+            this.activeSpeakers = event.activeSpeakers;
+        }
+
     }
 }

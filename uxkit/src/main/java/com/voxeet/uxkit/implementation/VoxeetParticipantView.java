@@ -133,13 +133,14 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
 
         if (null != participant) {
             double level = VoxeetSpeakersTimerInstance.instance.audioLevel(participant);
+            boolean isInActiveSpeaker = VoxeetSpeakersTimerInstance.instance.activeSpeakers().contains(participant.getId());
 
             if (selected) {
                 name.setTypeface(Typeface.DEFAULT_BOLD);
                 name.setTextColor(white);
 
                 color = selectedUserColor;
-            } else if (level > 0.02) {
+            } else if (level > 0.02 || isInActiveSpeaker) {
                 name.setTypeface(Typeface.DEFAULT_BOLD);
                 name.setTextColor(white);
 
