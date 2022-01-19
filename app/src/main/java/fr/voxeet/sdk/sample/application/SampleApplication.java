@@ -1,15 +1,10 @@
 package fr.voxeet.sdk.sample.application;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.multidex.MultiDexApplication;
-
 import android.util.Log;
 
+import androidx.multidex.MultiDexApplication;
+
 import com.voxeet.VoxeetSDK;
-import com.voxeet.promise.solve.ErrorPromise;
-import com.voxeet.promise.solve.PromiseExec;
-import com.voxeet.promise.solve.Solver;
 import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.push.center.NotificationCenter;
 import com.voxeet.sdk.push.center.management.EnforcedNotificationMode;
@@ -78,19 +73,11 @@ public class SampleApplication extends MultiDexApplication {
             //we have an user
             VoxeetSDK.session()
                     .close()
-                    .then(new PromiseExec<Boolean, Object>() {
-                        @Override
-                        public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-                            Log.d(TAG, "onCall: user disconnected");
-                            logSelectedUser();
-                        }
+                    .then((result, solver) -> {
+                        Log.d(TAG, "onCall: user disconnected");
+                        logSelectedUser();
                     })
-                    .error(new ErrorPromise() {
-                        @Override
-                        public void onError(Throwable error) {
-                            logSelectedUser();
-                        }
-                    });
+                    .error(error -> logSelectedUser());
         }
         return false;
     }
@@ -100,18 +87,10 @@ public class SampleApplication extends MultiDexApplication {
      */
     public void logSelectedUser() {
         VoxeetSDK.session().open(_current_user)
-                .then(new PromiseExec<Boolean, Object>() {
-                    @Override
-                    public void onCall(@Nullable Boolean result, @NonNull Solver<Object> solver) {
-
-                    }
+                .then((result, solver) -> {
+                    // no-op
                 })
-                .error(new ErrorPromise() {
-                    @Override
-                    public void onError(@NonNull Throwable error) {
-                        error.printStackTrace();
-                    }
-                });
+                .error(Throwable::printStackTrace);
     }
 
     public ParticipantInfo getCurrentUser() {
@@ -121,7 +100,7 @@ public class SampleApplication extends MultiDexApplication {
     private void onSdkInitialized() {
         //it's possible to use the meta-data in the AndroidManifest to directly control the default incoming activity
         NotificationCenter.instance.register(NotificationMode.FULLSCREEN_INCOMING_CALL, new IncomingFullScreen(DefaultIncomingCallActivity.class));
-        NotificationCenter.instance.register(NotificationMode.OVERHEAD_INCOMING_CALL, new IncomingNotification());
+        NotificationCenter.instance.register(NotificationMode.OVERHEAD_INCOMING_CALL, new IncomingNotification(getApplicationContext()));
         NotificationCenter.instance.setEnforcedNotificationMode(EnforcedNotificationMode.MIXED_INCOMING_CALL);
 
         //add filter to excluse fullscreen from Android Q

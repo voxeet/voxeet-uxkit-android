@@ -4,4 +4,7 @@
     <string name="voxeet_incoming_notification_accept">Do you accept the invitation?</string>
     <string name="voxeet_incoming_notification_button_accept">Accept</string>
     <string name="voxeet_incoming_notification_button_dismiss">Dismiss</string>
+
+    <string name="voxeet_incoming_notification_channel_name">Video conference</string>
+    <string name="voxeet_incoming_notification_channel_description">Invitation to a video conference</string>
 </resources>

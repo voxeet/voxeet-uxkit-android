@@ -1,10 +1,15 @@
 package com.voxeet.uxkit.incoming;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,10 +31,8 @@ import com.voxeet.uxkit.incoming.manifest.DismissNotificationBroadcastReceiver;
 import java.security.SecureRandom;
 
 public class IncomingNotification implements IIncomingInvitationListener {
-    //extracted from the sdk
-    //TODO set in the push module not the push_manifest one
-    private static final String SDK_CHANNEL_ID = "voxeet_sdk_channel_id";
-    private static final String DEFAULT_ID = "VideoConference";
+
+    private static final String CHANNEL_ID = "voxeet_sdk_channel_video_conference";
 
     public final static int INCOMING_NOTIFICATION_REQUEST_CODE = 928;
     private static final String TAG = IncomingNotification.class.getSimpleName();
@@ -39,11 +42,12 @@ public class IncomingNotification implements IIncomingInvitationListener {
     // to edit, preferrably use either Factory component in the manifest or Application override when dealing with FCM
     public final static IncomingNotificationConfiguration Configuration = new IncomingNotificationConfiguration();
 
-    private SecureRandom random;
+    private final SecureRandom random;
     private int notificationId = -1;
 
-    public IncomingNotification() {
+    public IncomingNotification(@NonNull Context context) {
         random = new SecureRandom();
+        createNotificationChannel(context);
     }
 
     public String getIncomingAcceptedClass(@NonNull Context context) {
@@ -53,17 +57,16 @@ public class IncomingNotification implements IIncomingInvitationListener {
     @Override
     public void onInvitation(@NonNull Context context, @NonNull InvitationBundle invitationBundle) {
         notificationId = random.nextInt(Integer.MAX_VALUE / 2);
-        if(null != invitationBundle.conferenceId) {
+        if (null != invitationBundle.conferenceId) {
             notificationId = invitationBundle.conferenceId.hashCode();
         }
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = getChannelId(context);
 
         Intent accept = createIntent(context, invitationBundle);
         Intent dismiss = createDismissIntent(context, invitationBundle);
 
-        if(null != accept) accept.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
+        if (null != accept) accept.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
         dismiss.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
 
         if (null == accept) {
@@ -80,20 +83,20 @@ public class IncomingNotification implements IIncomingInvitationListener {
 
         String inviterName = Opt.of(invitationBundle.inviter).then(ParticipantNotification::getInfo).then(ParticipantInfo::getName).or("");
 
-        Notification lastNotification = new NotificationCompat.Builder(context, channelId)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+        Notification lastNotification = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentTitle(context.getString(R.string.voxeet_incoming_notification_from_user, inviterName))
                 .setContentText(context.getString(R.string.voxeet_incoming_notification_accept))
                 .setSmallIcon(R.drawable.ic_incoming_call_notification)
                 .addAction(R.drawable.ic_incoming_call_dismiss, context.getString(R.string.voxeet_incoming_notification_button_dismiss), pendingIntentDismissed)
                 .addAction(R.drawable.ic_incoming_call_accept, context.getString(R.string.voxeet_incoming_notification_button_accept), pendingIntentAccepted)
                 .setAutoCancel(IncomingNotification.Configuration.IsAutoCancel)
+                .setSound(getRingtoneUri(context))
                 .setOngoing(IncomingNotification.Configuration.IsOnGoing)
                 .build();
         //TODO Android Use Full Screen Intent with according permission -> possible improvement
 
         notificationManager.notify(notificationId, lastNotification);
-
     }
 
     @Nullable
@@ -153,7 +156,38 @@ public class IncomingNotification implements IIncomingInvitationListener {
         notificationId = 0;
     }
 
-    public static String getChannelId(@NonNull Context context) {
-        return AndroidManifest.readMetadata(context, SDK_CHANNEL_ID, DEFAULT_ID);
+    private void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                    .build();
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    context.getString(R.string.voxeet_incoming_notification_channel_name),
+                    importance
+            );
+            channel.setDescription(context.getString(R.string.voxeet_incoming_notification_channel_description));
+            channel.enableLights(true);
+            channel.setLightColor(Color.WHITE);
+
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{100, 200});
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+
+            channel.setSound(getRingtoneUri(context), audioAttributes);
+
+            if (null != notificationManager) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private Uri getRingtoneUri(@NonNull Context context) {
+        return RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.TYPE_RINGTONE);
     }
 }
