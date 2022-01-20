@@ -1,14 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.jaredsburrows.license'
-
-licenseReport {
-    generateHtmlReport = false
-    generateJsonReport = true
-
-    // These options are ignored for Java projects
-    copyHtmlReportToAssets = false
-    copyJsonReportToAssets = true
-}
 
 System.out.println("creating for ${rootProject.ext.voxeetUXKitVersion}")
 android {
@@ -70,6 +60,6 @@ dependencies {
     api project(":uxkit-incoming-call")
 }
 
+apply from: "../advanced_gradle/license.gradle"
+apply from: "../advanced_gradle/tasks.gradle"
 apply from: "../advanced_gradle/publishing.gradle"
-apply from: "../tasks.gradle"
-apply from: "../license.gradle"
