@@ -52,6 +52,8 @@ dependencies {
     })
     api "androidx.core:core:${rootProject.ext.androidXCore}"
     api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
+
+    api project(":uxkit-common")
 }
 
 apply from: "../advanced_gradle/license.gradle"

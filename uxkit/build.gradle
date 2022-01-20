@@ -58,6 +58,7 @@ dependencies {
 
     api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
     api project(":uxkit-incoming-call")
+    api project(":uxkit-common")
 }
 
 apply from: "../advanced_gradle/license.gradle"

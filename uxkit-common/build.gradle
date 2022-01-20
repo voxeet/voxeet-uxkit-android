@@ -46,8 +46,14 @@ configurations {
 }
 
 dependencies {
-    api project(":uxkit")
-    api project(":uxkit-common")
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    api "androidx.core:core:${rootProject.ext.androidXCore}"
+    api "androidx.appcompat:appcompat:${rootProject.ext.androidXAppCompatVersion}"
+
+    api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
 }
 
 apply from: "../advanced_gradle/license.gradle"
