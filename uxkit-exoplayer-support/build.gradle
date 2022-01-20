@@ -52,6 +52,7 @@ dependencies {
     })
     api "androidx.core:core:${rootProject.ext.androidXCore}"
     api project(":uxkit")
+    api project(":uxkit-common")
 
     api 'com.google.android.exoplayer:exoplayer-core:2.13.3'
     api 'com.google.android.exoplayer:exoplayer-dash:2.13.3'
