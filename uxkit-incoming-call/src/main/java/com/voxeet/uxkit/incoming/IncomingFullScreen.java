@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
@@ -15,8 +14,12 @@ import com.voxeet.sdk.push.center.invitation.IIncomingInvitationListener;
 import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.push.center.management.Constants;
 import com.voxeet.sdk.utils.AndroidManifest;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 public class IncomingFullScreen implements IIncomingInvitationListener {
+
+    private final static ShortLogger Log = UXKitLogger.createLogger(IncomingFullScreen.class.getSimpleName());
 
     public static final String[] DEFAULT_NOTIFICATION_KEYS = new String[]{
             Constants.INVITER_ID,
@@ -45,7 +48,7 @@ public class IncomingFullScreen implements IIncomingInvitationListener {
     public void onInvitation(@NonNull Context context, @NonNull InvitationBundle invitationBundle) {
 
         String voxeet_default_incoming = AndroidManifest.readMetadata(context, "voxeet_incoming_class", null);
-        Log.d("NotificationCenterFactory", "onInvitation: " + voxeet_default_incoming);
+        Log.d( "onInvitation: " + voxeet_default_incoming);
 
         Bundle extra = invitationBundle.asBundle();
 
@@ -77,6 +80,6 @@ public class IncomingFullScreen implements IIncomingInvitationListener {
 
     @Override
     public void onInvitationCanceled(@NonNull Context context, @NonNull String conferenceId) {
-        //in this mode, the parent call will send event
+        Log.d("onInvitationCanceled : not used, the parent call will send event");
     }
 }

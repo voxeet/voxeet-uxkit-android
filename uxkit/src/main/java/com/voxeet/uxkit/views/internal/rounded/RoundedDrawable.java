@@ -16,15 +16,18 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.widget.ImageView.ScaleType;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
-import android.widget.ImageView.ScaleType;
+
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RoundedDrawable extends Drawable {
 
-    public static final String TAG = "RoundedDrawable";
+    public static final ShortLogger Log = UXKitLogger.createLogger(RoundedDrawable.class);
     public static final int DEFAULT_BORDER_COLOR = Color.BLACK;
 
     private final RectF mBounds = new RectF();
@@ -102,7 +105,7 @@ public class RoundedDrawable extends Drawable {
             if (bm != null) {
                 return new RoundedDrawable(bm);
             } else {
-                Log.w(TAG, "Failed to create bitmap from drawable!");
+                Log.w("Failed to create bitmap from drawable!");
             }
         }
         return drawable;
@@ -123,7 +126,7 @@ public class RoundedDrawable extends Drawable {
             drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             drawable.draw(canvas);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(e);
             bitmap = null;
         }
 

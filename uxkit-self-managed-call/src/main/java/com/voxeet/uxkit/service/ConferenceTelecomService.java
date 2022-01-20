@@ -2,23 +2,27 @@ package com.voxeet.uxkit.service;
 
 import android.content.Intent;
 import android.os.Build;
-import androidx.annotation.RequiresApi;
 import android.telecom.Connection;
 import android.telecom.ConnectionRequest;
 import android.telecom.ConnectionService;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.RemoteConference;
 import android.telecom.RemoteConnection;
-import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class ConferenceTelecomService extends ConnectionService {
-    private final static String TAG = ConferenceTelecomService.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(ConferenceTelecomService.class);
+
     private ConferenceConnection connection;
 
     public ConferenceTelecomService() {
         super();
-        Log.d(TAG, "ConferenceTelecomService: ");
+        Log.d("ConferenceTelecomService: ");
     }
 
     @Override
@@ -33,7 +37,7 @@ public class ConferenceTelecomService extends ConnectionService {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.d(TAG, "onUnbind: " + intent);
+        Log.d("onUnbind: " + intent);
         return super.onUnbind(intent);
     }
 
@@ -43,19 +47,19 @@ public class ConferenceTelecomService extends ConnectionService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             connection.setConnectionProperties(Connection.PROPERTY_SELF_MANAGED);
         }
-        Log.d(TAG, "onCreateIncomingConnection: " + connectionManagerPhoneAccount + " " + connectionManagerPhoneAccount);
+        Log.d("onCreateIncomingConnection: " + connectionManagerPhoneAccount + " " + connectionManagerPhoneAccount);
         return connection;
     }
 
     @Override
     public void onCreateIncomingConnectionFailed(PhoneAccountHandle connectionManagerPhoneAccount, ConnectionRequest request) {
-        Log.d(TAG, "onCreateIncomingConnectionFailed: ");
+        Log.d("onCreateIncomingConnectionFailed: ");
         super.onCreateIncomingConnectionFailed(connectionManagerPhoneAccount, request);
     }
 
     @Override
     public void onCreateOutgoingConnectionFailed(PhoneAccountHandle connectionManagerPhoneAccount, ConnectionRequest request) {
-        Log.d(TAG, "onCreateOutgoingConnectionFailed: ");
+        Log.d("onCreateOutgoingConnectionFailed: ");
         super.onCreateOutgoingConnectionFailed(connectionManagerPhoneAccount, request);
     }
 
@@ -65,55 +69,55 @@ public class ConferenceTelecomService extends ConnectionService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             connection.setConnectionProperties(Connection.PROPERTY_SELF_MANAGED);
         }
-        Log.d(TAG, "onCreateOutgoingConnection: ");
+        Log.d("onCreateOutgoingConnection: ");
         return connection;
     }
 
     @Override
     public Connection onCreateOutgoingHandoverConnection(PhoneAccountHandle fromPhoneAccountHandle, ConnectionRequest request) {
-        Log.d(TAG, "onCreateOutgoingHandoverConnection: ");
+        Log.d("onCreateOutgoingHandoverConnection: ");
         return super.onCreateOutgoingHandoverConnection(fromPhoneAccountHandle, request);
     }
 
     @Override
     public Connection onCreateIncomingHandoverConnection(PhoneAccountHandle fromPhoneAccountHandle, ConnectionRequest request) {
-        Log.d(TAG, "onCreateIncomingHandoverConnection: ");
+        Log.d("onCreateIncomingHandoverConnection: ");
         return super.onCreateIncomingHandoverConnection(fromPhoneAccountHandle, request);
     }
 
     @Override
     public void onHandoverFailed(ConnectionRequest request, int error) {
-        Log.d(TAG, "onHandoverFailed: ");
+        Log.d("onHandoverFailed: ");
         super.onHandoverFailed(request, error);
     }
 
     @Override
     public void onConference(Connection connection1, Connection connection2) {
-        Log.d(TAG, "onConference: ");
+        Log.d("onConference: ");
         super.onConference(connection1, connection2);
     }
 
     @Override
     public void onRemoteConferenceAdded(RemoteConference conference) {
-        Log.d(TAG, "onRemoteConferenceAdded: ");
+        Log.d("onRemoteConferenceAdded: ");
         super.onRemoteConferenceAdded(conference);
     }
 
     @Override
     public void onRemoteExistingConnectionAdded(RemoteConnection connection) {
-        Log.d(TAG, "onRemoteExistingConnectionAdded: ");
+        Log.d("onRemoteExistingConnectionAdded: ");
         super.onRemoteExistingConnectionAdded(connection);
     }
 
     @Override
     public void onConnectionServiceFocusLost() {
-        Log.d(TAG, "onConnectionServiceFocusLost: ");
+        Log.d("onConnectionServiceFocusLost: ");
         super.onConnectionServiceFocusLost();
     }
 
     @Override
     public void onConnectionServiceFocusGained() {
-        Log.d(TAG, "onConnectionServiceFocusGained: ");
+        Log.d("onConnectionServiceFocusGained: ");
         super.onConnectionServiceFocusGained();
     }
 }

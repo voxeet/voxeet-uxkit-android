@@ -2,14 +2,14 @@ package com.voxeet.uxkit.implementation.devices;
 
 import android.content.Context;
 import android.os.Build;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.audio2.devices.MediaDevice;
@@ -18,11 +18,15 @@ import com.voxeet.audio2.devices.description.DeviceType;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDeviceControlListener {
+
+    private static final ShortLogger Log = UXKitLogger.createLogger(VoxeetMediaRoutePickerView.class);
 
     private View devices_picker_background;
     private LinearLayout devices_picker_list;
@@ -92,7 +96,7 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
     }
 
     public void refreshDevices() {
-        VoxeetSDK.audio().enumerateDevices().then(this::onDevice).error(Throwable::printStackTrace);
+        VoxeetSDK.audio().enumerateDevices().then(this::onDevice).error(Log::e);
     }
 
     private void refresh() {

@@ -9,11 +9,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
@@ -21,6 +20,8 @@ import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.activities.notification.IncomingBundleChecker;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.uxkit.incoming.factory.IncomingCallFactory;
@@ -47,7 +48,7 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxeetActivity {
 
-    private static final String TAG = VoxeetAppCompatActivity.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(VoxeetAppCompatActivity.class);
     private IncomingBundleChecker mIncomingBundleChecker;
 
     @Nullable
@@ -175,12 +176,12 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
 
         if (requestCode == PermissionRefusedEvent.RESULT_CAMERA) {
             if (isPermissionSet(Manifest.permission.CAMERA, permissions, grantResults)) {
-                Log.d(TAG, "onActivityResult: camera is ok now");
+                Log.d( "onActivityResult: camera is ok now");
                 if (VoxeetSDK.conference().isLive()) {
                     VoxeetSDK.conference().startVideo()
                             .then(result -> {
                             })
-                            .error(Throwable::printStackTrace);
+                            .error(Log::e);
                 }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
@@ -262,7 +263,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
                 bindService(intent, sdkConnection, Context.BIND_AUTO_CREATE);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(e);
         }
     }
 
@@ -275,7 +276,7 @@ public class VoxeetAppCompatActivity extends AppCompatActivity implements IVoxee
                         onSdkServiceAvailable();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(e);
                 }
             }
         }

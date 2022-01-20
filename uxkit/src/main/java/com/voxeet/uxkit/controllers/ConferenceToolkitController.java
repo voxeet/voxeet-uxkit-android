@@ -2,7 +2,6 @@ package com.voxeet.uxkit.controllers;
 
 import android.content.Context;
 
-import com.voxeet.uxkit.configuration.Configuration;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
 import com.voxeet.uxkit.implementation.overlays.abs.IExpandableViewProviderListener;
 import com.voxeet.uxkit.providers.containers.DefaultConferenceProvider;

@@ -1,7 +1,5 @@
 package fr.voxeet.sdk.sample.application;
 
-import android.util.Log;
-
 import androidx.multidex.MultiDexApplication;
 
 import com.voxeet.VoxeetSDK;
@@ -12,6 +10,8 @@ import com.voxeet.sdk.push.center.management.NotificationMode;
 import com.voxeet.sdk.push.center.management.VersionFilter;
 import com.voxeet.sdk.sample.BuildConfig;
 import com.voxeet.uxkit.activities.notification.DefaultIncomingCallActivity;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.controllers.ConferenceToolkitController;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
@@ -23,7 +23,7 @@ import org.greenrobot.eventbus.EventBus;
 public class SampleApplication extends MultiDexApplication {
     private static final int ONE_MINUTE = 60 * 1000;
 
-    private static final String TAG = SampleApplication.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(SampleApplication.class);
 
     private ParticipantInfo _current_user;
 
@@ -74,7 +74,7 @@ public class SampleApplication extends MultiDexApplication {
             VoxeetSDK.session()
                     .close()
                     .then((result, solver) -> {
-                        Log.d(TAG, "onCall: user disconnected");
+                        Log.d("onCall: user disconnected");
                         logSelectedUser();
                     })
                     .error(error -> logSelectedUser());
@@ -90,7 +90,7 @@ public class SampleApplication extends MultiDexApplication {
                 .then((result, solver) -> {
                     // no-op
                 })
-                .error(Throwable::printStackTrace);
+                .error(Log::e);
     }
 
     public ParticipantInfo getCurrentUser() {

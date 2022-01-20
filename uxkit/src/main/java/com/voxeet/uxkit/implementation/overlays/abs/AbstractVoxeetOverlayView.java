@@ -5,9 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
-import androidx.annotation.NonNull;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,9 +14,13 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.configuration.Overlay;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
@@ -36,7 +38,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
 
     private ArrayList<AnimatorSet> mCurrentAnimations;
 
-    private final String TAG = AbstractVoxeetOverlayView.class.getSimpleName();
+    private final ShortLogger Log = UXKitLogger.createLogger(AbstractVoxeetOverlayView.class.getSimpleName());
 
     private final int defaultWidth = getResources().getDimensionPixelSize(R.dimen.conference_view_width);
 
@@ -88,7 +90,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         final boolean[] done = {false};
 
         mSubView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            Log.d("VoxeetConferenceView ", "onGlobalLayout: " + overlayState);
+            Log.d("onGlobalLayout: " + overlayState);
             if (!done[0]) {
                 done[0] = true;
                 if (OverlayState.EXPANDED.equals(overlayState)) {
@@ -102,7 +104,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         sub_container.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View view) {
-                Log.d("VoxeetConferenceView", "onViewAttachedToWindow: " + overlayState);
+                Log.d("onViewAttachedToWindow: " + overlayState);
                 if (OverlayState.EXPANDED.equals(overlayState)) {
                     expand();
                 } else {
@@ -493,7 +495,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
                 }
 
                 requestLayout();
-                Log.d(TAG, "onAnimationUpdate: height " + value);
+                Log.d("onAnimationUpdate: height " + value);
             }
         }
     };
@@ -510,7 +512,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
                 }
 
                 requestLayout();
-                Log.d(TAG, "onAnimationUpdate: width " + value);
+                Log.d("onAnimationUpdate: width " + value);
             }
         }
     };
@@ -560,7 +562,7 @@ public abstract class AbstractVoxeetOverlayView extends AbstractVoxeetExpandable
         } catch (Exception e) {
             //nothing particular to do here, print crash just in case
             //one could happen
-            e.printStackTrace();
+            Log.e(e);
             ExceptionManager.sendException(e);
         }
 

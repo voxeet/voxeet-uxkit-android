@@ -3,15 +3,15 @@ package com.voxeet.uxkit.implementation;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.VoxeetSDK;
@@ -22,6 +22,8 @@ import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.utils.VoxeetSpeakersTimerInstance;
 import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;
 
@@ -30,8 +32,8 @@ import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;
  */
 public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeakersTimerInstance.SpeakersUpdated {
 
+    private static final ShortLogger Log = UXKitLogger.createLogger(VoxeetParticipantView.class);
 
-    private static final String TAG = VoxeetParticipantView.class.getSimpleName();
     private VideoView videoView;
     private TextView name;
     private RoundedImageView avatar;
@@ -205,7 +207,7 @@ public class VoxeetParticipantView extends LinearLayout implements VoxeetSpeaker
                         .into(avatar);
             }
         } catch (Exception e) {
-            Log.e(TAG, "error " + e.getMessage());
+            Log.e(e);
         }
     }
 

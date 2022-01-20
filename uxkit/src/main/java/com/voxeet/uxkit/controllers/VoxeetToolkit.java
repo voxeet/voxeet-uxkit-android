@@ -3,15 +3,17 @@ package com.voxeet.uxkit.controllers;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.voxeet.sdk.services.TelemetryService;
 import com.voxeet.sdk.services.telemetry.SdkEnvironment;
 import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.BuildConfig;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
 import com.voxeet.uxkit.providers.rootview.AbstractRootViewProvider;
 import com.voxeet.uxkit.providers.rootview.DefaultRootViewProvider;
@@ -26,7 +28,7 @@ import java.util.List;
  */
 public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
 
-    private final static String TAG = VoxeetToolkit.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(VoxeetToolkit.class);
 
     private static VoxeetToolkit sInstance;
 
@@ -45,7 +47,7 @@ public class VoxeetToolkit implements Application.ActivityLifecycleCallbacks {
     public static synchronized VoxeetToolkit initialize(Application application, EventBus eventBus) {
 
         if (null == sInstance) {
-            Log.d(TAG, "initialize: toolkit initializing");
+            Log.d("initialize: toolkit initializing");
 
             TelemetryService.register(SdkEnvironment.UXKIT, BuildConfig.VERSION_NAME);
             sInstance = new VoxeetToolkit();

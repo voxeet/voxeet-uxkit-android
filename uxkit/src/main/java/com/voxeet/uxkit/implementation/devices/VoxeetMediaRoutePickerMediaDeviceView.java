@@ -2,30 +2,30 @@ package com.voxeet.uxkit.implementation.devices;
 
 import android.content.Context;
 import android.os.Build;
-
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
 import com.voxeet.VoxeetSDK;
 import com.voxeet.audio2.devices.MediaDevice;
 import com.voxeet.audio2.devices.description.DeviceType;
-import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
-
-import java.util.List;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 public class VoxeetMediaRoutePickerMediaDeviceView extends LinearLayout {
+
+    private final static ShortLogger Log = UXKitLogger.createLogger(VoxeetMediaRoutePickerMediaDeviceView.class);
+
     private ImageView media_icon;
     private TextView media_device_name;
 
@@ -71,7 +71,7 @@ public class VoxeetMediaRoutePickerMediaDeviceView extends LinearLayout {
                 if (null != onClickListener) onClickListener.onClick(view);
 
                 VoxeetSDK.audio().connect(device).then(aBoolean -> {
-                }).error(Throwable::printStackTrace);
+                }).error(Log::e);
             }
         });
 
@@ -86,7 +86,7 @@ public class VoxeetMediaRoutePickerMediaDeviceView extends LinearLayout {
         media_device_name.setText(getDeviceName());
     }
 
-    public void remote() {
+    public void remove() {
         this.device = null;
     }
 

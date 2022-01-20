@@ -4,27 +4,25 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.squareup.picasso.Picasso;
 import com.voxeet.VoxeetSDK;
-import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.models.Participant;
-import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
-import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.utils.Filter;
-import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.utils.ToolkitUtils;
 import com.voxeet.uxkit.utils.VoxeetSpeakersTimerInstance;
 import com.voxeet.uxkit.utils.WindowHelper;
@@ -37,8 +35,7 @@ import java.util.List;
  * View made to display a given user
  */
 public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimerInstance.ActiveSpeakerListener, VoxeetSpeakersTimerInstance.SpeakersUpdated {
-    private final String TAG = VoxeetSpeakerView.class.getSimpleName();
-
+    private static final ShortLogger Log = UXKitLogger.createLogger(VoxeetSpeakerView.class);
     private int currentWidth;
 
     private int orientation = 1;
@@ -248,7 +245,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
             return true;
         } catch (Exception e) {
             ExceptionManager.sendException(e);
-            Log.e(TAG, "error " + e.getMessage());
+            Log.e(e);
             return false;
         }
     }
@@ -367,7 +364,7 @@ public class VoxeetSpeakerView extends VoxeetView implements VoxeetSpeakersTimer
             }
         }
 
-        if (null != currentSpeaker && null != VoxeetSDK.conference()) {
+        if (null != currentSpeaker) {
             double value = VoxeetSDK.conference().audioLevel(currentSpeaker);
             boolean isInActiveSpeaker = VoxeetSpeakersTimerInstance.instance.activeSpeakers().contains(currentSpeaker.getId());
             vuMeter.updateMeter(value, isInActiveSpeaker);

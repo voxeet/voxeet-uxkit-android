@@ -2,7 +2,6 @@ package com.voxeet.uxkit.firebase.manifests;
 
 import android.content.Context;
 import android.content.pm.ProviderInfo;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,13 +10,17 @@ import com.google.firebase.FirebaseApp;
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
 import com.voxeet.sdk.push.utils.NotificationHelper;
 import com.voxeet.sdk.services.notification.NotificationTokenHolderFactory;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.firebase.implementation.FirebaseProvider;
 
 public final class FirebasePushEnablerManifestComponent extends AbstractManifestComponentProvider {
 
+    private final static ShortLogger Log = UXKitLogger.createLogger(FirebasePushEnablerManifestComponent.class);
+
     @Override
     protected void init(@NonNull Context context, @Nullable ProviderInfo providerInfo) {
-        Log.d(getClass().getSimpleName(), "init: enabling Firebase");
+        Log.d("init: enabling Firebase");
         FirebaseProvider provider = new FirebaseProvider();
 
         NotificationHelper.createNotificationChannel(context);
@@ -26,7 +29,7 @@ public final class FirebasePushEnablerManifestComponent extends AbstractManifest
         try {
             FirebaseApp.initializeApp(context);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(e);
         }
     }
 

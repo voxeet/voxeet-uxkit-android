@@ -5,39 +5,42 @@ import androidx.annotation.NonNull;
 /**
  * Interface describing what should be able to be logged
  */
-public interface ILoggerWrapper {
+public interface ShortLogger {
 
     /**
      * Send a debug message
      *
-     * @param tag  the tag to use
      * @param text the debug message
      */
-    void d(@NonNull String tag, @NonNull String text);
+    void d(@NonNull String text);
 
     /**
      * Send a warning message
      *
-     * @param tag  the tag to use
      * @param text the debug message
      */
-    void w(@NonNull String tag, @NonNull String text);
+    void w(@NonNull String text);
 
     /**
      * Send an information message
      *
-     * @param tag  the tag to use
      * @param text the debug message
      */
-    void i(@NonNull String tag, @NonNull String text);
+    void i(@NonNull String text);
 
     /**
      * Send an exception with the appropriate message
      *
-     * @param tag       the tag to use
      * @param text      the debug message
      * @param throwable the exception
      */
-    void e(@NonNull String tag, @NonNull String text, @NonNull Throwable throwable);
+    void e(@NonNull String text, @NonNull Throwable throwable);
+
+    /**
+     * Send an exception with the appropriate message
+     *
+     * @param throwable the exception
+     */
+    void e(@NonNull Throwable throwable);
 
 }

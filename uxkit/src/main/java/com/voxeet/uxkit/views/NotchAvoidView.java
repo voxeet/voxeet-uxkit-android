@@ -7,19 +7,21 @@ import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.DisplayCutout;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.utils.WindowHelper;
 
 public class NotchAvoidView extends View {
-    private static final String TAG = NotchAvoidView.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(NotchAvoidView.class);
     private float systemBarHeight;
     private float notchHeight;
     private boolean below_system_bar;
@@ -114,7 +116,7 @@ public class NotchAvoidView extends View {
      */
     protected boolean isTranslucentStatusBar() {
         if (below_system_bar) {
-            Log.d(TAG, "isTranslucentStatusBar: we have below_system_bar, so true in fact");
+            Log.d("isTranslucentStatusBar: we have below_system_bar, so true in fact");
             return true;
         }
 

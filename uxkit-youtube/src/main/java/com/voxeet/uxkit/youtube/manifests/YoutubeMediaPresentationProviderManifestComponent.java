@@ -2,6 +2,7 @@ package com.voxeet.uxkit.youtube.manifests;
 
 import android.content.Context;
 import android.content.pm.ProviderInfo;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 

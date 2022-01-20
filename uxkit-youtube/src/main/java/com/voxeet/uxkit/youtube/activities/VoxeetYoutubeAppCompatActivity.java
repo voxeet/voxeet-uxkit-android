@@ -2,9 +2,9 @@ package com.voxeet.uxkit.youtube.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.voxeet.VoxeetSDK;
@@ -13,6 +13,8 @@ import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.activities.notification.IncomingBundleChecker;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.uxkit.incoming.factory.IncomingCallFactory;
@@ -36,8 +38,7 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implements IVoxeetActivity {
 
-
-    private static final String TAG = VoxeetYoutubeAppCompatActivity.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(VoxeetYoutubeAppCompatActivity.class);
     private IncomingBundleChecker mIncomingBundleChecker;
 
     public VoxeetYoutubeAppCompatActivity() {
@@ -114,13 +115,13 @@ public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implemen
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PermissionRefusedEvent.RESULT_CAMERA: {
-                Log.d(TAG, "onActivityResult: camera is ok now");
+                Log.d("onActivityResult: camera is ok now");
                 if (VoxeetSDK.conference().isLive()) {
                     VoxeetSDK.conference().startVideo()
                             .then((result, solver) -> {
 
                             })
-                            .error(Throwable::printStackTrace);
+                            .error(Log::e);
                 }
                 return;
             }

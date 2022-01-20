@@ -3,23 +3,20 @@ package fr.voxeet.sdk.sample.activities;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.PromiseInOut;
-import com.voxeet.promise.solve.ErrorPromise;
-import com.voxeet.promise.solve.PromiseExec;
-import com.voxeet.promise.solve.Solver;
+import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.SocketStateChangeEvent;
 import com.voxeet.sdk.json.ParticipantInfo;
@@ -28,6 +25,8 @@ import com.voxeet.sdk.sample.R;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
 import com.voxeet.uxkit.activities.VoxeetAppCompatActivity;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 
 import org.greenrobot.eventbus.EventBus;
@@ -40,14 +39,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import fr.voxeet.sdk.sample.application.SampleApplication;
-import fr.voxeet.sdk.sample.main_screen.UserAdapter;
 import fr.voxeet.sdk.sample.main_screen.ParticipantItem;
+import fr.voxeet.sdk.sample.main_screen.UserAdapter;
 import fr.voxeet.sdk.sample.users.UsersHelper;
 
 public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter.UserClickListener {
 
     private static final int RECORD_AUDIO_RESULT = 0x20;
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(MainActivity.class);
 
     @Bind(R.id.join_conf_text)
     EditText joinConfEditText;
@@ -82,12 +81,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         users.setAdapter(new UserAdapter(this, UsersHelper.USER_ITEMS));
 
         if (null != force_test_overlay_switch) {
-            force_test_overlay_switch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ActivityToTestOverlay.start(MainActivity.this);
-                }
-            });
+            force_test_overlay_switch.setOnClickListener(v -> ActivityToTestOverlay.start(MainActivity.this));
         }
     }
 
@@ -101,7 +95,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         SessionService userService = VoxeetSDK.session();
         if (null != userService) userService.close()
                 .then(defaultConsume())
-                .error(createErrorDump());
+                .error(Log::e);
     }
 
     @Override
@@ -130,7 +124,7 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
         if (null != VoxeetSDK.conference() && VoxeetSDK.conference().isLive()) {
             VoxeetSDK.conference().leave()
                     .then(defaultConsume())
-                    .error(createErrorDump());
+                    .error(Log::e);
         } else {
             super.onBackPressed();
         }
@@ -157,17 +151,14 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
             }
 
             PromiseInOut<Conference, Object> create = service.create(conferenceAlias)
-                    .then(new PromiseExec<Conference, Object>() {
-                        @Override
-                        public void onCall(@Nullable Conference result, @NonNull Solver<Object> solver) {
-                            try {
-                                String conferenceId = null != result ? result.getId() : null;
-                                if (null == conferenceId)
-                                    throw new NullPointerException("ConferenceId null");
-                                solver.resolve(service.join(conferenceId));
-                            } catch (Exception e) {
-                                solver.reject(e);
-                            }
+                    .then((result, solver) -> {
+                        try {
+                            String conferenceId = null != result ? result.getId() : null;
+                            if (null == conferenceId)
+                                throw new NullPointerException("ConferenceId null");
+                            solver.resolve(service.join(conferenceId));
+                        } catch (Exception e) {
+                            solver.reject(e);
                         }
                     });
 
@@ -177,11 +168,11 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
                         .then(create)
                         //.then(VoxeetSdk.conference().startVideo())
                         .then(defaultConsume())
-                        .error(createErrorDump());
+                        .error(Log::e);
             } else {
                 create//.then(VoxeetSdk.conference().startVideo())
                         .then(defaultConsume())
-                        .error(createErrorDump());
+                        .error(Log::e);
             }
         }
     }
@@ -223,24 +214,10 @@ public class MainActivity extends VoxeetAppCompatActivity implements UserAdapter
 
         conferenceService.invite(conferenceService.getConferenceId(), users)
                 .then(defaultConsume())
-                .error(createErrorDump());
+                .error(Log::e);
     }
 
-    private <TYPE> PromiseExec<TYPE, Object> defaultConsume() {
-        return new PromiseExec<TYPE, Object>() {
-            @Override
-            public void onCall(@Nullable TYPE result, @NonNull Solver<Object> solver) {
-                Log.d(TAG, "onCall: promise managed done");
-            }
-        };
-    }
-
-    private ErrorPromise createErrorDump() {
-        return new ErrorPromise() {
-            @Override
-            public void onError(@NonNull Throwable error) {
-                error.printStackTrace();
-            }
-        };
+    private <TYPE> ThenVoid<TYPE> defaultConsume() {
+        return o -> Log.d( "onCall: promise managed done");
     }
 }

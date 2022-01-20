@@ -5,16 +5,14 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.AttributeSet;
+import android.view.View;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;

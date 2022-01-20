@@ -11,54 +11,56 @@ import android.telecom.PhoneAccountHandle;
 import android.telecom.RemoteConference;
 import android.telecom.RemoteConnection;
 import android.telecom.TelecomManager;
-import android.util.Log;
+
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 @TargetApi(Build.VERSION_CODES.M)
 public class VoxeetConnectionService extends ConnectionService {
 
-    private final String TAG = VoxeetConnectionService.class.getSimpleName();
+    private final static ShortLogger Log = UXKitLogger.createLogger(VoxeetConnectionService.class);
 
     private TelecomManager telecomManager;
 
     @Override
     public boolean bindService(Intent service, ServiceConnection conn, int flags) {
-        Log.e(TAG, "bindService");
+        Log.d("bindService");
         return super.bindService(service, conn, flags);
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.e(TAG, "1");
+        Log.d("onUnbind");
         return super.onUnbind(intent);
     }
 
     @Override
     public Connection onCreateIncomingConnection(PhoneAccountHandle connectionManagerPhoneAccount, ConnectionRequest request) {
-        Log.e(TAG, "2");
+        Log.d("onCreateIncomingConnection");
         return super.onCreateIncomingConnection(connectionManagerPhoneAccount, request);
     }
 
     @Override
     public Connection onCreateOutgoingConnection(PhoneAccountHandle connectionManagerPhoneAccount, ConnectionRequest request) {
-        Log.e(TAG, "3");
+        Log.d("onCreateOutgoingConnection");
         return super.onCreateOutgoingConnection(connectionManagerPhoneAccount, request);
     }
 
     @Override
     public void onConference(Connection connection1, Connection connection2) {
-        Log.e(TAG, "4");
+        Log.d("onConference");
         super.onConference(connection1, connection2);
     }
 
     @Override
     public void onRemoteConferenceAdded(RemoteConference conference) {
-        Log.e(TAG, "5");
+        Log.d("onRemoteConferenceAdded");
         super.onRemoteConferenceAdded(conference);
     }
 
     @Override
     public void onRemoteExistingConnectionAdded(RemoteConnection connection) {
-        Log.e(TAG, "6");
+        Log.d("onRemoteExistingConnectionAdded");
         super.onRemoteExistingConnectionAdded(connection);
     }
 
@@ -66,6 +68,6 @@ public class VoxeetConnectionService extends ConnectionService {
     public void onCreate() {
         super.onCreate();
 
-        Log.e(TAG, "on create ");
+        Log.d("onCreate");
     }
 }

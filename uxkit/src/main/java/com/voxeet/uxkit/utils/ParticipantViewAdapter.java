@@ -1,6 +1,9 @@
 package com.voxeet.uxkit.utils;
 
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -8,23 +11,19 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.implementation.VoxeetParticipantView;
-import com.voxeet.uxkit.implementation.VoxeetParticipantsView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantViewAdapter.ViewHolder> {
 
-    private final String TAG = VoxeetParticipantsView.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(ParticipantViewAdapter.class);
 
     @NonNull
     private LinearLayoutManager layoutManager;
@@ -259,7 +258,7 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
         if (first >= 0 && first <= last) {
 
             for (int index = first; index < layoutManager.getChildCount() && index <= last; index++) {
-                Log.d(TAG, "refreshVisible: index := " + index);
+                Log.d("refreshVisible: index := " + index);
                 View view = layoutManager.getChildAt(index);
                 if (null != view && view instanceof VoxeetParticipantView) {
                     VoxeetParticipantView participantView = (VoxeetParticipantView) view;
@@ -267,10 +266,10 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
                     if (null != participantView.getTag() && participantView.getTag() instanceof ViewHolder) {
                         manageParticipantView(participantView, (ViewHolder) participantView.getTag());
                     } else {
-                        Log.d(TAG, "refreshVisible: invalid tag " + participantView.getTag());
+                        Log.d("refreshVisible: invalid tag " + participantView.getTag());
                     }
                 } else {
-                    Log.d(TAG, "refreshVisible: invalid view " + view);
+                    Log.d("refreshVisible: invalid view " + view);
                 }
             }
         }
@@ -314,12 +313,12 @@ public class ParticipantViewAdapter extends RecyclerView.Adapter<ParticipantView
 
         holder.itemView.setOnClickListener(v -> {
             if (!on_air) {
-                Log.d(TAG, "onClick: click on an invalid user, we can't select hier");
+                Log.d("onClick: click on an invalid user, we can't select hier");
                 return;
             }
 
             if (null != user.getId()) {
-                Log.d(TAG, "onClick: selecting the user " + user.getId());
+                Log.d("onClick: selecting the user " + user.getId());
                 if (!equalsToUser(selectedUserId, user)) {
                     selectedUserId = user.getId();
 
