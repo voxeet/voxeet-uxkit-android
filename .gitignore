@@ -15,3 +15,5 @@ docs/
 
 *.class
 local.properties
+
+app/google-services.json
