@@ -18,10 +18,10 @@ def modules_sdk = [
 ]
 
 ext {
-    buildToolsVersion = "31.0.0"
+    buildToolsVersion = "32.0.0"
     minSdkVersion = 21
-    compileSdkVersion = 31
-    targetSdkVersion = 31
+    compileSdkVersion = 32
+    targetSdkVersion = 32
 
     groupId="com.voxeet.sdk"
     androidXCore = "1.6.0"
