@@ -1,9 +1,9 @@
 package com.voxeet.uxkit.controllers;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
@@ -15,6 +15,8 @@ import com.voxeet.sdk.models.v1.HistoryConference;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.utils.Opt;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.configuration.Configuration;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
 import com.voxeet.uxkit.implementation.overlays.abs.IExpandableViewProviderListener;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 
 public class ReplayMessageToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
-    private final static String TAG = ReplayMessageToolkitController.class.getSimpleName();
+    private final static ShortLogger Log = UXKitLogger.createLogger(ReplayMessageToolkitController.class);
     public final Configuration Configuration = new Configuration();
 
     private boolean _wait_for_history;
@@ -92,8 +94,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
                     _wait_for_history = false;
                 })
                 .error(throwable -> {
-                    Log.d(TAG, "onHistoryError: " + throwable.getMessage());
-                    throwable.printStackTrace();
+                    Log.e("onHistoryError: ", throwable);
 
                     _wait_for_history = false;
                 });
@@ -116,7 +117,7 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
                 .then((result, solver) -> {
                     //do something here ?
                 })
-                .error(Throwable::printStackTrace);
+                .error(Log::e);
     }
 
     @Override

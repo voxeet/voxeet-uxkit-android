@@ -1,10 +1,11 @@
 package com.voxeet.uxkit.youtube;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -14,12 +15,16 @@ import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
 
 /**
  * Simple implementation to help integrate youtube into Apps
  */
 public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implements YouTubePlayer.OnInitializedListener {
+
+    private final static ShortLogger Log = UXKitLogger.createLogger(YoutubeMediaPresentationView.class);
 
     private YouTubePlayerView youtubeView;
     private YouTubePlayer youtubePlayer;
@@ -125,7 +130,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
 
             youtubeView.initialize(youtubeKey, this);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(e);
         }
     }
 

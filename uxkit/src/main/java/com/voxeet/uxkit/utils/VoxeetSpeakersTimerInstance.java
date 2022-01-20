@@ -2,6 +2,7 @@ package com.voxeet.uxkit.utils;
 
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -13,6 +14,8 @@ import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -30,7 +33,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class VoxeetSpeakersTimerInstance {
 
-    public static final int REFRESH_METER = 100;
+    private final static ShortLogger Log = UXKitLogger.createLogger(VoxeetSpeakersTimerInstance.class);
+    public final static int REFRESH_METER = 100;
     private final static int INTERVALS_BEFORE_NEXT_SPEAKER_UPDATED = 15; //it will be * REFRESH_METER
     public final static VoxeetSpeakersTimerInstance instance = new VoxeetSpeakersTimerInstance();
     private final ActiveSpeakerHolder activeSpeakerHolder;
@@ -111,7 +115,7 @@ public final class VoxeetSpeakersTimerInstance {
                 }
                 handler.postDelayed(refreshActiveSpeaker, VoxeetSpeakersTimerInstance.REFRESH_METER);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(e);
             }
         };
     }
@@ -238,7 +242,7 @@ public final class VoxeetSpeakersTimerInstance {
             try {
                 speaker.onActiveSpeakerUpdated(currentActiveSpeaker);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(e);
             }
         }
     }
@@ -248,7 +252,7 @@ public final class VoxeetSpeakersTimerInstance {
             try {
                 speaker.onSpeakersUpdated();
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(e);
             }
         }
     }

@@ -7,13 +7,13 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.SystemClock;
-
-import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.models.Conference;

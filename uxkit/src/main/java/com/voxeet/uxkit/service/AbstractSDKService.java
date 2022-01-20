@@ -5,15 +5,12 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Handler;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
-
-import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
@@ -24,6 +21,8 @@ import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
 import com.voxeet.sdk.utils.Opt;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,7 +32,7 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Service {
 
-    private static final String TAG = AbstractSDKService.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(AbstractSDKService.class);
 
     @Nullable
     protected EventBus eventBus;
@@ -178,7 +177,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
 
             startForeground(getNotificationId(), notification);
         } else {
-            Log.d(TAG, "setForegroundState: impossible to set foreground, activity is null");
+            Log.d("setForegroundState: impossible to set foreground, activity is null");
         }
     }
 

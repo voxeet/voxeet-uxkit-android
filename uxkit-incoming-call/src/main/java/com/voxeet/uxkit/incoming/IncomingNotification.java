@@ -12,7 +12,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +23,8 @@ import com.voxeet.sdk.push.center.invitation.IIncomingInvitationListener;
 import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.sdk.utils.Opt;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.uxkit.incoming.factory.IncomingCallFactory;
 import com.voxeet.uxkit.incoming.manifest.DismissNotificationBroadcastReceiver;
@@ -35,7 +36,7 @@ public class IncomingNotification implements IIncomingInvitationListener {
     private static final String CHANNEL_ID = "voxeet_sdk_channel_video_conference";
 
     public final static int INCOMING_NOTIFICATION_REQUEST_CODE = 928;
-    private static final String TAG = IncomingNotification.class.getSimpleName();
+    private static final ShortLogger Log = UXKitLogger.createLogger(IncomingNotification.class.getSimpleName());
     public final static String EXTRA_NOTIFICATION_ID = "EXTRA_NOTIFICATION_ID";
 
     // will hold the various static configuration for the IncomingNotification
@@ -70,7 +71,7 @@ public class IncomingNotification implements IIncomingInvitationListener {
         dismiss.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
 
         if (null == accept) {
-            Log.d(TAG, "onInvitation: accept intent is null !! did you set the voxeet_incoming_accepted_class prop");
+            Log.d( "onInvitation: accept intent is null !! did you set the voxeet_incoming_accepted_class prop");
             return;
         }
 
@@ -97,6 +98,7 @@ public class IncomingNotification implements IIncomingInvitationListener {
         //TODO Android Use Full Screen Intent with according permission -> possible improvement
 
         notificationManager.notify(notificationId, lastNotification);
+        Log.d( "sending notification with id := " + notificationId);
     }
 
     @Nullable
@@ -105,12 +107,15 @@ public class IncomingNotification implements IIncomingInvitationListener {
 
         Class<? extends IVoxeetActivity> klass = IncomingCallFactory.getAcceptedIncomingActivityKlass();
         if (null == klass) {
+            Log.d( "createIntent: IncomingCallFactory.getAcceptedIncomingActivityKlass() is null");
+
             String klass_fully_qualified = getIncomingAcceptedClass(context);
             if (null != klass_fully_qualified) {
                 try {
                     klass = (Class<? extends IVoxeetActivity>) Class.forName(klass_fully_qualified);
+                    Log.d( "createIntent : obtained class " + klass.getSimpleName() + " to forward to");
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    Log.e( "createIntent: " + klass_fully_qualified + " resolution issue", e);
                 }
             }
         }

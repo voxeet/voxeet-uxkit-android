@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
@@ -44,6 +44,8 @@ import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.utils.ScreenHelper;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.configuration.Configuration;
 import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
 import com.voxeet.uxkit.implementation.VoxeetConferenceView;
@@ -77,6 +79,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 public abstract class AbstractConferenceToolkitController implements VoxeetOverlayContainerFrameLayout.OnSizeChangedListener {
+    private static final ShortLogger Log = UXKitLogger.createLogger(AbstractConferenceToolkitController.class);
+
     //TODO put this static variable into each controller with an abstract method to make sure of no collision with various impl
     private static OverlayState SAVED_OVERLAY_STATE = null;
 
@@ -141,7 +145,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     protected void init() {
         Activity activity = VoxeetToolkit.instance().getCurrentActivity();
 
-        Log.d(TAG, "init saved ?" + SAVED_OVERLAY_STATE);
+        Log.d("init saved ?" + SAVED_OVERLAY_STATE);
         if (null == SAVED_OVERLAY_STATE) {
             SAVED_OVERLAY_STATE = getDefaultOverlayState();
         }
@@ -259,7 +263,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                     service.requestAudioFocus();
                     service.checkOutputRoute();
 
-                    log("run: add view" + mMainView);
+                    Log.d("run: add view" + mMainView);
                     if (mMainView != null) {
                         boolean added = false;
                         Activity activity = getRootViewProvider().getCurrentActivity();
@@ -271,7 +275,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
                         ViewGroup viewHolder = (ViewGroup) mMainView.getParent();
                         if (null != viewHolder && null != root && root != viewHolder) {
-                            Log.d(TAG, "run: REMOVING MAIN VIEW FROM HOLDER" + root + " " + viewHolder);
+                            Log.d("run: REMOVING MAIN VIEW FROM HOLDER" + root + " " + viewHolder);
                             //viewHolder.removeView(mMainView);
                             viewHolder = (ViewGroup) mMainView.getParent();
                             if (viewHolder != null)
@@ -316,12 +320,12 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
         final boolean statement_release = should_release && release;
 
-        Log.d(TAG, "removeView: statement_release_1 " + statement_release);
+        Log.d("removeView: statement_release_1 " + statement_release);
 
         Runnable removeHold = () -> {
             //releasing the hold on the view
             if (statement_release) {
-                Log.d(TAG, "run: killing the saved overlay state 1");
+                Log.d("run: killing the saved overlay state 1");
                 if (!keepOverlayState) SAVED_OVERLAY_STATE = null;
 
                 mMainView = null;
@@ -335,14 +339,14 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                 if (view == mMainView || statement_release) {
                     if (viewParent.getParent() instanceof ViewGroup) {
 
-                        Log.d(TAG, "removeView: statement_release_2 true ");
+                        Log.d("removeView: statement_release_2 true ");
 
                         ViewGroup viewHolder = (ViewGroup) viewParent.getParent();
                         if (viewHolder != null)
                             viewHolder.removeView(viewParent);
                     } else {
 
-                        Log.d(TAG, "removeView: statement_release_3 true ");
+                        Log.d("removeView: statement_release_3 true ");
 
                         getRootViewProvider().onReleaseRootView();
                     }
@@ -352,10 +356,10 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
                 if (statement_release) {
                     //restore the saved state
-                    Log.d("DefaultRootViewProvider", "run: killing the saved overlay state " + keepOverlayState);
+                    Log.d("run: killing the saved overlay state " + keepOverlayState);
                     if (!keepOverlayState) SAVED_OVERLAY_STATE = null;
 
-                    Log.d(TAG, "run: AbstractConferenceToolkitController should release view " + view.getClass().getSimpleName());
+                    Log.d("run: AbstractConferenceToolkitController should release view " + view.getClass().getSimpleName());
                     view.onDestroy();
                     //if we still have the main view displayed
                     //but wanted to clear it
@@ -435,7 +439,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * Minimize the overlay
      */
     public void minimize() {
-        Log.d("DefaultRootViewProvider", "minimize");
+        Log.d("minimize");
         if (null != mMainView) mMainView.minimize();
         SAVED_OVERLAY_STATE = OverlayState.MINIMIZED;
     }
@@ -444,7 +448,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      * Maximize the overlay
      */
     public void maximize() {
-        Log.d("DefaultRootViewProvider", "maximize");
+        Log.d("maximize");
         if (null != mMainView) mMainView.expand();
         SAVED_OVERLAY_STATE = OverlayState.EXPANDED;
     }
@@ -526,7 +530,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ConferenceStatusUpdatedEvent event) {
-        Log.d("DefaultRootViewProvider", "onEvent: state " + event.state + " " + mMainView);
+        Log.d("onEvent: state " + event.state + " " + mMainView);
         switch (event.state) {
             case CREATING:
                 onConferenceCreatingEvent(event);
@@ -559,7 +563,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         //VoxeetSDK.audio().playSoundType(AudioType.RING);
         Activity activity = VoxeetToolkit.instance().getCurrentActivity();
 
-        log("onEvent: " + event.getClass().getSimpleName() + " " + activity);
+        Log.d("onEvent: " + event.getClass().getSimpleName() + " " + activity);
         if (activity != null) {
             if (isEnabled() && isInConference() && null == mMainView) init();
 
@@ -580,7 +584,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             VoxeetSDK.audio().playSoundType(AudioType.RING);
         } else {
             VoxeetSDK.audio().stopSoundType(AudioType.RING);
-            Log.d(TAG, "onEvent: your current conference type is not compatible with ringing");
+            Log.d("onEvent: your current conference type is not compatible with ringing");
         }
 
         Activity activity = VoxeetToolkit.instance().getCurrentActivity();
@@ -602,7 +606,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         if (validFilter(event.conference.getAlias()) || validFilter(event.conference.getId())) {
 
             if (isEnabled() && Configuration.Contextual.default_speaker_on) {
-                Log.d(TAG, "onConferenceJoinedEvent: switching to speaker");
+                Log.d("onConferenceJoinedEvent: switching to speaker");
                 VoxeetSDK.audio().enumerateDevices().then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
                     MediaDevice speaker = Map.find(mediaDevices,
                             mediaDevice -> mediaDevice.deviceType() == DeviceType.EXTERNAL_SPEAKER
@@ -611,12 +615,12 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                     if (null == speaker)
                         throw new IllegalStateException("Impossible to make output to speaker");
                     return VoxeetSDK.audio().connect(speaker);
-                }).error(error -> Log.e(TAG, "onError: ", error));
+                }).error(Log::e);
             }
 
             displayView();
 
-            log("onEvent: ConferenceJoinedSuccessEvent");
+            Log.d("onEvent: ConferenceJoinedSuccessEvent");
             if (mMainView != null) {
                 mMainView.onConferenceUsersListUpdate(getParticipants());
                 mMainView.onConferenceJoined(event.conference);
@@ -631,7 +635,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             VoxeetSDK.audio().playSoundType(AudioType.RING);
         } else {
             VoxeetSDK.audio().stopSoundType(AudioType.RING);
-            Log.d(TAG, "onEvent: your current conference type is not compatible with ringing");
+            Log.d("onEvent: your current conference type is not compatible with ringing");
         }
 
         if (showOnCreations)
@@ -646,7 +650,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull ParticipantAddedEvent event) {
-        log("onEvent: UserAddedEvent " + event.participant);
+        Log.d("onEvent: UserAddedEvent " + event.participant);
         if (mMainView != null) mMainView.onUserAddedEvent(event.conference, event.participant);
     }
 
@@ -654,7 +658,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     public void onEvent(final ParticipantUpdatedEvent event) {
         checkStopOutgoingCall();
 
-        log("onEvent: UserUpdatedEvent " + event);
+        Log.d("onEvent: UserUpdatedEvent " + event);
         if (mMainView != null) mMainView.onUserUpdatedEvent(event.conference, event.participant);
     }
 
@@ -695,7 +699,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     private void onConferenceError(ConferenceStatusUpdatedEvent event) {
-        Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
+        Log.d("onEvent: " + event.getClass().getSimpleName());
         VoxeetSDK.audio().stop();
 
         if (null != mMainView) {
@@ -712,12 +716,12 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPush event) {
-        Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
+        Log.d("onEvent: " + event.getClass().getSimpleName());
 
         //avoid leaving when received event for another conference
         //should not impact current flows since local events are already make the ui leave when the current user interacts in hi.er own conf
         if (!optConferenceId().equals(event.conferenceId)) {
-            Log.d(TAG, "onEvent: ConferenceDestroyedPush received for another conf. current:=" + optConferenceId() + " other:=" + event.conferenceId);
+            Log.d("onEvent: ConferenceDestroyedPush received for another conf. current:=" + optConferenceId() + " other:=" + event.conferenceId);
             return;
         }
 
@@ -737,12 +741,12 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceEnded event) {
-        Log.d("SoundPool", "onEvent: " + event.getClass().getSimpleName());
+        Log.d("onEvent: " + event.getClass().getSimpleName());
 
         //avoid leaving when received event for another conference
         //should not impact current flows since local events are already make the ui leave when the current user interacts in hi.er own conf
         if (!optConferenceId().equals(event.conferenceId)) {
-            Log.d(TAG, "onEvent: ConferenceDestroyedPush received for another conf. current:=" + optConferenceId() + " other:=" + event.conferenceId);
+            Log.d("onEvent: ConferenceDestroyedPush received for another conf. current:=" + optConferenceId() + " other:=" + event.conferenceId);
             return;
         }
 
@@ -793,7 +797,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(@NonNull LoadLastSavedOverlayStateEvent event) {
-        Log.d("DefaultRootViewProvider", "onEvent: LoadLastSavedOverlayStateEvent " + SAVED_OVERLAY_STATE);
+        Log.d("onEvent: LoadLastSavedOverlayStateEvent " + SAVED_OVERLAY_STATE);
         if (null != mMainView) {
             OverlayState state = SAVED_OVERLAY_STATE;
             if (null == state) state = getDefaultOverlayState();
@@ -804,10 +808,6 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                 minimize();
             }
         }
-    }
-
-    private void log(@NonNull String value) {
-        Log.d(TAG, value);
     }
 
     private void checkStopOutgoingCall() {
@@ -843,7 +843,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     @Override
     public void onSizedChangedListener(@NonNull VoxeetOverlayContainerFrameLayout view) {
-        Log.d(TAG, "onSizedChangedListener: " + SAVED_OVERLAY_STATE);
+        Log.d("onSizedChangedListener: " + SAVED_OVERLAY_STATE);
         if (null != mMainView) {
             switch (SAVED_OVERLAY_STATE) {
                 case MINIMIZED:

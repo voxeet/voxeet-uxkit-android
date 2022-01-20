@@ -1,12 +1,12 @@
 package com.voxeet.uxkit.implementation;
 
 import android.content.Context;
-
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 
 import com.voxeet.android.media.MediaStream;
 import com.voxeet.sdk.models.Conference;

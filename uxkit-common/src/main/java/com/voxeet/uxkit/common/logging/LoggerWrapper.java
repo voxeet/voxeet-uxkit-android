@@ -1,13 +1,11 @@
 package com.voxeet.uxkit.common.logging;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 /**
- * Send log messages to the logcat
+ * Interface describing what should be able to be logged
  */
-public class LoggerDefaultWrapper implements LoggerWrapper {
+public interface LoggerWrapper {
 
     /**
      * Send a debug message
@@ -15,10 +13,7 @@ public class LoggerDefaultWrapper implements LoggerWrapper {
      * @param tag  the tag to use
      * @param text the debug message
      */
-    @Override
-    public void d(@NonNull String tag, @NonNull String text) {
-        Log.d(tag, text);
-    }
+    void d(@NonNull String tag, @NonNull String text);
 
     /**
      * Send a warning message
@@ -26,10 +21,7 @@ public class LoggerDefaultWrapper implements LoggerWrapper {
      * @param tag  the tag to use
      * @param text the debug message
      */
-    @Override
-    public void w(@NonNull String tag, @NonNull String text) {
-        Log.w(tag, text);
-    }
+    void w(@NonNull String tag, @NonNull String text);
 
     /**
      * Send an information message
@@ -37,10 +29,7 @@ public class LoggerDefaultWrapper implements LoggerWrapper {
      * @param tag  the tag to use
      * @param text the debug message
      */
-    @Override
-    public void i(@NonNull String tag, @NonNull String text) {
-        Log.i(tag, text);
-    }
+    void i(@NonNull String tag, @NonNull String text);
 
     /**
      * Send an exception with the appropriate message
@@ -49,8 +38,6 @@ public class LoggerDefaultWrapper implements LoggerWrapper {
      * @param text      the debug message
      * @param throwable the exception
      */
-    @Override
-    public void e(@NonNull String tag, @NonNull String text, @NonNull Throwable throwable) {
-        Log.e(tag, text, throwable);
-    }
+    void e(@NonNull String tag, @NonNull String text, @NonNull Throwable throwable);
+
 }

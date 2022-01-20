@@ -2,7 +2,6 @@ package com.voxeet.uxkit.utils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
@@ -11,7 +10,6 @@ import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.models.v2.ParticipantType;
 import com.voxeet.sdk.utils.Map;
-import com.voxeet.sdk.utils.MapFilter;
 import com.voxeet.sdk.utils.Opt;
 
 import java.util.Arrays;

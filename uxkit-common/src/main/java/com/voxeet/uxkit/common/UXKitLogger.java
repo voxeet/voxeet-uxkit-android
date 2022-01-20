@@ -2,14 +2,15 @@ package com.voxeet.uxkit.common;
 
 import androidx.annotation.NonNull;
 
-import com.voxeet.uxkit.common.logging.ILoggerWrapper;
 import com.voxeet.uxkit.common.logging.Logger;
 import com.voxeet.uxkit.common.logging.LoggerDefaultOverride;
 import com.voxeet.uxkit.common.logging.LoggerDefaultWrapper;
+import com.voxeet.uxkit.common.logging.LoggerWrapper;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 /**
  * Global instance which by default includes the following output to logcat :
- *
+ * <p>
  * - sends messages with tag to "tag" (adb logcat -s tag) - filter to specific tags
  * - sends messages to UXKitLogger tag (adb logcat -s UXKitLogger) - broader output
  */
@@ -21,12 +22,13 @@ public class UXKitLogger {
 
     public static boolean enabled = false;
 
+
     /**
      * Register a new Logger to the list of loggers
      *
      * @param wrapper Add a new logger wrapper. No check is done for possible clones
      */
-    public void add(@NonNull ILoggerWrapper wrapper) {
+    public void add(@NonNull LoggerWrapper wrapper) {
         logger.add(wrapper);
     }
 
@@ -69,6 +71,39 @@ public class UXKitLogger {
      */
     public static void e(@NonNull String tag, @NonNull String text, @NonNull Throwable throwable) {
         if (enabled) logger.e(tag, text, throwable);
+    }
+
+    public static ShortLogger createLogger(@NonNull Class<?> klass) {
+        return createLogger(klass.getSimpleName());
+    }
+
+    public static ShortLogger createLogger(@NonNull String tag) {
+        return new ShortLogger() {
+            @Override
+            public void d(@NonNull String text) {
+                UXKitLogger.d(tag, text);
+            }
+
+            @Override
+            public void w(@NonNull String text) {
+                UXKitLogger.w(tag, text);
+            }
+
+            @Override
+            public void i(@NonNull String text) {
+                UXKitLogger.i(tag, text);
+            }
+
+            @Override
+            public void e(@NonNull Throwable throwable) {
+                UXKitLogger.e(tag, "Exception reported", throwable);
+            }
+
+            @Override
+            public void e(@NonNull String text, @NonNull Throwable throwable) {
+                UXKitLogger.e(tag, text, throwable);
+            }
+        };
     }
 
 }

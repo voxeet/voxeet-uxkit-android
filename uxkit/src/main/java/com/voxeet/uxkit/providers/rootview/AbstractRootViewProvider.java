@@ -3,12 +3,13 @@ package com.voxeet.uxkit.providers.rootview;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.views.internal.VoxeetOverlayContainerFrameLayout;
 
@@ -18,7 +19,9 @@ import com.voxeet.uxkit.views.internal.VoxeetOverlayContainerFrameLayout;
  */
 
 public abstract class AbstractRootViewProvider implements Application.ActivityLifecycleCallbacks {
-    private static final String TAG = AbstractRootViewProvider.class.getSimpleName();
+
+    private static final ShortLogger Log = UXKitLogger.createLogger(AbstractRootViewProvider.class);
+
     @NonNull
     private Application mApp; //initialized by constructor
 
@@ -53,7 +56,7 @@ public abstract class AbstractRootViewProvider implements Application.ActivityLi
     }
 
     public void registerLifecycleListener(Application.ActivityLifecycleCallbacks listener) {
-        Log.d(TAG, "registerLifecycleListener: " + listener);
+        Log.d("registerLifecycleListener: " + listener);
         mListener = listener;
     }
 

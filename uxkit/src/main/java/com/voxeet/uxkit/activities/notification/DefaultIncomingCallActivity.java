@@ -9,14 +9,13 @@ import android.media.Ringtone;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.WindowManager;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-import android.util.Log;
-import android.view.WindowManager;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.voxeet.VoxeetSDK;
@@ -43,6 +42,8 @@ import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.application.VoxeetApplication;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.utils.LoadLastSavedOverlayStateEvent;
 import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;
 
@@ -52,7 +53,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class DefaultIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
 
-    private final static String TAG = DefaultIncomingCallActivity.class.getSimpleName();
+    private final static ShortLogger Log = UXKitLogger.createLogger(DefaultIncomingCallActivity.class.getSimpleName());
     private static final String DEFAULT_VOXEET_INCOMING_CALL_DURATION_KEY = "voxeet_incoming_call_duration";
     private static final int DEFAULT_VOXEET_INCOMING_CALL_DURATION_VALUE = 40 * 1000;
     private static final int RECORD_AUDIO_RESULT = 0x10;
@@ -118,7 +119,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
             }
             return Promise.resolve(true);
         }).then(aBoolean -> {
-            Log.d(TAG, "onCall: user logged !");
+            Log.d("onCall: user logged !");
         }).error(simpleError(false));
     }
 
@@ -146,7 +147,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
 
         tryInitializedSDK().then((result) -> {
             if (!isResumed) {
-                Log.d(TAG, "onCall: not resumed, quit promise");
+                Log.d("onCall: not resumed, quit promise");
                 return;
             }
 
@@ -338,12 +339,12 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
             } else if (app instanceof VoxeetApplication) {
                 //if we have a VoxeetApplication, we can manage the state
                 ((VoxeetApplication) app).initializeSDK().then((result, sss) -> {
-                    Log.d(TAG, "onCall: sdk initialized now");
+                    Log.d("onCall: sdk initialized now");
                     solver.resolve(result);
                 }).error(solver::reject);
             } else {
                 //if we are
-                Log.d(TAG, "onCall: sdk not initialized, please make your App override VoxeetApplication and follow the README.md");
+                Log.d("onCall: sdk not initialized, please make your App override VoxeetApplication and follow the README.md");
                 solver.resolve(false);
             }
         });
@@ -351,7 +352,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
 
     private ErrorPromise simpleError(boolean quit) {
         return error -> {
-            error.printStackTrace();
+            Log.e(error);
             if (quit) finish();
         };
     }

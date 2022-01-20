@@ -14,9 +14,12 @@ import com.voxeet.sdk.push.center.NotificationCenter;
 import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
 
+    private final static ShortLogger Log = UXKitLogger.createLogger(DismissNotificationBroadcastReceiver.class.getSimpleName());
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -29,8 +32,11 @@ public class DismissNotificationBroadcastReceiver extends BroadcastReceiver {
         if (null != invitationBundle && null != invitationBundle.conferenceId) {
             InvitationBundle finalInvitationBundle = invitationBundle;
             createPromise(invitationBundle.conferenceId).then((result, solver) -> {
+                Log.d("sending onInvitationCanceledReceived");
                 NotificationCenter.instance.onInvitationCanceledReceived(context, finalInvitationBundle.conferenceId);
             }).error(error -> NotificationCenter.instance.onInvitationCanceledReceived(context, finalInvitationBundle.conferenceId));
+        } else {
+            Log.d("invalid bundle or bundle.conferenceId");
         }
     }
 

@@ -1,14 +1,16 @@
 package com.voxeet.uxkit.firebase.implementation;
 
 import android.content.Context;
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.voxeet.sdk.push.utils.NotificationHelper;
 import com.voxeet.sdk.services.notification.INotificationTokenProvider;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 /**
  * Simple Firebase wrapper
@@ -21,12 +23,12 @@ import com.voxeet.sdk.services.notification.INotificationTokenProvider;
  */
 public class FirebaseProvider implements INotificationTokenProvider {
 
+    private final static ShortLogger Log = UXKitLogger.createLogger(FirebaseProvider.class);
+
     private boolean _enabled;
-    private boolean _can_log;
 
     public FirebaseProvider() {
         _enabled = false;
-        _can_log = false;
     }
 
     /**
@@ -43,14 +45,8 @@ public class FirebaseProvider implements INotificationTokenProvider {
         return this;
     }
 
-    /**
-     * Defined if the current controller will log incoming strings
-     *
-     * @param can_log true or false
-     * @return the current controller to chain
-     */
+    @Deprecated
     public FirebaseProvider log(boolean can_log) {
-        _can_log = can_log;
         return this;
     }
 
@@ -63,7 +59,7 @@ public class FirebaseProvider implements INotificationTokenProvider {
     }
 
     public void log(@NonNull String string) {
-        if (_can_log) Log.d(getClass().getSimpleName(), string);
+        Log.d(string);
     }
 
     @Override
@@ -72,11 +68,10 @@ public class FirebaseProvider implements INotificationTokenProvider {
         try {
             String token = FirebaseInstanceId.getInstance().getToken();
             if (TextUtils.isEmpty(token))
-                Log.d("FirebaseProvider", "getToken: the token is null from FirebaseInstanceId...");
+                Log.d("getToken: the token is null from FirebaseInstanceId...");
             return token;
         } catch (IllegalStateException e) {
-            Log.d("FirebaseProvider", "FirebaseInstanceId.getInstance().getAccessToken() returned an IllegalStateException, you have an issue with your project configuration (google-services.json for instance)");
-            e.printStackTrace();
+            Log.e("FirebaseInstanceId.getInstance().getAccessToken() returned an IllegalStateException, you have an issue with your project configuration (google-services.json for instance)", e);
             return null;
         }
     }

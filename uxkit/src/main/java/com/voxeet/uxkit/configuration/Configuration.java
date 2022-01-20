@@ -1,7 +1,5 @@
 package com.voxeet.uxkit.configuration;
 
-import android.content.Context;
-
 /**
  * Hold the various sub-Configuration objects for the given Configuration instance.
  * It's mandatory for each Controllers to have one instance of this Class

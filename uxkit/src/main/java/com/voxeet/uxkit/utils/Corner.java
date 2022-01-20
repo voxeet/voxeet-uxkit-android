@@ -1,6 +1,7 @@
 package com.voxeet.uxkit.utils;
 
 import android.graphics.Point;
+
 import androidx.annotation.NonNull;
 
 public class Corner {

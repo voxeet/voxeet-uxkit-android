@@ -14,14 +14,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Contains and holds logger wrappers, it will receive and propagate messages to underlying instances
  */
-public class Logger implements ILoggerWrapper {
+public class Logger implements LoggerWrapper {
 
     private final static String TAG = Logger.class.getSimpleName();
 
     @NonNull
-    private final List<ILoggerWrapper> loggers;
+    private final List<LoggerWrapper> loggers;
 
-    public Logger(@NonNull ILoggerWrapper... loggers) {
+    public Logger(@NonNull LoggerWrapper... loggers) {
         this.loggers = new CopyOnWriteArrayList<>();
         this.loggers.addAll(Arrays.asList(loggers));
     }
@@ -30,7 +30,7 @@ public class Logger implements ILoggerWrapper {
      * Add a new logger to the list of known wrappers of this instance
      * @param logger
      */
-    public void add(@NonNull ILoggerWrapper logger) {
+    public void add(@NonNull LoggerWrapper logger) {
         loggers.add(logger);
     }
 
@@ -79,8 +79,8 @@ public class Logger implements ILoggerWrapper {
         safeRun(logger -> logger.e(tag, text, exception));
     }
 
-    private void safeRun(__Call<ILoggerWrapper> runnable) {
-        for (ILoggerWrapper logger : loggers) {
+    private void safeRun(__Call<LoggerWrapper> runnable) {
+        for (LoggerWrapper logger : loggers) {
             try {
                 runnable.apply(logger);
             } catch (Throwable throwable) {

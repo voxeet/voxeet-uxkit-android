@@ -8,18 +8,16 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
@@ -48,6 +46,8 @@ import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.configuration.ActionBar;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
@@ -65,7 +65,7 @@ import java.util.List;
  */
 public class VoxeetActionBarView extends VoxeetView {
 
-    private final String TAG = VoxeetActionBarView.class.getSimpleName();
+    private final static ShortLogger Log = UXKitLogger.createLogger(VoxeetActionBarView.class);
 
     /**
      * handling buttons visibility
@@ -236,13 +236,10 @@ public class VoxeetActionBarView extends VoxeetView {
         if (null != information && information.isOwnVideoStarted() && !MediaState.STARTED.equals(information.getVideoState())) {
             service.startVideo()
                     .then(aBoolean -> {
-                        Log.d(TAG, "onAttachedToWindow: starting video ? success:=" + aBoolean);
+                        Log.d("onAttachedToWindow: starting video ? success:=" + aBoolean);
                         updateCameraState();
                     })
-                    .error(error -> {
-                        Log.d(TAG, "onAttachedToWindow: starting video ? thrown:=" + error);
-                        error.printStackTrace();
-                    });
+                    .error(Log::e);
         }
 
         updateCameraState();
@@ -373,7 +370,7 @@ public class VoxeetActionBarView extends VoxeetView {
                 try {
                     onSpeakerAction.onMediaRouteButtonInteraction();
                 } catch (Exception e) {
-
+                    Log.e(e);
                 }
                 return;
             }
@@ -418,7 +415,7 @@ public class VoxeetActionBarView extends VoxeetView {
                     .then(aBoolean -> {
                         //manage the result ?
                     })
-                    .error(Throwable::printStackTrace);
+                    .error(Log::e);
         });
 
         microphone = v.findViewById(R.id.microphone);
@@ -636,7 +633,6 @@ public class VoxeetActionBarView extends VoxeetView {
         if (hangup != null)
             hangup_wrapper.setVisibility(displayLeave ? visibility : GONE);
 
-
         boolean screenShareEnabled = VoxeetToolkit.instance().getConferenceToolkit().isScreenShareEnabled();
         if (screenshare != null)
             screenshare_wrapper.setVisibility(displayScreenShare && screenShareEnabled ? visibility : GONE);
@@ -709,7 +705,7 @@ public class VoxeetActionBarView extends VoxeetView {
     private boolean checkPermission(@NonNull String permission, @NonNull String error_message,
                                     int result_code) {
         if (!Validate.hasPermissionInManifest(getContext(), permission)) {
-            Log.d(TAG, error_message);
+            Log.d(error_message);
             return false;
         } else if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_DENIED) {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -728,13 +724,11 @@ public class VoxeetActionBarView extends VoxeetView {
         service.enumerateDevices().then(devices -> {
             VoxeetActionBarView.this.devices = devices;
             updateSpeakerButtonWithDevices();
-        }).error(error -> {
-
-        });
+        }).error(Log::e);
     }
 
     private void updateSpeakerButtonWithDevices() {
-        Log.d(TAG, "updateSpeakerButtonWithDevices: ");
+        Log.d("updateSpeakerButtonWithDevices: ");
         ActionBar configuration = VoxeetToolkit.instance().getConferenceToolkit().Configuration.ActionBar;
         StateListDrawable selector_speaker = createOverridenSelector(configuration.speaker_on, configuration.speaker_off);
         StateListDrawable selector_hangup = createOverridenSelectorPressed(configuration.hangup, configuration.hangup_pressed);

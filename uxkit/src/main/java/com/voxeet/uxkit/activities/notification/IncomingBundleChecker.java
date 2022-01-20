@@ -3,9 +3,9 @@ package com.voxeet.uxkit.activities.notification;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.Log;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
@@ -15,12 +15,14 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.push.center.management.Constants;
 import com.voxeet.sdk.utils.AndroidManifest;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
 import com.voxeet.uxkit.incoming.factory.IncomingCallFactory;
 
 public class IncomingBundleChecker {
 
-    private final static String TAG = IncomingBundleChecker.class.getSimpleName();
+    private final static ShortLogger Log = UXKitLogger.createLogger(IncomingBundleChecker.class.getSimpleName());
 
     private final static String BUNDLE_EXTRA_BUNDLE = "BUNDLE_EXTRA_BUNDLE";
 
@@ -68,39 +70,41 @@ public class IncomingBundleChecker {
      * not from the incoming call activity (!)
      */
     public void onAccept() {
-        if (mConferenceId != null) {
-            Log.d(TAG, "onAccept: mConferenceId := " + mConferenceId);
-            //join the conference
-            Promise<Conference> join = VoxeetSDK.conference().join(mConferenceId);
-            //only when error() is called
+        if (mConferenceId == null) {
+            Log.d("onAccept: the conferenceId is invalid, dismissing...");
+            return;
+        }
+        Log.d("onAccept: mConferenceId := " + mConferenceId);
+        //join the conference
+        Promise<Conference> join = VoxeetSDK.conference().join(mConferenceId);
+        //only when error() is called
 
-            Log.d(TAG, "onAccept: isSocketOpen := " + VoxeetSDK.session().isSocketOpen());
-            if (!VoxeetSDK.session().isSocketOpen()) {
-                ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
+        Log.d("onAccept: isSocketOpen := " + VoxeetSDK.session().isSocketOpen());
+        if (!VoxeetSDK.session().isSocketOpen()) {
+            ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
-                if (null != userInfo) {
-                    VoxeetSDK.session().open(userInfo)
-                            .then((ThenPromise<Boolean, Conference>) aBoolean -> join)
-                            .then(result -> {
-                                Log.d(TAG, "onCall: join conference := " + result);
-                            })
-                            .error(Throwable::printStackTrace);
-                } else {
-                    Log.d(TAG, "onAccept: unable to log the user");
-                }
-            } else if (VoxeetSDK.conference().isLive()) {
-                VoxeetSDK.conference()
-                        .leave()
+            if (null != userInfo) {
+                VoxeetSDK.session().open(userInfo)
                         .then((ThenPromise<Boolean, Conference>) aBoolean -> join)
-                        .then(conference -> {
-                            Log.d(TAG, "onCall: resolved 1");
+                        .then(result -> {
+                            Log.d("onCall: join conference := " + result);
                         })
-                        .error(Throwable::printStackTrace);
+                        .error(Log::e);
             } else {
-                join.then(result -> {
-                    Log.d(TAG, "onCall: resolved");
-                }).error(Throwable::printStackTrace);
+                Log.d("onAccept: unable to log the user");
             }
+        } else if (VoxeetSDK.conference().isLive()) {
+            VoxeetSDK.conference()
+                    .leave()
+                    .then((ThenPromise<Boolean, Conference>) aBoolean -> join)
+                    .then(conference -> {
+                        Log.d("onCall: resolved 1");
+                    })
+                    .error(Log::e);
+        } else {
+            join.then(result -> {
+                Log.d("onCall: resolved");
+            }).error(Log::e);
         }
     }
 
@@ -162,14 +166,14 @@ public class IncomingBundleChecker {
     final public Intent createActivityAccepted(@NonNull Activity caller) {
         Class<? extends IVoxeetActivity> klass = IncomingCallFactory.getAcceptedIncomingActivityKlass();
         if (null == klass) {
-            Log.d(TAG, "createActivityAccepted: no klass defined ! we'll now try to load from the AndroidManifest");
+            Log.d("createActivityAccepted: no klass defined ! we'll now try to load from the AndroidManifest");
             String klass_fully_qualified = AndroidManifest.readMetadata(caller, "voxeet_incoming_accepted_class", null);
             if (null != klass_fully_qualified) {
                 try {
                     klass = (Class<? extends IVoxeetActivity>) Class.forName(klass_fully_qualified);
+                    Log.d("createActivityAccepted: " + klass.getSimpleName() + " obtained");
                 } catch (ClassNotFoundException e) {
-                    Log.d(TAG, "createActivityAccepted: ERROR !! IS THE KLASS VALID AND INHERITING VoxeetAppCompatActivity");
-                    e.printStackTrace();
+                    Log.e("createActivityAccepted: ERROR !! IS THE KLASS VALID AND INHERITING VoxeetAppCompatActivity", e);
                 }
             }
         }
@@ -209,6 +213,7 @@ public class IncomingBundleChecker {
      * in onResume/onPause lifecycle
      */
     public void flushIntent() {
+        Log.d("flushIntent");
         mIntent.removeExtra(Constants.INVITER_ID);
         mIntent.removeExtra(Constants.INVITER_EXTERNAL_ID);
         mIntent.removeExtra(Constants.CONF_ID);
@@ -224,6 +229,7 @@ public class IncomingBundleChecker {
             extra = mFillerListener.createExtraBundle();
 
         if (null == extra) extra = new Bundle();
+        Log.d("createExtraBundle created");
         return extra;
     }
 

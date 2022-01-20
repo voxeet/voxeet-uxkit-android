@@ -2,9 +2,10 @@ package com.voxeet.uxkit.utils;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+
+import androidx.annotation.NonNull;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
@@ -12,6 +13,8 @@ import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.media.camera.CameraContext;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.views.VideoView;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.implementation.VoxeetConferenceView;
 
 import java.lang.ref.WeakReference;
@@ -19,6 +22,8 @@ import java.lang.ref.WeakReference;
 import javax.annotation.Nullable;
 
 public class ConferenceViewRendererControl {
+
+    private final static ShortLogger Log = UXKitLogger.createLogger(ConferenceViewRendererControl.class);
 
     @NonNull
     private WeakReference<VoxeetConferenceView> parent;
@@ -225,7 +230,7 @@ public class ConferenceViewRendererControl {
                     CameraContext provider = VoxeetSDK.mediaDevice().getCameraContext();
                     updateMirror(provider.isDefaultFrontFacing());
                 })
-                .error(Throwable::printStackTrace);
+                .error(Log::e);
     }
 
     public void updateMirror(boolean isFrontCamera) {

@@ -8,18 +8,21 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.voxeet.uxkit.R;
+import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RoundedImageView extends ImageView {
 
-    public static final String TAG = "RoundedImageView";
+    private final static ShortLogger Log = UXKitLogger.createLogger(RoundedImageView.class);
+
     public static final float DEFAULT_RADIUS = 0f;
     public static final float DEFAULT_BORDER_WIDTH = 0f;
     private static final ScaleType[] SCALE_TYPES = {
@@ -191,7 +194,7 @@ public class RoundedImageView extends ImageView {
             try {
                 d = rsrc.getDrawable(mResource);
             } catch (Exception e) {
-                Log.w(TAG, "Unable to find resource: " + mResource, e);
+                Log.e("Unable to find resource: " + mResource, e);
                 // Don't try again.
                 mResource = 0;
             }

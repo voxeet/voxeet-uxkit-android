@@ -2,6 +2,7 @@ package com.voxeet.uxkit.service.manifests;
 
 import android.content.Context;
 import android.content.pm.ProviderInfo;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
