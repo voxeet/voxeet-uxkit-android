@@ -1,4 +1,4 @@
-package com.voxeet.uxkit.activities.notification;
+package com.voxeet.uxkit.common.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,8 +17,6 @@ import com.voxeet.sdk.push.center.management.Constants;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
-import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
-import com.voxeet.uxkit.incoming.factory.IncomingCallFactory;
 
 public class IncomingBundleChecker {
 
@@ -164,13 +162,13 @@ public class IncomingBundleChecker {
      */
     @NonNull
     final public Intent createActivityAccepted(@NonNull Activity caller) {
-        Class<? extends IVoxeetActivity> klass = IncomingCallFactory.getAcceptedIncomingActivityKlass();
+        Class<? extends VoxeetCommonAppCompatActivity> klass = ActivityInfoHolder.getAcceptedIncomingActivityKlass();
         if (null == klass) {
             Log.d("createActivityAccepted: no klass defined ! we'll now try to load from the AndroidManifest");
             String klass_fully_qualified = AndroidManifest.readMetadata(caller, "voxeet_incoming_accepted_class", null);
             if (null != klass_fully_qualified) {
                 try {
-                    klass = (Class<? extends IVoxeetActivity>) Class.forName(klass_fully_qualified);
+                    klass = (Class<? extends VoxeetCommonAppCompatActivity>) Class.forName(klass_fully_qualified);
                     Log.d("createActivityAccepted: " + klass.getSimpleName() + " obtained");
                 } catch (ClassNotFoundException e) {
                     Log.e("createActivityAccepted: ERROR !! IS THE KLASS VALID AND INHERITING VoxeetAppCompatActivity", e);
@@ -184,7 +182,7 @@ public class IncomingBundleChecker {
         Intent intent = new Intent(caller, klass);
 
         //inject the extras from the current "loaded" activity
-        Bundle extras = IncomingCallFactory.getAcceptedIncomingActivityExtras();
+        Bundle extras = ActivityInfoHolder.getAcceptedIncomingActivityExtras();
         if (null != extras) {
             intent.putExtras(extras);
         }

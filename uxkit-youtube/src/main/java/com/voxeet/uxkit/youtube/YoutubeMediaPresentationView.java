@@ -3,10 +3,13 @@ package com.voxeet.uxkit.youtube;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.youtube.player.ViewProvider;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
@@ -126,7 +129,10 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView implem
         try {
             View view = LayoutInflater.from(getContext()).inflate(R.layout.voxeet_youtube, this, false);
             addView(view);
-            youtubeView = findViewById(R.id.voxeet_youtube);
+            FrameLayout parent = findViewById(R.id.voxeet_youtube_parent);
+            youtubeView = ViewProvider.createView(getContext());
+
+            parent.addView(youtubeView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
             youtubeView.initialize(youtubeKey, this);
         } catch (Exception e) {

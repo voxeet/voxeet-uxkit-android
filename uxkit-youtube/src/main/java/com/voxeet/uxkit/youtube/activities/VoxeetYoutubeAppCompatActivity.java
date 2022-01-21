@@ -1,187 +1,25 @@
 package com.voxeet.uxkit.youtube.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import com.voxeet.uxkit.common.activity.VoxeetCommonAppCompatActivity;
+import com.voxeet.uxkit.common.service.AbstractSDKService;
+import com.voxeet.uxkit.common.service.SDKBinder;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
-import com.voxeet.VoxeetSDK;
-import com.voxeet.sdk.events.error.PermissionRefusedEvent;
-import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
-import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
-import com.voxeet.sdk.utils.Validate;
-import com.voxeet.uxkit.activities.notification.IncomingBundleChecker;
-import com.voxeet.uxkit.common.UXKitLogger;
-import com.voxeet.uxkit.common.logging.ShortLogger;
-import com.voxeet.uxkit.controllers.VoxeetToolkit;
-import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
-import com.voxeet.uxkit.incoming.factory.IncomingCallFactory;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-/**
- * VoxeetYoutubeAppCompatActivity manages the call state
- * This class is to be used in the context of any requirement to be able to play Youtube URL
- * <p>
- * In the current merged state, this class is not used
- * <p>
- * However, it is extremely easy to use this class now :
- * - manages automatically the bundles to join conferences when "resumed"
- * - automatically registers its subclasses's extra info to propagate to "recreated" instances
- * <p>
- * Few things to consider :
- * - singleTop / singleInstance
- */
-public class VoxeetYoutubeAppCompatActivity extends YouTubeBaseActivity implements IVoxeetActivity {
-
-    private static final ShortLogger Log = UXKitLogger.createLogger(VoxeetYoutubeAppCompatActivity.class);
-    private IncomingBundleChecker mIncomingBundleChecker;
+@Deprecated
+public class VoxeetYoutubeAppCompatActivity<T extends AbstractSDKService<? extends SDKBinder<T>>> extends VoxeetCommonAppCompatActivity<T> {
 
     public VoxeetYoutubeAppCompatActivity() {
         super();
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //create a check incoming call
-        mIncomingBundleChecker = new IncomingBundleChecker(getIntent(), null);
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-
-        VoxeetSDK.instance().register(this);
-
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this); //registering this activity
-        }
-
-        if (canBeRegisteredToReceiveCalls()) {
-            IncomingCallFactory.setTempAcceptedIncomingActivity(this.getClass());
-            IncomingCallFactory.setTempExtras(getIntent().getExtras());
-        }
-
-        if (mIncomingBundleChecker.isBundleValid()) {
-            mIncomingBundleChecker.onAccept();
-        }
-
-        VoxeetSDK.screenShare().consumeRightsToScreenShare();
-
-        VoxeetToolkit.instance().getConferenceToolkit().forceReattach();
-    }
-
-    @Override
-    protected void onPause() {
-        //stop fetching stats if any pending
-        if (!VoxeetSDK.conference().isLive()) {
-            VoxeetSDK.localStats().stopAutoFetch();
-        }
-
-        EventBus.getDefault().unregister(this);
-
-        super.onPause();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        mIncomingBundleChecker = new IncomingBundleChecker(intent, null);
-        if (mIncomingBundleChecker.isBundleValid()) {
-            mIncomingBundleChecker.onAccept();
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(@NonNull PermissionRefusedEvent event) {
-        switch (event.getPermission()) {
-            case CAMERA:
-            case MICROPHONE:
-                Validate.requestMandatoryPermissions(this,
-                        event.getPermission().getPermissions(),
-                        event.getPermission().getRequestCode());
-                break;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PermissionRefusedEvent.RESULT_CAMERA: {
-                Log.d("onActivityResult: camera is ok now");
-                if (VoxeetSDK.conference().isLive()) {
-                    VoxeetSDK.conference().startVideo()
-                            .then((result, solver) -> {
-
-                            })
-                            .error(Log::e);
-                }
-                return;
-            }
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        boolean managed = VoxeetSDK.screenShare().onActivityResult(requestCode, resultCode, data);
-
-        if (!managed) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(RequestScreenSharePermissionEvent event) {
-        VoxeetSDK.screenShare().sendUserPermissionRequest(this);
-    }
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Specific event used to manage the current "incoming" call feature
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public final void onEvent(ConferenceStatusUpdatedEvent event) {
-        mIncomingBundleChecker.flushIntent();
-        onConferenceState(event);
-    }
-
-    protected void onConferenceState(@NonNull ConferenceStatusUpdatedEvent event) {
-
-    }
-
-    /**
-     * Get the current voxeet bundle checker
-     * <p>
-     * usefull to retrieve info about the notification (if such)
-     * - user name
-     * - avatar url
-     * - conference id
-     * - user id
-     * - external user id
-     * - extra bundle (custom)
-     *
-     * @return a nullable object
-     */
-    @Nullable
-    protected IncomingBundleChecker getExtraVoxeetBundleChecker() {
-        return mIncomingBundleChecker;
-    }
-
-    /**
-     * Method called during the onResume of this
-     *
-     * @return true by default, override to change behaviour
-     */
-    protected boolean canBeRegisteredToReceiveCalls() {
-        return true;
     }
 }

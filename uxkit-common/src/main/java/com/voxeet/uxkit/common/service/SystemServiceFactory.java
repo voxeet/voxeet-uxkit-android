@@ -1,18 +1,18 @@
-package com.voxeet.uxkit.service;
+package com.voxeet.uxkit.common.service;
+
+import android.app.Activity;
 
 import androidx.annotation.Nullable;
-
-import com.voxeet.uxkit.activities.VoxeetAppCompatActivity;
 
 public class SystemServiceFactory {
 
     private static Class<? extends AbstractSDKService> sdk_service_klass;
 
     @Nullable
-    private static Class<? extends VoxeetAppCompatActivity> klass;
+    private static Class<? extends Activity> klass;
 
     @Nullable
-    private static Class<? extends VoxeetAppCompatActivity> forcedKlass;
+    private static Class<? extends Activity> forcedKlass;
 
     private SystemServiceFactory() {
 
@@ -32,16 +32,16 @@ public class SystemServiceFactory {
     }
 
     @Nullable
-    public static Class<? extends VoxeetAppCompatActivity> getAppCompatActivity() {
+    public static Class<? extends Activity> getAppCompatActivity() {
         if (null != forcedKlass) return forcedKlass;
         return klass;
     }
 
-    public static void setForcedAppCompatActivity(@Nullable Class<? extends VoxeetAppCompatActivity> forcedKlass) {
+    public static void setForcedAppCompatActivity(@Nullable Class<? extends Activity> forcedKlass) {
         SystemServiceFactory.forcedKlass = forcedKlass;
     }
 
-    public static void setLastAppCompatActivity(@Nullable Class<? extends VoxeetAppCompatActivity> klass) {
+    public static void setLastAppCompatActivity(@Nullable Class<? extends Activity> klass) {
         SystemServiceFactory.klass = klass;
     }
 }

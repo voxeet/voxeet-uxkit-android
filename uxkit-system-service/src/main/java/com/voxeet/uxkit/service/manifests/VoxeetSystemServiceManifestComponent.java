@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
-import com.voxeet.uxkit.service.SystemServiceFactory;
+import com.voxeet.uxkit.common.service.SystemServiceFactory;
 import com.voxeet.uxkit.service.VoxeetSystemService;
 
 public final class VoxeetSystemServiceManifestComponent extends AbstractManifestComponentProvider {
