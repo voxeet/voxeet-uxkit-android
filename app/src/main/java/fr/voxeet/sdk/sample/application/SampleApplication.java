@@ -31,6 +31,8 @@ public class SampleApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        UXKitLogger.enabled = true;
+
         VoxeetSDK.initialize(
                 BuildConfig.CONSUMER_KEY,
                 BuildConfig.CONSUMER_SECRET

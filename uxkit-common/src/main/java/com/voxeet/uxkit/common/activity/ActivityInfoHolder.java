@@ -1,17 +1,17 @@
-package com.voxeet.uxkit.incoming.factory;
+package com.voxeet.uxkit.common.activity;
 
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
 /**
- * Factory use to store and make the integration of the VoxeetActivities easier
+ * Use to store and make the integration of the VoxeetActivities easier
  */
 
-public class IncomingCallFactory {
+public class ActivityInfoHolder {
 
     @Nullable
-    private static Class<? extends IVoxeetActivity> sAcceptedIncomingActivityKlass;
+    private static Class<? extends VoxeetCommonAppCompatActivity> sAcceptedIncomingActivityKlass;
 
     @Nullable
     private static Bundle sAcceptedIncomingActivityExtras;
@@ -21,7 +21,7 @@ public class IncomingCallFactory {
      *
      * @param klass a nullable klass (null = reset)
      */
-    public static void setTempAcceptedIncomingActivity(@Nullable Class<? extends IVoxeetActivity> klass) {
+    public static void setTempAcceptedIncomingActivity(@Nullable Class<? extends VoxeetCommonAppCompatActivity> klass) {
         sAcceptedIncomingActivityKlass = klass;
     }
 
@@ -35,7 +35,7 @@ public class IncomingCallFactory {
      * @return a valid instance of Class<VoxeetAppCompatActivity>
      */
     @Nullable
-    public static Class<? extends IVoxeetActivity> getAcceptedIncomingActivityKlass() {
+    public static Class<? extends VoxeetCommonAppCompatActivity> getAcceptedIncomingActivityKlass() {
         return sAcceptedIncomingActivityKlass;
     }
 

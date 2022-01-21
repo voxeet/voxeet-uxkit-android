@@ -24,9 +24,10 @@ import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.activity.ActivityInfoHolder;
+import com.voxeet.uxkit.common.activity.VoxeetCommonAppCompatActivity;
 import com.voxeet.uxkit.common.logging.ShortLogger;
-import com.voxeet.uxkit.incoming.factory.IVoxeetActivity;
-import com.voxeet.uxkit.incoming.factory.IncomingCallFactory;
+import com.voxeet.uxkit.common.notification.IncomingNotificationHelper;
 import com.voxeet.uxkit.incoming.manifest.DismissNotificationBroadcastReceiver;
 
 import java.security.SecureRandom;
@@ -37,7 +38,6 @@ public class IncomingNotification implements IIncomingInvitationListener {
 
     public final static int INCOMING_NOTIFICATION_REQUEST_CODE = 928;
     private static final ShortLogger Log = UXKitLogger.createLogger(IncomingNotification.class.getSimpleName());
-    public final static String EXTRA_NOTIFICATION_ID = "EXTRA_NOTIFICATION_ID";
 
     // will hold the various static configuration for the IncomingNotification
     // to edit, preferrably use either Factory component in the manifest or Application override when dealing with FCM
@@ -67,8 +67,8 @@ public class IncomingNotification implements IIncomingInvitationListener {
         Intent accept = createIntent(context, invitationBundle);
         Intent dismiss = createDismissIntent(context, invitationBundle);
 
-        if (null != accept) accept.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
-        dismiss.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
+        if (null != accept) accept.putExtra(IncomingNotificationHelper.EXTRA_NOTIFICATION_ID, notificationId);
+        dismiss.putExtra(IncomingNotificationHelper.EXTRA_NOTIFICATION_ID, notificationId);
 
         if (null == accept) {
             Log.d( "onInvitation: accept intent is null !! did you set the voxeet_incoming_accepted_class prop");
@@ -105,14 +105,14 @@ public class IncomingNotification implements IIncomingInvitationListener {
     private Intent createIntent(@NonNull Context context, @NonNull InvitationBundle invitationBundle) {
         Bundle extra = invitationBundle.asBundle();
 
-        Class<? extends IVoxeetActivity> klass = IncomingCallFactory.getAcceptedIncomingActivityKlass();
+        Class<? extends VoxeetCommonAppCompatActivity> klass = ActivityInfoHolder.getAcceptedIncomingActivityKlass();
         if (null == klass) {
             Log.d( "createIntent: IncomingCallFactory.getAcceptedIncomingActivityKlass() is null");
 
             String klass_fully_qualified = getIncomingAcceptedClass(context);
             if (null != klass_fully_qualified) {
                 try {
-                    klass = (Class<? extends IVoxeetActivity>) Class.forName(klass_fully_qualified);
+                    klass = (Class<? extends VoxeetCommonAppCompatActivity>) Class.forName(klass_fully_qualified);
                     Log.d( "createIntent : obtained class " + klass.getSimpleName() + " to forward to");
                 } catch (ClassNotFoundException e) {
                     Log.e( "createIntent: " + klass_fully_qualified + " resolution issue", e);
@@ -126,7 +126,7 @@ public class IncomingNotification implements IIncomingInvitationListener {
         Intent intent = new Intent(context, klass);
 
         //inject the extras from the current "loaded" activity
-        Bundle extras = IncomingCallFactory.getAcceptedIncomingActivityExtras();
+        Bundle extras = ActivityInfoHolder.getAcceptedIncomingActivityExtras();
         if (null != extras) {
             intent.putExtras(extras);
         }

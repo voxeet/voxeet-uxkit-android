@@ -43,6 +43,7 @@ import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.application.VoxeetApplication;
 import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.activity.IncomingBundleChecker;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.utils.LoadLastSavedOverlayStateEvent;
 import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;

@@ -1,4 +1,4 @@
-package com.voxeet.uxkit.service;
+package com.voxeet.uxkit.common.service;
 
 import android.app.Activity;
 import android.app.Notification;

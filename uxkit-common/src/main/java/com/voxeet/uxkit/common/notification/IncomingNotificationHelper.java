@@ -1,4 +1,4 @@
-package com.voxeet.uxkit.utils;
+package com.voxeet.uxkit.common.notification;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.voxeet.VoxeetSDK;
-import com.voxeet.uxkit.incoming.IncomingNotification;
 
 /**
  * Help integration to automatically invitation into conferences
@@ -26,6 +25,7 @@ import com.voxeet.uxkit.incoming.IncomingNotification;
  * - ConferenceStatusUpdatedEvent for the Conference, the SDK may be calling for joining in parallel, this way, the notification gets cleaned at the same time
  */
 public class IncomingNotificationHelper {
+    public final static String EXTRA_NOTIFICATION_ID = "EXTRA_NOTIFICATION_ID";
 
     /**
      * Dismiss a possible Notification from the SystemBar if the `IncomingNotification.EXTRA_NOTIFICATION_ID` is referenced in the `Intent`
@@ -36,7 +36,7 @@ public class IncomingNotificationHelper {
      */
     public static boolean dismiss(@NonNull Context context,
                                   @NonNull Intent intent) {
-        String key = IncomingNotification.EXTRA_NOTIFICATION_ID;
+        String key = IncomingNotificationHelper.EXTRA_NOTIFICATION_ID;
         if (intent.hasExtra(key)) {
             int notificationId = intent.getIntExtra(key, -1);
             if (dismiss(context, notificationId)) {
