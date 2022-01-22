@@ -9,9 +9,17 @@ After accepting the [Dolby Software License Agreement](https://github.com/voxeet
 ```
 allprojects {
     repositories {
-        maven { url "https://android-sdk.voxeet.com/release" }
         ...
+        maven { url "https://android-sdk.voxeet.com/release" }
     }
+}
+```
+
+In your app's build.gradle :
+
+```gradle
+dependencies {
+  compile ('com.voxeet.sdk:uxkit:3.+') { transitive = true }
 }
 ```
 
@@ -19,85 +27,9 @@ allprojects {
 
 ### Available stable versions
 
-The list will only feature new most recents versions
+[Refer to the releases](https://github.com/voxeet/voxeet-uxkit-android/releases)
 
-#### v3.3.0
-
-- Use SDK 3.3.0
-- Set build tools/compile and target to 31.0.0
-- Fix texts in the translations
-
-#### v3.2.3
-
-- Use SDK 3.2.3
-- Fix an issue where the invitation notification could be dismissed without active interactions
-
-#### v3.2.2
-
-- Use SDK 3.2.2
-
-#### v3.2.1
-
-- The SDK 3.2.0 add a missing dependency block ; this fix adds the expected SoLoader dependency
-
-#### v3.2.0
-
-- Official compatibiltiy with SDK 3.2+
-- Removed deprecated toolkit classes (replaced by uxkit classes)
-- Fix issue where the mute button could be disabled even with microphone permission granted
-
-#### v3.1.4
-
-Compatibility for SDK 3.2+ where the documentation annotations changed
-
-#### v3.1.3
-
-use SDK version 3.1.4 which updates device database
-
-#### v3.1.2
-
-use SDK version 3.1.2
-
-#### v3.0.4
-
-use SDK version v3.0.3
-
-- Add enhanced action buttons
-- add maximize and minimize methods
-
-#### v3.0.3
-
-use SDK version v3.0.3
-
-- VoxeetSDK.instance() is always valid
-- VoxeetSDK.<services()> are always instantiated
-- VoxeetSDK.initialize(...) still needs to be called to enable network-related calls
-- The speaker action refreshes the devices on top of displaying those media devices
-- Media output shows properly the list's text color
-- Add static IncomingNotification.Configuration to override some fields
-
-### Available beta versions
-
-#### v3.0.3-BETA2
-
-use beta version of the SDK, v3.0.3-BETA2012071606
-
-- VoxeetSDK.instance() is always valid
-- VoxeetSDK.<services()> are always instantiated
-- VoxeetSDK.initialize(...) still needs to be called to enable network-related calls
-- The speaker action refreshes the devices on top of displaying those media devices
-- Media output shows properly the list's text color
-- Add static IncomingNotification.Configuration to override some fields
-
-### App's dependencies
-
-Then update the app's dependencies with :
-
-```gradle
-dependencies {
-  compile ('com.voxeet.sdk:uxkit:3.+') { transitive = true }
-}
-```
+### Integration
 
 See the main process and our various articles on our [website](https://dolby.io/developers/interactivity-apis/client-ux-kit/uxkit-voxeet-java)
 
@@ -107,7 +39,7 @@ See the main process and our various articles on our [website](https://dolby.io/
 
 MIT License
 
-Copyright (c) 2020 Voxeet
+Copyright (c) 2020 - 2022 Voxeet
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
