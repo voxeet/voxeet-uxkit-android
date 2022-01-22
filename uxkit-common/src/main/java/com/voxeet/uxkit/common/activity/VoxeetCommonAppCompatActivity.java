@@ -10,11 +10,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.voxeet.VoxeetSDK;
+import com.voxeet.audio.utils.__Call;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
@@ -22,12 +25,18 @@ import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.common.notification.IncomingNotificationHelper;
+import com.voxeet.uxkit.common.permissions.IRequestPermissions;
+import com.voxeet.uxkit.common.permissions.PermissionController;
 import com.voxeet.uxkit.common.service.AbstractSDKService;
 import com.voxeet.uxkit.common.service.SDKBinder;
 import com.voxeet.uxkit.common.service.SystemServiceFactory;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * VoxeetAppCompatActivity manages the call state
@@ -48,6 +57,14 @@ public class VoxeetCommonAppCompatActivity<T extends AbstractSDKService<? extend
 
     @Nullable
     private T sdkService;
+
+    @Nullable
+    private __Call<Map<String, Boolean>> tempRequestCallback;
+    @Nullable
+    private List<String> tempPermissions;
+
+    private ActivityResultLauncher<String[]> multiplePermissions;
+    private ActivityResultLauncher<String> singlePermission;
 
     /**
      * Flag set to true when the last request for camera permission failed, use the commit method to restore it to false
@@ -75,12 +92,27 @@ public class VoxeetCommonAppCompatActivity<T extends AbstractSDKService<? extend
         //create a check incoming call
         mIncomingBundleChecker = new IncomingBundleChecker(getIntent(), null);
 
+        ActivityResultContracts.RequestMultiplePermissions multipleContract = new ActivityResultContracts.RequestMultiplePermissions();
+        multiplePermissions = registerForActivityResult(multipleContract, permissionCallback::apply);
+        ActivityResultContracts.RequestPermission singleContract = new ActivityResultContracts.RequestPermission();
+        singlePermission = registerForActivityResult(singleContract, result -> {
+            if(null == tempPermissions || tempPermissions.size() == 0) {
+                return;
+            }
+            Map<String, Boolean> map = new HashMap<>();
+            map.put(tempPermissions.get(0), result);
+            permissionCallback.apply(map);
+        });
+
         startService();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        PermissionController.register(requestPermissions);
+
         SystemServiceFactory.setLastAppCompatActivity(getClass());
         startService();
 
@@ -284,5 +316,25 @@ public class VoxeetCommonAppCompatActivity<T extends AbstractSDKService<? extend
         }
         return false;
     }
+
+    @NonNull
+    private __Call<Map<String, Boolean>> permissionCallback = new __Call<Map<String, Boolean>>() {
+        @Override
+        public void apply(Map<String, Boolean> update) {
+            if(null != tempRequestCallback) tempRequestCallback.apply(update);
+        }
+    };
+
+    private IRequestPermissions requestPermissions = (permissions, callback) -> {
+        tempRequestCallback = callback;
+        tempPermissions = permissions;
+
+        if (permissions.size() > 1) {
+            multiplePermissions.launch(permissions.toArray(new String[0]));
+        } else {
+            String perm = permissions.get(0);
+            singlePermission.launch(perm);
+        }
+    };
 }
 
