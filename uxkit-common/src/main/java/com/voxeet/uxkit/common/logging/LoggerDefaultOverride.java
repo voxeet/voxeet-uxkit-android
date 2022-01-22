@@ -4,6 +4,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.voxeet.uxkit.common.UXKitLogger;
+
 /**
  * Send log messages to the logcat, the tags will be the one set when being built but messages will be :
  * "tag :: message"
@@ -24,7 +26,7 @@ public class LoggerDefaultOverride extends LoggerDefaultWrapper {
      */
     @Override
     public void d(@NonNull String tag, @NonNull String text) {
-        Log.d(overrideTag, tag + " :: " + text);
+        if (UXKitLogger.logcatEnabled) Log.d(overrideTag, tag + " :: " + text);
     }
 
     /**
@@ -35,7 +37,7 @@ public class LoggerDefaultOverride extends LoggerDefaultWrapper {
      */
     @Override
     public void w(@NonNull String tag, @NonNull String text) {
-        Log.w(overrideTag, tag + " :: " + text);
+        if (UXKitLogger.logcatEnabled) Log.w(overrideTag, tag + " :: " + text);
     }
 
     /**
@@ -46,7 +48,7 @@ public class LoggerDefaultOverride extends LoggerDefaultWrapper {
      */
     @Override
     public void i(@NonNull String tag, @NonNull String text) {
-        Log.i(overrideTag, tag + " :: " + text);
+        if (UXKitLogger.logcatEnabled) Log.i(overrideTag, tag + " :: " + text);
     }
 
     /**
@@ -58,6 +60,6 @@ public class LoggerDefaultOverride extends LoggerDefaultWrapper {
      */
     @Override
     public void e(@NonNull String tag, @NonNull String text, @NonNull Throwable throwable) {
-        Log.e(overrideTag, tag + " :: " + text, throwable);
+        if (UXKitLogger.logcatEnabled) Log.e(overrideTag, tag + " :: " + text, throwable);
     }
 }
