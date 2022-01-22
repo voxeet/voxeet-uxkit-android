@@ -4,6 +4,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.voxeet.uxkit.common.UXKitLogger;
+
 /**
  * Send log messages to the logcat
  */
@@ -17,7 +19,7 @@ public class LoggerDefaultWrapper implements LoggerWrapper {
      */
     @Override
     public void d(@NonNull String tag, @NonNull String text) {
-        Log.d(tag, text);
+        if(UXKitLogger.logcatEnabled) Log.d(tag, text);
     }
 
     /**
@@ -28,7 +30,7 @@ public class LoggerDefaultWrapper implements LoggerWrapper {
      */
     @Override
     public void w(@NonNull String tag, @NonNull String text) {
-        Log.w(tag, text);
+        if(UXKitLogger.logcatEnabled) Log.w(tag, text);
     }
 
     /**
@@ -39,7 +41,7 @@ public class LoggerDefaultWrapper implements LoggerWrapper {
      */
     @Override
     public void i(@NonNull String tag, @NonNull String text) {
-        Log.i(tag, text);
+        if(UXKitLogger.logcatEnabled) Log.i(tag, text);
     }
 
     /**
@@ -51,6 +53,6 @@ public class LoggerDefaultWrapper implements LoggerWrapper {
      */
     @Override
     public void e(@NonNull String tag, @NonNull String text, @NonNull Throwable throwable) {
-        Log.e(tag, text, throwable);
+        if(UXKitLogger.logcatEnabled) Log.e(tag, text, throwable);
     }
 }

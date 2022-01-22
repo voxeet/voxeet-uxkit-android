@@ -22,6 +22,11 @@ public class UXKitLogger {
 
     public static boolean enabled = false;
 
+    // during UXKit local development, enable the 2 default logcat's loggers
+    // while developing a project using the UXKit, this needs to be set to true/false depending on the requirements
+    // for instance UXKitLogger = BuildConfig.DEBUG (where BuildConfig is in this case the projet's BuildConfig, not UXKit's
+    public static boolean logcatEnabled = BuildConfig.DEBUG;
+
 
     /**
      * Register a new Logger to the list of loggers
