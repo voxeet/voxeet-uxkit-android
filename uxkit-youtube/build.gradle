@@ -46,7 +46,7 @@ configurations {
 }
 
 dependencies {
-    implementation files([ "src/libs/YouTubeAndroidPlayerApi.jar" ])
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.26'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
