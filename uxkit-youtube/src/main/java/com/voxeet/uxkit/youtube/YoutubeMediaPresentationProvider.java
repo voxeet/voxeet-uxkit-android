@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.voxeet.uxkit.common.logging.ShortLogger;
+import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
 
 /**
@@ -12,25 +14,12 @@ import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
  */
 public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvider<YoutubeMediaPresentationView> {
 
-    @Nullable
-    private static String youtubeKey;
+    private final static ShortLogger Log = UXKitLogger.createLogger(YoutubeMediaPresentationProvider.class);
 
     /**
      * Constructor with the developer's app key
      */
     public YoutubeMediaPresentationProvider() {
-    }
-
-    /**
-     * Set the Youtube API Key for the current session
-     *
-     * This method must be call upon initialization or as soon as it is known by the app (before any conference,
-     * if any video must be played during a call, a crash will be triggered)
-     *
-     * @param youtubeKey a valid key obtained from google's developer website
-     */
-    public static void setApiKey(@NonNull String youtubeKey) {
-        YoutubeMediaPresentationProvider.youtubeKey = youtubeKey;
     }
 
     /**
@@ -40,7 +29,9 @@ public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvide
      */
     @Override
     public boolean isUrlCompatible(@NonNull String url) {
-        return url.startsWith("https://youtube.com/") || url.startsWith("https://youtu.be/");
+        boolean compatible = url.startsWith("https://youtube.com/") || url.startsWith("https://youtu.be/");
+        Log.d("isUrlCompatible " + url + " " + compatible);
+        return compatible;
     }
 
     /**
@@ -51,7 +42,7 @@ public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvide
     @NonNull
     @Override
     public YoutubeMediaPresentationView createMediaPlayerView(@NonNull Context context) {
-        if(null == youtubeKey) throw new NullPointerException("oopsi invalid youtube key");
-        return new YoutubeMediaPresentationView(youtubeKey, context);
+        Log.d("createMediaPlayerView called");
+        return new YoutubeMediaPresentationView(context);
     }
 }
