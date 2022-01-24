@@ -12,9 +12,17 @@ buildscript {
 }
 
 def modules_sdk = [
-        'uxkit', 'uxkit-exoplayer-support', 'uxkit-firebase',
+        // main module
+        'uxkit',
+        // firebase support
+        'uxkit-firebase',
+        // in conference specific "presentation"
+        'uxkit-exoplayer-support', 'uxkit-youtube', 'uxkit-screenshare',
+        // plugins related to services and system info
         'uxkit-incoming-call', 'uxkit-self-managed-call', 'uxkit-system-service',
-        'uxkit-youtube', 'uxkit-common'
+        // common module
+        'uxkit-common',
+
 ]
 
 ext {

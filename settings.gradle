@@ -1,6 +1,7 @@
 include ':app'
 include ':uxkit'
 include ':uxkit-youtube'
+include ':uxkit-screenshare'
 include ':uxkit-exoplayer-support'
 include ':uxkit-incoming-call'
 include ':uxkit-firebase'
