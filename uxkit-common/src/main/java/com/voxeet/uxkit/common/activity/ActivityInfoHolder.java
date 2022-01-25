@@ -3,6 +3,7 @@ package com.voxeet.uxkit.common.activity;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Use to store and make the integration of the VoxeetActivities easier
@@ -11,7 +12,7 @@ import androidx.annotation.Nullable;
 public class ActivityInfoHolder {
 
     @Nullable
-    private static Class<? extends VoxeetCommonAppCompatActivity> sAcceptedIncomingActivityKlass;
+    private static Class<? extends AppCompatActivity> sAcceptedIncomingActivityKlass;
 
     @Nullable
     private static Bundle sAcceptedIncomingActivityExtras;
@@ -21,7 +22,7 @@ public class ActivityInfoHolder {
      *
      * @param klass a nullable klass (null = reset)
      */
-    public static void setTempAcceptedIncomingActivity(@Nullable Class<? extends VoxeetCommonAppCompatActivity> klass) {
+    public static void setTempAcceptedIncomingActivity(@Nullable Class<? extends AppCompatActivity> klass) {
         sAcceptedIncomingActivityKlass = klass;
     }
 
@@ -35,7 +36,7 @@ public class ActivityInfoHolder {
      * @return a valid instance of Class<VoxeetAppCompatActivity>
      */
     @Nullable
-    public static Class<? extends VoxeetCommonAppCompatActivity> getAcceptedIncomingActivityKlass() {
+    public static Class<? extends AppCompatActivity> getAcceptedIncomingActivityKlass() {
         return sAcceptedIncomingActivityKlass;
     }
 

@@ -15,6 +15,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
 import com.voxeet.sdk.json.ParticipantInfo;
@@ -105,14 +106,14 @@ public class IncomingNotification implements IIncomingInvitationListener {
     private Intent createIntent(@NonNull Context context, @NonNull InvitationBundle invitationBundle) {
         Bundle extra = invitationBundle.asBundle();
 
-        Class<? extends VoxeetCommonAppCompatActivity> klass = ActivityInfoHolder.getAcceptedIncomingActivityKlass();
+        Class<? extends AppCompatActivity> klass = ActivityInfoHolder.getAcceptedIncomingActivityKlass();
         if (null == klass) {
             Log.d( "createIntent: IncomingCallFactory.getAcceptedIncomingActivityKlass() is null");
 
             String klass_fully_qualified = getIncomingAcceptedClass(context);
             if (null != klass_fully_qualified) {
                 try {
-                    klass = (Class<? extends VoxeetCommonAppCompatActivity>) Class.forName(klass_fully_qualified);
+                    klass = (Class<? extends AppCompatActivity>) Class.forName(klass_fully_qualified);
                     Log.d( "createIntent : obtained class " + klass.getSimpleName() + " to forward to");
                 } catch (ClassNotFoundException e) {
                     Log.e( "createIntent: " + klass_fully_qualified + " resolution issue", e);

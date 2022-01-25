@@ -1,4 +1,4 @@
-package com.voxeet.uxkit.common.activity;
+package com.voxeet.uxkit.common.activity.bundle;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.promise.Promise;
@@ -16,11 +17,12 @@ import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.push.center.management.Constants;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.activity.ActivityInfoHolder;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 
-public class IncomingBundleChecker {
+public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
 
-    private final static ShortLogger Log = UXKitLogger.createLogger(IncomingBundleChecker.class.getSimpleName());
+    private final static ShortLogger Log = UXKitLogger.createLogger(DefaultIncomingBundleChecker.class.getSimpleName());
 
     private final static String BUNDLE_EXTRA_BUNDLE = "BUNDLE_EXTRA_BUNDLE";
 
@@ -45,11 +47,11 @@ public class IncomingBundleChecker {
     @Nullable
     private String mConferenceId;
 
-    private IncomingBundleChecker() {
+    private DefaultIncomingBundleChecker() {
         mIntent = new Intent();
     }
 
-    public IncomingBundleChecker(@NonNull Intent intent, @Nullable IExtraBundleFillerListener filler_listener) {
+    public DefaultIncomingBundleChecker(@NonNull Intent intent, @Nullable IExtraBundleFillerListener filler_listener) {
         this();
         mFillerListener = filler_listener;
         mIntent = intent;
@@ -162,13 +164,13 @@ public class IncomingBundleChecker {
      */
     @NonNull
     final public Intent createActivityAccepted(@NonNull Activity caller) {
-        Class<? extends VoxeetCommonAppCompatActivity> klass = ActivityInfoHolder.getAcceptedIncomingActivityKlass();
+        Class<? extends AppCompatActivity> klass = ActivityInfoHolder.getAcceptedIncomingActivityKlass();
         if (null == klass) {
             Log.d("createActivityAccepted: no klass defined ! we'll now try to load from the AndroidManifest");
             String klass_fully_qualified = AndroidManifest.readMetadata(caller, "voxeet_incoming_accepted_class", null);
             if (null != klass_fully_qualified) {
                 try {
-                    klass = (Class<? extends VoxeetCommonAppCompatActivity>) Class.forName(klass_fully_qualified);
+                    klass = (Class<? extends AppCompatActivity>) Class.forName(klass_fully_qualified);
                     Log.d("createActivityAccepted: " + klass.getSimpleName() + " obtained");
                 } catch (ClassNotFoundException e) {
                     Log.e("createActivityAccepted: ERROR !! IS THE KLASS VALID AND INHERITING VoxeetAppCompatActivity", e);
@@ -231,9 +233,4 @@ public class IncomingBundleChecker {
         return extra;
     }
 
-    public static interface IExtraBundleFillerListener {
-
-        @Nullable
-        Bundle createExtraBundle();
-    }
 }

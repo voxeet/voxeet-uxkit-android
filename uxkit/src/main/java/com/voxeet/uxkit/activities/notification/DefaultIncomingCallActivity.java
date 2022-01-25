@@ -43,7 +43,9 @@ import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.application.VoxeetApplication;
 import com.voxeet.uxkit.common.UXKitLogger;
-import com.voxeet.uxkit.common.activity.IncomingBundleChecker;
+import com.voxeet.uxkit.common.activity.bundle.DefaultIncomingBundleChecker;
+import com.voxeet.uxkit.common.activity.bundle.IExtraBundleFillerListener;
+import com.voxeet.uxkit.common.activity.bundle.IncomingBundleChecker;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.utils.LoadLastSavedOverlayStateEvent;
 import com.voxeet.uxkit.views.internal.rounded.RoundedImageView;
@@ -52,7 +54,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class DefaultIncomingCallActivity extends AppCompatActivity implements IncomingBundleChecker.IExtraBundleFillerListener {
+public class DefaultIncomingCallActivity extends AppCompatActivity implements IExtraBundleFillerListener {
 
     private final static ShortLogger Log = UXKitLogger.createLogger(DefaultIncomingCallActivity.class.getSimpleName());
     private static final String DEFAULT_VOXEET_INCOMING_CALL_DURATION_KEY = "voxeet_incoming_call_duration";
@@ -79,7 +81,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements In
         //we preInit the AudioService,
         AudioService.preInitSounds(getApplicationContext());
 
-        mIncomingBundleChecker = new IncomingBundleChecker(getIntent(), this);
+        mIncomingBundleChecker = new DefaultIncomingBundleChecker(getIntent(), this);
 
         //add few Flags to start the activity before its setContentView
         //note that if your device is using a keyguard (code or password)
