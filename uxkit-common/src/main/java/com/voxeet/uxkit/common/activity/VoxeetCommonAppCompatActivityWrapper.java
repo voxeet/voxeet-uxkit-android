@@ -105,6 +105,7 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
         VoxeetSDK.instance().register(this);
 
         if (canBeRegisteredToReceiveCalls()) {
+            ActivityInfoHolder.setTempAcceptedIncomingActivityOnResume(this);
             ActivityInfoHolder.setTempAcceptedIncomingActivity(parentActivity.getClass());
             ActivityInfoHolder.setTempExtras(parentActivity.getIntent().getExtras());
         }
@@ -117,6 +118,8 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
     }
 
     public void onPause() {
+        ActivityInfoHolder.setTempAcceptedIncomingActivityOnPause(this);
+
         //stop fetching stats if any pending
         if (!VoxeetSDK.conference().isLive()) {
             VoxeetSDK.localStats().stopAutoFetch();
@@ -277,6 +280,14 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
             }
         }
         return false;
+    }
+
+    public void bringBackParent(@NonNull Context context, @Nullable Intent directIntent) {
+        onNewIntent(directIntent);
+
+        Intent bring = new Intent(context, parentActivity.getClass());
+        bring.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        parentActivity.startActivity(bring);
     }
 }
 

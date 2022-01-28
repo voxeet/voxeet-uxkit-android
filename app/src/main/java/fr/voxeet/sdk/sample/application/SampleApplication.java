@@ -9,14 +9,12 @@ import com.voxeet.sdk.push.center.management.EnforcedNotificationMode;
 import com.voxeet.sdk.push.center.management.NotificationMode;
 import com.voxeet.sdk.push.center.management.VersionFilter;
 import com.voxeet.sdk.sample.BuildConfig;
-import com.voxeet.uxkit.activities.notification.DefaultIncomingCallActivity;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.controllers.ConferenceToolkitController;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.implementation.overlays.OverlayState;
-import com.voxeet.uxkit.incoming.IncomingFullScreen;
-import com.voxeet.uxkit.incoming.IncomingNotification;
+import com.voxeet.uxkit.incoming.implementation.DefaultIncomingNotification;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -102,8 +100,8 @@ public class SampleApplication extends MultiDexApplication {
 
     private void onSdkInitialized() {
         //it's possible to use the meta-data in the AndroidManifest to directly control the default incoming activity
-        NotificationCenter.instance.register(NotificationMode.FULLSCREEN_INCOMING_CALL, new IncomingFullScreen(DefaultIncomingCallActivity.class));
-        NotificationCenter.instance.register(NotificationMode.OVERHEAD_INCOMING_CALL, new IncomingNotification(getApplicationContext()));
+        NotificationCenter.instance.register(NotificationMode.FULLSCREEN_INCOMING_CALL, new DefaultIncomingNotification(getApplicationContext()));
+        NotificationCenter.instance.register(NotificationMode.OVERHEAD_INCOMING_CALL, new DefaultIncomingNotification(getApplicationContext()));
         NotificationCenter.instance.setEnforcedNotificationMode(EnforcedNotificationMode.MIXED_INCOMING_CALL);
 
         //add filter to excluse fullscreen from Android Q

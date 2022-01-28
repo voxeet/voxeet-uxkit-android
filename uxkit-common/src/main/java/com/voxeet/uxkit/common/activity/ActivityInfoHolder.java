@@ -17,6 +17,9 @@ public class ActivityInfoHolder {
     @Nullable
     private static Bundle sAcceptedIncomingActivityExtras;
 
+    @Nullable
+    private static VoxeetCommonAppCompatActivityWrapper currentOnResumeActivity;
+
     /**
      * Store in memory the current activity to call when incoming call is accepted
      *
@@ -49,5 +52,19 @@ public class ActivityInfoHolder {
     @Nullable
     public static Bundle getAcceptedIncomingActivityExtras() {
         return sAcceptedIncomingActivityExtras;
+    }
+
+    public static void setTempAcceptedIncomingActivityOnResume(VoxeetCommonAppCompatActivityWrapper parentActivity) {
+        currentOnResumeActivity = parentActivity;
+    }
+
+    public static void setTempAcceptedIncomingActivityOnPause(VoxeetCommonAppCompatActivityWrapper parentActivity) {
+        if (currentOnResumeActivity == parentActivity) {
+            currentOnResumeActivity = null;
+        }
+    }
+
+    public static VoxeetCommonAppCompatActivityWrapper getCurrentAcceptedIncomingCallActivity() {
+        return currentOnResumeActivity;
     }
 }

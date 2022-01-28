@@ -5,9 +5,23 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
-        <!-- TODO check for exportability-->
+        <!-- Default service if the DefaultNotificationIncomingNotification is used -->
+        <!-- nothing prevent its reuse tho -->
+        <service android:name=".implementation.DefaultIncomingNotificationService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Default service if the DefaultNotificationIncomingNotification is used -->
+        <!-- nothing prevent its reuse tho -->
         <receiver
             android:name=".manifest.DismissNotificationBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Default service if the DefaultNotificationIncomingNotification is used -->
+        <!-- nothing prevent its reuse tho -->
+        <receiver
+            android:name=".implementation.AcceptedNotificationBroadcastReceiver"
             android:enabled="true"
             android:exported="false" />
     </application>
