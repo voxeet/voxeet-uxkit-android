@@ -60,11 +60,6 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
     @Nullable
     private T sdkService;
 
-    /**
-     * Flag set to true when the last request for camera permission failed, use the commit method to restore it to false
-     * after the adequate warning has been made to the user
-     */
-    private boolean cameraPermissionPermaBanned = false;
     private PermissionContractHolder permissionContractHolder;
 
     public VoxeetCommonAppCompatActivityWrapper(@NonNull AppCompatActivity parentActivity) {
@@ -157,36 +152,8 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
      */
     public boolean isCameraPermissionBanned() {
         if (Validate.hasCameraPermissions(parentActivity)) return false;
-        if (cameraPermissionPermaBanned) return true;
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        //    if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) return true;
-        //}
-        return false;
-    }
-
-    /**
-     * when the user has been warned by the developers about the permnantly refused error, simply reset back to normal
-     */
-    public void commitCameraPermissionBannedWarned() {
-        cameraPermissionPermaBanned = false;
-    }
-
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PermissionRefusedEvent.RESULT_CAMERA) {
-            if (isPermissionSet(Manifest.permission.CAMERA, permissions, grantResults)) {
-                Log.d("onActivityResult: camera is ok now");
-                if (VoxeetSDK.conference().isLive()) {
-                    VoxeetSDK.conference().startVideo()
-                            .then(result -> {
-                            })
-                            .error(Log::e);
-                }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!parentActivity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    cameraPermissionPermaBanned = true;
-                }
-            }
-        }
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
+        return !parentActivity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
     }
 
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -120,13 +120,6 @@ public class VoxeetCommonAppCompatActivity<T extends AbstractSDKService<? extend
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        wrapper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         boolean managed = wrapper.onActivityResult(requestCode, resultCode, data);
 

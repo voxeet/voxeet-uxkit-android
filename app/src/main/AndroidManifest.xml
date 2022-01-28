@@ -26,15 +26,6 @@
         android:supportsRtl="true"
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme">
-        <service
-            android:name="fr.voxeet.sdk.sample.connection.VoxeetConnectionService"
-            android:label="@string/connection_service"
-            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.telecom.ConnectionService" />
-            </intent-filter>
-        </service>
 
         <!-- if a push notification is received from a killed-state app, the accept/declined calls will arrive there -->
         <!-- Note : any override in the code will replace this metadata -->

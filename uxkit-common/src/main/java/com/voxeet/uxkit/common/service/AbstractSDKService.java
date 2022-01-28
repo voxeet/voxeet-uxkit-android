@@ -195,10 +195,10 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     protected void stopForeground() {
         lastForeground = -1;
 
-        if (Opt.of(eventBus).then(e -> e.isRegistered(this)).or(false)) {
-            eventBus.unregister(this);
-            //eventBus = null;
-        }
+        //if (Opt.of(eventBus).then(e -> e.isRegistered(this)).or(false)) {
+        //    eventBus.unregister(this);
+        //      eventBus = null;
+        //}
 
         handler.removeCallbacks(stopForeground);
         stopForeground.run();

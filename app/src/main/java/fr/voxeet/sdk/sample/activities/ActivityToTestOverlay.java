@@ -8,8 +8,9 @@ import android.widget.Button;
 
 import com.voxeet.sdk.sample.R;
 import com.voxeet.uxkit.activities.VoxeetAppCompatActivity;
+import com.voxeet.uxkit.service.VoxeetSystemService;
 
-public class ActivityToTestOverlay extends VoxeetAppCompatActivity {
+public class ActivityToTestOverlay extends VoxeetAppCompatActivity<VoxeetSystemService> {
 
     private Button launch_one;
 
@@ -27,11 +28,6 @@ public class ActivityToTestOverlay extends VoxeetAppCompatActivity {
 
         launch_one = findViewById(R.id.launch_one);
 
-        launch_one.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                start(ActivityToTestOverlay.this);
-            }
-        });
+        launch_one.setOnClickListener(v -> start(ActivityToTestOverlay.this));
     }
 }

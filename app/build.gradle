@@ -63,6 +63,9 @@ dependencies {
     api project(':uxkit-exoplayer-support')
     api project(':uxkit-firebase')
 
+    // to add the default service
+    api project(':uxkit-system-service')
+
     testImplementation 'junit:junit:4.12'
 
     //also used as annotation processor
