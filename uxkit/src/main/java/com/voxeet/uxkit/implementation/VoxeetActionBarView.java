@@ -2,7 +2,6 @@ package com.voxeet.uxkit.implementation;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
@@ -27,7 +25,6 @@ import com.voxeet.audio2.devices.description.ConnectionState;
 import com.voxeet.audio2.devices.description.DeviceType;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ThenPromise;
-import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
 import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
@@ -48,6 +45,7 @@ import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
+import com.voxeet.uxkit.common.permissions.PermissionController;
 import com.voxeet.uxkit.configuration.ActionBar;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
@@ -445,7 +443,7 @@ public class VoxeetActionBarView extends VoxeetView {
         if (null != selector_speaker) speaker.setImageDrawable(selector_speaker);
         if (null != selector_hangup) hangup.setImageDrawable(selector_hangup);
 
-        if (!checkMicrophonePermission()) {
+        if (!Validate.hasMicrophonePermissions(v.getContext())) {
             microphone.setSelected(true);
             VoxeetSDK.conference().mute(true);
         }
@@ -458,28 +456,31 @@ public class VoxeetActionBarView extends VoxeetView {
      * Toggle the mute button
      */
     protected void toggleMute() {
-        boolean new_muted_state = !VoxeetSDK.conference().isMuted();
+        checkMicrophonePermission().then(ok -> {
+            boolean new_muted_state = !VoxeetSDK.conference().isMuted();
+            microphone.setEnabled(ok);
+            if (!ok) {
+                //force mute
+                new_muted_state = true;
+            }
 
-        if (!checkMicrophonePermission()) {
-            microphone.setSelected(true);
-            microphone.setEnabled(false);
-
-            VoxeetSDK.conference().mute(true);
-        } else {
             // if we unmute, check for microphone state
             microphone.setSelected(new_muted_state);
-            microphone.setEnabled(true);
 
             VoxeetSDK.conference().mute(new_muted_state);
-        }
+        }).error(Log::e);
     }
 
     /**
      * Activate or deactivate the local camera
      */
     protected void toggleCamera() {
-        ConferenceService conferenceService = VoxeetSDK.conference();
-        if (checkCameraPermission() && null != conferenceService) {
+        checkCameraPermission().then(ok -> {
+            if(!ok) {
+                Log.d("toggleCamera :: impossible, no permissions");
+                return;
+            }
+            ConferenceService conferenceService = VoxeetSDK.conference();
             Promise<Boolean> video = null;
 
             ConferenceInformation information = conferenceService.getCurrentConference();
@@ -505,7 +506,7 @@ public class VoxeetActionBarView extends VoxeetView {
                     updateCameraState();
                 });
             }
-        }
+        }).error(Log::e);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -675,7 +676,7 @@ public class VoxeetActionBarView extends VoxeetView {
         // also invalidate information about mute stream
         if (null == microphone) return;
 
-        if (!checkMicrophonePermission()) {
+        if (!Validate.hasMicrophonePermissions(getContext())) {
             microphone.setSelected(true); //mute state is selected
             microphone.setEnabled(false);
         } else {
@@ -684,17 +685,15 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
-    private boolean checkMicrophonePermission() {
+    private Promise<Boolean> checkMicrophonePermission() {
         return checkPermission(Manifest.permission.RECORD_AUDIO,
-                "checkMicrophonePermission : RECORD_AUDIO permission  _is not_ set in your manifest. Please update accordingly",
-                PermissionRefusedEvent.RESULT_MICROPHONE);
+                "checkMicrophonePermission : RECORD_AUDIO permission  _is not_ set in your manifest. Please update accordingly");
     }
 
 
-    private boolean checkCameraPermission() {
+    private Promise<Boolean> checkCameraPermission() {
         return checkPermission(Manifest.permission.CAMERA,
-                "checkCameraPermission: CAMERA permission _is not_ set in your manifest. Please update accordingly",
-                PermissionRefusedEvent.RESULT_CAMERA);
+                "checkCameraPermission: CAMERA permission _is not_ set in your manifest. Please update accordingly");
     }
 
     private boolean canScreenShare() {
@@ -702,20 +701,14 @@ public class VoxeetActionBarView extends VoxeetView {
     }
 
 
-    private boolean checkPermission(@NonNull String permission, @NonNull String error_message,
-                                    int result_code) {
-        if (!Validate.hasPermissionInManifest(getContext(), permission)) {
-            Log.d(error_message);
-            return false;
-        } else if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_DENIED) {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Validate.requestMandatoryPermissions(VoxeetToolkit.instance().getCurrentActivity(),
-                        new String[]{permission}, result_code);
+    private Promise<Boolean> checkPermission(@NonNull String permission, @NonNull String error_message) {
+        return new Promise<>(solver -> PermissionController.requestPermissions(permission).then(ok -> {
+            if (!ok.get(0).isGranted) {
+                solver.reject(new IllegalStateException(error_message));
+                return;
             }
-            return false;
-        } else {
-            return true;
-        }
+            solver.resolve(true);
+        }).error(solver::reject));
     }
 
     private void updateSpeakerButton() {

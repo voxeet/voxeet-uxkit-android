@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.voxeet.promise.Promise;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class PermissionController {
@@ -17,5 +18,10 @@ public class PermissionController {
     @NonNull
     public static Promise<List<PermissionResult>> requestPermissions(@NonNull List<String> permissions) {
         return permissionManager.requestPermissions(permissions);
+    }
+
+    @NonNull
+    public static Promise<List<PermissionResult>> requestPermissions(@NonNull String ...permissions) {
+        return permissionManager.requestPermissions(Arrays.asList(permissions));
     }
 }

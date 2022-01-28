@@ -10,14 +10,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.voxeet.VoxeetSDK;
-import com.voxeet.audio.utils.__Call;
+import com.voxeet.promise.Promise;
+import com.voxeet.promise.solve.ThenPromise;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
@@ -26,8 +25,8 @@ import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.activity.bundle.IncomingBundleChecker;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.common.notification.IncomingNotificationHelper;
-import com.voxeet.uxkit.common.permissions.IRequestPermissions;
 import com.voxeet.uxkit.common.permissions.PermissionController;
+import com.voxeet.uxkit.common.permissions.PermissionResult;
 import com.voxeet.uxkit.common.service.AbstractSDKService;
 import com.voxeet.uxkit.common.service.SDKBinder;
 import com.voxeet.uxkit.common.service.SystemServiceFactory;
@@ -35,9 +34,7 @@ import com.voxeet.uxkit.common.service.SystemServiceFactory;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * VoxeetAppCompatActivity manages the call state
@@ -142,11 +139,14 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
     public void onEvent(@NonNull PermissionRefusedEvent event) {
         switch (event.getPermission()) {
             case CAMERA:
-            case MICROPHONE:
-                Validate.requestMandatoryPermissions(parentActivity,
-                        event.getPermission().getPermissions(),
-                        event.getPermission().getRequestCode());
-                break;
+                PermissionController.requestPermissions(Manifest.permission.CAMERA).then((ThenPromise<List<PermissionResult>, Boolean>) ok -> {
+                    if (!ok.get(0).isGranted)
+                        return Promise.reject(new IllegalStateException("no video permission"));
+                    return Promise.resolve(true);
+                }).then(o -> {
+                    //TODO start camera ?
+                    Log.d("camera permission ok");
+                }).error(Log::e);
         }
     }
 
