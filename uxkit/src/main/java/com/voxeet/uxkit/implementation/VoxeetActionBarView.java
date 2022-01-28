@@ -50,6 +50,7 @@ import com.voxeet.uxkit.configuration.ActionBar;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;
 import com.voxeet.uxkit.implementation.devices.IMediaDeviceControlListener;
+import com.voxeet.uxkit.utils.ActionBarPermissionHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -374,29 +375,30 @@ public class VoxeetActionBarView extends VoxeetView {
             }
             speaker.setSelected(!speaker.isSelected());
 
-            VoxeetSDK.audio().enumerateDevices().then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
-                MediaDevice standard = oneOf(mediaDevices, ConnectionState.CONNECTED, DeviceType.INTERNAL_SPEAKER, DeviceType.NORMAL_MEDIA);
-                //MediaDevice external = oneOf(mediaDevices, ConnectionState.CONNECTED, DeviceType.EXTERNAL_SPEAKER, DeviceType.BLUETOOTH, DeviceType.WIRED_HEADSET);
 
-                MediaDevice to_connect;
-                if (null != standard) {
-                    to_connect = oneOf(mediaDevices, ConnectionState.DISCONNECTED, DeviceType.BLUETOOTH, DeviceType.WIRED_HEADSET, DeviceType.EXTERNAL_SPEAKER);
-                } else {
-                    to_connect = oneOf(mediaDevices, ConnectionState.DISCONNECTED, DeviceType.INTERNAL_SPEAKER, DeviceType.NORMAL_MEDIA);
-                }
+            ActionBarPermissionHelper.checkBluetoothConnectPermission()
+                    .then((ThenPromise<Boolean, List<MediaDevice>>) ok -> VoxeetSDK.audio().enumerateDevices())
+                    .then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
+                        MediaDevice standard = oneOf(mediaDevices, ConnectionState.CONNECTED, DeviceType.INTERNAL_SPEAKER, DeviceType.NORMAL_MEDIA);
+                        //MediaDevice external = oneOf(mediaDevices, ConnectionState.CONNECTED, DeviceType.EXTERNAL_SPEAKER, DeviceType.BLUETOOTH, DeviceType.WIRED_HEADSET);
 
-                if (null != to_connect) {
-                    return VoxeetSDK.audio().connect(to_connect);
-                }
+                        MediaDevice to_connect;
+                        if (null != standard) {
+                            to_connect = oneOf(mediaDevices, ConnectionState.DISCONNECTED, DeviceType.BLUETOOTH, DeviceType.WIRED_HEADSET, DeviceType.EXTERNAL_SPEAKER);
+                        } else {
+                            to_connect = oneOf(mediaDevices, ConnectionState.DISCONNECTED, DeviceType.INTERNAL_SPEAKER, DeviceType.NORMAL_MEDIA);
+                        }
 
-                try {
-                    throw new IllegalStateException("No devices found");
-                } catch (Exception e) {
-                    return Promise.reject(e);
-                }
-            }).error(error -> {
-                Toast.makeText(getContext(), "No devices found", Toast.LENGTH_SHORT).show();
-            });
+                        if (null != to_connect) {
+                            return VoxeetSDK.audio().connect(to_connect);
+                        }
+
+                        try {
+                            throw new IllegalStateException("No devices found");
+                        } catch (Exception e) {
+                            return Promise.reject(e);
+                        }
+                    }).error(error -> Toast.makeText(getContext(), "No devices found", Toast.LENGTH_SHORT).show());
         });
 
         hangup = v.findViewById(R.id.hangup);
@@ -456,7 +458,7 @@ public class VoxeetActionBarView extends VoxeetView {
      * Toggle the mute button
      */
     protected void toggleMute() {
-        checkMicrophonePermission().then(ok -> {
+        ActionBarPermissionHelper.checkMicrophonePermission().then(ok -> {
             boolean new_muted_state = !VoxeetSDK.conference().isMuted();
             microphone.setEnabled(ok);
             if (!ok) {
@@ -475,8 +477,8 @@ public class VoxeetActionBarView extends VoxeetView {
      * Activate or deactivate the local camera
      */
     protected void toggleCamera() {
-        checkCameraPermission().then(ok -> {
-            if(!ok) {
+        ActionBarPermissionHelper.checkCameraPermission().then(ok -> {
+            if (!ok) {
                 Log.d("toggleCamera :: impossible, no permissions");
                 return;
             }
@@ -685,30 +687,8 @@ public class VoxeetActionBarView extends VoxeetView {
         }
     }
 
-    private Promise<Boolean> checkMicrophonePermission() {
-        return checkPermission(Manifest.permission.RECORD_AUDIO,
-                "checkMicrophonePermission : RECORD_AUDIO permission  _is not_ set in your manifest. Please update accordingly");
-    }
-
-
-    private Promise<Boolean> checkCameraPermission() {
-        return checkPermission(Manifest.permission.CAMERA,
-                "checkCameraPermission: CAMERA permission _is not_ set in your manifest. Please update accordingly");
-    }
-
     private boolean canScreenShare() {
         return Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT;
-    }
-
-
-    private Promise<Boolean> checkPermission(@NonNull String permission, @NonNull String error_message) {
-        return new Promise<>(solver -> PermissionController.requestPermissions(permission).then(ok -> {
-            if (!ok.get(0).isGranted) {
-                solver.reject(new IllegalStateException(error_message));
-                return;
-            }
-            solver.resolve(true);
-        }).error(solver::reject));
     }
 
     private void updateSpeakerButton() {

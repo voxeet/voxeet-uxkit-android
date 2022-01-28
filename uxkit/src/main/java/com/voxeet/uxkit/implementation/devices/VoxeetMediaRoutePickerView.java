@@ -15,11 +15,14 @@ import com.voxeet.VoxeetSDK;
 import com.voxeet.audio2.devices.MediaDevice;
 import com.voxeet.audio2.devices.description.ConnectionState;
 import com.voxeet.audio2.devices.description.DeviceType;
+import com.voxeet.promise.solve.ThenPromise;
+import com.voxeet.sdk.services.AudioService;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
+import com.voxeet.uxkit.utils.ActionBarPermissionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,8 +137,11 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
     @Override
     public void onMediaRouteButtonInteraction() {
         setVisibility(View.VISIBLE);
+        AudioService service = VoxeetSDK.audio();
 
-        // also check for devices which could have happened while out of the window
-        refreshDevices();
+        ActionBarPermissionHelper.checkBluetoothConnectPermission().then((ThenPromise<Boolean, List<MediaDevice>>) ok -> service.enumerateDevices()).then(devices -> {
+            // also check for devices which could have happened while out of the window
+            refreshDevices();
+        }).error(Log::e);
     }
 }
