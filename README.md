@@ -10,6 +10,7 @@ After accepting the [Dolby Software License Agreement](https://github.com/voxeet
 allprojects {
     repositories {
         ...
+        maven { url "https://android-sdk.voxeet.com/beta" }
         maven { url "https://android-sdk.voxeet.com/release" }
     }
 }
