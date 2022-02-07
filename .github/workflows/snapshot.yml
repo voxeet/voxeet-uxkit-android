@@ -25,22 +25,22 @@ jobs:
           aws-region: ${{ secrets.CODEARTIFACT_REGION }}
 
 
-      - id: codeartifact_login
-        name: Login to CodeArtifact
+      - name: Login to CodeArtifact
+        id: codeartifact_login
         run: |
           CODEARTIFACT_TOKEN=$(/usr/local/bin/aws codeartifact get-authorization-token --duration-seconds 900 --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --domain-owner ${{ secrets.CODEARTIFACT_DOMAIN_OWNER }} --region ${{ secrets.CODEARTIFACT_REGION }} --output text --query authorizationToken)
           echo "::add-mask::$CODEARTIFACT_TOKEN"
           echo "CODEARTIFACT_TOKEN=$CODEARTIFACT_TOKEN" >> $GITHUB_ENV
 
 
-      - name: 'Check build for master'
+      - name: Check build for master
         id: master_configuration
         if: github.ref == 'refs/heads/master'
         run: |
           echo "building for master... nothing to do, the version will be used"
 
 
-      - name: 'Check build for beta'
+      - name: Check build for beta
         id: beta_configuration
         if: startsWith(github.ref, 'refs/heads/beta/')
         run: |
