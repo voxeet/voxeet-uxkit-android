@@ -25,7 +25,7 @@ jobs:
           aws-region: ${{ secrets.CODEARTIFACT_REGION }}
 
 
-      - name: Login to CodeArtifact
+      - name: Prepare wrapper environment
         id: codeartifact_login
         run: |
           CODEARTIFACT_TOKEN=$(/usr/local/bin/aws codeartifact get-authorization-token --duration-seconds 900 --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --domain-owner ${{ secrets.CODEARTIFACT_DOMAIN_OWNER }} --region ${{ secrets.CODEARTIFACT_REGION }} --output text --query authorizationToken)
@@ -86,10 +86,16 @@ jobs:
         run: |
           export branch="${{ github.ref }}"
           if [[ "$branch" == "master" ]]; then
-            /usr/local/bin/aws s3 sync ~/.m2/repository/ "${{ secrets.ARTIFACT_REPO_URL_MASTER }}/" --acl "public-read"
+            /usr/local/bin/aws s3 sync ~/.m2/repository/ "$ARTIFACT_REPO_URL_MASTER" --acl "public-read"
           else
-            /usr/local/bin/aws s3 sync ~/.m2/repository/ "${{ secrets.ARTIFACT_REPO_URL_BETA }}/" --acl "public-read"
+            /usr/local/bin/aws s3 sync ~/.m2/repository/ "$ARTIFACT_REPO_URL_BETA" --acl "public-read"
           fi
+        env:
+          ARTIFACT_REPO_URL_MASTER: ${{ secrets.ARTIFACT_REPO_URL_MASTER }}
+          ARTIFACT_REPO_URL_BETA: ${{ secrets.ARTIFACT_REPO_URL_BETA }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.CODEARTIFACT_REGION }}
 
 
       - name: Create tag
