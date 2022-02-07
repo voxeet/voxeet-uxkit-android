@@ -30,10 +30,6 @@ import com.voxeet.uxkit.screenshare.utils.PinchGestureProvider;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.webrtc.RendererCommon;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Simple implementation to help integrate screenshare playback into Apps

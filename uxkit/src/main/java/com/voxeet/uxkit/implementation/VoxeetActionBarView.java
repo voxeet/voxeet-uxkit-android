@@ -1,6 +1,5 @@
 package com.voxeet.uxkit.implementation;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -45,7 +44,6 @@ import com.voxeet.sdk.utils.Validate;
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
-import com.voxeet.uxkit.common.permissions.PermissionController;
 import com.voxeet.uxkit.configuration.ActionBar;
 import com.voxeet.uxkit.controllers.VoxeetToolkit;
 import com.voxeet.uxkit.events.UXKitNotInConferenceEvent;

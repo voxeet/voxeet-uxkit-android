@@ -15,6 +15,14 @@ public class PermissionController {
         permissionManager.register(callback);
     }
 
+    public static boolean isPermissionNeverAskAgain(@NonNull String permission) throws Exception {
+        return permissionManager.isPermissionNeverAskAgain(permission);
+    }
+
+    public static boolean shouldShowRequestPermissionRationale(@NonNull String permission) throws Exception {
+        return permissionManager.shouldShowRequestPermissionRationale(permission);
+    }
+
     @NonNull
     public static Promise<List<PermissionResult>> requestPermissions(@NonNull List<String> permissions) {
         return permissionManager.requestPermissions(permissions);

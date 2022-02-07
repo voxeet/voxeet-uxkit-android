@@ -21,6 +21,24 @@ public class PermissionManager {
         this.callback = new WeakReference<>(callback);
     }
 
+    public boolean isPermissionNeverAskAgain(@NonNull String permission) throws Exception {
+        IRequestPermissions callback = this.callback.get();
+
+        if (null == callback) {
+            throw new Exception("unable to call isPermissionNeverAskAgain: invalid permission callback");
+        }
+        return callback.isPermissionNeverAskAgain(permission);
+    }
+
+    public boolean shouldShowRequestPermissionRationale(@NonNull String permission) throws Exception {
+        IRequestPermissions callback = this.callback.get();
+
+        if (null == callback) {
+            throw new Exception("unable to call shouldShowRequestPermissionRationale: invalid permission callback");
+        }
+        return callback.shouldShowRequestPermissionRationale(permission);
+    }
+
     @NonNull
     public Promise<List<PermissionResult>> requestPermissions(@NonNull List<String> permissions) {
         return new Promise<>(solver -> {

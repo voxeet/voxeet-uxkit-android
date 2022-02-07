@@ -85,7 +85,7 @@ public class VoxeetSystemService extends AbstractSDKService<VoxeetSystemService.
 
     @Override
     protected Class<? extends Activity> getActivityClass() {
-        return SystemServiceFactory.getAppCompatActivity();
+        return SystemServiceFactory.getActivityClass();
     }
 
 }

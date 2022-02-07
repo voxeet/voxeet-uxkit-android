@@ -29,7 +29,7 @@ public class ActionBarPermissionHelper {
 
     private static Promise<Boolean> checkPermission(@NonNull String permission, @NonNull String error_message) {
         return new Promise<>(solver -> PermissionController.requestPermissions(permission).then(ok -> {
-            if (!ok.get(0).isGranted) {
+            if (ok.size() <= 0 || !ok.get(0).isGranted) {
                 solver.reject(new IllegalStateException(error_message));
                 return;
             }

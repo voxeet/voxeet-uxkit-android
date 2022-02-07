@@ -11,10 +11,8 @@ import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.events.error.PermissionRefusedEvent;
 import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.services.screenshare.RequestScreenSharePermissionEvent;
-import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.activity.bundle.DefaultIncomingBundleChecker;
 import com.voxeet.uxkit.common.activity.bundle.IncomingBundleChecker;
-import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.common.service.AbstractSDKService;
 import com.voxeet.uxkit.common.service.SDKBinder;
 
@@ -35,7 +33,6 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 public class VoxeetCommonAppCompatActivity<T extends AbstractSDKService<? extends SDKBinder<T>>> extends AppCompatActivity {
 
-    private static final ShortLogger Log = UXKitLogger.createLogger(VoxeetCommonAppCompatActivity.class);
     private final VoxeetCommonAppCompatActivityWrapper<T> wrapper;
 
     public VoxeetCommonAppCompatActivity() {

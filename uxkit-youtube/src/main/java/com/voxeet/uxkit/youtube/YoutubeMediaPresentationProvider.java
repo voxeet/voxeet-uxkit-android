@@ -3,10 +3,9 @@ package com.voxeet.uxkit.youtube;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.common.UXKitLogger;
+import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
 
 /**

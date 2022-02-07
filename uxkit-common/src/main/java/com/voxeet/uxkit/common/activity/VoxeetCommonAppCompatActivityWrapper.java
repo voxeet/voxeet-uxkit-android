@@ -5,8 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -152,8 +150,12 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
      */
     public boolean isCameraPermissionBanned() {
         if (Validate.hasCameraPermissions(parentActivity)) return false;
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
-        return !parentActivity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
+        try {
+            return PermissionController.isPermissionNeverAskAgain(Manifest.permission.CAMERA);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -234,19 +236,6 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
 
     private void dismissNotification() {
         IncomingNotificationHelper.dismiss(parentActivity);
-    }
-
-    private boolean isPermissionSet(@NonNull String permission, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (null == permission) return false;
-
-        if (null != permissions && null != grantResults && permissions.length == grantResults.length) {
-            for (int i = 0; i < permissions.length; i++) {
-                if (permission.equals(permissions[i])) {
-                    return PackageManager.PERMISSION_DENIED != grantResults[i];
-                }
-            }
-        }
-        return false;
     }
 
     public void bringBackParent(@NonNull Context context, @Nullable Intent directIntent) {
