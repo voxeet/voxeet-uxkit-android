@@ -98,3 +98,28 @@ jobs:
         with:
           tag: ${{ steps.environment.outputs.version }}
 
+
+      - name: Create Github's beta release
+        id: automatic_beta
+        if: startsWith(github.ref, 'refs/heads/beta/')
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ steps.environment.outputs.version }}
+          prerelease: true
+          title: ${{ steps.environment.outputs.version }}
+          files: |
+            artifacts
+
+
+      - name: Create Github's master release
+        id: automatic_master
+        if: github.ref == 'refs/heads/master'
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ steps.environment.outputs.version }}
+          prerelease: false
+          title: ${{ steps.environment.outputs.version }}
+          files: |
+            artifacts
