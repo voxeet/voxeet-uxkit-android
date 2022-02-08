@@ -70,15 +70,16 @@ jobs:
         id: build
         run: |
           ./gradlew -PUXKIT_SUFFIX=$UXKIT_SUFFIX :assembleAll :app:assembleDebug :installAll
-          mkdir artifacts
-          cp -r ~/.m2/repository ./artifacts/
+          mkdir -p ./repository
+          cp -r ~/.m2/repository/* ./repository
+          zip -r repository.zip ./repository
 
 
       - name: Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: assets-for-download
-          path: artifacts
+          name: repository
+          path: repository.zip
 
 
       - name: Create release
@@ -115,7 +116,7 @@ jobs:
           prerelease: true
           title: ${{ steps.environment.outputs.version }}
           files: |
-            artifacts
+            repository.zip
 
 
       - name: Create Github's master release
@@ -128,4 +129,4 @@ jobs:
           prerelease: false
           title: ${{ steps.environment.outputs.version }}
           files: |
-            artifacts
+            repository.zip
