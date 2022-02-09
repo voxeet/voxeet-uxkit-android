@@ -1,0 +1,36 @@
+name: Snapshot build
+
+on:
+  pull_request:
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Run tests
+        id: codeartifact_login
+        run: bash ./scripts/tests.sh
+
+      - name: Unit Tests Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: ./**/build/test-results/**/*.xml
+
+      - name: Add coverage to PR
+        id: jacoco
+        uses: codlab/jacoco-report@v1.2.3
+        with:
+          paths: ./app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit-common/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit-exoplayer-support/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit-firebase/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit-incoming-call/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit-screenshare/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit-self-managed-call/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit-system-service/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,./uxkit-youtube/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          debug-mode: true
+          fail-on-read: false
+          min-coverage-overall: 0
+          min-coverage-changed-files: 0

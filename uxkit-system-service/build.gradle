@@ -54,3 +54,4 @@ dependencies {
 apply from: "../advanced_gradle/license.gradle"
 apply from: "../advanced_gradle/tasks.gradle"
 apply from: "../advanced_gradle/publishing.gradle"
+apply from: "../advanced_gradle/jacoco.gradle"
