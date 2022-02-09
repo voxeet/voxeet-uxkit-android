@@ -44,7 +44,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView {
     /**
      * Available constructor to create an Youtube View to hold incoming requests
      *
-     * @param context    a valid context used to inflate the view when needed
+     * @param context a valid context used to inflate the view when needed
      */
     public YoutubeMediaPresentationView(@NonNull Context context) {
         super(context);
@@ -93,7 +93,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView {
      */
     @Override
     public void play(@NonNull VideoPresentationPlay videoPresentationPlay) {
-        Log.d("play lastKey:=" + lastKey + " key:=" + videoPresentationPlay.key+" "+ videoPresentationPlay.timestamp);
+        Log.d("play lastKey:=" + lastKey + " key:=" + videoPresentationPlay.key + " " + videoPresentationPlay.timestamp);
         if (null == lastKey || !lastKey.equals(videoPresentationPlay.key)) return;
         if (null != youtubePlayer) {
             seek = videoPresentationPlay.timestamp;
@@ -111,7 +111,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView {
      */
     @Override
     public void pause(@NonNull VideoPresentationPaused videoPresentationPaused) {
-        Log.d("pause lastKey:=" + lastKey + " key:=" + videoPresentationPaused.key+" "+ videoPresentationPaused.timestamp);
+        Log.d("pause lastKey:=" + lastKey + " key:=" + videoPresentationPaused.key + " " + videoPresentationPaused.timestamp);
         if (null == lastKey || !lastKey.equals(videoPresentationPaused.key)) return;
         if (null != youtubePlayer) {
             seek = videoPresentationPaused.timestamp;
@@ -218,19 +218,11 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView {
 
     @Nullable
     private String getVideoId(@Nullable String url) {
-        if (null == url) return "";
-
-        if (url.startsWith("https://youtu.be/")) {
-            String[] split = url.split("youtu.be/");
-            if (split.length > 1) {
-                return split[1];
-            }
+        try {
+            return InternalYoutubeHelper.getVideoId(url);
+        } catch (Throwable throwable) {
+            Log.e("getVideoid exception", throwable);
+            return null;
         }
-
-        String[] split = url.split("v=");
-        if (split.length > 0) {
-            return split[0].split("&")[0];
-        }
-        return "";
     }
 }
