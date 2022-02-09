@@ -28,9 +28,7 @@ public class YoutubeMediaPresentationProvider extends AbstractMediaPlayerProvide
      */
     @Override
     public boolean isUrlCompatible(@NonNull String url) {
-        boolean compatible = url.startsWith("https://youtube.com/") || url.startsWith("https://youtu.be/");
-        Log.d("isUrlCompatible " + url + " " + compatible);
-        return compatible;
+        return InternalYoutubeHelper.isUrlCompatible(url);
     }
 
     /**
