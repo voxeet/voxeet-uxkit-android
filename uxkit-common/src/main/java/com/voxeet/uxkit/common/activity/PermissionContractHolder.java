@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PermissionContractHolder {
+public class PermissionContractHolder implements IPermissionContractHolder {
 
     private final static ShortLogger Log = UXKitLogger.createLogger(PermissionContractHolder.class);
 
@@ -35,6 +35,7 @@ public class PermissionContractHolder {
 
     private Map<String, Boolean> permissionRequestResults = new HashMap<>();
 
+    @Override
     public boolean isPermissionNeverAskAgain(@NonNull String permission) {
         if (!permissionRequestResults.containsKey(permission)) return false;
         Boolean granted = permissionRequestResults.get(permission);
@@ -42,6 +43,7 @@ public class PermissionContractHolder {
         return !granted && !shouldShowRequestPermissionRationale(permission);
     }
 
+    @Override
     public boolean shouldShowRequestPermissionRationale(@NonNull String permission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return appCompatActivity.shouldShowRequestPermissionRationale(permission);
@@ -73,6 +75,7 @@ public class PermissionContractHolder {
         });
     }
 
+    @Override
     public IRequestPermissions getRequestPermissions() {
         return requestPermissions;
     }

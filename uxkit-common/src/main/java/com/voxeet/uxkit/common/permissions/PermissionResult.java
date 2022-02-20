@@ -17,4 +17,10 @@ public class PermissionResult {
     public boolean isFor(@NonNull String permission) {
         return Opt.of(permission).then(p -> p.equals(this.permission)).or(false);
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return permission + "->" + isGranted;
+    }
 }

@@ -58,7 +58,7 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
     @Nullable
     private T sdkService;
 
-    private PermissionContractHolder permissionContractHolder;
+    private IPermissionContractHolder permissionContractHolder;
 
     public VoxeetCommonAppCompatActivityWrapper(@NonNull AppCompatActivity parentActivity) {
         this.parentActivity = parentActivity;
@@ -81,9 +81,13 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
         //create a check incoming call
         incomingBundleChecker = createIncomingBundleChecker(parentActivity.getIntent());
 
-        permissionContractHolder = new PermissionContractHolder(parentActivity);
+        permissionContractHolder = createPermissionContractHolder();
 
         startService();
+    }
+
+    public IPermissionContractHolder createPermissionContractHolder() {
+        return new PermissionContractHolder(parentActivity);
     }
 
     public void onResume() {
