@@ -21,6 +21,7 @@ import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
 import com.voxeet.sdk.utils.Opt;
+import com.voxeet.uxkit.common.R;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 
@@ -56,12 +57,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     public AbstractSDKService() {
     }
 
-    private Runnable stopForeground = new Runnable() {
-        @Override
-        public void run() {
-            stopForeground(true);
-        }
-    };
+    private Runnable stopForeground = () -> stopForeground(true);
 
     @Override
     public void onCreate() {
@@ -78,7 +74,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
         NotificationHelper.createNotificationChannel(this);
 
         if (conferenceService.isLive())
-            setForegroundState(getConferenceStateJoined());
+            setForegroundState(ConferenceStatus.JOINED, getConferenceStateJoined());
 
         currentConferenceState = null;
     }
@@ -104,20 +100,20 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     public void onEvent(@NonNull ConferenceStatusUpdatedEvent event) {
         switch (event.state) {
             case CREATING:
-                setForegroundState(getConferenceStateCreating());
+                setForegroundState(event.state, getConferenceStateCreating());
                 break;
             case CREATED:
-                setForegroundState(getConferenceStateCreated());
+                setForegroundState(event.state, getConferenceStateCreated());
                 break;
             case JOINING:
-                setForegroundState(getConferenceStateJoining());
+                setForegroundState(event.state, getConferenceStateJoining());
                 break;
             case JOINED:
-                setForegroundState(getConferenceStateJoined());
+                setForegroundState(event.state, getConferenceStateJoined());
                 break;
             case LEFT:
             case ERROR:
-                setForegroundState(getConferenceStateLeft());
+                setForegroundState(event.state, getConferenceStateLeft());
                 stopForeground();
                 break;
             default:
@@ -127,13 +123,13 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceDestroyedPush event) {
-        setForegroundState(getConferenceStateEnd());
+        setForegroundState(ConferenceStatus.ENDED, getConferenceStateEnd());
         stopForeground();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(ConferenceEnded event) {
-        setForegroundState(getConferenceStateEnd());
+        setForegroundState(ConferenceStatus.ENDED, getConferenceStateEnd());
         stopForeground();
     }
 
@@ -158,22 +154,37 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
     @StringRes
     protected abstract int getConferenceStateEnd();
 
-    protected void setForegroundState(@StringRes int string) {
+    protected void beforeNotificationBuild(NotificationCompat.Builder builder,
+                                           ConferenceStatus status) {
+
+    }
+
+    protected void afterNotificationBuild(NotificationCompat.Builder builder,
+                                           ConferenceStatus status) {
+
+    }
+
+    protected void setForegroundState(@NonNull ConferenceStatus status, @StringRes int string) {
         Class<? extends Activity> activity = getActivityClass();
         if (null != activity) {
-            if (lastForeground == string) return;
+            //enable reset notif
+            //if (lastForeground == string) return;
             lastForeground = string;
 
             Intent notificationIntent = new Intent(this, getActivityClass());
 
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                    notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+                    notificationIntent, PendingIntent.FLAG_MUTABLE);
 
-            Notification notification = new NotificationCompat.Builder(this, NotificationHelper.getChannelId(this))
-                    .setSmallIcon(getSmallIcon())
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.getChannelId(this));
+            beforeNotificationBuild(builder, status);
+            builder.setSmallIcon(getSmallIcon())
                     .setContentTitle(getContentTitle())
                     .setContentText(getString(string))
-                    .setContentIntent(pendingIntent).build();
+                    .setContentIntent(pendingIntent);
+            afterNotificationBuild(builder, status);
+
+            Notification notification = builder.build();
 
             startForeground(getNotificationId(), notification);
         } else {

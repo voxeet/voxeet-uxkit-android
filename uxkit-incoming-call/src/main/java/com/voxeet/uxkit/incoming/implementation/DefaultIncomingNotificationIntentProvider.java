@@ -30,6 +30,12 @@ public class DefaultIncomingNotificationIntentProvider extends AbstractIncomingN
 
     @NonNull
     @Override
+    protected Class<? extends AppCompatActivity> getAcceptedBounceActivityForBroadcastReceiverClass() {
+        return DefaultAndroid12BounceActivity.class;
+    }
+
+    @NonNull
+    @Override
     protected Class<? extends BroadcastReceiver> getDismissedBroadcastReceiverClass() {
         return DismissNotificationBroadcastReceiver.class;
     }

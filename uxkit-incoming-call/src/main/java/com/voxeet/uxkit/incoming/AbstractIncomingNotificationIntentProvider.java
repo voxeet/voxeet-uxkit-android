@@ -28,6 +28,7 @@ import com.voxeet.sdk.push.center.invitation.InvitationBundle;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.common.logging.ShortLogger;
+import com.voxeet.uxkit.incoming.implementation.DefaultAndroid12BounceActivity;
 import com.voxeet.uxkit.incoming.notification.NotificationBundle;
 import com.voxeet.uxkit.incoming.utils.IncomingNotificationServiceHelper;
 
@@ -50,6 +51,16 @@ public abstract class AbstractIncomingNotificationIntentProvider {
     @NonNull
     protected abstract Class<? extends BroadcastReceiver> getAcceptedBroadcastReceiverClass();
 
+    /**
+     * For Android 12, it's not possible to use bounce activities anymore. So a workaround is used for now
+     *
+     * @return
+     */
+    @NonNull
+    protected Class<? extends AppCompatActivity> getAcceptedBounceActivityForBroadcastReceiverClass() {
+        return DefaultAndroid12BounceActivity.class;
+    }
+
     @NonNull
     protected abstract Class<? extends BroadcastReceiver> getDismissedBroadcastReceiverClass();
 
@@ -62,6 +73,17 @@ public abstract class AbstractIncomingNotificationIntentProvider {
         Intent intent = new Intent(context, getAcceptedBroadcastReceiverClass());
         log.d("createAcceptIntent for " + getAcceptedBroadcastReceiverClass().getSimpleName());
         pushKeysIntoIntent(extra, intent);
+
+        return intent;
+    }
+
+    @Nullable
+    public Intent createAcceptBounceActivity(@NonNull Context context, @NonNull InvitationBundle invitationBundle) {
+        Bundle extra = invitationBundle.asBundle();
+        Intent intent = new Intent(context, getAcceptedBounceActivityForBroadcastReceiverClass());
+        log.d("createAcceptBounceActivity for " + getAcceptedBounceActivityForBroadcastReceiverClass().getSimpleName());
+        pushKeysIntoIntent(extra, intent);
+        intent.putExtra(DefaultAndroid12BounceActivity.FULLY_QUALIFIED_NAME, getAcceptedBroadcastReceiverClass().getCanonicalName());
 
         return intent;
     }
@@ -121,10 +143,12 @@ public abstract class AbstractIncomingNotificationIntentProvider {
         String channelId = getChannelId(context);
 
         Intent accept = createAcceptIntent(context, serviceInvitationBundle);
+        Intent acceptForBounceActivity = createAcceptBounceActivity(context, serviceInvitationBundle);
         Intent dismiss = createDismissIntent(context, serviceInvitationBundle);
         Intent callingIntent = createCallingIntent(context, serviceInvitationBundle);
 
         if (null != accept) accept.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
+        if (null != acceptForBounceActivity) acceptForBounceActivity.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
         if (null != dismiss) dismiss.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
         if (null != callingIntent) callingIntent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
 
@@ -141,6 +165,10 @@ public abstract class AbstractIncomingNotificationIntentProvider {
         PendingIntent pendingIntentAccepted = PendingIntent.getBroadcast(context, INCOMING_NOTIFICATION_REQUEST_CODE, accept, flag);
         PendingIntent pendingIntentDismissed = PendingIntent.getBroadcast(context, INCOMING_NOTIFICATION_REQUEST_CODE, dismiss, flag);
         PendingIntent pendingCallingIntent = null;
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            pendingIntentAccepted = PendingIntent.getActivity(context, INCOMING_NOTIFICATION_REQUEST_CODE, acceptForBounceActivity, flag);
+        }
 
         if (null != callingIntent) {
             pendingCallingIntent = PendingIntent.getActivity(context, INCOMING_NOTIFICATION_REQUEST_CODE, callingIntent, flag);

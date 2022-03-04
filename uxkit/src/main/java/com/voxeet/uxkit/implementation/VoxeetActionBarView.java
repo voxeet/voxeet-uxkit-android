@@ -25,9 +25,11 @@ import com.voxeet.audio2.devices.description.DeviceType;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ThenPromise;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
+import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
 import com.voxeet.sdk.events.v2.VideoStateEvent;
+import com.voxeet.sdk.events.v3.MicrophoneStateEvent;
 import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
@@ -37,6 +39,7 @@ import com.voxeet.sdk.services.SessionService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
 import com.voxeet.sdk.services.media.MediaState;
+import com.voxeet.sdk.services.media.MicrophoneState;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
@@ -676,7 +679,13 @@ public class VoxeetActionBarView extends VoxeetView {
         // also invalidate information about mute stream
         if (null == microphone) return;
 
-        if (!Validate.hasMicrophonePermissions(getContext())) {
+        boolean no_perm = !Validate.hasMicrophonePermissions(getContext());
+        MediaState state = Opt.of(VoxeetSDK.conference().getCurrentConference())
+                .then(ConferenceInformation::getAudioState).or(MediaState.STOPPED);
+
+        boolean no_audio = state.equals(MediaState.STOPPED) || state.equals(MediaState.STOPPING);
+
+        if (no_perm || no_audio) {
             microphone.setSelected(true); //mute state is selected
             microphone.setEnabled(false);
         } else {
@@ -801,5 +810,14 @@ public class VoxeetActionBarView extends VoxeetView {
     public VoxeetActionBarView setMediaDeviceControl(@Nullable IMediaDeviceControlListener onSpeakerAction) {
         this.onSpeakerAction = onSpeakerAction;
         return this;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(@NonNull MicrophoneStateEvent event) {
+        Conference conference = VoxeetSDK.conference().getConference();
+        if (null == conference) return;
+
+        microphone.setSelected(MicrophoneState.MUTED.equals(event.state));
+        checkMicrophoneButtonState();
     }
 }

@@ -7,4 +7,7 @@
     <string name="voxeet_foreground_conference_state_join_error">"Unable to join"</string>
     <string name="voxeet_foreground_conference_state_ended">"Conference ended"</string>
     <string name="voxeet_foreground_content_title">Change me</string>
+    <string name="notification_unmute_mic">Unmute</string>
+    <string name="notification_mute_mic">Mute</string>
+    <string name="leave_call">Leave</string>
 </resources>
