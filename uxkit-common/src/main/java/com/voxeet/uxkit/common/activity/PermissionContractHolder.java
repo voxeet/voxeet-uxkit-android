@@ -1,5 +1,6 @@
 package com.voxeet.uxkit.common.activity;
 
+import android.content.pm.PackageManager;
 import android.os.Build;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -8,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.voxeet.audio.utils.__Call;
 import com.voxeet.uxkit.common.UXKitLogger;
@@ -104,6 +106,12 @@ public class PermissionContractHolder implements IPermissionContractHolder {
                 String perm = permissions.get(0);
                 singlePermission.launch(perm);
             }
+        }
+
+        @Override
+        public boolean hasPermission(@NonNull String permission) {
+            return ContextCompat.checkSelfPermission(appCompatActivity, permission)
+                    == PackageManager.PERMISSION_GRANTED;
         }
 
         @Override

@@ -53,6 +53,11 @@ public abstract class AbstractIncomingNotificationService<T extends AbstractInco
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (null == intent) {
+            Log.d("receiving invalid bundle");
+        }
+
+        Log.d("receiving start for service");
         Bundle bundle = intent.getExtras();
         InvitationBundle serviceInvitationBundle = new InvitationBundle(bundle);
         NotificationBundle notificationBundle = provider.createNotification(serviceInvitationBundle, false);

@@ -11,6 +11,8 @@ public interface IRequestPermissions {
 
     void requestPermissions(@NonNull List<String> permissions, @NonNull __Call<Map<String, Boolean>> callback);
 
+    boolean hasPermission(@NonNull String permission);
+
     boolean isPermissionNeverAskAgain(@NonNull String permission);
 
     boolean shouldShowRequestPermissionRationale(@NonNull String permission);

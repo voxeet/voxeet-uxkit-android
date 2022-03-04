@@ -7,4 +7,7 @@
     <string name="voxeet_foreground_conference_state_join_error">"Impossible de rejoindre"</string>
     <string name="voxeet_foreground_conference_state_ended">"Conférence terminée"</string>
     <string name="voxeet_foreground_content_title">Change me</string>
+    <string name="notification_unmute_mic">Activer Mic</string>
+    <string name="notification_mute_mic">Désactiver Mic</string>
+    <string name="leave_call">Quitter</string>
 </resources>

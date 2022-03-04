@@ -24,6 +24,11 @@
             android:name=".implementation.AcceptedNotificationBroadcastReceiver"
             android:enabled="true"
             android:exported="false" />
+
+        <activity
+            android:name=".implementation.DefaultAndroid12BounceActivity"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

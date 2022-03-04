@@ -12,6 +12,18 @@
             android:authorities="${applicationId}.manifests.VoxeetSystemServiceManifestComponent"
             android:enabled="true"
             android:exported="false" />
+
+        <receiver android:name=".OnLeaveActionBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver android:name=".OnUnMuteActionBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver android:name=".OnMuteActionBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

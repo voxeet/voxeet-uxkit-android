@@ -1,17 +1,24 @@
-package com.voxeet.uxkit.presentation.view;
+package com.voxeet.uxkit.common.presentation.view;
 
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
+import com.voxeet.sdk.json.VideoPresentationPaused;
+import com.voxeet.sdk.json.VideoPresentationPlay;
+import com.voxeet.sdk.json.VideoPresentationSeek;
+import com.voxeet.sdk.json.VideoPresentationStarted;
+import com.voxeet.sdk.json.VideoPresentationStopped;
 
 /**
  * Abstract View to manage and expose Video Presentation
  */
-@Deprecated
-public abstract class AbstractMediaPlayerView extends com.voxeet.uxkit.common.presentation.view.AbstractMediaPlayerView {
+public abstract class AbstractMediaPlayerView extends FrameLayout {
 
     /**
      * Create an instance of the View directly from the MediaPlayerProvider
@@ -56,4 +63,37 @@ public abstract class AbstractMediaPlayerView extends com.voxeet.uxkit.common.pr
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    /**
+     * Start a video from valid information
+     *
+     * @param videoPresentationStarted representation of the holder to get the info from
+     */
+    public abstract void start(@NonNull VideoPresentationStarted videoPresentationStarted);
+
+    /**
+     * Stop the current video
+     * @param videoPresentationStopped representation of the holder to get the info from
+     */
+    public abstract void stop(@NonNull VideoPresentationStopped videoPresentationStopped);
+
+    /**
+     * Play the current video
+     *
+     * @param videoPresentationPlay representation of the holder to get the info from
+     */
+    public abstract void play(@NonNull VideoPresentationPlay videoPresentationPlay);
+
+    /**
+     * Pause the current video
+     *
+     * @param videoPresentationPaused representation of the holder to get the info from
+     */
+    public abstract void pause(@NonNull VideoPresentationPaused videoPresentationPaused);
+
+    /**
+     * Directly change a video presentation to a defined timestamp
+     *
+     * @param videoPresentationSeek representation of the holder to get the info from
+     */
+    public abstract void seek(@NonNull VideoPresentationSeek videoPresentationSeek);
 }
