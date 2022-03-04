@@ -14,9 +14,9 @@ import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
-import com.voxeet.uxkit.presentation.controller.MediaPlayerProviderController;
-import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
-import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
+import com.voxeet.uxkit.common.presentation.controller.MediaPlayerProviderController;
+import com.voxeet.uxkit.common.presentation.provider.AbstractMediaPlayerProvider;
+import com.voxeet.uxkit.common.presentation.view.AbstractMediaPlayerView;
 
 public class VoxeetVideoStreamView extends FrameLayout {
 

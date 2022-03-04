@@ -1,17 +1,20 @@
-package com.voxeet.uxkit.presentation.controller;
+package com.voxeet.uxkit.common.presentation.controller;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
+import com.voxeet.uxkit.common.presentation.provider.AbstractMediaPlayerProvider;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The purpose of this class is to provide a static way to register instance of MediaPlayerProvider when a VideoPresentation is started for the following (by default provided when using our direct optionnal dependencies) :
  * - api (':toolkit-exoplayer-support') to support ExoPlayer for mp4 urls
  * - api (':toolkit-youtube') to support Youtube playback for ... youtube urls
  */
-@Deprecated
 public class MediaPlayerProviderController {
+
+    private final static CopyOnWriteArrayList<AbstractMediaPlayerProvider> MEDIA_PLAYER_PROVIDERS = new CopyOnWriteArrayList<>();
 
     private MediaPlayerProviderController() {
 
@@ -30,7 +33,7 @@ public class MediaPlayerProviderController {
      * @param mediaPlayerProvider
      */
     public static void register(@NonNull AbstractMediaPlayerProvider mediaPlayerProvider) {
-        com.voxeet.uxkit.common.presentation.controller.MediaPlayerProviderController.register(mediaPlayerProvider);
+        MEDIA_PLAYER_PROVIDERS.add(mediaPlayerProvider);
     }
 
     /**
@@ -46,7 +49,11 @@ public class MediaPlayerProviderController {
      * @return the proper manager instance of null if none have been registered
      */
     @Nullable
-    public static com.voxeet.uxkit.common.presentation.provider.AbstractMediaPlayerProvider getCompatibleMediaPlayerProvider(@NonNull String url) {
-        return com.voxeet.uxkit.common.presentation.controller.MediaPlayerProviderController.getCompatibleMediaPlayerProvider(url);
+    public static AbstractMediaPlayerProvider getCompatibleMediaPlayerProvider(@NonNull String url) {
+        for (AbstractMediaPlayerProvider provider : MEDIA_PLAYER_PROVIDERS) {
+            if (provider.isUrlCompatible(url)) return provider;
+        }
+
+        return null;
     }
 }
