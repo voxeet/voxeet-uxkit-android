@@ -50,8 +50,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    api libs.androidx.core
-    api libs.androidx.appcompat
     api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
 
     api project(":uxkit-common")

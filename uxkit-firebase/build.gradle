@@ -51,7 +51,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     implementation libs.firebase.messaging
-    implementation libs.androidx.core
     api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
 
     api project(":uxkit-common")
