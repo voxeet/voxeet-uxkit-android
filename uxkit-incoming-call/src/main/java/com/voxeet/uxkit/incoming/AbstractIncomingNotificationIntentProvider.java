@@ -148,7 +148,8 @@ public abstract class AbstractIncomingNotificationIntentProvider {
         Intent callingIntent = createCallingIntent(context, serviceInvitationBundle);
 
         if (null != accept) accept.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
-        if (null != acceptForBounceActivity) acceptForBounceActivity.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
+        if (null != acceptForBounceActivity)
+            acceptForBounceActivity.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
         if (null != dismiss) dismiss.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
         if (null != callingIntent) callingIntent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
 
@@ -166,7 +167,7 @@ public abstract class AbstractIncomingNotificationIntentProvider {
         PendingIntent pendingIntentDismissed = PendingIntent.getBroadcast(context, INCOMING_NOTIFICATION_REQUEST_CODE, dismiss, flag);
         PendingIntent pendingCallingIntent = null;
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             pendingIntentAccepted = PendingIntent.getActivity(context, INCOMING_NOTIFICATION_REQUEST_CODE, acceptForBounceActivity, flag);
         }
 

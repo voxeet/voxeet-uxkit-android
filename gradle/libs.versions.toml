@@ -1,0 +1,49 @@
+[versions]
+# Gradle plugins
+androidGradlePlugin = "7.1.1"
+licenseGradlePlugin = "0.8.91-SNAPSHOT"
+
+# Testing
+junit = "4.12"
+androidx-test = "1.4.0"
+espresso = "3.3.0"
+
+# AndroidX/Material
+androidx-core = "1.7.0"
+androidx-recyclerview = "1.2.1"
+androidx-appcompat = "1.3.0"
+androidx-material = "1.5.0"
+androidx-multidex = "2.0.1"
+
+# Other
+picasso = "2.71828"
+firebase-messaging = "17.4.0"
+exoplayer = "2.17.0"
+retrofit = "2.9.0"
+butterknife = "7.0.1"
+
+[libraries]
+# Gradle plugins
+android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
+license-gradlePlugin = { module = "com.jaredsburrows:gradle-license-plugin", version.ref = "licenseGradlePlugin" }
+
+# Testing
+junit = { module = "junit:junit", version.ref = "junit" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test" }
+espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+
+# AndroidX/Material
+androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "androidx-recyclerview" }
+androidx-material = { module = "com.google.android.material:material", version.ref = "androidx-material" }
+androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "androidx-multidex" }
+
+# Other
+picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebase-messaging" }
+exoplayer-core = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "exoplayer" }
+exoplayer-dash = { module = "com.google.android.exoplayer:exoplayer-dash", version.ref = "exoplayer" }
+exoplayer-ui = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "exoplayer" }
+retrofit-converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
+butterknife = { module = "com.jakewharton:butterknife", version.ref = "butterknife" }

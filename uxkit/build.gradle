@@ -47,20 +47,21 @@ configurations {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+    testImplementation libs.junit
+    androidTestImplementation(libs.espresso.core, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    api "androidx.core:core:${rootProject.ext.androidXCore}"
-    api "androidx.appcompat:appcompat:${rootProject.ext.androidXAppCompatVersion}"
-    api "androidx.recyclerview:recyclerview:${rootProject.ext.androidXRecyclerVersion}"
-    api 'com.squareup.picasso:picasso:2.71828'
+
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.recyclerview
+    implementation libs.picasso
 
     api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
     api project(":uxkit-incoming-call")
     api project(":uxkit-common")
 }
 
-apply from: "../advanced_gradle/license.gradle"
-apply from: "../advanced_gradle/tasks.gradle"
-apply from: "../advanced_gradle/publishing.gradle"
+apply from: "../gradle/license.gradle"
+apply from: "../gradle/tasks.gradle"
+apply from: "../gradle/publishing.gradle"

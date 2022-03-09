@@ -1,7 +1,6 @@
 package com.voxeet.uxkit.mp4;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -9,13 +8,14 @@ import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import com.voxeet.sdk.json.VideoPresentationPaused;
 import com.voxeet.sdk.json.VideoPresentationPlay;
@@ -29,8 +29,8 @@ import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
  */
 public class MP4MediaPresentationView extends AbstractMediaPlayerView {
 
-    private SimpleExoPlayer exoPlayer;
-    private PlayerView playerView;
+    private ExoPlayer exoPlayer;
+    private StyledPlayerView playerView;
 
     private MediaSource mediaSource;
 
@@ -57,10 +57,10 @@ public class MP4MediaPresentationView extends AbstractMediaPlayerView {
         lastKey = videoPresentationStarted.key;
 
         if (exoPlayer == null) {
-            exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(),
-                    new DefaultRenderersFactory(getContext()),
-                    new DefaultTrackSelector(),
-                    new DefaultLoadControl());
+            exoPlayer = new ExoPlayer.Builder(getContext())
+                    .setTrackSelector(new DefaultTrackSelector(getContext()))
+                    .setLoadControl(new DefaultLoadControl())
+                    .setRenderersFactory(new DefaultRenderersFactory(getContext())).build();
 
             playerView.setPlayer(exoPlayer);
             playerView.hideController();
@@ -125,8 +125,10 @@ public class MP4MediaPresentationView extends AbstractMediaPlayerView {
     }
 
     private MediaSource createMediaSource(@NonNull String url) {
-        String UA = Util.getUserAgent(getContext(), getContext().getPackageName());
-        return new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory(UA)).createMediaSource(Uri.parse(url));
+        String userAgent = Util.getUserAgent(getContext(), getContext().getPackageName());
+
+        DataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory().setUserAgent(userAgent);
+        return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(url));
     }
 
     private void init() {

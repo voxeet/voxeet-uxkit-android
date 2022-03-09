@@ -25,7 +25,6 @@ import com.voxeet.audio2.devices.description.DeviceType;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ThenPromise;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
-import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
 import com.voxeet.sdk.events.v2.VideoStateEvent;

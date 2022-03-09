@@ -46,11 +46,11 @@ configurations {
 }
 
 dependencies {
-    api "androidx.core:core:${rootProject.ext.androidXCore}"
+    implementation libs.androidx.core
     api project(":uxkit")
     api project(":uxkit-common")
 }
 
-apply from: "../advanced_gradle/license.gradle"
-apply from: "../advanced_gradle/tasks.gradle"
-apply from: "../advanced_gradle/publishing.gradle"
+apply from: "../gradle/license.gradle"
+apply from: "../gradle/tasks.gradle"
+apply from: "../gradle/publishing.gradle"

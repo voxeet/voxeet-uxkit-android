@@ -46,16 +46,16 @@ configurations {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+    testImplementation libs.junit
+    androidTestImplementation(libs.espresso.core, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    api "androidx.core:core:${rootProject.ext.androidXCore}"
-    api "androidx.appcompat:appcompat:${rootProject.ext.androidXAppCompatVersion}"
+    implementation libs.androidx.core
+    implementation libs.androidx.appcompat
 
     api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
 }
 
-apply from: "../advanced_gradle/license.gradle"
-apply from: "../advanced_gradle/tasks.gradle"
-apply from: "../advanced_gradle/publishing.gradle"
+apply from: "../gradle/license.gradle"
+apply from: "../gradle/tasks.gradle"
+apply from: "../gradle/publishing.gradle"

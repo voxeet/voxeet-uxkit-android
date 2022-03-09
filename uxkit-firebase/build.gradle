@@ -46,17 +46,17 @@ configurations {
 }
 
 dependencies {
-    api "com.google.firebase:firebase-messaging:17.4.0"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+    testImplementation libs.junit
+    androidTestImplementation(libs.espresso.core, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    api "androidx.core:core:${rootProject.ext.androidXCore}"
+    implementation libs.firebase.messaging
+    implementation libs.androidx.core
     api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
 
     api project(":uxkit-common")
 }
 
-apply from: "../advanced_gradle/license.gradle"
-apply from: "../advanced_gradle/tasks.gradle"
-apply from: "../advanced_gradle/publishing.gradle"
+apply from: "../gradle/license.gradle"
+apply from: "../gradle/tasks.gradle"
+apply from: "../gradle/publishing.gradle"

@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.gms:google-services:4.2.0' // google-services plugin
+        classpath 'com.google.gms:google-services:4.3.10' // google-services plugin
     }
 }
 
@@ -58,27 +58,27 @@ android {
 }
 
 dependencies {
-    api project(':uxkit')
-    api project(':uxkit-youtube')
-    api project(':uxkit-exoplayer-support')
-    api project(':uxkit-firebase')
+    implementation project(':uxkit')
+    implementation project(':uxkit-youtube')
+    implementation project(':uxkit-exoplayer-support')
+    implementation project(':uxkit-firebase')
 
     // to add the default service
-    api project(':uxkit-system-service')
+    implementation project(':uxkit-system-service')
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation libs.junit
 
     //also used as annotation processor
-    implementation 'com.jakewharton:butterknife:7.0.1'
-    annotationProcessor 'com.jakewharton:butterknife:7.0.1'
+    implementation libs.butterknife
+    annotationProcessor libs.butterknife
 
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation libs.androidx.material
+    implementation libs.androidx.multidex
 
     //when working with our oauth example
     //this converter is here to convert "string" only result
     //if a regular json is sent, please use Jackson
-    implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
+    implementation libs.retrofit.converter.scalars
 }
 
 //add google-services.json to enable google-services plugin
@@ -86,4 +86,4 @@ if (file("./google-services.json").exists()) {
     apply plugin: 'com.google.gms.google-services'
 }
 
-apply from: "../advanced_gradle/license.gradle"
+apply from: "../gradle/license.gradle"
