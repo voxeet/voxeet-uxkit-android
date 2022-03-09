@@ -25,7 +25,7 @@ import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.views.VideoView;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
-import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
+import com.voxeet.uxkit.common.presentation.view.AbstractMediaPlayerView;
 import com.voxeet.uxkit.screenshare.utils.PinchGestureProvider;
 
 import org.greenrobot.eventbus.EventBus;

@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
-import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
+import com.voxeet.uxkit.common.presentation.provider.AbstractMediaPlayerProvider;
 
 /**
  * Manage and create screenshare videos
