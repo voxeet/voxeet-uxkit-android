@@ -58,7 +58,10 @@ public abstract class AbstractIncomingNotificationService<T extends AbstractInco
         }
 
         Log.d("receiving start for service");
+        if (null == intent) return Service.START_STICKY;
         Bundle bundle = intent.getExtras();
+        if (null == bundle) return Service.START_STICKY;
+
         InvitationBundle serviceInvitationBundle = new InvitationBundle(bundle);
         NotificationBundle notificationBundle = provider.createNotification(serviceInvitationBundle, false);
 
