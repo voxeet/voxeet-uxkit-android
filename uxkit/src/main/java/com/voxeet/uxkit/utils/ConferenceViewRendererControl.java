@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
@@ -18,8 +19,6 @@ import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.implementation.VoxeetConferenceView;
 
 import java.lang.ref.WeakReference;
-
-import javax.annotation.Nullable;
 
 public class ConferenceViewRendererControl {
 

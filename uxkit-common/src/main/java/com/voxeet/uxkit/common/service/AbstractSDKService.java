@@ -9,6 +9,7 @@ import android.os.Handler;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 
@@ -28,8 +29,6 @@ import com.voxeet.uxkit.common.logging.ShortLogger;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import javax.annotation.Nullable;
 
 public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Service {
 
