@@ -46,19 +46,18 @@ configurations {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
+    testImplementation libs.junit
+    androidTestImplementation(libs.espresso.core, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    api "androidx.core:core:${rootProject.ext.androidXCore}"
     api project(":uxkit")
     api project(":uxkit-common")
 
-    api 'com.google.android.exoplayer:exoplayer-core:2.13.3'
-    api 'com.google.android.exoplayer:exoplayer-dash:2.13.3'
-    api 'com.google.android.exoplayer:exoplayer-ui:2.13.3'
+    api libs.exoplayer.core
+    api libs.exoplayer.dash
+    api libs.exoplayer.ui
 }
 
-apply from: "../advanced_gradle/license.gradle"
-apply from: "../advanced_gradle/tasks.gradle"
-apply from: "../advanced_gradle/publishing.gradle"
+apply from: "../gradle/license.gradle"
+apply from: "../gradle/tasks.gradle"
+apply from: "../gradle/publishing.gradle"

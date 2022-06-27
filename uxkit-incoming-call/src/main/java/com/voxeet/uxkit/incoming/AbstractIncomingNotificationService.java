@@ -40,7 +40,6 @@ public abstract class AbstractIncomingNotificationService<T extends AbstractInco
         Log.d("onCreate: ");
 
         createNotificationChannel(this);
-        startForegroundDefault();
     }
 
     @NonNull
@@ -108,30 +107,6 @@ public abstract class AbstractIncomingNotificationService<T extends AbstractInco
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (null != mNotificationManager) {
             mNotificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private void startForegroundDefault() {
-        int notificationId = DEFAULT_NOTIFICATION_ID;
-        String channelId = provider.getChannelId(this);
-        Log.d("startForegroundDefault: " + channelId);
-
-        Notification lastNotification = new NotificationCompat.Builder(this, channelId)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_CALL)
-                .setContentTitle("starting")
-                .setContentText("starting")
-                .setSmallIcon(R.drawable.ic_incoming_call_notification)
-                .setOngoing(true)
-                .build();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            //shouldn't happen, creating overhead above
-            startForeground(notificationId, lastNotification,
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
-                            | ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
-        } else {
-            startForeground(notificationId, lastNotification);
         }
     }
 }

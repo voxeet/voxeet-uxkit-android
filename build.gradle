@@ -5,9 +5,8 @@ buildscript {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4'
-
-        classpath 'com.jaredsburrows:gradle-license-plugin:0.8.91-SNAPSHOT'
+        classpath libs.android.gradlePlugin
+        classpath libs.license.gradlePlugin
     }
 }
 
@@ -32,9 +31,6 @@ ext {
     targetSdkVersion = 32
 
     groupId="com.voxeet.sdk"
-    androidXCore = "1.6.0"
-    androidXAppCompatVersion = "1.4.0"
-    androidXRecyclerVersion = "1.2.1"
     //underlying sdk
     //voxeetSdkVersion defined in the sdk.gradle file
     //voxeetUXKitVersion defined in the uxkit.gradle file

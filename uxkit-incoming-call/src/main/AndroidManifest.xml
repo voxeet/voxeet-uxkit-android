@@ -1,15 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.voxeet.uxkit.incoming">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:label="@string/app_name"
         android:supportsRtl="true">
 
         <!-- Default service if the DefaultNotificationIncomingNotification is used -->
         <!-- nothing prevent its reuse tho -->
-        <service android:name=".implementation.DefaultIncomingNotificationService"
+        <service
+            android:name=".implementation.DefaultIncomingNotificationService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="phoneCall" />
 
         <!-- Default service if the DefaultNotificationIncomingNotification is used -->
         <!-- nothing prevent its reuse tho -->
