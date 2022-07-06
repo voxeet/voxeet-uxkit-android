@@ -87,7 +87,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     private NotchAvoidView notchView;
     private TextView conferenceState;
-    private ConferenceStatus mState = ConferenceStatus.DEFAULT;
+    private ConferenceStatus mState = ConferenceStatus.UNINITIALIZED;
     private boolean isExpanded = false;
     private ScaleGestureDetector mScaleOnPinchDetector;
 
@@ -273,7 +273,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
         if (null != information) {
             switch (information.getConferenceState()) {
-                case DEFAULT:
+                case UNINITIALIZED:
                 case CREATING:
                     onConferenceCreating();
                     break;
@@ -286,12 +286,12 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                 case JOINED:
                     onConferenceJoined(information.getConference());
                     break;
-                case FIRST_PARTICIPANT:
-                    onConferenceFromNoOneToOneUser();
-                    break;
-                case NO_MORE_PARTICIPANT:
-                    onConferenceNoMoreUser();
-                    break;
+                //case FIRST_PARTICIPANT:
+                //    onConferenceFromNoOneToOneUser();
+                //    break;
+                //case NO_MORE_PARTICIPANT:
+                //    onConferenceNoMoreUser();
+                //    break;
                 case LEAVING:
                 case LEFT:
                     onConferenceLeaving();
@@ -965,7 +965,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     private void checkStateValue() {
         ConferenceService service = VoxeetSDK.conference();
 
-        mState = ConferenceStatus.DEFAULT;
+        mState = ConferenceStatus.UNINITIALIZED;
         boolean isInConference = service.isInConference();
         if (isInConference && null != service.getConferenceId()) {
             ConferenceInformation information = service.getCurrentConference();
@@ -1036,12 +1036,12 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
                     onConferenceJoined(conferenceInformation.getConference());
                 }
                 break;
-            case FIRST_PARTICIPANT:
-                onConferenceFromNoOneToOneUser();
-                break;
-            case NO_MORE_PARTICIPANT:
-                onConferenceNoMoreUser();
-                break;
+            //case FIRST_PARTICIPANT:
+            //    onConferenceFromNoOneToOneUser();
+            //    break;
+            //case NO_MORE_PARTICIPANT:
+            //    onConferenceNoMoreUser();
+            //    break;
             case LEAVING:
                 onConferenceLeaving();
                 break;

@@ -85,7 +85,7 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
             return info.getConferenceState();
         }
 
-        return ConferenceStatus.DEFAULT;
+        return ConferenceStatus.UNINITIALIZED;
     }
 
     @NonNull
