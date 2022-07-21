@@ -100,9 +100,13 @@ jobs:
 
       - name: Create tag
         if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/beta/') }}
-        uses: actions-ecosystem/action-push-tag@v1
-        with:
-          tag: ${{ steps.environment.outputs.version }}
+        run: |
+          tag=${{ steps.environment.outputs.version }}
+          message='${{ steps.environment.outputs.version }}'
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git tag -a "${tag}" -m "${message}"
+          git push origin "${tag}"
 
 
       - name: Create Github's beta release
