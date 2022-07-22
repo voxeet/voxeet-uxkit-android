@@ -552,7 +552,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             case LEFT:
                 onConferenceLeftEvent(event);
                 break;
-            case DEFAULT:
+            case UNINITIALIZED:
             default:
 
         }
