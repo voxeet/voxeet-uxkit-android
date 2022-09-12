@@ -270,6 +270,12 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
         selfVideoView.requestLayout();
 
+        if (ToolkitUtils.hasParticipantsOnline()) {
+            onConferenceFromNoOneToOneUser();
+        } else {
+            onConferenceNoMoreUser();
+        }
+
         ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
         if (null != information) {
             switch (information.getConferenceState()) {

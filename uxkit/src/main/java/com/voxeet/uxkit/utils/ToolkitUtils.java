@@ -61,4 +61,25 @@ public class ToolkitUtils {
         }
         return false;
     }
+
+    public static List<Participant> getOnAirParticipants() {
+        return Filter.filter(VoxeetSDK.conference().getParticipants(), participant -> {
+            if (participant.getId().equals(VoxeetSDK.session().getParticipantId())) return false;
+            if (com.voxeet.sdk.utils.ParticipantUtils.isMixer(participant)) return false;
+
+            if (ConferenceParticipantStatus.ON_AIR.equals(participant.getStatus())) {
+                return true;
+            }
+            if (ConferenceParticipantStatus.CONNECTING.equals(participant.getStatus()) && participant.streams().size() > 0) {
+                return true;
+            }
+
+            //default, nope
+            return false;
+        });
+    }
+
+    public static boolean hasParticipantsOnline() {
+        return getOnAirParticipants().size() > 0;
+    }
 }
