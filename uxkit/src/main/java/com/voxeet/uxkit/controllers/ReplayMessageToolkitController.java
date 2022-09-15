@@ -6,13 +6,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.voxeet.VoxeetSDK;
+import com.voxeet.audio2.devices.MediaDevice;
+import com.voxeet.audio2.devices.description.DeviceType;
 import com.voxeet.promise.Promise;
+import com.voxeet.promise.solve.ThenPromise;
+import com.voxeet.promise.solve.ThenValue;
+import com.voxeet.promise.solve.ThenVoid;
 import com.voxeet.sdk.events.sdk.ConferenceHistoryResult;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.media.audio.AudioRoute;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.v1.HistoryConference;
 import com.voxeet.sdk.services.ConferenceService;
+import com.voxeet.sdk.services.audio.LocalAudio;
+import com.voxeet.sdk.utils.AudioUtils;
 import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.common.UXKitLogger;
@@ -28,6 +35,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReplayMessageToolkitController extends AbstractConferenceToolkitController implements IExpandableViewProviderListener {
 
@@ -81,7 +89,12 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
 
 
         ConferenceService service = VoxeetSDK.conference();
-        VoxeetSDK.audio().setAudioRoute(AudioRoute.ROUTE_SPEAKER);
+
+        findDevice(DeviceType.EXTERNAL_SPEAKER)
+                .then((ThenPromise<MediaDevice, Boolean>) device ->
+                        device != null ? VoxeetSDK.audio().getLocal().connect(device) : Promise.resolve(false)
+                )
+                .execute();
         service.conferenceHistory(conferenceId)
                 .then((event, solver) -> {
                     //possibility to manage the conference history event right here
@@ -150,5 +163,16 @@ public class ReplayMessageToolkitController extends AbstractConferenceToolkitCon
     private HistoryConference findFirstMatch(@NonNull ConferenceHistoryResult event) {
         return Map.find(Opt.of(event.items).or(new ArrayList<>()),
                 item -> _last_conference.equalsIgnoreCase(item.getConferenceId()) && item.getConferenceRecordingDuration() > 0);
+    }
+
+    private Promise<MediaDevice> findDevice(DeviceType type) {
+        return new Promise<>(solver -> {
+            VoxeetSDK.audio().getLocal().enumerateDevices()
+                    .then((ThenValue<List<MediaDevice>, MediaDevice>) devices ->
+                            Map.find(devices, device -> device.deviceType() == DeviceType.EXTERNAL_SPEAKER)
+                    )
+                    .then((ThenVoid<MediaDevice>) solver::resolve)
+                    .error(error -> solver.resolve((MediaDevice) null));
+        });
     }
 }

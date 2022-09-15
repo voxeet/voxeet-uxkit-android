@@ -9,6 +9,7 @@ import com.voxeet.android.media.stream.MediaStreamType;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.models.v2.ParticipantType;
+import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.utils.Opt;
 

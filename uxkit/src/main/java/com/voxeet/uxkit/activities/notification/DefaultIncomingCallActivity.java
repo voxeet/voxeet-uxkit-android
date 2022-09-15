@@ -78,9 +78,6 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements IE
         super.onCreate(savedInstanceState);
         isResumed = false;
 
-        //we preInit the AudioService,
-        AudioService.preInitSounds(getApplicationContext());
-
         mIncomingBundleChecker = new DefaultIncomingBundleChecker(getIntent(), this);
 
         //add few Flags to start the activity before its setContentView
