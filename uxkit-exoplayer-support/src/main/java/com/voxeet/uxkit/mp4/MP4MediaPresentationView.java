@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -22,7 +21,7 @@ import com.voxeet.sdk.json.VideoPresentationPlay;
 import com.voxeet.sdk.json.VideoPresentationSeek;
 import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
-import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
+import com.voxeet.uxkit.common.presentation.view.AbstractMediaPlayerView;
 
 /**
  * Simple implementation to help integrate ExoPlayer for MP4 into Apps
@@ -57,10 +56,10 @@ public class MP4MediaPresentationView extends AbstractMediaPlayerView {
         lastKey = videoPresentationStarted.key;
 
         if (exoPlayer == null) {
-            exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(),
-                    new DefaultRenderersFactory(getContext()),
-                    new DefaultTrackSelector(),
-                    new DefaultLoadControl());
+            exoPlayer = new SimpleExoPlayer.Builder(getContext(), new DefaultRenderersFactory(getContext()))
+                    .setTrackSelector(new DefaultTrackSelector(getContext()))
+                    .setLoadControl(new DefaultLoadControl())
+                    .build();
 
             playerView.setPlayer(exoPlayer);
             playerView.hideController();

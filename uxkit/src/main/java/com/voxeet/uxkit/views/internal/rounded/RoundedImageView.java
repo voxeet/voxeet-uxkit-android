@@ -13,6 +13,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.common.UXKitLogger;
@@ -192,7 +193,7 @@ public class RoundedImageView extends ImageView {
 
         if (mResource != 0) {
             try {
-                d = rsrc.getDrawable(mResource);
+                d = ResourcesCompat.getDrawable(rsrc, mResource, null);
             } catch (Exception e) {
                 Log.e("Unable to find resource: " + mResource, e);
                 // Don't try again.
@@ -204,7 +205,9 @@ public class RoundedImageView extends ImageView {
 
     @Override
     public void setBackground(Drawable background) {
-        setBackgroundDrawable(background);
+        mBackgroundDrawable = background;
+        updateBackgroundDrawableAttrs(true);
+        super.setBackground(background);
     }
 
     private void updateDrawableAttrs() {
@@ -239,14 +242,6 @@ public class RoundedImageView extends ImageView {
                 updateAttrs(ld.getDrawable(i));
             }
         }
-    }
-
-    @Override
-    @Deprecated
-    public void setBackgroundDrawable(Drawable background) {
-        mBackgroundDrawable = background;
-        updateBackgroundDrawableAttrs(true);
-        super.setBackgroundDrawable(mBackgroundDrawable);
     }
 
     public float getCornerRadius() {

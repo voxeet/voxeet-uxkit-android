@@ -25,7 +25,6 @@ public final class FirebasePushEnablerManifestComponent extends AbstractManifest
 
         NotificationHelper.createNotificationChannel(context);
         NotificationTokenHolderFactory.provider = provider;
-        provider.enable(true).log(true);
         try {
             FirebaseApp.initializeApp(context);
         } catch (Exception e) {

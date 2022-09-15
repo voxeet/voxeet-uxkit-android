@@ -34,7 +34,6 @@ import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
-import com.voxeet.sdk.services.AudioService;
 import com.voxeet.sdk.services.SessionService;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
 import com.voxeet.sdk.utils.AndroidManifest;
@@ -111,7 +110,7 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements IE
                 DEFAULT_VOXEET_INCOMING_CALL_DURATION_VALUE));
 
         tryInitializedSDK().then((ThenPromise<Boolean, Boolean>) result -> {
-            if (!Opt.of(VoxeetSDK.session()).then(SessionService::isSocketOpen).or(false)) {
+            if (!Opt.of(VoxeetSDK.session()).then(SessionService::isOpen).or(false)) {
                 ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
                 if (null != userInfo) return VoxeetSDK.session().open(userInfo);
@@ -129,19 +128,17 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements IE
         isResumed = true;
 
         boolean useRingtone = "true".equals(AndroidManifest.readMetadata(this, "voxeet_use_ringtone", "true"));
-        SoundManager soundManager = AudioService.getSoundManager();
+        SoundManager soundManager = VoxeetSDK.audio().getLocal().getSoundManager();
 
-        if (null != soundManager) {
-            ringTone = soundManager.getSystemRingtone();
-            if (useRingtone && null != ringTone) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    ringTone.setLooping(true);
-                }
-                if (!ringTone.isPlaying()) ringTone.play();
-            } else {
-                soundManager.setAudioRoute(AudioRoute.ROUTE_SPEAKER);
-                soundManager.playSoundType(AudioType.RING);
+        ringTone = soundManager.getSystemRingtone();
+        if (useRingtone && null != ringTone) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ringTone.setLooping(true);
             }
+            if (!ringTone.isPlaying()) ringTone.play();
+        } else {
+            soundManager.setAudioRoute(AudioRoute.ROUTE_SPEAKER);
+            soundManager.playSoundType(AudioType.RING);
         }
 
 
@@ -188,10 +185,8 @@ public class DefaultIncomingCallActivity extends AppCompatActivity implements IE
         }
         isResumed = false;
 
-        SoundManager soundManager = AudioService.getSoundManager();
-        if (null != soundManager) {
-            soundManager.resetDefaultSoundType().stopSoundType(AudioType.RING);
-        }
+        SoundManager soundManager = VoxeetSDK.audio().getLocal().getSoundManager();
+        soundManager.resetDefaultSoundType().stopSoundType(AudioType.RING);
 
         if (mEventBus != null) {
             mEventBus.unregister(this);

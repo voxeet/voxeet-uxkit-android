@@ -77,7 +77,7 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        VoxeetSDK.audio().registerUpdateDevices(this::onDevice);
+        VoxeetSDK.audio().getLocal().registerUpdateDevices(this::onDevice);
         attached = true;
 
         refreshDevices();
@@ -86,7 +86,7 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
     @Override
     protected void onDetachedFromWindow() {
         attached = false;
-        VoxeetSDK.audio().unregisterUpdateDevices(this::onDevice);
+        VoxeetSDK.audio().getLocal().unregisterUpdateDevices(this::onDevice);
 
         super.onDetachedFromWindow();
     }
@@ -99,7 +99,7 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
     }
 
     public void refreshDevices() {
-        VoxeetSDK.audio().enumerateDevices().then(this::onDevice).error(Log::e);
+        VoxeetSDK.audio().getLocal().enumerateDevices().then(this::onDevice).error(Log::e);
     }
 
     private void refresh() {
@@ -139,9 +139,11 @@ public class VoxeetMediaRoutePickerView extends LinearLayout implements IMediaDe
         setVisibility(View.VISIBLE);
         AudioService service = VoxeetSDK.audio();
 
-        ActionBarPermissionHelper.checkBluetoothConnectPermission().then((ThenPromise<Boolean, List<MediaDevice>>) ok -> service.enumerateDevices()).then(devices -> {
-            // also check for devices which could have happened while out of the window
-            refreshDevices();
-        }).error(Log::e);
+        ActionBarPermissionHelper.checkBluetoothConnectPermission()
+                .then((ThenPromise<Boolean, List<MediaDevice>>) ok -> service.getLocal().enumerateDevices())
+                .then(devices -> {
+                    // also check for devices which could have happened while out of the window
+                    refreshDevices();
+                }).error(Log::e);
     }
 }

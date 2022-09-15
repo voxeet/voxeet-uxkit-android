@@ -23,8 +23,9 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.sample.R;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.SessionService;
+import com.voxeet.sdk.services.builders.ConferenceCreateOptions;
+import com.voxeet.sdk.services.builders.ConferenceJoinOptions;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
-import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.activities.VoxeetAppCompatActivity;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
@@ -138,13 +139,11 @@ public class MainActivity extends VoxeetAppCompatActivity<VoxeetSystemService> i
         }
 
         //create temp promises
-        Promise<Conference> create = new Promise<>(solver -> service.create(conferenceAlias)
-                .then((ThenPromise<Conference, Conference>) conference -> {
-                    String conferenceId = Opt.of(conference).then(Conference::getId).orNull();
-                    if (null == conferenceId)
-                        return Promise.reject(new NullPointerException("ConferenceId null"));
-                    return service.join(conferenceId);
-                })
+        Promise<Conference> create = new Promise<>(solver -> service
+                .create(new ConferenceCreateOptions.Builder().setConferenceAlias(conferenceAlias).build())
+                .then((ThenPromise<Conference, Conference>) conference -> null == conference ?
+                        Promise.reject(new NullPointerException("Conference null")) :
+                        service.join(new ConferenceJoinOptions.Builder(conference).build()))
                 .then((ThenVoid<Conference>) solver::resolve)
                 .error(solver::reject));
 
@@ -190,17 +189,16 @@ public class MainActivity extends VoxeetAppCompatActivity<VoxeetSystemService> i
         super.onConferenceState(event);
 
         if (event.state == ConferenceStatus.JOINED) {
-            onConferenceJoinedSuccessEvent();
+            onConferenceJoinedSuccessEvent(event.conference);
         }
     }
 
-    private void onConferenceJoinedSuccessEvent() {
+    private void onConferenceJoinedSuccessEvent(Conference conference) {
         SessionService userService = VoxeetSDK.session();
-        ConferenceService conferenceService = VoxeetSDK.conference();
 
         List<ParticipantInfo> users = UsersHelper.getExternalIds(userService.getParticipantId());
 
-        conferenceService.invite(conferenceService.getConferenceId(), users)
+        VoxeetSDK.notification().invite(conference, users)
                 .then(defaultConsume())
                 .error(Log::e);
     }

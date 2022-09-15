@@ -70,7 +70,7 @@ public class VoxeetMediaRoutePickerMediaDeviceView extends LinearLayout {
             if (null != device) {
                 if (null != onClickListener) onClickListener.onClick(view);
 
-                VoxeetSDK.audio().connect(device).then(aBoolean -> {
+                VoxeetSDK.audio().getLocal().connect(device).then(aBoolean -> {
                 }).error(Log::e);
             }
         });

@@ -19,7 +19,7 @@ import com.voxeet.sdk.json.VideoPresentationStarted;
 import com.voxeet.sdk.json.VideoPresentationStopped;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
-import com.voxeet.uxkit.presentation.view.AbstractMediaPlayerView;
+import com.voxeet.uxkit.common.presentation.view.AbstractMediaPlayerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class YoutubeMediaPresentationView extends AbstractMediaPlayerView {
     private YouTubePlayer youtubePlayer;
 
     @NonNull
-    private List<Event> pendingEvents = new ArrayList<>();
+    private final List<Event> pendingEvents = new ArrayList<>();
 
     private long seek = 0;
 

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.voxeet.uxkit.presentation.provider.AbstractMediaPlayerProvider;
+import com.voxeet.uxkit.common.presentation.provider.AbstractMediaPlayerProvider;
 
 /**
  * Manage and create standard and classic mp4 view manager

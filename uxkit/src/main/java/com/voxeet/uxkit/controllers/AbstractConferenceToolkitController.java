@@ -30,12 +30,12 @@ import com.voxeet.sdk.exceptions.ExceptionManager;
 import com.voxeet.sdk.json.ConferenceDestroyedPush;
 import com.voxeet.sdk.json.ConferenceEnded;
 import com.voxeet.sdk.json.RecordingStatusUpdatedEvent;
+import com.voxeet.sdk.media.audio.SoundManager;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.models.v1.RecordingStatus;
 import com.voxeet.sdk.models.v2.ParticipantType;
-import com.voxeet.sdk.services.AudioService;
 import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
@@ -155,9 +155,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                 mVoxeetSubViewProvider,
                 state);
 
-        if (null != AudioService.getSoundManager()) {
-            AudioService.getSoundManager().requestAudioFocus();
-        }
+        VoxeetSDK.audio().getLocal().getSoundManager().requestAudioFocus();
     }
 
     /**
@@ -259,9 +257,9 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             mHandler.postDelayed(() -> {
                 try {
                     //request audio focus and set in voice call
-                    AudioService service = VoxeetSDK.audio();
-                    service.requestAudioFocus();
-                    service.checkOutputRoute();
+                    SoundManager soundManager = VoxeetSDK.audio().getLocal().getSoundManager();
+                    soundManager.requestAudioFocus();
+                    soundManager.checkOutputRoute();
 
                     Log.d("run: add view" + mMainView);
                     if (mMainView != null) {
@@ -581,9 +579,9 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
 
         if (null != information && ConferenceParticipantType.NORMAL.equals(information.getConferenceParticipantType())) {
-            VoxeetSDK.audio().playSoundType(AudioType.RING);
+            VoxeetSDK.audio().getLocal().getSoundManager().playSoundType(AudioType.RING);
         } else {
-            VoxeetSDK.audio().stopSoundType(AudioType.RING);
+            VoxeetSDK.audio().getLocal().getSoundManager().stopSoundType(AudioType.RING);
             Log.d("onEvent: your current conference type is not compatible with ringing");
         }
 
@@ -607,14 +605,14 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
             if (isEnabled() && Configuration.Contextual.default_speaker_on) {
                 Log.d("onConferenceJoinedEvent: switching to speaker");
-                VoxeetSDK.audio().enumerateDevices().then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
+                VoxeetSDK.audio().getLocal().enumerateDevices().then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
                     MediaDevice speaker = Map.find(mediaDevices,
                             mediaDevice -> mediaDevice.deviceType() == DeviceType.EXTERNAL_SPEAKER
                                     && mediaDevice.platformConnectionState() == ConnectionState.CONNECTED);
 
                     if (null == speaker)
                         throw new IllegalStateException("Impossible to make output to speaker");
-                    return VoxeetSDK.audio().connect(speaker);
+                    return VoxeetSDK.audio().getLocal().connect(speaker);
                 }).error(Log::e);
             }
 
@@ -632,9 +630,9 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
         ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
 
         if (null != information && ConferenceParticipantType.NORMAL.equals(information.getConferenceParticipantType())) {
-            VoxeetSDK.audio().playSoundType(AudioType.RING);
+            VoxeetSDK.audio().getLocal().getSoundManager().playSoundType(AudioType.RING);
         } else {
-            VoxeetSDK.audio().stopSoundType(AudioType.RING);
+            VoxeetSDK.audio().getLocal().getSoundManager().stopSoundType(AudioType.RING);
             Log.d("onEvent: your current conference type is not compatible with ringing");
         }
 
@@ -689,7 +687,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
     }
 
     private void onConferenceLeftEvent(@Nullable ConferenceStatusUpdatedEvent event) {
-        VoxeetSDK.audio().stop();
+        VoxeetSDK.audio().getLocal().getSoundManager().stop();
 
         if (null != mMainView) {
             mMainView.onConferenceLeft();
@@ -700,7 +698,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
 
     private void onConferenceError(ConferenceStatusUpdatedEvent event) {
         Log.d("onEvent: " + event.getClass().getSimpleName());
-        VoxeetSDK.audio().stop();
+        VoxeetSDK.audio().getLocal().getSoundManager().stop();
 
         if (null != mMainView) {
             mMainView.onConferenceError(event.error);
@@ -725,7 +723,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             return;
         }
 
-        VoxeetSDK.audio().stop();
+        VoxeetSDK.audio().getLocal().getSoundManager().stop();
 
         if (null != mMainView) {
             mMainView.onConferenceDestroyed();
@@ -750,7 +748,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
             return;
         }
 
-        VoxeetSDK.audio().stop();
+        VoxeetSDK.audio().getLocal().getSoundManager().stop();
 
         if (null != mMainView) {
             mMainView.onConferenceDestroyed();
@@ -832,7 +830,7 @@ public abstract class AbstractConferenceToolkitController implements VoxeetOverl
                 });
 
         if (found) {
-            VoxeetSDK.audio().stop();
+            VoxeetSDK.audio().getLocal().getSoundManager().stop();
         }
     }
 

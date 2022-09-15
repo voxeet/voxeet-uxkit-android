@@ -139,7 +139,7 @@ public class VoxeetParticipantsView extends VoxeetView {
 
         displayNonAir = attributes.getBoolean(R.styleable.VoxeetParticipantsView_display_user_lefts, true);
 
-        Users configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.Users;
+        Users configuration = VoxeetToolkit.instance().getConferenceToolkit().Configuration.Users;
         ColorStateList color = attributes.getColorStateList(R.styleable.VoxeetParticipantsView_speaking_user_color);
         if (null != configuration.speaking_user_color)
             setSelectedUserColor(configuration.speaking_user_color);

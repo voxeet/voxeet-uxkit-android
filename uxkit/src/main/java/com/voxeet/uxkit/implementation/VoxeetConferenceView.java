@@ -199,10 +199,10 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         if (null == voxeetActiveSpeakerTimer)
             voxeetActiveSpeakerTimer = VoxeetSpeakersTimerInstance.instance;
 
-        voxeetActiveSpeakerTimer.setActiveSpeakerListener(this);
+        voxeetActiveSpeakerTimer.registerActiveSpeakerListener(this);
         voxeetActiveSpeakerTimer.start();
 
-        VoxeetSDK.audio().registerUpdateDevices(onDevices);
+        VoxeetSDK.audio().getLocal().registerUpdateDevices(onDevices);
 
         if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
@@ -226,7 +226,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
 
     @Override
     protected void onDetachedFromWindow() {
-        VoxeetSDK.audio().unregisterUpdateDevices(onDevices);
+        VoxeetSDK.audio().getLocal().unregisterUpdateDevices(onDevices);
         resumed = false;
         voxeetActiveSpeakerTimer.stop();
         voxeetActiveSpeakerTimer = null;
@@ -712,7 +712,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
     }
 
     private void refreshConnectedDevice() {
-        VoxeetSDK.audio().enumerateDevices().then((ThenVoid<List<MediaDevice>>) this::refreshConnectedDevice)
+        VoxeetSDK.audio().getLocal().enumerateDevices().then((ThenVoid<List<MediaDevice>>) this::refreshConnectedDevice)
                 .error(Log::e);
     }
 
@@ -836,7 +836,7 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             if (null != conferenceBarView)
                 conferenceBarView.setMediaDeviceControl(mediaRoutePicker);
 
-            Configuration configuration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration;
+            Configuration configuration = VoxeetToolkit.instance().getConferenceToolkit().Configuration;
             ActionBar actionBarConfiguration = configuration.ActionBar;
             conferenceBarView.setDisplayCamera(actionBarConfiguration.displayCamera);
             conferenceBarView.setDisplayLeave(actionBarConfiguration.displayLeave);
@@ -1024,8 +1024,8 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         }
         ConferenceInformation conferenceInformation = service.getCurrentConference();
 
-        boolean enableInConfiguration = VoxeetToolkit.getInstance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
-        conferenceBarView.setDisplayScreenShare(enableInConfiguration && VoxeetToolkit.getInstance().getConferenceToolkit().isScreenShareEnabled());
+        boolean enableInConfiguration = VoxeetToolkit.instance().getConferenceToolkit().Configuration.ActionBar.displayScreenShare;
+        conferenceBarView.setDisplayScreenShare(enableInConfiguration && VoxeetToolkit.instance().getConferenceToolkit().isScreenShareEnabled());
 
         switch (state) {
             case CREATING:

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.android.media.MediaStream;
@@ -25,7 +26,6 @@ import com.voxeet.audio2.devices.description.DeviceType;
 import com.voxeet.promise.Promise;
 import com.voxeet.promise.solve.ThenPromise;
 import com.voxeet.sdk.events.sdk.AudioRouteChangeEvent;
-import com.voxeet.sdk.events.sdk.ConferenceStatusUpdatedEvent;
 import com.voxeet.sdk.events.sdk.StartScreenShareAnswerEvent;
 import com.voxeet.sdk.events.sdk.StopScreenShareAnswerEvent;
 import com.voxeet.sdk.events.v2.VideoStateEvent;
@@ -35,11 +35,13 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.services.AudioService;
 import com.voxeet.sdk.services.ConferenceService;
+import com.voxeet.sdk.services.ScreenShareService;
 import com.voxeet.sdk.services.SessionService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceParticipantType;
 import com.voxeet.sdk.services.media.MediaState;
 import com.voxeet.sdk.services.media.MicrophoneState;
+import com.voxeet.sdk.services.video.LocalVideo;
 import com.voxeet.sdk.utils.AudioType;
 import com.voxeet.sdk.utils.Filter;
 import com.voxeet.sdk.utils.Opt;
@@ -221,7 +223,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
         attached = true;
 
-        VoxeetSDK.audio().registerUpdateDevices(this.onAudioDeviceUpdate);
+        VoxeetSDK.audio().getLocal().registerUpdateDevices(this.onAudioDeviceUpdate);
         updateSpeakerButton();
 
         checkMicrophoneButtonState();
@@ -230,11 +232,10 @@ public class VoxeetActionBarView extends VoxeetView {
             EventBus.getDefault().register(this);
         }
 
-        ConferenceService service = VoxeetSDK.conference();
-        ConferenceInformation information = service.getCurrentConference();
+        ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
 
         if (null != information && information.isOwnVideoStarted() && !MediaState.STARTED.equals(information.getVideoState())) {
-            service.startVideo()
+            VoxeetSDK.video().getLocal().start()
                     .then(aBoolean -> {
                         Log.d("onAttachedToWindow: starting video ? success:=" + aBoolean);
                         updateCameraState();
@@ -378,7 +379,7 @@ public class VoxeetActionBarView extends VoxeetView {
 
 
             ActionBarPermissionHelper.checkBluetoothConnectPermission()
-                    .then((ThenPromise<Boolean, List<MediaDevice>>) ok -> VoxeetSDK.audio().enumerateDevices())
+                    .then((ThenPromise<Boolean, List<MediaDevice>>) ok -> VoxeetSDK.audio().getLocal().enumerateDevices())
                     .then((ThenPromise<List<MediaDevice>, Boolean>) mediaDevices -> {
                         MediaDevice standard = oneOf(mediaDevices, ConnectionState.CONNECTED, DeviceType.INTERNAL_SPEAKER, DeviceType.NORMAL_MEDIA);
                         //MediaDevice external = oneOf(mediaDevices, ConnectionState.CONNECTED, DeviceType.EXTERNAL_SPEAKER, DeviceType.BLUETOOTH, DeviceType.WIRED_HEADSET);
@@ -391,7 +392,7 @@ public class VoxeetActionBarView extends VoxeetView {
                         }
 
                         if (null != to_connect) {
-                            return VoxeetSDK.audio().connect(to_connect);
+                            return VoxeetSDK.audio().getLocal().connect(to_connect);
                         }
 
                         try {
@@ -405,7 +406,7 @@ public class VoxeetActionBarView extends VoxeetView {
         hangup = v.findViewById(R.id.hangup);
         hangup_wrapper = v.findViewById(R.id.hangup_wrapper);
         hangup.setOnClickListener(v1 -> {
-            VoxeetSDK.audio().playSoundType(AudioType.HANGUP);
+            VoxeetSDK.audio().getLocal().getSoundManager().playSoundType(AudioType.HANGUP);
 
             if (!VoxeetSDK.conference().isLive()) {
                 EventBus.getDefault().post(new UXKitNotInConferenceEvent());
@@ -483,17 +484,17 @@ public class VoxeetActionBarView extends VoxeetView {
                 Log.d("toggleCamera :: impossible, no permissions");
                 return;
             }
-            ConferenceService conferenceService = VoxeetSDK.conference();
+            LocalVideo localVideo = VoxeetSDK.video().getLocal();
             Promise<Boolean> video = null;
 
-            ConferenceInformation information = conferenceService.getCurrentConference();
+            ConferenceInformation information = VoxeetSDK.conference().getCurrentConference();
             if (null != information) {
                 switch (information.getVideoState()) {
                     case STARTED:
-                        video = conferenceService.stopVideo();
+                        video = localVideo.stop();
                         break;
                     case STOPPED:
-                        video = conferenceService.startVideo();
+                        video = localVideo.start();
                         break;
                     default:
                 }
@@ -541,7 +542,14 @@ public class VoxeetActionBarView extends VoxeetView {
      */
     protected void toggleScreenShare() {
         if (canScreenShare()) {
-            VoxeetSDK.screenShare().toggleScreenShare();
+            ScreenShareService screenShareService = VoxeetSDK.screenShare();
+            ConferenceInformation currentConference = VoxeetSDK.conference().getCurrentConference();
+            if (currentConference == null) return;
+            if (currentConference.isScreenShareOn()) {
+                screenShareService.stopScreenShare().error(Throwable::printStackTrace);
+            } else {
+                screenShareService.sendRequestStartScreenShare();
+            }
         }
     }
 
@@ -701,7 +709,7 @@ public class VoxeetActionBarView extends VoxeetView {
     private void updateSpeakerButton() {
         AudioService service = VoxeetSDK.audio();
 
-        service.enumerateDevices().then(devices -> {
+        service.getLocal().enumerateDevices().then(devices -> {
             VoxeetActionBarView.this.devices = devices;
             updateSpeakerButtonWithDevices();
         }).error(Log::e);
@@ -755,8 +763,8 @@ public class VoxeetActionBarView extends VoxeetView {
         if (!isValidOverride(button_on, button_off)) return null;
 
         Resources resources = getContext().getResources();
-        Drawable drawable_on = resources.getDrawable(button_on);
-        Drawable drawable_off = resources.getDrawable(button_off);
+        Drawable drawable_on = ResourcesCompat.getDrawable(resources, button_on, null);
+        Drawable drawable_off = ResourcesCompat.getDrawable(resources, button_off, null);
 
         StateListDrawable states = new StateListDrawable();
 
@@ -771,8 +779,8 @@ public class VoxeetActionBarView extends VoxeetView {
         if (!isValidOverride(button_on, button_off)) return null;
 
         Resources resources = getContext().getResources();
-        Drawable drawable_on = resources.getDrawable(button_on);
-        Drawable drawable_off = resources.getDrawable(button_off);
+        Drawable drawable_on = ResourcesCompat.getDrawable(resources, button_on, null);
+        Drawable drawable_off = ResourcesCompat.getDrawable(resources, button_off, null);
 
         StateListDrawable states = new StateListDrawable();
 

@@ -13,6 +13,7 @@ import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.models.Participant;
 import com.voxeet.sdk.models.v1.ConferenceParticipantStatus;
 import com.voxeet.sdk.utils.Filter;
+import com.voxeet.sdk.utils.Map;
 import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
@@ -284,7 +285,7 @@ public final class VoxeetSpeakersTimerInstance {
 
         @Subscribe(threadMode = ThreadMode.MAIN)
         public void onEvent(@NonNull ActiveSpeakerChangeEvent event) {
-            this.activeSpeakers = event.activeSpeakers;
+            this.activeSpeakers = Map.map(event.activeParticipants, Participant::getId);
         }
 
     }

@@ -130,7 +130,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         @Override
         public void onClick(View view) {
-            int position = getAdapterPosition();
+            int position = getBindingAdapterPosition();
             if (position >= 0) onClickItemAtPosition(position);
         }
     }

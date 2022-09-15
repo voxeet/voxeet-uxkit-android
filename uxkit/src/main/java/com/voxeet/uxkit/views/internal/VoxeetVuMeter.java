@@ -101,13 +101,13 @@ public class VoxeetVuMeter extends RoundedFrameLayout {
      * On participant unselected.
      */
     public void onParticipantUnselected() {
-        updateMeter(0);
+        updateMeter(0, false);
     }
 
     /**
      * Resets the queue.
      */
     public void reset() {
-        updateMeter(0);
+        updateMeter(0, false);
     }
 }

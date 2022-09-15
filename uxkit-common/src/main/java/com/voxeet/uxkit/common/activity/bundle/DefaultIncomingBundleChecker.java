@@ -15,6 +15,7 @@ import com.voxeet.sdk.json.ParticipantInfo;
 import com.voxeet.sdk.models.Conference;
 import com.voxeet.sdk.preferences.VoxeetPreferences;
 import com.voxeet.sdk.push.center.management.Constants;
+import com.voxeet.sdk.services.builders.ConferenceJoinOptions;
 import com.voxeet.sdk.utils.AndroidManifest;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.activity.ActivityInfoHolder;
@@ -76,11 +77,12 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
         }
         Log.d("onAccept: mConferenceId := " + mConferenceId);
         //join the conference
-        Promise<Conference> join = VoxeetSDK.conference().join(mConferenceId);
+        Conference conference = VoxeetSDK.conference().getConference(mConferenceId);
+        Promise<Conference> join = VoxeetSDK.conference().join(new ConferenceJoinOptions.Builder(conference).build());
         //only when error() is called
 
-        Log.d("onAccept: isSocketOpen := " + VoxeetSDK.session().isSocketOpen());
-        if (!VoxeetSDK.session().isSocketOpen()) {
+        Log.d("onAccept: isSocketOpen := " + VoxeetSDK.session().isOpen());
+        if (!VoxeetSDK.session().isOpen()) {
             ParticipantInfo userInfo = VoxeetPreferences.getSavedUserInfo();
 
             if (null != userInfo) {
@@ -97,7 +99,7 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
             VoxeetSDK.conference()
                     .leave()
                     .then((ThenPromise<Boolean, Conference>) aBoolean -> join)
-                    .then(conference -> {
+                    .then(joined -> {
                         Log.d("onCall: resolved 1");
                     })
                     .error(Log::e);

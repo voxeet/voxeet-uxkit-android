@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:drawablePadding="4dp"
-                android:drawableTop="@drawable/hangup"
+                app:drawableTopCompat="@drawable/hangup"
                 android:gravity="center"
                 android:text="@string/voxeet_incoming_call_decline"
                 android:textColor="@color/white" />
@@ -92,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:drawablePadding="4dp"
-                android:drawableTop="@drawable/phone_green_animation"
+                app:drawableTopCompat="@drawable/phone_green_animation"
                 android:gravity="center"
                 android:text="@string/voxeet_incoming_call_accept"
                 android:textColor="@color/white" />
