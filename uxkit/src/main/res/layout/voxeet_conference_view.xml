@@ -108,6 +108,12 @@
 
     </LinearLayout>
 
+    <com.voxeet.uxkit.implementation.VoxeetVideoStreamView
+        android:id="@+id/videoStream"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -137,12 +143,6 @@
             android:visibility="gone"
             app:record_button="false" />
     </LinearLayout>
-
-    <com.voxeet.uxkit.implementation.VoxeetVideoStreamView
-        android:id="@+id/videoStream"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
 
     <com.voxeet.uxkit.implementation.devices.VoxeetMediaRoutePickerView
         android:id="@+id/media_route_picker"

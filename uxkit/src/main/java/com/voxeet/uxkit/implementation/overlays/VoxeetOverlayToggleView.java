@@ -1,8 +1,11 @@
 package com.voxeet.uxkit.implementation.overlays;
 
 import android.content.Context;
+import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.implementation.overlays.abs.AbstractVoxeetOverlayView;
@@ -33,9 +36,14 @@ public class VoxeetOverlayToggleView extends AbstractVoxeetOverlayView {
         getExpandableViewProviderListener().onActionButtonClicked();
     }
 
-
     @Override
     protected int layout() {
         return R.layout.voxeet_overlay_toggle_view;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (!isExpanded()) return true;
+        return super.onInterceptTouchEvent(ev);
     }
 }

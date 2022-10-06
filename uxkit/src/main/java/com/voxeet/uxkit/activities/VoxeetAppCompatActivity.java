@@ -1,5 +1,6 @@
 package com.voxeet.uxkit.activities;
 
+import com.voxeet.sdk.services.screenshare.ScreenCapturerService;
 import com.voxeet.uxkit.common.activity.VoxeetCommonAppCompatActivity;
 import com.voxeet.uxkit.common.service.AbstractSDKService;
 import com.voxeet.uxkit.common.service.SDKBinder;
@@ -26,6 +27,8 @@ public class VoxeetAppCompatActivity<T extends AbstractSDKService<? extends SDKB
     @Override
     protected void onResume() {
         super.onResume();
+
+        ScreenCapturerService.register(this);
 
         if (null != VoxeetToolkit.instance()) {
             //to prevent uninitialized toolkit but ... it's highly recommended for future releases to always init
