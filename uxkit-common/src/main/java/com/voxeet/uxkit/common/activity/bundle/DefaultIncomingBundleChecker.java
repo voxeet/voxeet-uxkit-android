@@ -48,6 +48,9 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
     @Nullable
     private String mConferenceId;
 
+    @Nullable
+    private String mConferenceAlias;
+
     private DefaultIncomingBundleChecker() {
         mIntent = new Intent();
     }
@@ -62,6 +65,7 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
         mUserId = mIntent.getStringExtra(Constants.INVITER_ID);
         mAvatarUrl = mIntent.getStringExtra(Constants.INVITER_URL);
         mConferenceId = mIntent.getStringExtra(Constants.CONF_ID);
+        mConferenceAlias = mIntent.getStringExtra(Constants.CONF_ALIAS);
     }
 
     /**
@@ -149,6 +153,11 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
     }
 
     @Nullable
+    final public String getConferenceAlias() {
+        return mConferenceAlias;
+    }
+
+    @Nullable
     final public Bundle getExtraBundle() {
         return mIntent.getBundleExtra(BUNDLE_EXTRA_BUNDLE);
     }
@@ -194,6 +203,7 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
         intent.putExtra(BUNDLE_EXTRA_BUNDLE, createExtraBundle());
 
         intent.putExtra(Constants.CONF_ID, getConferenceId())
+                .putExtra(Constants.CONF_ALIAS, getConferenceAlias())
                 .putExtra(Constants.INVITER_NAME, getUserName())
                 .putExtra(Constants.INVITER_ID, getExternalUserId())
                 .putExtra(Constants.INVITER_EXTERNAL_ID, getExternalUserId())
@@ -219,6 +229,7 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
         mIntent.removeExtra(Constants.INVITER_ID);
         mIntent.removeExtra(Constants.INVITER_EXTERNAL_ID);
         mIntent.removeExtra(Constants.CONF_ID);
+        mIntent.removeExtra(Constants.CONF_ALIAS);
         mIntent.removeExtra(Constants.INVITER_URL);
         mIntent.removeExtra(Constants.INVITER_NAME);
     }

@@ -30,7 +30,8 @@ public class IncomingNotificationServiceHelper {
             Constants.NOTIF_TYPE,
             Constants.INVITER_EXTERNAL_ID,
             Constants.INVITER_URL,
-            Constants.CONF_ID
+            Constants.CONF_ID,
+            Constants.CONF_ALIAS
     };
 
     private final static ShortLogger Log = UXKitLogger.createLogger(IncomingNotificationServiceHelper.class);
