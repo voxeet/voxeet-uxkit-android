@@ -552,7 +552,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         if (hasParticipants() && localUserId.equalsIgnoreCase(currentUserAttached)) {
             currentUserAttached = null;
             videoView.unAttach();
-            videoView.setMirror(false);
         }
 
         if (null != currentUserAttached) {
@@ -585,7 +584,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             if (localUserMediaStream.videoTracks().size() > 0) {
                 selfVideoView.attach(localUserId, localUserMediaStream);
 
-                selfVideoView.setMirror(VoxeetSDK.mediaDevice().getCameraContext().isDefaultFrontFacing());
                 if (isExpanded) selfVideoView.setVisibility(View.VISIBLE);
                 else selfVideoView.setVisibility(View.GONE);
             } else {
@@ -603,9 +601,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
             videoView.unAttach();
             videoView.setVisibility(View.GONE);
         } else {
-            //participants are here so we don't have our own video on top
-            //force unmirrored view with participants
-            videoView.setMirror(false);
             currentSpeakerView.onPause();
             currentSpeakerView.setVisibility(View.GONE);
         }
@@ -1065,11 +1060,6 @@ public class VoxeetConferenceView extends AbstractVoxeetExpandableView implement
         boolean hide = null == information || ConferenceParticipantType.LISTENER.equals(information.getConferenceParticipantType());
 
         conferenceBarView.setVisibility(hide ? View.GONE : View.VISIBLE);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(CameraSwitchSuccessEvent event) {
-        mConferenceViewRendererControl.updateMirror(event.isFront);
     }
 
     @Nullable
