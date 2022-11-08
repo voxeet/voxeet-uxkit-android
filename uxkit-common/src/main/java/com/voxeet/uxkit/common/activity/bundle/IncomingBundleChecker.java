@@ -23,6 +23,9 @@ public interface IncomingBundleChecker {
     String getUserName();
 
     @Nullable
+    String getConferenceAlias();
+
+    @Nullable
     String getAvatarUrl();
 
     @Nullable
