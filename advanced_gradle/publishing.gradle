@@ -1,27 +1,57 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'maven'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier "sources"
 }
+
 afterEvaluate {
+
     publishing {
         publications {
-            // Creates a Maven publication called "release".
             release(MavenPublication) {
-                // Applies the component for the release build variant.
                 from components.release
 
-                // You can then customize attributes of the publication as shown below.
                 artifactId = "${project.name}"
                 groupId = rootProject.ext.groupId
                 version = rootProject.ext.voxeetUXKitVersion
+
+                pom {
+                    name = "${project.name}"
+                    description = 'Voxeet UXKit'
+                    url = 'https://github.com/voxeet/voxeet-uxkit-android'
+
+                    licenses {
+                        license {
+                            name = 'MIT License'
+                            url = 'https://github.com/voxeet/voxeet-uxkit-android/blob/main/LICENSE'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'dolbyio'
+                            name = 'Dolby.io'
+                            email = 'support@dolby.io'
+                        }
+                    }
+
+                    scm {
+                        connection = 'scm:git:github.com/voxeet/voxeet-uxkit-android.git'
+                        developerConnection = 'scm:git:ssh://github.com/voxeet/voxeet-uxkit-android.git'
+                        url = 'https://github.com/voxeet/voxeet-uxkit-android/tree/main'
+                    }
+                }
             }
         }
-        repositories {
-            mavenLocal()
+    }
+
+    signing {
+        setRequired {
+            gradle.taskGraph.allTasks.any { it instanceof PublishToMavenRepository }
         }
+        sign publishing.publications.release
     }
 }

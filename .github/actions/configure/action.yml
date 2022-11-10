@@ -1,0 +1,27 @@
+name: "Configure"
+description: "Configure the environment for multiple jobs"
+inputs:
+  gpg-secret-key:
+    description: 'the GPG key to use'
+    required: true
+  gpg-keyid-last8:
+    description: 'the last keyid to use in gradle'
+    required: true
+  gpg-secret-passphrase:
+    description: 'the passphrase to use'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Configure publication
+      id: install_gpg
+      shell: bash
+      run: |
+        export KEYRING_FILE=/home/runner/.gnupg/secring.gpg
+        cat <(echo -e "${{ inputs.gpg-secret-key }}") | gpg --batch --import
+        gpg --list-secret-keys --keyid-format LONG
+        gpg --export-secret-keys -o "$KEYRING_FILE"
+        mkdir -p ~/.gradle/gradle
+        echo "signing.keyId=${{ inputs.gpg-keyid-last8 }}" >> ~/.gradle/gradle.properties
+        echo "signing.password=${{ inputs.gpg-secret-passphrase }}" >> ~/.gradle/gradle.properties
+        echo "signing.secretKeyRingFile=$KEYRING_FILE"  >> ~/.gradle/gradle.properties

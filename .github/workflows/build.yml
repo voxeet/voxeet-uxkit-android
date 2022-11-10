@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -16,54 +15,23 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+
+      - uses: ./.github/actions/configure
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.CODEARTIFACT_REGION }}
+          gpg-secret-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          gpg-keyid-last8: ${{ secrets.OSSRH_GPG_KEY_ID_LAST_8 }}
+          gpg-secret-passphrase: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSPHRASE }}
 
+      - uses: ./.github/actions/version
+        id: version
 
-      - name: Prepare wrapper environment
-        id: codeartifact_login
+      - name: Debug environment set from above
         run: |
-          CODEARTIFACT_TOKEN=$(/usr/local/bin/aws codeartifact get-authorization-token --duration-seconds 900 --domain ${{ secrets.CODEARTIFACT_DOMAIN }} --domain-owner ${{ secrets.CODEARTIFACT_DOMAIN_OWNER }} --region ${{ secrets.CODEARTIFACT_REGION }} --output text --query authorizationToken)
-          echo "::add-mask::$CODEARTIFACT_TOKEN"
-          echo "CODEARTIFACT_TOKEN=$CODEARTIFACT_TOKEN" >> $GITHUB_ENV
-
-
-      - name: Check build for master
-        id: master_configuration
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "building for master... nothing to do, the version will be used"
-
-
-      - name: Check build for beta
-        id: beta_configuration
-        if: startsWith(github.ref, 'refs/heads/beta/')
-        run: |
-          echo "building for beta..."
-          export message="${{ github.event.head_commit.message }}"
-          if [[ "$message" =~ (beta\.[[:digit:]]+) ]]; then
-            export BETA_VERSION="${BASH_REMATCH[1]}"
-            echo "UXKIT_SUFFIX=$BETA_VERSION" >> $GITHUB_ENV
-          else
-            echo "no beta.X pattern found in the commit generating this pipeline. Please update and retrigger a build"
-            exit 1
-          fi
-
-
-      - name: Configure specific environment information
-        id: environment
-        run: |
-          grep "version=" uxkit.gradle | cut -d'=' -f2 | sed "s/[^[:digit:][:alpha:]\.-]//g"
-          export VERSION=$(grep "version=" uxkit.gradle | cut -d'=' -f2 | sed "s/[^[:digit:][:alpha:]\.-]//g")
-          # replaces the VERSION with "version-suffix"
-          [ ! -z "$UXKIT_SUFFIX" ] && export VERSION=$VERSION-$UXKIT_SUFFIX
-          echo "will build $VERSION"
-          echo "::set-output name=version::v$VERSION"
-
+          echo "BETA_VERSION = $BETA_VERSION"
+          echo "UXKIT_SUFFIX = $UXKIT_SUFFIX"
+          echo "UXKIT_VERSION = $UXKIT_VERSION"
+          echo "UXKIT_CONFIGURED = $UXKIT_CONFIGURED"
+          echo "VERSION_CONFIGURED = $VERSION_CONFIGURED"
 
       - name: Build and Install
         id: build
@@ -73,41 +41,49 @@ jobs:
           cp -r ~/.m2/repository/* ./repository
           zip -r repository.zip ./repository
 
-
       - name: Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: repository
           path: repository.zip
 
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - uses: ./.github/actions/configure
+        with:
+          gpg-secret-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          gpg-keyid-last8: ${{ secrets.OSSRH_GPG_KEY_ID_LAST_8 }}
+          gpg-secret-passphrase: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSPHRASE }}
+
+      - uses: ./.github/actions/version
+        id: version
 
       - name: Create release
         if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/beta/') }}
         run: |
+          echo "sonatypeUsername=${{ secrets.OSSRH_USERNAME }}" >> gradle.properties
+          echo "sonatypePassword=${{ secrets.OSSRH_PASSWORD }}" >> gradle.properties
           export branch="${{ github.ref }}"
-          if [[ "$branch" == "master" ]]; then
-            /usr/local/bin/aws s3 sync ~/.m2/repository/ "$ARTIFACT_REPO_URL_MASTER" --acl "public-read"
-          else
-            /usr/local/bin/aws s3 sync ~/.m2/repository/ "$ARTIFACT_REPO_URL_BETA" --acl "public-read"
-          fi
-        env:
-          ARTIFACT_REPO_URL_MASTER: ${{ secrets.ARTIFACT_REPO_URL_MASTER }}
-          ARTIFACT_REPO_URL_BETA: ${{ secrets.ARTIFACT_REPO_URL_BETA }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.CODEARTIFACT_REGION }}
-
+          ./gradlew -PUXKIT_SUFFIX=$UXKIT_SUFFIX publishToSonatype closeAndReleaseStagingRepository
 
       - name: Create tag
         if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/beta/') }}
         run: |
-          tag=${{ steps.environment.outputs.version }}
-          message='${{ steps.environment.outputs.version }}'
+          tag=${{ steps.version.outputs.uxkit-version }}
+          message='${{ steps.version.outputs.uxkit-version }}'
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git tag -a "${tag}" -m "${message}"
           git push origin "${tag}"
-
 
       - name: Create Github's beta release
         id: automatic_beta
@@ -115,9 +91,9 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.environment.outputs.version }}
+          automatic_release_tag: ${{ steps.version.outputs.uxkit-version }}
           prerelease: true
-          title: ${{ steps.environment.outputs.version }}
+          title: ${{ steps.version.outputs.uxkit-version }}
           files: |
             repository.zip
 
@@ -128,8 +104,8 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.environment.outputs.version }}
+          automatic_release_tag: ${{ steps.version.outputs.uxkit-version }}
           prerelease: false
-          title: ${{ steps.environment.outputs.version }}
+          title: ${{ steps.version.outputs.uxkit-version }}
           files: |
             repository.zip

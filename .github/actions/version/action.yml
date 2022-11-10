@@ -1,0 +1,38 @@
+name: "Configure"
+description: "Configure the environment for multiple jobs"
+outputs:
+  uxkit-version:
+    description: "UXKIT version available for non-env related"
+    value: ${{ steps.random-number-generator.outputs.random-number }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check build for beta IN COMPOSITE
+      id: beta_configuration
+      shell: bash
+      if: startsWith(github.ref, 'refs/heads/beta/')
+      run: |
+        echo "building for beta..."
+        export message="${{ github.event.head_commit.message }}"
+        if [[ "$message" =~ (beta\.[[:digit:]]+) ]]; then
+          export BETA_VERSION="${BASH_REMATCH[1]}"
+          echo "UXKIT_SUFFIX=$BETA_VERSION" >> $GITHUB_ENV
+        else
+          echo "no beta.X pattern found in the commit generating this pipeline. Please update and retrigger a build"
+          exit 1
+        fi
+        echo "UXKIT_CONFIGURED='true'" >> $GITHUB_ENV
+
+    - name: Configure specific environment information IN COMPOSITE
+      id: environment
+      shell: bash
+      run: |
+        grep "version=" uxkit.gradle | cut -d'=' -f2 | sed "s/[^[:digit:][:alpha:]\.-]//g"
+        export UXKIT_VERSION=$(grep "version=" uxkit.gradle | cut -d'=' -f2 | sed "s/[^[:digit:][:alpha:]\.-]//g")
+        # replaces the UXKIT_VERSION with "version-suffix"
+        [ ! -z "$UXKIT_SUFFIX" ] && export UXKIT_VERSION=$UXKIT_VERSION-$UXKIT_SUFFIX
+        echo "will build $UXKIT_VERSION"
+        echo "uxkit-version='$UXKIT_VERSION'" >> $GITHUB_OUTPUT
+        echo "UXKIT_VERSION='$UXKIT_VERSION'" >> $GITHUB_ENV
+        echo "VERSION_CONFIGURED='true'" >> $GITHUB_ENV

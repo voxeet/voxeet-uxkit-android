@@ -3,13 +3,17 @@ buildscript {
         google()
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://plugins.gradle.org/m2' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
 
         classpath 'com.jaredsburrows:gradle-license-plugin:0.8.91-SNAPSHOT'
+        classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
     }
 }
+
+apply plugin: "io.github.gradle-nexus.publish-plugin"
 
 def modules_sdk = [
         // main module
@@ -31,10 +35,11 @@ ext {
     compileSdkVersion = 32
     targetSdkVersion = 32
 
-    groupId="com.voxeet.sdk"
+    groupId="io.dolby"
     androidXCore = "1.6.0"
     androidXAppCompatVersion = "1.4.0"
     androidXRecyclerVersion = "1.2.1"
+
     //underlying sdk
     //voxeetSdkVersion defined in the sdk.gradle file
     //voxeetUXKitVersion defined in the uxkit.gradle file
@@ -43,13 +48,33 @@ ext {
 apply from: "./uxkit.gradle"
 apply from: "./sdk.gradle"
 
+group = ext.groupId
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
+}
+
 allprojects {
     repositories {
         mavenLocal()
         google()
         mavenCentral()
-        maven { url "https://android-sdk.voxeet.com/beta" }
-        maven { url "https://android-sdk.voxeet.com/release" }
+        maven {
+            url "https://android-sdk.voxeet.com/release"
+            content {
+                includeGroup "com.voxeet.sdk"
+                //any other possible group with a new includeGroup line but as far as I remember I only created and set one group
+            }
+        }
+
+        maven {
+            url "https://android-sdk.voxeet.com/beta"
+            content {
+                includeGroup "com.voxeet.sdk" //same as above
+            }
+        }
     }
 }
 

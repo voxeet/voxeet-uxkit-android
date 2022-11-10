@@ -10,8 +10,20 @@ After accepting the [Dolby Software License Agreement](https://github.com/voxeet
 allprojects {
     repositories {
         ...
-        maven { url "https://android-sdk.voxeet.com/beta" }
-        maven { url "https://android-sdk.voxeet.com/release" }
+        maven {
+            url "https://android-sdk.voxeet.com/release"
+            content {
+                includeGroup "com.voxeet.sdk"
+                //any other possible group with a new includeGroup line but as far as I remember I only created and set one group
+            }
+        }
+
+        maven {
+            url "https://android-sdk.voxeet.com/beta"
+            content {
+                includeGroup "com.voxeet.sdk" //same as above
+            }
+        }
     }
 }
 ```
