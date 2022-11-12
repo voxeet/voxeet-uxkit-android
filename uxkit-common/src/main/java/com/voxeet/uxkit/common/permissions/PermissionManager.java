@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.voxeet.promise.Promise;
 import com.voxeet.sdk.utils.Map;
-import com.voxeet.sdk.utils.MapCallback;
-import com.voxeet.sdk.utils.MapFilter;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

@@ -9,7 +9,8 @@
         <!-- nothing prevent its reuse tho -->
         <service android:name=".implementation.DefaultIncomingNotificationService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="camera|microphone" />
 
         <!-- Default service if the DefaultNotificationIncomingNotification is used -->
         <!-- nothing prevent its reuse tho -->

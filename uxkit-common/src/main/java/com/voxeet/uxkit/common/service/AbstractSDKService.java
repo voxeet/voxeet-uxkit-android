@@ -5,6 +5,8 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
+import android.os.Build;
 import android.os.Handler;
 
 import androidx.annotation.DrawableRes;
@@ -22,7 +24,6 @@ import com.voxeet.sdk.services.ConferenceService;
 import com.voxeet.sdk.services.conference.information.ConferenceInformation;
 import com.voxeet.sdk.services.conference.information.ConferenceStatus;
 import com.voxeet.sdk.utils.Opt;
-import com.voxeet.uxkit.common.R;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 
@@ -185,7 +186,12 @@ public abstract class AbstractSDKService<BINDER extends SDKBinder> extends Servi
 
             Notification notification = builder.build();
 
-            startForeground(getNotificationId(), notification);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                //shouldn't happen, creating overhead above
+                startForeground(getNotificationId(), notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST);
+            } else {
+                startForeground(getNotificationId(), notification);
+            }
         } else {
             Log.d("setForegroundState: impossible to set foreground, activity is null");
         }

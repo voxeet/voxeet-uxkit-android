@@ -2,10 +2,8 @@ package com.voxeet.uxkit.implementation.overlays;
 
 import android.content.Context;
 import android.view.MotionEvent;
-import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.voxeet.uxkit.R;
 import com.voxeet.uxkit.implementation.overlays.abs.AbstractVoxeetOverlayView;

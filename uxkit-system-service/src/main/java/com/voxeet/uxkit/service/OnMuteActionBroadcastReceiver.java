@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.voxeet.VoxeetSDK;
-import com.voxeet.sdk.models.Conference;
-import com.voxeet.sdk.services.conference.information.ConferenceStatus;
-import com.voxeet.sdk.utils.Opt;
 import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 

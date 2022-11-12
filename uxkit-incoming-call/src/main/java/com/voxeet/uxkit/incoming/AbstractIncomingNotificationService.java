@@ -73,9 +73,8 @@ public abstract class AbstractIncomingNotificationService<T extends AbstractInco
         int notificationId = notificationBundle.notificationId;
         Notification lastNotification = notificationBundle.notification;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(notificationId, lastNotification,
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            startForeground(notificationId, lastNotification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST);
         } else {
             startForeground(notificationId, lastNotification);
         }
@@ -125,11 +124,9 @@ public abstract class AbstractIncomingNotificationService<T extends AbstractInco
                 .setOngoing(true)
                 .build();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             //shouldn't happen, creating overhead above
-            startForeground(notificationId, lastNotification,
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
-                            | ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
+            startForeground(notificationId, lastNotification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST);
         } else {
             startForeground(notificationId, lastNotification);
         }

@@ -7,8 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.voxeet.sdk.manifests.AbstractManifestComponentProvider;
-import com.voxeet.uxkit.mp4.MP4MediaPresentationProvider;
 import com.voxeet.uxkit.common.presentation.controller.MediaPlayerProviderController;
+import com.voxeet.uxkit.mp4.MP4MediaPresentationProvider;
 
 public final class MP4MediaPresentationProviderManifestComponent extends AbstractManifestComponentProvider {
 

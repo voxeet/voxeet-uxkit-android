@@ -4,7 +4,8 @@
     <application android:supportsRtl="true">
         <service android:name="com.voxeet.uxkit.service.VoxeetSystemService"
             android:enabled="true"
-            android:exported="false">
+            android:exported="false"
+            android:foregroundServiceType="camera|microphone" />
         </service>
 
         <provider
