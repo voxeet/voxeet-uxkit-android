@@ -73,6 +73,7 @@ jobs:
           echo "sonatypeUsername=${{ secrets.OSSRH_USERNAME }}" >> gradle.properties
           echo "sonatypePassword=${{ secrets.OSSRH_PASSWORD }}" >> gradle.properties
           export branch="${{ github.ref }}"
+          ./gradlew -PUXKIT_SUFFIX=$UXKIT_SUFFIX :assembleAll
           ./gradlew -PUXKIT_SUFFIX=$UXKIT_SUFFIX publishToSonatype closeAndReleaseStagingRepository
 
       - name: Create tag
