@@ -81,28 +81,15 @@ jobs:
           ./gradlew -PUXKIT_SUFFIX=$UXKIT_SUFFIX :assembleAll
           ./gradlew -PUXKIT_SUFFIX=$UXKIT_SUFFIX publishToSonatype closeAndReleaseStagingRepository
 
-      - name: Create tag
-        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/beta/') }}
-        run: |
-          tag=${{ steps.version.outputs.uxkit }}
-          message='${{ steps.version.outputs.uxkit }}'
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git tag -a "${tag}" -m "${message}"
-          git push origin "${tag}"
-
       - name: Create Github's beta release
         id: automatic_beta
         if: startsWith(github.ref, 'refs/heads/beta/')
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.version.outputs.uxkit }}
+          automatic_release_tag: "v${{ steps.version.outputs.uxkit }}"
           prerelease: true
           title: ${{ steps.version.outputs.uxkit }}
-          files: |
-            repository.zip
-
 
       - name: Create Github's master release
         id: automatic_master
@@ -110,8 +97,6 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.version.outputs.uxkit }}
+          automatic_release_tag: "v${{ steps.version.outputs.uxkit }}"
           prerelease: false
           title: ${{ steps.version.outputs.uxkit }}
-          files: |
-            repository.zip
