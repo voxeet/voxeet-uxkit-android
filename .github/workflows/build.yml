@@ -66,6 +66,11 @@ jobs:
 
       - uses: ./.github/actions/version
         id: version
+      
+      - name: Check mandatory variables
+        id: check
+        run: |
+          echo "${{ steps.version.outputs.uxkit }}"
 
       - name: Create release
         if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/beta/') }}
@@ -79,8 +84,8 @@ jobs:
       - name: Create tag
         if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/beta/') }}
         run: |
-          tag=${{ steps.version.outputs.uxkit-version }}
-          message='${{ steps.version.outputs.uxkit-version }}'
+          tag=${{ steps.version.outputs.uxkit }}
+          message='${{ steps.version.outputs.uxkit }}'
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git tag -a "${tag}" -m "${message}"
@@ -92,9 +97,9 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.version.outputs.uxkit-version }}
+          automatic_release_tag: ${{ steps.version.outputs.uxkit }}
           prerelease: true
-          title: ${{ steps.version.outputs.uxkit-version }}
+          title: ${{ steps.version.outputs.uxkit }}
           files: |
             repository.zip
 
@@ -105,8 +110,8 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.version.outputs.uxkit-version }}
+          automatic_release_tag: ${{ steps.version.outputs.uxkit }}
           prerelease: false
-          title: ${{ steps.version.outputs.uxkit-version }}
+          title: ${{ steps.version.outputs.uxkit }}
           files: |
             repository.zip

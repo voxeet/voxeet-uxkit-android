@@ -1,9 +1,9 @@
 name: "Configure"
 description: "Configure the environment for multiple jobs"
 outputs:
-  uxkit-version:
+  uxkit:
     description: "UXKIT version available for non-env related"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
+    value: ${{ steps.environment.outputs.uxkit }}
 
 runs:
   using: "composite"
@@ -33,6 +33,6 @@ runs:
         # replaces the UXKIT_VERSION with "version-suffix"
         [ ! -z "$UXKIT_SUFFIX" ] && export UXKIT_VERSION=$UXKIT_VERSION-$UXKIT_SUFFIX
         echo "will build $UXKIT_VERSION"
-        echo "uxkit-version='$UXKIT_VERSION'" >> $GITHUB_OUTPUT
+        echo "uxkit='$UXKIT_VERSION'" >> $GITHUB_OUTPUT
         echo "UXKIT_VERSION='$UXKIT_VERSION'" >> $GITHUB_ENV
         echo "VERSION_CONFIGURED='true'" >> $GITHUB_ENV
