@@ -6,7 +6,6 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="camera|microphone" />
-        </service>
 
         <provider
             android:name="com.voxeet.uxkit.service.manifests.VoxeetSystemServiceManifestComponent"
