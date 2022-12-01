@@ -8,16 +8,14 @@ buildscript {
     }
 }
 
-apply plugin: 'com.android.application'
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+}
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-
     defaultConfig {
         applicationId "com.voxeet.sdk.sample"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        multiDexEnabled true
         versionCode 1
         versionName "1.0"
 
@@ -37,24 +35,6 @@ android {
     dexOptions {
         javaMaxHeapSize "4g"
     }
-
-    packagingOptions {
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/MANIFEST.MF'
-    }
-
-    lintOptions {
-        abortOnError false
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
 }
 
 dependencies {
@@ -66,19 +46,16 @@ dependencies {
     // to add the default service
     api project(':uxkit-system-service')
 
-    testImplementation 'junit:junit:4.12'
-
     //also used as annotation processor
-    implementation 'com.jakewharton:butterknife:7.0.1'
-    annotationProcessor 'com.jakewharton:butterknife:7.0.1'
+    implementation dolbyio.butterknife
+    annotationProcessor dolbyio.butterknife
 
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'androidx.multidex:multidex:2.0.0'
+    implementation dolbyio.androidx.material
 
     //when working with our oauth example
     //this converter is here to convert "string" only result
     //if a regular json is sent, please use Jackson
-    implementation 'com.squareup.retrofit2:converter-scalars:2.3.0'
+    implementation dolbyio.retrofit.converter.scalars
 }
 
 //add google-services.json to enable google-services plugin
@@ -86,4 +63,4 @@ if (file("./google-services.json").exists()) {
     apply plugin: 'com.google.gms.google-services'
 }
 
-apply from: "../advanced_gradle/license.gradle"
+apply from: gradle.dolbyio.files.license

@@ -1,6 +1,6 @@
 package fr.voxeet.sdk.sample.application;
 
-import androidx.multidex.MultiDexApplication;
+import android.app.Application;
 
 import com.voxeet.VoxeetSDK;
 import com.voxeet.sdk.json.ParticipantInfo;
@@ -18,7 +18,7 @@ import com.voxeet.uxkit.incoming.implementation.DefaultIncomingNotification;
 
 import org.greenrobot.eventbus.EventBus;
 
-public class SampleApplication extends MultiDexApplication {
+public class SampleApplication extends Application {
     private static final int ONE_MINUTE = 60 * 1000;
 
     private static final ShortLogger Log = UXKitLogger.createLogger(SampleApplication.class);

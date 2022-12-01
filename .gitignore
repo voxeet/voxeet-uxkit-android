@@ -17,3 +17,5 @@ docs/
 local.properties
 
 app/google-services.json
+
+gradle/dolbyio

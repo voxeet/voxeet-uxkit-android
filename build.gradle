@@ -1,19 +1,28 @@
 buildscript {
+    apply from: gradle.dolbyio.files.modules
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'https://plugins.gradle.org/m2' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
-
-        classpath 'com.jaredsburrows:gradle-license-plugin:0.8.91-SNAPSHOT'
-        classpath "io.github.gradle-nexus:publish-plugin:1.1.0"
+        classpath dolbyio.android.gradlePlugin
+        classpath dolbyio.nexus.gradlePlugin
+        classpath dolbyio.kotlin.gradlePlugin
+        classpath dolbyio.sonarcube.gradlePlugin
+        classpath dolbyio.license.gradlePlugin
+        classpath dolbyio.gradle.versions.plugin
+        classpath dolbyio.version.catalog.update.plugin
+        classpath dolbyio.hilt.gradle
+        classpath dolbyio.mkdocs.gradlePlugin
+        classpath dolbyio.dokka.gradlePlugin
     }
 }
 
-apply plugin: "io.github.gradle-nexus.publish-plugin"
+plugins {
+    alias(dolbyio.plugins.dokka)
+    alias(dolbyio.plugins.publish.nexus)
+}
 
 def modules_sdk = [
         // main module
@@ -30,19 +39,27 @@ def modules_sdk = [
 ]
 
 ext {
-    buildToolsVersion = "32.0.0"
-    minSdkVersion = 21
-    compileSdkVersion = 32
-    targetSdkVersion = 32
+    groupId = "io.dolby"
 
-    groupId="io.dolby"
-    androidXCore = "1.6.0"
-    androidXAppCompatVersion = "1.4.0"
-    androidXRecyclerVersion = "1.2.1"
-
-    //underlying sdk
-    //voxeetSdkVersion defined in the sdk.gradle file
-    //voxeetUXKitVersion defined in the uxkit.gradle file
+    pom = [
+        description: "Dolby.io Communications APIs library module",
+        inceptionYear: "${new Date().format("YYYY")}",
+        url: "https://github.com/voxeet/voxeet-sdk-android-gradle",
+        license: [
+            name: 'MIT License',
+            url: 'https://github.com/voxeet/voxeet-sdk-android-gradle/blob/main/LICENSE'
+        ],
+        developer: [
+            id: 'dolbyio',
+            name: 'Dolby.io',
+            email: 'support@dolby.io'
+        ],
+        scm: [
+            connection: 'scm:git:github.com/voxeet/voxeet-sdk-android-gradle.git',
+            developerConnection: 'scm:git:ssh://github.com/voxeet/voxeet-sdk-android-gradle.git',
+            url: 'https://github.com/voxeet/voxeet-sdk-android-gradle/tree/main'
+        ]
+    ]
 }
 
 apply from: "./uxkit.gradle"
@@ -82,6 +99,14 @@ allprojects {
     }
 }
 
+subprojects {
+    task allDeps(type: DependencyReportTask) {}
+
+    if (isSourcesModule(it)) {
+        apply from: gradle.dolbyio.files.moduleSetup
+    }
+}
+
 
 task cleanAll {
     dependsOn = modules_sdk.collect { ":${it}:clean" }
@@ -116,8 +141,4 @@ task uploadAll {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-subprojects {
-    task allDeps(type: DependencyReportTask) {}
 }

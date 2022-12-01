@@ -1,0 +1,9 @@
+[versions]
+firebase-messaging = "17.4.0"
+youtube-player = "0.26"
+robolectric = "4.6"
+
+[libraries]
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebase-messaging" }
+youtube-player = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender", version.ref = "youtube-player" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }

@@ -1,3 +1,17 @@
+def version = 'v0.0.16'
+def random = new Random()
+
+def dolbyioGradle = "https://raw.githubusercontent.com/voxeet/voxeet-sdk-android-gradle/${version}/dolbyio.gradle?rand=${random.nextInt()}"
+apply from: dolbyioGradle
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        dolbyio {
+            from(files(gradle.dolbyio.files.catalog))
+        }
+    }
+}
+
 include ':app'
 include ':uxkit'
 include ':uxkit-youtube'
