@@ -1,4 +1,9 @@
-# Voxeet Android UXKit
+# Dolby.io Android UXKit
+
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fvoxeet%2Fvoxeet-uxkit-android%2Fbadge%3Fref%3Dmain&style=flat)](https://github.com/voxeet/voxeet-uxkit-android)
+
+[![GitHub release](https://img.shields.io/github/release/voxeet/voxeet-uxkit-android.svg)](https://github.com/voxeet/voxeet-uxkit-android/releases/)
+
 
 ## Integrating the UXKit
 
@@ -32,7 +37,7 @@ In your app's build.gradle :
 
 ```gradle
 dependencies {
-  compile ('com.voxeet.sdk:uxkit:3.+') { transitive = true }
+  compile ('io.dolby:uxkit:3.+') { transitive = true }
 }
 ```
 
@@ -52,7 +57,7 @@ See the main process and our various articles on our [website](https://dolby.io/
 
 MIT License
 
-Copyright (c) 2020 - 2022 Voxeet
+Copyright (c) 2020 - 2022 Dolby.io
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
