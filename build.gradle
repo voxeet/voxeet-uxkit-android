@@ -55,9 +55,9 @@ ext {
             email: 'support@dolby.io'
         ],
         scm: [
-            connection: 'scm:git:github.com/voxeet/voxeet-sdk-android-gradle.git',
-            developerConnection: 'scm:git:ssh://github.com/voxeet/voxeet-sdk-android-gradle.git',
-            url: 'https://github.com/voxeet/voxeet-sdk-android-gradle/tree/main'
+            connection: 'scm:git:github.com/voxeet/voxeet-uxkit-android.git',
+            developerConnection: 'scm:git:ssh://github.com/voxeet/voxeet-uxkit-android.git',
+            url: 'https://github.com/voxeet/voxeet-uxkit-android/tree/main'
         ]
     ]
 }

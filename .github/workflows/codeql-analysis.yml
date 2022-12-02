@@ -61,7 +61,7 @@ jobs:
 
     - name: Build
       run: |
-        ./gradlew :assembleAll :app:asembleDebug
+        ./gradlew :assembleAll :app:assembleDebug publishToMavenLocal
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
