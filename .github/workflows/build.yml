@@ -73,7 +73,7 @@ jobs:
           echo "${{ steps.version.outputs.uxkit }}"
 
       - name: Create release
-        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/beta/') }}
+        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/beta/') }}
         run: |
           echo "sonatypeUsername=${{ secrets.OSSRH_USERNAME }}" >> gradle.properties
           echo "sonatypePassword=${{ secrets.OSSRH_PASSWORD }}" >> gradle.properties
@@ -91,9 +91,9 @@ jobs:
           prerelease: true
           title: ${{ steps.version.outputs.uxkit }}
 
-      - name: Create Github's master release
-        id: automatic_master
-        if: github.ref == 'refs/heads/master'
+      - name: Create Github's main release
+        id: automatic_main
+        if: github.ref == 'refs/heads/main'
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
