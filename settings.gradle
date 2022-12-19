@@ -1,4 +1,4 @@
-def version = 'v0.0.16'
+def version = 'v0.0.25'
 def random = new Random()
 
 def dolbyioGradle = "https://raw.githubusercontent.com/voxeet/voxeet-sdk-android-gradle/${version}/dolbyio.gradle?rand=${random.nextInt()}"

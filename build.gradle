@@ -9,7 +9,7 @@ buildscript {
         classpath dolbyio.android.gradlePlugin
         classpath dolbyio.nexus.gradlePlugin
         classpath dolbyio.kotlin.gradlePlugin
-        classpath dolbyio.sonarcube.gradlePlugin
+        classpath dolbyio.sonarqube.gradlePlugin
         classpath dolbyio.license.gradlePlugin
         classpath dolbyio.gradle.versions.plugin
         classpath dolbyio.version.catalog.update.plugin
@@ -23,6 +23,9 @@ plugins {
     alias(dolbyio.plugins.dokka)
     alias(dolbyio.plugins.publish.nexus)
 }
+
+apply from: gradle.dolbyio.files.dependencyUpdates
+
 
 def modules_sdk = [
         // main module
