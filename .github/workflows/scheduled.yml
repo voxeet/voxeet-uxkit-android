@@ -1,0 +1,30 @@
+name: Snapshot build
+on:
+  schedule:
+    - cron:  '0 12 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Build and Install
+        id: build
+        run: |
+          ./gradlew dependencyUpdates | grep " - [^\[]* \[[^-]* -> [^\]]*" > dependencies.txt
+
+      - name: Available updates
+        id: updates
+        run: |
+          cat dependencies.txt
+
+      - name: Mandatory dolby.io
+        id: mandatory_dolby.io
+        run: |
+          grep "io.dolby" dependencies.txt && (echo "found dolby.io updates" ; exit 1)
