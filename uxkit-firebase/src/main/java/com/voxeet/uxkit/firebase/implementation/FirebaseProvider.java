@@ -1,12 +1,12 @@
 package com.voxeet.uxkit.firebase.implementation;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.voxeet.promise.Promise;
 import com.voxeet.sdk.push.utils.NotificationHelper;
 import com.voxeet.sdk.services.notification.INotificationTokenProvider;
 import com.voxeet.uxkit.common.UXKitLogger;
@@ -64,16 +64,18 @@ public class FirebaseProvider implements INotificationTokenProvider {
 
     @Override
     @Nullable
-    public String getToken() {
-        try {
-            String token = FirebaseInstanceId.getInstance().getToken();
-            if (TextUtils.isEmpty(token))
-                Log.d("getToken: the token is null from FirebaseInstanceId...");
-            return token;
-        } catch (IllegalStateException e) {
-            Log.e("FirebaseInstanceId.getInstance().getAccessToken() returned an IllegalStateException, you have an issue with your project configuration (google-services.json for instance)", e);
-            return null;
-        }
+    public Promise<String> getToken() {
+        return new Promise<>(solver -> {
+            try {
+                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                    // send the obtained token
+                    solver.resolve(task.getResult());
+                }).addOnFailureListener(e -> solver.resolve((String) null));
+            } catch (Throwable e) {
+                Log.e("FirebaseInstanceId.getInstance().getAccessToken() returned an IllegalStateException, you have an issue with your project configuration (google-services.json for instance)", e);
+                solver.resolve((String) null);
+            }
+        });
     }
 
     @Deprecated

@@ -2,5 +2,5 @@ def version_uxkit = { String version ->  project.hasProperty("UXKIT_SUFFIX") && 
         ? "${version}-${project.UXKIT_SUFFIX}"
         : "${version}" }
 
-def version="3.7.6"
+def version="3.8.0"
 rootProject.ext.version = version_uxkit(version)
