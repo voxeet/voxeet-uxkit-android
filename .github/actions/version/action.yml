@@ -28,7 +28,7 @@ runs:
       id: environment
       shell: bash
       run: |
-        grep "version = " uxkit.gradle | cut -d'=' -f2 | sed "s/[^[:digit:][:alpha:]\.-]//g"
+        grep -m1 "version = " uxkit.gradle | sed "s/ //g" | cut -d'=' -f2 | sed "s/[^[:digit:][:alpha:]\.-]//g"
         export UXKIT_VERSION=$(grep "version = " uxkit.gradle | cut -d'=' -f2 | sed "s/[^[:digit:][:alpha:]\.-]//g")
         # replaces the UXKIT_VERSION with "version-suffix"
         [ ! -z "$UXKIT_SUFFIX" ] && export UXKIT_VERSION=$UXKIT_VERSION-$UXKIT_SUFFIX
