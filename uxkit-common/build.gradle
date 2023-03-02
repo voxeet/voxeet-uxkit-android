@@ -16,7 +16,7 @@ configurations {
 dependencies {
     api dolbyio.androidx.appcompat
 
-    api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
+    api "io.dolby:sdk:${rootProject.ext.voxeetSdkVersion}"
 }
 
 apply from: gradle.dolbyio.files.publishing

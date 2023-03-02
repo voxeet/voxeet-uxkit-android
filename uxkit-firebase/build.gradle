@@ -17,7 +17,7 @@ dependencies {
     implementation platform(libs.firebase.bom)
     api libs.firebase.messaging
 
-    api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
+    api "io.dolby:sdk:${rootProject.ext.voxeetSdkVersion}"
 
     api project(":uxkit-common")
 }

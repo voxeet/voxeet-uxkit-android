@@ -18,7 +18,7 @@ dependencies {
     api dolbyio.androidx.appcompat
     api dolbyio.androidx.recyclerview
 
-    api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
+    api "io.dolby:sdk:${rootProject.ext.voxeetSdkVersion}"
 
     api project(":uxkit-incoming-call")
     api project(":uxkit-common")

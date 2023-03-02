@@ -14,7 +14,7 @@ configurations {
 }
 
 dependencies {
-    api "com.voxeet.sdk:sdk:${rootProject.ext.voxeetSdkVersion}"
+    api "io.dolby:sdk:${rootProject.ext.voxeetSdkVersion}"
     api project(":uxkit-common")
 }
 
