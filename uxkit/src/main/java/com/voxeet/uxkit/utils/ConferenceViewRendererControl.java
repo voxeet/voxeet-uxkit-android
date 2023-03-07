@@ -89,7 +89,6 @@ public class ConferenceViewRendererControl {
             if (!ownUserId.equals(peerId)) {
                 selectedView.setOnClickListener(null);
                 selectedView.setClickable(false);
-                selectedView.setMirror(false);
                 selectedView.unAttach();
                 selectedView.setVisibility(View.VISIBLE);
                 selectedView.attach(peerId, stream);
@@ -100,7 +99,6 @@ public class ConferenceViewRendererControl {
         } else {
             selectedView.setOnClickListener(null);
             selectedView.setClickable(false);
-            selectedView.setMirror(false);
             selectedView.unAttach();
             selectedView.setVisibility(View.VISIBLE);
             selectedView.attach(peerId, stream);
@@ -139,7 +137,6 @@ public class ConferenceViewRendererControl {
                 selfView.setVisibility(View.GONE);
 
                 selectedView.setVideoFill();
-                selectedView.setMirror(provider.isDefaultFrontFacing());
                 selectedView.setVisibility(View.VISIBLE);
                 selectedView.attach(ownUserId, stream);
                 setClickForSelectedIfNecessary();
@@ -152,7 +149,6 @@ public class ConferenceViewRendererControl {
                     selectedView.setVisibility(View.GONE);
                     getParent().showSpeakerView();
                 }
-                selfView.setMirror(provider.isDefaultFrontFacing());
                 selfView.attach(VoxeetSDK.session().getParticipantId(), stream);
                 selfView.setVisibility(View.VISIBLE);
             }
@@ -225,29 +221,7 @@ public class ConferenceViewRendererControl {
         }
 
         VoxeetSDK.mediaDevice().switchCamera()
-                .then(aBoolean -> {
-                    CameraContext provider = VoxeetSDK.mediaDevice().getCameraContext();
-                    updateMirror(provider.isDefaultFrontFacing());
-                })
                 .error(Log::e);
-    }
-
-    public void updateMirror(boolean isFrontCamera) {
-        String ownUserId = VoxeetSDK.session().getParticipantId();
-        VideoView selectedView = getOtherVideoView();
-        VideoView selfView = getSelfVideoView();
-
-        if (null != ownUserId) {
-            if (null != selectedView && ownUserId.equals(selectedView.getPeerId())) {
-                //only mirror the view in case of camera stream
-                MediaStreamType type = selectedView.current();
-                if (MediaStreamType.Camera.equals(type)) {
-                    selectedView.setMirror(isFrontCamera);
-                }
-            } else if (null != selfView && ownUserId.equals(selfView.getPeerId())) {
-                selfView.setMirror(isFrontCamera);
-            }
-        }
     }
 
     public void enableClick(boolean state) {
