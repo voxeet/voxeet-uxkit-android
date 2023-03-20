@@ -25,6 +25,6 @@ jobs:
           cat dependencies.txt
 
       - name: Mandatory dolby.io
-        id: mandatory_dolby.io
+        id: mandatory_dolby_io
         run: |
           grep "io.dolby" dependencies.txt && (echo "found dolby.io updates" ; exit 1)
