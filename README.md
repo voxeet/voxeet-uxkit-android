@@ -1,6 +1,6 @@
 # Dolby.io Android UXKit
 
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fvoxeet%2Fvoxeet-uxkit-android%2Fbadge%3Fref%3Dmain&style=flat)](https://github.com/voxeet/voxeet-uxkit-android)
+[![Build Status](https://github.com/voxeet/voxeet-uxkit-android/actions/workflows/build.yml/badge.svg)](https://github.com/voxeet/voxeet-uxkit-android)
 
 [![GitHub release](https://img.shields.io/github/release/voxeet/voxeet-uxkit-android.svg)](https://github.com/voxeet/voxeet-uxkit-android/releases/)
 
@@ -26,6 +26,10 @@ dependencies {
 ### Integration
 
 See the main process and our various articles on our [website](https://dolby.io/developers/interactivity-apis/client-ux-kit/uxkit-voxeet-java)
+
+### Local
+
+To help working on local environment, if you need a specific version of the SDK, you can spool up the uxkit's installation with `-PSDK_VERSION=x.y.z-someExplicitSuffix`
 
 ## License
 
