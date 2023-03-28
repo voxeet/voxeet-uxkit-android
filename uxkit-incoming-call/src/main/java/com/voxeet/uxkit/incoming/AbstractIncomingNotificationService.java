@@ -21,6 +21,7 @@ import com.voxeet.uxkit.common.UXKitLogger;
 import com.voxeet.uxkit.common.logging.ShortLogger;
 import com.voxeet.uxkit.incoming.implementation.DefaultIncomingNotification;
 import com.voxeet.uxkit.incoming.notification.NotificationBundle;
+import com.voxeet.uxkit.incoming.utils.IncomingNotificationServiceHelper;
 
 public abstract class AbstractIncomingNotificationService<T extends AbstractIncomingNotificationIntentProvider> extends Service {
 
@@ -41,6 +42,10 @@ public abstract class AbstractIncomingNotificationService<T extends AbstractInco
 
         createNotificationChannel(this);
         startForegroundDefault();
+
+        // also register the current service so that it will be managing auto close when invitation
+        // are going to be accepted or declined
+        IncomingNotificationServiceHelper.registerIncomingNotificationServiceForAutoStop(this);
     }
 
     @NonNull

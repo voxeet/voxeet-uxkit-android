@@ -22,8 +22,11 @@ import com.voxeet.uxkit.incoming.AbstractIncomingNotificationIntentProvider;
 import com.voxeet.uxkit.incoming.AbstractIncomingNotificationService;
 import com.voxeet.uxkit.incoming.notification.NotificationBundle;
 
+import java.lang.ref.WeakReference;
+
 public class IncomingNotificationServiceHelper {
 
+    private static WeakReference<? extends AbstractIncomingNotificationService> startedService;
     public static final String[] DEFAULT_NOTIFICATION_KEYS = new String[]{
             Constants.INVITER_ID,
             Constants.INVITER_NAME,
@@ -34,11 +37,27 @@ public class IncomingNotificationServiceHelper {
             Constants.CONF_ALIAS
     };
 
+    /**
+     * In order to help automatically stop the incoming notification service,
+     * call this method with the instance of your service once it calls the onForeground
+     * @param service
+     */
+    public static void registerIncomingNotificationServiceForAutoStop(@Nullable AbstractIncomingNotificationService service) {
+        startedService = new WeakReference<>(service);
+    }
+
     private final static ShortLogger Log = UXKitLogger.createLogger(IncomingNotificationServiceHelper.class);
 
     public static void stop(@NonNull Class<? extends AbstractIncomingNotificationService> klass,
                             @NonNull Context context) {
         IncomingNotificationServiceHelper.stop(klass, context, null, null);
+    }
+
+    public static void stopRegisteredIncomingNotificationServiceForAutoStop() {
+        AbstractIncomingNotificationService service = startedService.get();
+
+        if (null == service) return;
+        service.stopSelf();
     }
 
     public static void stop(@NonNull Class<? extends AbstractIncomingNotificationService> klass,
