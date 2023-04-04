@@ -18,6 +18,9 @@ public final class UXKitManifestComponent extends AbstractManifestComponentProvi
 
     @Override
     protected void init(@NonNull Context context, @Nullable ProviderInfo providerInfo) {
+        // in out of order manifest instanciation, prevents a crash
+        VoxeetSDK.setApplication(context);
+
         VoxeetSDK.registerComponentVersion("android-uxkit", BuildConfig.VERSION_NAME);
     }
 
