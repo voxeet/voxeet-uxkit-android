@@ -2,4 +2,4 @@ def version_from_sdk = { String version ->  project.hasProperty("SDK_VERSION") &
         ? "${project.SDK_VERSION}"
         : version }
 
-rootProject.ext.voxeetSdkVersion = version_from_sdk("[3.8.1,)")
+rootProject.ext.voxeetSdkVersion = version_from_sdk("[3.8.1,3.9.0)")

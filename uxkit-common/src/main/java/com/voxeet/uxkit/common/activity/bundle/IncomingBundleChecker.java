@@ -11,6 +11,8 @@ public interface IncomingBundleChecker {
 
     void onAccept();
 
+    void onAccept(@Nullable OnAcceptCallback onAcceptCallback);
+
     boolean isBundleValid();
 
     @Nullable

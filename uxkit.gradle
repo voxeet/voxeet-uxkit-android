@@ -4,5 +4,5 @@ def version_uxkit = { String version ->
             : "${version}"
 }
 
-def version = "3.8.5"
+def version = "3.9.0"
 rootProject.ext.version = version_uxkit(version)

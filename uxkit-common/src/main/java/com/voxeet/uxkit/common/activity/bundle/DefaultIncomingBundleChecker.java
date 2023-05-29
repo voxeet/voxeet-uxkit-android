@@ -75,6 +75,19 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
      * not from the incoming call activity (!)
      */
     public void onAccept() {
+        onAccept(null);
+    }
+
+    /**
+     * Call accepted invitation
+     * <p>
+     * this must be called from the activity launched
+     * not from the incoming call activity (!)
+     *
+     * @param onAcceptCallback optional callback to give ability to configure the acceptation call
+     */
+    @Override
+    public void onAccept(@Nullable OnAcceptCallback onAcceptCallback) {
         if (mConferenceId == null) {
             Log.d("onAccept: the conferenceId is invalid, dismissing...");
             return;
@@ -82,8 +95,14 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
         Log.d("onAccept: mConferenceId := " + mConferenceId);
         //join the conference
         Conference conference = VoxeetSDK.conference().getConference(mConferenceId);
-        Promise<Conference> join = VoxeetSDK.conference().join(new ConferenceJoinOptions.Builder(conference).build());
-        //only when error() is called
+        ConferenceJoinOptions.Builder builder = new ConferenceJoinOptions.Builder(conference);
+
+        // give the ability to set custom configurations
+        if (null != onAcceptCallback) {
+            onAcceptCallback.onAcceptConfiguration(builder);
+        }
+
+        Promise<Conference> join = VoxeetSDK.conference().join(builder.build());
 
         Log.d("onAccept: isSocketOpen := " + VoxeetSDK.session().isOpen());
         if (!VoxeetSDK.session().isOpen()) {
