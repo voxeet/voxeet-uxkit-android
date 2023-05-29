@@ -1,5 +1,7 @@
 package com.voxeet.uxkit.common.activity.bundle;
 
+import static com.voxeet.uxkit.common.DefaultConfiguration.onAcceptCallback;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -75,7 +77,7 @@ public class DefaultIncomingBundleChecker implements IncomingBundleChecker {
      * not from the incoming call activity (!)
      */
     public void onAccept() {
-        onAccept(null);
+        onAccept(onAcceptCallback);
     }
 
     /**

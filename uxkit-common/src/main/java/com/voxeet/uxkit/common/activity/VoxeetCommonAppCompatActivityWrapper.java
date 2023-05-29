@@ -1,5 +1,7 @@
 package com.voxeet.uxkit.common.activity;
 
+import static com.voxeet.uxkit.common.DefaultConfiguration.onAcceptCallback;
+
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
@@ -105,7 +107,7 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
         }
 
         if (incomingBundleChecker.isBundleValid()) {
-            incomingBundleChecker.onAccept();
+            incomingBundleChecker.onAccept(onAcceptCallback);
         }
 
         VoxeetSDK.screenShare().consumeRightsToScreenShare();
@@ -126,7 +128,7 @@ public abstract class VoxeetCommonAppCompatActivityWrapper<T extends AbstractSDK
 
         incomingBundleChecker = createIncomingBundleChecker(intent);
         if (incomingBundleChecker.isBundleValid()) {
-            incomingBundleChecker.onAccept();
+            incomingBundleChecker.onAccept(onAcceptCallback);
         }
 
         dismissNotification();
