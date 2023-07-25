@@ -86,7 +86,7 @@ jobs:
       - name: Create Github's beta release
         id: automatic_beta
         if: startsWith(github.ref, 'refs/heads/beta/')
-        uses: "./.github/actions/action-automatic-releases-1.2.1"
+        uses: "DolbyIO/action-automatic-releases@1.0"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "v${{ steps.version.outputs.uxkit }}"
@@ -96,7 +96,7 @@ jobs:
       - name: Create Github's main release
         id: automatic_main
         if: github.ref == 'refs/heads/main'
-        uses: "./.github/actions/action-automatic-releases-1.2.1"
+        uses: "DolbyIO/action-automatic-releases@1.0"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "v${{ steps.version.outputs.uxkit }}"
